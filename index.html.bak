@@ -811,77 +811,77 @@
 
   <script>
     const photoPages = [
-      { type: 'pair', src: ["retouch_2025052400135401.jpg", "mmexport1741595537727.jpg"], orientation: ["landscape", "landscape"], date: "2025年", station: 1, label: "You & Me", title: "你的样子，我都喜欢", body: "即使不在同一个画面里，
+      { type: 'pair', src: ["retouch_2025052400135401.jpg", "mmexport1741595537727.jpg"], orientation: ["landscape", "landscape"], date: "2025.05.24", station: 1, label: "You & Me", title: "你的样子，我都喜欢", body: "即使不在同一个画面里，
 心也在一起。" },
-      { type: 'couple', src: "情侣欢乐_九寨沟湖边大笑_8.35分.jpg", orientation: "portrait", date: "2025年", station: 2, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。
+      { type: 'couple', src: "情侣欢乐_九寨沟湖边大笑_8.35分.jpg", orientation: "portrait", date: "美好时光", station: 2, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。
 因为有你，平凡的地方也有了意义。" },
-      { type: 'couple', src: "情侣唯美_爱心石雪山_8.10分.jpg", orientation: "portrait", date: "2025年", station: 3, label: "Moment", title: "时光里最温柔的画面", body: "世界很大，但我的眼里只有你。
+      { type: 'couple', src: "情侣唯美_爱心石雪山_8.10分.jpg", orientation: "portrait", date: "美好时光", station: 3, label: "Moment", title: "时光里最温柔的画面", body: "世界很大，但我的眼里只有你。
 再大的人流，我也能一眼找到你。" },
-      { type: 'couple', src: "情侣浪漫_户外自拍依偾_7.30分.jpg", orientation: "portrait", date: "2025年", station: 4, label: "Together", title: "有你的地方就是家", body: "感谢时间，让我们相遇。
+      { type: 'couple', src: "情侣浪漫_户外自拍依偾_7.30分.jpg", orientation: "portrait", date: "美好时光", station: 4, label: "Together", title: "有你的地方就是家", body: "感谢时间，让我们相遇。
 更感谢命运，让我们没有错过。" },
-      { type: 'couple', src: "110APPLE_IMG_0020.jpg", orientation: "landscape", date: "2025年", station: 5, label: "Us", title: "想把这一刻定格", body: "只要和你在一起，哪里都是晴天。
+      { type: 'couple', src: "110APPLE_IMG_0020.jpg", orientation: "landscape", date: "美好时光", station: 5, label: "Us", title: "想把这一刻定格", body: "只要和你在一起，哪里都是晴天。
 哪怕是下雨天，也觉得浪漫。" },
-      { type: 'couple', src: "IMG_20250511_170129.jpg", orientation: "landscape", date: "2025年", station: 6, label: "Forever", title: "最好的我们", body: "想把这一刻定格，
+      { type: 'couple', src: "IMG_20250511_170129.jpg", orientation: "landscape", date: "2025.05.11", station: 6, label: "Forever", title: "最好的我们", body: "想把这一刻定格，
 放进我们的回忆里，永远珍藏。" },
-      { type: 'couple', src: "IMG_20250525_221852.jpg", orientation: "portrait", date: "2025年", station: 7, label: "Sunshine", title: "世界很大，眼里只有你", body: "你笑起来的样子，
+      { type: 'couple', src: "IMG_20250525_221852.jpg", orientation: "portrait", date: "2025.05.25", station: 7, label: "Sunshine", title: "世界很大，眼里只有你", body: "你笑起来的样子，
 是我见过最美的风景。" },
-      { type: 'pair', src: ["IMG_20250809_175936.jpg", "IMG_20250530_165640.jpg"], orientation: ["portrait", "portrait"], date: "2025年", station: 8, label: "Two Souls", title: "一个人的镜头，两个人的故事", body: "你的每一面，我都想珍藏。
+      { type: 'pair', src: ["IMG_20250809_175936.jpg", "IMG_20250530_165640.jpg"], orientation: ["portrait", "portrait"], date: "2025.08.09", station: 8, label: "Two Souls", title: "一个人的镜头，两个人的故事", body: "你的每一面，我都想珍藏。
 因为都是你，所以都喜欢。" },
-      { type: 'couple', src: "IMG_20250705_201036.jpg", orientation: "portrait", date: "2025年", station: 9, label: "Sweet", title: "只要在一起，哪里都是晴天", body: "不需要去哪里，
+      { type: 'couple', src: "IMG_20250705_201036.jpg", orientation: "portrait", date: "2025.07.05", station: 9, label: "Sweet", title: "只要在一起，哪里都是晴天", body: "不需要去哪里，
 只要你在身边，就是最好的旅行。" },
-      { type: 'couple', src: "IMG_20250809_192822.jpg", orientation: "landscape", date: "2025年", station: 10, label: "Treasure", title: "你笑起来，风都温柔", body: "时间过得很快，
+      { type: 'couple', src: "IMG_20250809_192822.jpg", orientation: "landscape", date: "2025.08.09", station: 10, label: "Treasure", title: "你笑起来，风都温柔", body: "时间过得很快，
 但和你在一起的每一秒，我都想慢一点。" },
-      { type: 'couple', src: "IMG_20250817_104404.jpg", orientation: "portrait", date: "2025年", station: 11, label: "Bliss", title: "这一刻，就是永远", body: "世界喧嚣，我们安静相爱。
+      { type: 'couple', src: "IMG_20250817_104404.jpg", orientation: "portrait", date: "2025.08.17", station: 11, label: "Bliss", title: "这一刻，就是永远", body: "世界喧嚣，我们安静相爱。
 这就是我最想要的幸福。" },
-      { type: 'couple', src: "IMG_20251002_132901.jpg", orientation: "portrait", date: "2025年", station: 12, label: "Warmth", title: "牵手走过的路，都是浪漫", body: "牵着你的手，
+      { type: 'couple', src: "IMG_20251002_132901.jpg", orientation: "portrait", date: "2025.10.02", station: 12, label: "Warmth", title: "牵手走过的路，都是浪漫", body: "牵着你的手，
 我就知道，这条路我想一直走下去。" },
-      { type: 'couple', src: "IMG_1184.jpg", orientation: "landscape", date: "2025年", station: 13, label: "Love", title: "你的眼里，有整片星空", body: "你的眼神里有光，
+      { type: 'couple', src: "IMG_1184.jpg", orientation: "landscape", date: "美好时光", station: 13, label: "Love", title: "你的眼里，有整片星空", body: "你的眼神里有光，
 那是我最想停留的地方。" },
-      { type: 'couple', src: "IMG_1275.jpg", orientation: "landscape", date: "2025年", station: 14, label: "Radiance", title: "平凡的日子，因为有你而发光", body: "和你在一起的时候，
+      { type: 'couple', src: "IMG_1275.jpg", orientation: "landscape", date: "美好时光", station: 14, label: "Radiance", title: "平凡的日子，因为有你而发光", body: "和你在一起的时候，
 连空气都是甜的。" },
-      { type: 'pair', src: ["IMG_20251004_175959.jpg", "IMG_20251004_175939.jpg"], orientation: ["portrait", "portrait"], date: "2025年", station: 15, label: "Both Sides", title: "不同的角度，同样的爱", body: "两个人，各自精彩。
+      { type: 'pair', src: ["IMG_20251004_175959.jpg", "IMG_20251004_175939.jpg"], orientation: ["portrait", "portrait"], date: "2025.10.04", station: 15, label: "Both Sides", title: "不同的角度，同样的爱", body: "两个人，各自精彩。
 合在一起，就是最美好的我们。" },
-      { type: 'couple', src: "retouch_2025100722025775.jpg", orientation: "portrait", date: "2025年", station: 16, label: "Dream", title: "想和你一起，慢慢变老", body: "遇见你之前，我没想过结婚。
+      { type: 'couple', src: "retouch_2025100722025775.jpg", orientation: "portrait", date: "2025.10.07", station: 16, label: "Dream", title: "想和你一起，慢慢变老", body: "遇见你之前，我没想过结婚。
 遇见你之后，结婚我没想过别人。" },
-      { type: 'couple', src: "情侣浪漫_城市公园草坪依偾B_7.90分.jpg", orientation: "portrait", date: "2025年", station: 17, label: "Promise", title: "故事还长，我们慢慢讲", body: "我们的故事很长，
+      { type: 'couple', src: "情侣浪漫_城市公园草坪依偾B_7.90分.jpg", orientation: "portrait", date: "美好时光", station: 17, label: "Promise", title: "故事还长，我们慢慢讲", body: "我们的故事很长，
 长到要用一辈子去慢慢讲。" },
-      { type: 'couple', src: "情侣浪漫_银杏树林对视_7.75分.jpg", orientation: "portrait", date: "2025年", station: 18, label: "Eternity", title: "有你在身边，什么都不怕", body: "有你在身边，
+      { type: 'couple', src: "情侣浪漫_银杏树林对视_7.75分.jpg", orientation: "portrait", date: "美好时光", station: 18, label: "Eternity", title: "有你在身边，什么都不怕", body: "有你在身边，
 我什么都不怕，什么都敢。" },
-      { type: 'couple', src: "IMG_20251129_164829.jpg", orientation: "landscape", date: "2025年", station: 19, label: "Heart", title: "你的存在，就是最好的礼物", body: "你的存在，就是我最好的礼物。
+      { type: 'couple', src: "IMG_20251129_164829.jpg", orientation: "landscape", date: "2025.11.29", station: 19, label: "Heart", title: "你的存在，就是最好的礼物", body: "你的存在，就是我最好的礼物。
 不需要节日，每天都想珍惜。" },
-      { type: 'couple', src: "情侣欢乐_红叶林大笑比耶_8.55分.jpg", orientation: "portrait", date: "2025年", station: 20, label: "Soul", title: "人间烟火，最抚人心", body: "人间烟火，最抚人心。
+      { type: 'couple', src: "情侣欢乐_红叶林大笑比耶_8.55分.jpg", orientation: "portrait", date: "美好时光", station: 20, label: "Soul", title: "人间烟火，最抚人心", body: "人间烟火，最抚人心。
 而你，最抚我心。" },
-      { type: 'couple', src: "情侣浪漫_红叶林依偾自拍_8.55分.jpg", orientation: "portrait", date: "2025年", station: 21, label: "Magic", title: "与你有关，皆是浪漫", body: "与你有关，皆是浪漫。
+      { type: 'couple', src: "情侣浪漫_红叶林依偾自拍_8.55分.jpg", orientation: "portrait", date: "美好时光", station: 21, label: "Magic", title: "与你有关，皆是浪漫", body: "与你有关，皆是浪漫。
 哪怕是日常，也闪闪发光。" },
-      { type: 'couple', src: "情侣欢乐_三峡之巅大笑_7.65分.jpg", orientation: "portrait", date: "2025年", station: 22, label: "Wonder", title: "喜欢是选择，爱是非你不可", body: "喜欢是选择，爱是非你不可。
+      { type: 'couple', src: "情侣欢乐_三峡之巅大笑_7.65分.jpg", orientation: "portrait", date: "美好时光", station: 22, label: "Wonder", title: "喜欢是选择，爱是非你不可", body: "喜欢是选择，爱是非你不可。
 而我，非你不可。" },
-      { type: 'couple', src: "情侣欢乐_夕阳古塔比耶_8.85分.jpg", orientation: "portrait", date: "2025年", station: 23, label: "Smile", title: "从此朝暮，都有人陪", body: "从此朝暮，都有人陪。
+      { type: 'couple', src: "情侣欢乐_夕阳古塔比耶_8.85分.jpg", orientation: "portrait", date: "美好时光", station: 23, label: "Smile", title: "从此朝暮，都有人陪", body: "从此朝暮，都有人陪。
 这是我最大的心安。" },
-      { type: 'couple', src: "情侣特色_金雕雕塑比心_8.25分.jpg", orientation: "portrait", date: "2025年", station: 24, label: "Glow", title: "我们的故事，未完待续", body: "我们的故事，未完待续。
+      { type: 'couple', src: "情侣特色_金雕雕塑比心_8.25分.jpg", orientation: "portrait", date: "美好时光", station: 24, label: "Glow", title: "我们的故事，未完待续", body: "我们的故事，未完待续。
 而我，迫不及待想写下去。" },
-      { type: 'couple', src: "情侣特色_爱心框合照_8.20分.jpg", orientation: "portrait", date: "2025年", station: 25, label: "Bloom", title: "余生请多指教", body: "余生请多指教。
+      { type: 'couple', src: "情侣特色_爱心框合照_8.20分.jpg", orientation: "portrait", date: "美好时光", station: 25, label: "Bloom", title: "余生请多指教", body: "余生请多指教。
 我会用每一天来爱你。" },
-      { type: 'couple', src: "情侣唯美_相框雪景_7.60分.jpg", orientation: "portrait", date: "2025年", station: 26, label: "Breeze", title: "山河远阔，人间烟火", body: "山河远阔，人间烟火。
+      { type: 'couple', src: "情侣唯美_相框雪景_7.60分.jpg", orientation: "portrait", date: "美好时光", station: 26, label: "Breeze", title: "山河远阔，人间烟火", body: "山河远阔，人间烟火。
 无一是你，无一不是你。" },
-      { type: 'couple', src: "情侣唯美_乐山大佛前_7.60分.jpg", orientation: "portrait", date: "2025年", station: 27, label: "Sparkle", title: "遇见你，世界都温柔了", body: "遇见你，世界都温柔了。
+      { type: 'couple', src: "情侣唯美_乐山大佛前_7.60分.jpg", orientation: "portrait", date: "美好时光", station: 27, label: "Sparkle", title: "遇见你，世界都温柔了", body: "遇见你，世界都温柔了。
 因为你，我学会了温柔。" },
-      { type: 'couple', src: "情侣浪漫_雪景自拍依偾_7.50分.jpg", orientation: "portrait", date: "2025年", station: 28, label: "Harmony", title: "有幸相遇，恰好合拍", body: "有幸相遇，恰好合拍。
+      { type: 'couple', src: "情侣浪漫_雪景自拍依偾_7.50分.jpg", orientation: "portrait", date: "美好时光", station: 28, label: "Harmony", title: "有幸相遇，恰好合拍", body: "有幸相遇，恰好合拍。
 这就是最好的爱情吧。" },
-      { type: 'couple', src: "情侣欢乐_雪景雾凇比耶B_7.75分.jpg", orientation: "portrait", date: "2025年", station: 29, label: "Destiny", title: "你是我的心之所向", body: "你是我的心之所向。
+      { type: 'couple', src: "情侣欢乐_雪景雾凇比耶B_7.75分.jpg", orientation: "portrait", date: "美好时光", station: 29, label: "Destiny", title: "你是我的心之所向", body: "你是我的心之所向。
 无论走多远，终点都是你。" },
-      { type: 'couple', src: "psc.jpeg", orientation: "landscape", date: "2026年", station: 30, label: "Serendipity", title: "所有美好，都与你有关", body: "所有美好，都与你有关。
+      { type: 'couple', src: "psc.jpeg", orientation: "landscape", date: "美好时光", station: 30, label: "Serendipity", title: "所有美好，都与你有关", body: "所有美好，都与你有关。
 所有期待，都是你。" },
-      { type: 'couple', src: "psc (1).jpeg", orientation: "landscape", date: "2026年", station: 31, label: "Journey", title: "和你一起，风景更美", body: "那一天，阳光正好，你笑得正好。
+      { type: 'couple', src: "psc (1).jpeg", orientation: "landscape", date: "美好时光", station: 31, label: "Journey", title: "和你一起，风景更美", body: "那一天，阳光正好，你笑得正好。
 我站在你身边，觉得整个世界都安静了。" },
-      { type: 'couple', src: "psc (2).jpeg", orientation: "landscape", date: "2026年", station: 32, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。
+      { type: 'couple', src: "psc (2).jpeg", orientation: "landscape", date: "美好时光", station: 32, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。
 因为有你，平凡的地方也有了意义。" },
-      { type: 'pair', src: ["psc =3-2.jpeg", "psc =2.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 33, label: "Both Sides", title: "不同的角度，同样的爱", body: "两个人，各自精彩。
+      { type: 'pair', src: ["psc =3-2.jpeg", "psc =2.jpeg"], orientation: ["portrait", "portrait"], date: "美好时光", station: 33, label: "Both Sides", title: "不同的角度，同样的爱", body: "两个人，各自精彩。
 合在一起，就是最美好的我们。" },
-      { type: 'pair', src: ["psc (4).jpeg", "psc (3).jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 34, label: "Reflections", title: "你在这边，我在那边", body: "你在镜头前笑，
+      { type: 'pair', src: ["psc (4).jpeg", "psc (3).jpeg"], orientation: ["portrait", "portrait"], date: "美好时光", station: 34, label: "Reflections", title: "你在这边，我在那边", body: "你在镜头前笑，
 我在镜头里心动。" },
-      { type: 'pair', src: ["psc (6).jpeg", "psc (5).jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 35, label: "His & Hers", title: "各自闪耀，彼此照亮", body: "不同的照片，同一个故事。
+      { type: 'pair', src: ["psc (6).jpeg", "psc (5).jpeg"], orientation: ["portrait", "portrait"], date: "美好时光", station: 35, label: "His & Hers", title: "各自闪耀，彼此照亮", body: "不同的照片，同一个故事。
 故事的名字，叫我们。" },
-      { type: 'couple', src: "psc (7).jpeg", orientation: "landscape", date: "2026年", station: 36, label: "Forever", title: "最好的我们", body: "想把这一刻定格，
+      { type: 'couple', src: "psc (7).jpeg", orientation: "landscape", date: "美好时光", station: 36, label: "Forever", title: "最好的我们", body: "想把这一刻定格，
 放进我们的回忆里，永远珍藏。" },
     ];
 
@@ -974,45 +974,45 @@
     const loveDate = new Date('2025-05-10T00:00:00+08:00');
 
     const timelineEvents = [
-      { date: "2024.12.30", label: "相识" , milestone: true},
-      { date: "2025.05.10", label: "相恋" , milestone: true},
-      { date: "2025年", label: "第1站" },
-      { date: "2025年", label: "第2站" },
-      { date: "2025年", label: "第3站" },
-      { date: "2025年", label: "第4站" },
-      { date: "2025年", label: "第5站" },
-      { date: "2025年", label: "第6站" },
-      { date: "2025年", label: "第7站" },
-      { date: "2025年", label: "第8站" },
-      { date: "2025年", label: "第9站" },
-      { date: "2025年", label: "第10站" },
-      { date: "2025年", label: "第11站" },
-      { date: "2025年", label: "第12站" },
-      { date: "2025年", label: "第13站" },
-      { date: "2025年", label: "第14站" },
-      { date: "2025年", label: "第15站" },
-      { date: "2025年", label: "第16站" },
-      { date: "2025年", label: "第17站" },
-      { date: "2025年", label: "第18站" },
-      { date: "2025年", label: "第19站" },
-      { date: "2025年", label: "第20站" },
-      { date: "2025年", label: "第21站" },
-      { date: "2025年", label: "第22站" },
-      { date: "2025年", label: "第23站" },
-      { date: "2025年", label: "第24站" },
-      { date: "2025年", label: "第25站" },
-      { date: "2025年", label: "第26站" },
-      { date: "2025年", label: "第27站" },
-      { date: "2025年", label: "第28站" },
-      { date: "2025年", label: "第29站" },
-      { date: "2026年", label: "第30站" },
-      { date: "2026年", label: "第31站" },
-      { date: "2026年", label: "第32站" },
-      { date: "2026年", label: "第33站" },
-      { date: "2026年", label: "第34站" },
-      { date: "2026年", label: "第35站" },
-      { date: "2026年", label: "第36站" },
-      { date: "2026.06.22", label: "今天" , milestone: true},
+      { date: '2024.12.30', label: '相识', milestone: true },
+      { date: '2025.05.10', label: '相恋', milestone: true },
+      { date: '2025.03.09', label: '第1站' },
+      { date: '2025.04.30', label: '第2站' },
+      { date: '2025.05.02', label: '第3站' },
+      { date: '2025.05.02', label: '第4站' },
+      { date: '2025.05.10', label: '第5站' },
+      { date: '2025.05.11', label: '第6站' },
+      { date: '2025.05.25', label: '第7站' },
+      { date: '2025.05.30', label: '第8站' },
+      { date: '2025.07.05', label: '第9站' },
+      { date: '2025.08.09', label: '第10站' },
+      { date: '2025.08.17', label: '第11站' },
+      { date: '2025.10.02', label: '第12站' },
+      { date: '2025.10.02', label: '第13站' },
+      { date: '2025.10.04', label: '第14站' },
+      { date: '2025.10.04', label: '第15站' },
+      { date: '2025.10.07', label: '第16站' },
+      { date: '2025.11.15', label: '第17站' },
+      { date: '2025.11.15', label: '第18站' },
+      { date: '2025.11.29', label: '第19站' },
+      { date: '2025.11.30', label: '第20站' },
+      { date: '2025.11.30', label: '第21站' },
+      { date: '2026.02.23', label: '第22站' },
+      { date: '2026.04.30', label: '第23站' },
+      { date: '2026.04.30', label: '第24站' },
+      { date: '2026.04.30', label: '第25站' },
+      { date: '2026.04.30', label: '第26站' },
+      { date: '2026.04.30', label: '第27站' },
+      { date: '2026.04.30', label: '第28站' },
+      { date: '2026.04.30', label: '第29站' },
+      { date: '2026.06.22', label: '第30站' },
+      { date: '2026.06.22', label: '第31站' },
+      { date: '2026.06.22', label: '第32站' },
+      { date: '2026.06.22', label: '第33站' },
+      { date: '2026.06.22', label: '第34站' },
+      { date: '2026.06.22', label: '第35站' },
+      { date: '2026.06.22', label: '第36站' },
+      { date: '2026.06.22', label: '今天', milestone: true }
     ];
 
     const photos = [
@@ -1262,7 +1262,7 @@
       el.style.top = pos.y + 'px';
       el.style.setProperty('--rot', (Math.random() * 20 - 10) + 'deg');
       el.style.setProperty('--delay', (0.3 + i * 0.08) + 's');
-      el.innerHTML = `<img src="lihao.img/${src}" alt="photo ${i+1}" loading="lazy">`;
+      el.innerHTML = `<img src="${src}" alt="photo ${i+1}" loading="lazy">`;
       heartwall.appendChild(el);
     });
 
