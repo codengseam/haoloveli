@@ -832,86 +832,42 @@
 
   <script>
     const photoPages = [
-      { type: 'couple', src: "2025 年 2 月第一次见面缙云山.jpg", orientation: "portrait", date: "2025年2月", station: 1, label: "You & Me", title: "第一次相见", body: "2024年的冬天，
-我们在缙云山第一次见面。
-从那一刻起，故事开始了。" },
-      { type: 'couple', src: "mmexport1741595537727.jpg", orientation: "landscape", date: "2025年3月10日", station: 2, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。
-因为有你，平凡的地方也有了意义。" },
-      { type: 'couple', src: "2025 年 5 月_爱心石雪山_8.10分.jpg", orientation: "portrait", date: "2025年5月", station: 3, label: "Moment", title: "爱心石前", body: "爱心石前，
-我的心意早已不言而喻。" },
-      { type: 'couple', src: "2025 年 5 月阿坝州.jpeg", orientation: "landscape", date: "2025年5月", station: 4, label: "Together", title: "有你的地方就是家", body: "感谢时间，让我们相遇。
-更感谢命运，让我们没有错过。" },
-      { type: 'couple', src: "2025 年 5 月.jpg", orientation: "portrait", date: "2025年5月", station: 5, label: "Us", title: "想把这一刻定格", body: "只要和你在一起，哪里都是晴天。
-哪怕是下雨天，也觉得浪漫。" },
-      { type: 'couple', src: "2025 年 5 月 10 号表白成为恋人.jpg", orientation: "landscape", date: "2025年5月10日", station: 6, label: "Forever", title: "成为恋人的那一天", body: "2025年5月10日，
-我鼓起勇气向你表白。
-你说愿意，我的世界从此亮了起来。" },
-      { type: 'couple', src: "IMG_20250511_170129.jpg", orientation: "landscape", date: "2025年5月11日", station: 7, label: "Sunshine", title: "世界很大，眼里只有你", body: "你笑起来的样子，
-是我见过最美的风景。" },
-      { type: 'couple', src: "retouch_2025052400135401.jpg", orientation: "landscape", date: "2025年5月24日", station: 8, label: "Two Souls", title: "一个人的镜头，两个人的故事", body: "你的每一面，我都想珍藏。
-因为都是你，所以都喜欢。" },
-      { type: 'pair', src: ["IMG_20250525_221852.jpg", "IMG_20250530_165640.jpg"], orientation: ["portrait", "portrait"], date: "2025年5月25日", station: 9, label: "Sweet", title: "只要在一起，哪里都是晴天", body: "不需要去哪里，
-只要你在身边，就是最好的旅行。" },
-      { type: 'couple', src: "2025 年 7 月-1.jpg", orientation: "portrait", date: "2025年7月", station: 10, label: "Treasure", title: "你笑起来，风都温柔", body: "时间过得很快，
-但和你在一起的每一秒，我都想慢一点。" },
-      { type: 'couple', src: "2025 年 7 月_乐山大佛前_7.60分.jpg", orientation: "portrait", date: "2025年7月", station: 11, label: "Bliss", title: "乐山大佛前", body: "站在乐山大佛前，
-许愿余生都有你。" },
-      { type: 'couple', src: "2025 年 7 月.jpg", orientation: "portrait", date: "2025年7月", station: 12, label: "Warmth", title: "牵手走过的路，都是浪漫", body: "牵着你的手，
-我就知道，这条路我想一直走下去。" },
-      { type: 'couple', src: "IMG_20250705_201036.jpg", orientation: "portrait", date: "2025年7月5日", station: 13, label: "Love", title: "你的眼里，有整片星空", body: "你的眼神里有光，
-那是我最想停留的地方。" },
-      { type: 'couple', src: "IMG_20250809_192822.jpg", orientation: "landscape", date: "2025年8月9日", station: 14, label: "Radiance", title: "平凡的日子，因为有你而发光", body: "和你在一起的时候，
-连空气都是甜的。" },
-      { type: 'couple', src: "IMG_20250809_175936.jpg", orientation: "portrait", date: "2025年8月9日", station: 15, label: "Both Sides", title: "不同的角度，同样的爱", body: "两个人，各自精彩。
-合在一起，就是最美好的我们。" },
-      { type: 'couple', src: "IMG_20250817_104404.jpg", orientation: "portrait", date: "2025年8月17日", station: 16, label: "Dream", title: "想和你一起，慢慢变老", body: "遇见你之前，我没想过结婚。
-遇见你之后，结婚我没想过别人。" },
-      { type: 'couple', src: "2025 年 10 月泸沽湖日出.jpg", orientation: "landscape", date: "2025年10月", station: 17, label: "Promise", title: "泸沽湖日出", body: "泸沽湖的日出，
-和你一起等待。
-那一刻，时间仿佛静止。" },
-      { type: 'couple', src: "2025 年 10 月稻城亚丁.jpg", orientation: "landscape", date: "2025年10月", station: 18, label: "Eternity", title: "稻城亚丁", body: "在稻城亚丁，
-和你一起看雪山、海子、蓝天。
-只要有你在，哪里都是天堂。" },
-      { type: 'couple', src: "IMG_20251002_132901.jpg", orientation: "portrait", date: "2025年10月2日", station: 19, label: "Heart", title: "你的存在，就是最好的礼物", body: "你的存在，就是我最好的礼物。
-不需要节日，每天都想珍惜。" },
-      { type: 'couple', src: "IMG_20251004_175939.jpg", orientation: "portrait", date: "2025年10月4日", station: 20, label: "Soul", title: "人间烟火，最抚人心", body: "人间烟火，最抚人心。
-而你，最抚我心。" },
-      { type: 'couple', src: "IMG_20251004_175959.jpg", orientation: "portrait", date: "2025年10月4日", station: 21, label: "Magic", title: "与你有关，皆是浪漫", body: "与你有关，皆是浪漫。
-哪怕是日常，也闪闪发光。" },
-      { type: 'couple', src: "retouch_2025100722025775.jpg", orientation: "portrait", date: "2025年10月7日", station: 22, label: "Wonder", title: "喜欢是选择，爱是非你不可", body: "喜欢是选择，爱是非你不可。
-而我，非你不可。" },
-      { type: 'couple', src: "情侣浪漫_城市公园草坪依偾B_7.90分.jpg", orientation: "portrait", date: "2025年11月15日", station: 23, label: "Smile", title: "从此朝暮，都有人陪", body: "从此朝暮，都有人陪。
-这是我最大的心安。" },
-      { type: 'couple', src: "IMG_20251129_164829.jpg", orientation: "landscape", date: "2025年11月29日", station: 24, label: "Glow", title: "我们的故事，未完待续", body: "我们的故事，未完待续。
-而我，迫不及待想写下去。" },
-      { type: 'couple', src: "情侣欢乐_红叶林大笑比耶_8.55分.jpg", orientation: "portrait", date: "2025年11月30日", station: 25, label: "Bloom", title: "红叶纷飞", body: "红叶漫天，
-而你是我眼中最美的风景。" },
-      { type: 'couple', src: "情侣浪漫_红叶林依偾自拍_8.55分.jpg", orientation: "portrait", date: "2025年11月30日", station: 26, label: "Breeze", title: "红叶纷飞", body: "红叶漫天，
-而你是我眼中最美的风景。" },
-      { type: 'couple', src: "情侣欢乐_三峡之巅大笑_7.65分.jpg", orientation: "portrait", date: "2026年2月23日", station: 27, label: "Sparkle", title: "三峡之巅", body: "在三峡之巅大笑，
-那是我们最美的模样。" },
-      { type: 'couple', src: "情侣唯美_相框雪景_7.60分.jpg", orientation: "portrait", date: "2026年", station: 28, label: "Harmony", title: "雪中的我们", body: "雪落在你的头发上，
-我想和你一起，从青丝到白头。" },
-      { type: 'couple', src: "情侣浪漫_雪景自拍依偾_7.50分.jpg", orientation: "portrait", date: "2026年", station: 29, label: "Destiny", title: "雪中的我们", body: "雪落在你的头发上，
-我想和你一起，从青丝到白头。" },
-      { type: 'couple', src: "情侣特色_爱心框合照_8.20分.jpg", orientation: "portrait", date: "2026年", station: 30, label: "Serendipity", title: "爱心石前", body: "爱心石前，
-我的心意早已不言而喻。" },
-      { type: 'couple', src: "情侣特色_金雕雕塑比心_8.25分.jpg", orientation: "portrait", date: "2026年", station: 31, label: "Journey", title: "和你一起，风景更美", body: "那一天，阳光正好，你笑得正好。
-我站在你身边，觉得整个世界都安静了。" },
-      { type: 'couple', src: "psc (1).jpeg", orientation: "landscape", date: "2026年", station: 32, label: "Reflections", title: "你在这边，我在那边", body: "你在镜头前笑，
-我在镜头里心动。" },
-      { type: 'couple', src: "psc (2).jpeg", orientation: "landscape", date: "2026年", station: 33, label: "His & Hers", title: "各自闪耀，彼此照亮", body: "不同的照片，同一个故事。
-故事的名字，叫我们。" },
-      { type: 'couple', src: "psc.jpeg", orientation: "landscape", date: "2026年", station: 34, label: "You & Me", title: "你的样子，我都喜欢", body: "即使不在同一个画面里，
-心也在一起。" },
-      { type: 'couple', src: "psc (6).jpeg", orientation: "portrait", date: "2026年", station: 35, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。
-因为有你，平凡的地方也有了意义。" },
-      { type: 'couple', src: "psc =3-2.jpeg", orientation: "portrait", date: "2026年", station: 36, label: "Moment", title: "时光里最温柔的画面", body: "世界很大，但我的眼里只有你。
-再大的人流，我也能一眼找到你。" },
-      { type: 'pair', src: ["psc (3).jpeg", "psc (4).jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 37, label: "Together", title: "有你的地方就是家", body: "感谢时间，让我们相遇。
-更感谢命运，让我们没有错过。" },
-      { type: 'pair', src: ["psc (5).jpeg", "psc =2.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 38, label: "Us", title: "想把这一刻定格", body: "只要和你在一起，哪里都是晴天。
-哪怕是下雨天，也觉得浪漫。" },
+      { type: 'couple', src: "2025 年 2 月第一次见面缙云山.jpg", orientation: "portrait", date: "2025年2月", station: 1, label: "You & Me", title: "第一次相见", body: "2024年的冬天，\n我们在缙云山第一次见面。\n从那一刻起，故事开始了。" },
+      { type: 'couple', src: "mmexport1741595537727.jpg", orientation: "portrait", date: "2025年3月10日", station: 2, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。\n因为有你，平凡的地方也有了意义。" },
+      { type: 'couple', src: "2025 年 5 月_爱心石雪山_8.10分.jpg", orientation: "landscape", date: "2025年5月", station: 3, label: "Moment", title: "爱心石前", body: "爱心石前，\n我的心意早已不言而喻。" },
+      { type: 'couple', src: "2025 年 5 月阿坝州.jpeg", orientation: "landscape", date: "2025年5月", station: 4, label: "Together", title: "阿坝州的风", body: "阿坝州的风吹过，\n你在我身旁，\n世界都变得辽阔。" },
+      { type: 'couple', src: "2025 年 5 月.jpg", orientation: "landscape", date: "2025年5月", station: 5, label: "Us", title: "想把这一刻定格", body: "只要和你在一起，哪里都是晴天。\n哪怕是下雨天，也觉得浪漫。" },
+      { type: 'couple', src: "2025 年 5 月 10 号表白成为恋人.jpg", orientation: "landscape", date: "2025年5月10日", station: 6, label: "Forever", title: "成为恋人的那一天", body: "2025年5月10日，\n我鼓起勇气向你表白。\n你说愿意，我的世界从此亮了起来。" },
+      { type: 'couple', src: "IMG_20250511_170129.jpg", orientation: "landscape", date: "2025年5月11日", station: 7, label: "Sunshine", title: "世界很大，眼里只有你", body: "你笑起来的样子，\n是我见过最美的风景。" },
+      { type: 'couple', src: "IMG_20250525_221852.jpg", orientation: "portrait", date: "2025年5月24日", station: 8, label: "Two Souls", title: "一个人的镜头，两个人的故事", body: "你的每一面，我都想珍藏。\n因为都是你，所以都喜欢。" },
+      { type: 'couple', src: "IMG_20250530_165640.jpg", orientation: "portrait", date: "2025年5月30日", station: 9, label: "Sweet", title: "只要在一起，哪里都是晴天", body: "不需要去哪里，\n只要你在身边，就是最好的旅行。" },
+      { type: 'couple', src: "2025 年 7 月-1.jpg", orientation: "portrait", date: "2025年7月", station: 10, label: "Treasure", title: "你笑起来，风都温柔", body: "时间过得很快，\n但和你在一起的每一秒，我都想慢一点。" },
+      { type: 'couple', src: "2025 年 7 月.jpg", orientation: "portrait", date: "2025年7月", station: 11, label: "Bliss", title: "牵手走过的路，都是浪漫", body: "牵着你的手，\n我就知道，这条路我想一直走下去。" },
+      { type: 'couple', src: "2025 年 7 月_乐山大佛前_7.60分.jpg", orientation: "portrait", date: "2025年7月", station: 12, label: "Warmth", title: "乐山大佛前", body: "站在乐山大佛前，\n许愿余生都有你。" },
+      { type: 'couple', src: "IMG_20250705_201036.jpg", orientation: "landscape", date: "2025年7月5日", station: 13, label: "Love", title: "你的眼里，有整片星空", body: "你的眼神里有光，\n那是我最想停留的地方。" },
+      { type: 'couple', src: "IMG_20250809_192822.jpg", orientation: "landscape", date: "2025年8月9日", station: 14, label: "Radiance", title: "平凡的日子，因为有你而发光", body: "和你在一起的时候，\n连空气都是甜的。" },
+      { type: 'couple', src: "IMG_20250809_175936.jpg", orientation: "portrait", date: "2025年8月9日", station: 15, label: "Both Sides", title: "不同的角度，同样的爱", body: "两个人，各自精彩。\n合在一起，就是最美好的我们。" },
+      { type: 'couple', src: "IMG_20250817_104404.jpg", orientation: "portrait", date: "2025年8月17日", station: 16, label: "Dream", title: "想和你一起，慢慢变老", body: "遇见你之前，我没想过结婚。\n遇见你之后，结婚我没想过别人。" },
+      { type: 'couple', src: "2025 年 10 月泸沽湖日出.jpg", orientation: "landscape", date: "2025年10月", station: 17, label: "Promise", title: "泸沽湖日出", body: "泸沽湖的日出，\n和你一起等待。\n那一刻，时间仿佛静止。" },
+      { type: 'couple', src: "泸沽湖-走婚桥.jpg", orientation: "portrait", date: "2025年10月", station: 18, label: "Eternity", title: "走婚桥上", body: "走婚桥上的风，\n吹过我们的故事。\n一桥两端，都是我们。" },
+      { type: 'couple', src: "2025 年 10 月稻城亚丁.jpg", orientation: "landscape", date: "2025年10月", station: 19, label: "Heart", title: "稻城亚丁", body: "在稻城亚丁，\n和你一起看雪山、海子、蓝天。\n只要有你在，哪里都是天堂。" },
+      { type: 'couple', src: "IMG_20251002_132901.jpg", orientation: "landscape", date: "2025年10月2日", station: 20, label: "Soul", title: "你的存在，就是最好的礼物", body: "你的存在，就是我最好的礼物。\n不需要节日，每天都想珍惜。" },
+      { type: 'couple', src: "IMG_20251004_175939.jpg", orientation: "portrait", date: "2025年10月4日", station: 21, label: "Magic", title: "人间烟火，最抚人心", body: "人间烟火，最抚人心。\n而你，最抚我心。" },
+      { type: 'couple', src: "IMG_20251004_175959.jpg", orientation: "portrait", date: "2025年10月4日", station: 22, label: "Wonder", title: "与你有关，皆是浪漫", body: "与你有关，皆是浪漫。\n哪怕是日常，也闪闪发光。" },
+      { type: 'couple', src: "情侣浪漫_城市公园草坪依偾B_7.90分.jpg", orientation: "portrait", date: "2025年11月15日", station: 23, label: "Smile", title: "从此朝暮，都有人陪", body: "从此朝暮，都有人陪。\n这是我最大的心安。" },
+      { type: 'couple', src: "IMG_20251129_164829.jpg", orientation: "landscape", date: "2025年11月29日", station: 24, label: "Glow", title: "我们的故事，未完待续", body: "我们的故事，未完待续。\n而我，迫不及待想写下去。" },
+      { type: 'couple', src: "情侣欢乐_红叶林大笑比耶_8.55分.jpg", orientation: "portrait", date: "2025年11月30日", station: 25, label: "Bloom", title: "红叶纷飞", body: "红叶漫天，\n而你是我眼中最美的风景。" },
+      { type: 'couple', src: "情侣浪漫_红叶林依偾自拍_8.55分.jpg", orientation: "portrait", date: "2025年11月30日", station: 26, label: "Breeze", title: "红叶下的我们", body: "红叶漫天，\n我们的笑容是最美的风景。" },
+      { type: 'couple', src: "情侣欢乐_三峡之巅大笑_7.65分.jpg", orientation: "portrait", date: "2026年2月23日", station: 27, label: "Sparkle", title: "三峡之巅", body: "在三峡之巅大笑，\n那是我们最美的模样。" },
+      { type: 'couple', src: "情侣浪漫_雪景自拍依偾_7.50分.jpg", orientation: "portrait", date: "2026年", station: 28, label: "Harmony", title: "雪中的我们", body: "雪落在你的头发上，\n我想和你一起，从青丝到白头。" },
+      { type: 'couple', src: "情侣特色_爱心框合照_8.20分.jpg", orientation: "portrait", date: "2026年", station: 29, label: "Destiny", title: "爱心石前", body: "爱心石前，\n我的心意早已不言而喻。" },
+      { type: 'couple', src: "情侣特色_金雕雕塑比心_8.25分.jpg", orientation: "portrait", date: "2026年", station: 30, label: "Serendipity", title: "金雕雕塑前", body: "那一天，阳光正好，你笑得正好。\n我站在你身边，觉得整个世界都安静了。" },
+      { type: 'couple', src: "夜晚-花海相拥.jpg", orientation: "portrait", date: "2026年", station: 31, label: "Journey", title: "夜晚的花海", body: "夜晚的花海，\n拥你入怀，\n这一刻就是永恒。" },
+      { type: 'couple', src: "psc (2).jpeg", orientation: "portrait", date: "2026年", station: 32, label: "Reflections", title: "你的样子，我都喜欢", body: "即使不在同一个画面里，\n心也在一起。" },
+      { type: 'pair', src: ["有情-女左.jpeg", "有情-男右.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 33, label: "His & Hers", title: "有情人", body: "有情人终成眷属，\n你就是我的情之所钟。" },
+      { type: 'pair', src: ["金佛山-金龟朝阳-女左.jpeg", "金佛山-金龟朝阳-男右.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 34, label: "You & Me", title: "金佛山上", body: "金佛山上看朝阳，\n你比朝阳更耀眼。" },
+      { type: 'pair', src: ["四面山瀑布-女.jpeg", "四面山瀑布-男.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 35, label: "Memory", title: "四面山瀑布", body: "瀑布飞流而下，\n我的爱，只为你奔涌。" },
+      { type: 'pair', src: ["马尿水瀑布-男左.jpeg", "马尿水瀑布—女右.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 36, label: "Moment", title: "马尿水瀑布", body: "瀑布边有你，\n风景才有了声音。" }
     ];
 
     function buildPhotoSlides() {
@@ -1013,7 +969,7 @@
       { date: "2025年5月10日", label: "第6站" },
       { date: "2025年5月11日", label: "第7站" },
       { date: "2025年5月24日", label: "第8站" },
-      { date: "2025年5月25日", label: "第9站" },
+      { date: "2025年5月30日", label: "第9站" },
       { date: "2025年7月", label: "第10站" },
       { date: "2025年7月", label: "第11站" },
       { date: "2025年7月", label: "第12站" },
@@ -1023,10 +979,10 @@
       { date: "2025年8月17日", label: "第16站" },
       { date: "2025年10月", label: "第17站" },
       { date: "2025年10月", label: "第18站" },
-      { date: "2025年10月2日", label: "第19站" },
-      { date: "2025年10月4日", label: "第20站" },
+      { date: "2025年10月", label: "第19站" },
+      { date: "2025年10月2日", label: "第20站" },
       { date: "2025年10月4日", label: "第21站" },
-      { date: "2025年10月7日", label: "第22站" },
+      { date: "2025年10月4日", label: "第22站" },
       { date: "2025年11月15日", label: "第23站" },
       { date: "2025年11月29日", label: "第24站" },
       { date: "2025年11月30日", label: "第25站" },
@@ -1041,53 +997,50 @@
       { date: "2026年", label: "第34站" },
       { date: "2026年", label: "第35站" },
       { date: "2026年", label: "第36站" },
-      { date: "2026年", label: "第37站" },
-      { date: "2026年", label: "第38站" },
-      { date: "2026.06.22", label: "今天", milestone: true },
+      { date: "2026.06.22", label: "今天", milestone: true }
     ];
 
     const photos = [
       "2025 年 2 月第一次见面缙云山.jpg",
       "mmexport1741595537727.jpg",
-      "2025 年 5 月.jpg",
       "2025 年 5 月_爱心石雪山_8.10分.jpg",
       "2025 年 5 月阿坝州.jpeg",
+      "2025 年 5 月.jpg",
       "2025 年 5 月 10 号表白成为恋人.jpg",
       "IMG_20250511_170129.jpg",
-      "retouch_2025052400135401.jpg",
       "IMG_20250525_221852.jpg",
       "IMG_20250530_165640.jpg",
       "2025 年 7 月-1.jpg",
       "2025 年 7 月.jpg",
       "2025 年 7 月_乐山大佛前_7.60分.jpg",
       "IMG_20250705_201036.jpg",
-      "IMG_20250809_175936.jpg",
       "IMG_20250809_192822.jpg",
+      "IMG_20250809_175936.jpg",
       "IMG_20250817_104404.jpg",
       "2025 年 10 月泸沽湖日出.jpg",
+      "泸沽湖-走婚桥.jpg",
       "2025 年 10 月稻城亚丁.jpg",
       "IMG_20251002_132901.jpg",
       "IMG_20251004_175939.jpg",
       "IMG_20251004_175959.jpg",
-      "retouch_2025100722025775.jpg",
       "情侣浪漫_城市公园草坪依偾B_7.90分.jpg",
       "IMG_20251129_164829.jpg",
       "情侣欢乐_红叶林大笑比耶_8.55分.jpg",
       "情侣浪漫_红叶林依偾自拍_8.55分.jpg",
       "情侣欢乐_三峡之巅大笑_7.65分.jpg",
-      "情侣唯美_相框雪景_7.60分.jpg",
       "情侣浪漫_雪景自拍依偾_7.50分.jpg",
       "情侣特色_爱心框合照_8.20分.jpg",
       "情侣特色_金雕雕塑比心_8.25分.jpg",
-      "psc (1).jpeg",
+      "夜晚-花海相拥.jpg",
       "psc (2).jpeg",
-      "psc (3).jpeg",
-      "psc (4).jpeg",
-      "psc (5).jpeg",
-      "psc (6).jpeg",
-      "psc =2.jpeg",
-      "psc =3-2.jpeg",
-      "psc.jpeg"
+      "有情-女左.jpeg",
+      "有情-男右.jpeg",
+      "金佛山-金龟朝阳-女左.jpeg",
+      "金佛山-金龟朝阳-男右.jpeg",
+      "四面山瀑布-女.jpeg",
+      "四面山瀑布-男.jpeg",
+      "马尿水瀑布-男左.jpeg",
+      "马尿水瀑布—女右.jpeg"
     ];
 
     const slides = document.querySelectorAll('.slide');
