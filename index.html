@@ -628,6 +628,34 @@
       .timer-card { min-width: 280px; width: 90vw; }
       .timeline-hero { flex-direction: column; gap: 4vh; }
     }
+  
+    /* Pair slides */
+    .pair-slide .slide-content {
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 3vh; padding-left: 5vw;
+    }
+    .pair-header {
+      text-align: center; opacity: 0; transform: translateY(-30px);
+      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+    }
+    .slide.active .pair-header { opacity: 1; transform: translateY(0); }
+    .pair-photos {
+      display: flex; align-items: center; justify-content: center; gap: 3vw;
+      opacity: 0; transform: scale(0.95);
+      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+    }
+    .slide.active .pair-photos { opacity: 1; transform: scale(1); }
+    .pair-photos .photo-card { transform: rotate(-1deg); }
+    .pair-photos .photo-card:last-of-type { transform: rotate(1deg); }
+    .pair-connector {
+      font-family: 'Cormorant Garamond', serif; font-size: 2rem;
+      color: var(--rose-gold); opacity: 0.8;
+    }
+    @media (max-width: 900px) {
+      .pair-photos { flex-direction: column; gap: 3vh; }
+      .pair-connector { transform: rotate(90deg); }
+    }
+
   </style>
 </head>
 <body>
@@ -692,303 +720,9 @@
       </div>
     </section>
 
-    <section class="slide chapter-slide" data-layout="chapter">
-      <div class="slide-content">
-        <div class="chapter-number">Chapter I</div>
-        <h2 class="chapter-title">我们的旅程<br>开始了</h2>
-      </div>
-    </section>
+        <div id="photoSlides"></div>
 
-    <section class="slide split-slide" data-layout="split-left" data-timeline="0">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2025.05.20 · 第一站</div>
-          <div class="side-label">First Journey</div>
-          <h2 class="side-title">爱心石前的约定</h2>
-          <p class="side-body">还记得那次旅行吗？
-站在雪山前，你说这颗爱心石真美。
-我没看石头，只看着你。
-那一刻，我想永远这样看着你。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%88%B1%E5%BF%83%E7%9F%B3%E9%9B%AA%E5%B1%B1_8.10%E5%88%86.jpg" alt="爱心石雪山" loading="eager">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="1">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2025.06.08 · 第二站</div>
-          <div class="side-label">Love Frame</div>
-          <h2 class="side-title">被框住的幸福</h2>
-          <p class="side-body">这个爱心框里，是我们两个人的笑容。
-如果幸福有形，大概就是这样。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E7%88%B1%E5%BF%83%E6%A1%86%E5%90%88%E7%85%A7_8.20%E5%88%86.jpg" alt="爱心框合照" loading="eager">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide" data-layout="split-left" data-timeline="2">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2025.07.15 · 第三站</div>
-          <div class="side-label">Golden Hour</div>
-          <h2 class="side-title">夕阳下的古塔</h2>
-          <p class="side-body">夕阳把我们的影子拉得很长，
-古塔静默，时光也温柔。
-你比夕阳更让我心动。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E5%A4%95%E9%98%B3%E5%8F%A4%E5%A1%94%E6%AF%94%E8%80%B6_8.85%E5%88%86.jpg" alt="夕阳古塔" loading="eager">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide chapter-slide" data-layout="chapter">
-      <div class="slide-content">
-        <div class="chapter-number">Chapter II</div>
-        <h2 class="chapter-title">每一个瞬间<br>都是永恒</h2>
-      </div>
-    </section>
-
-    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="3">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2025.09.20 · 第四站</div>
-          <div class="side-label">Autumn Whisper</div>
-          <h2 class="side-title">银杏林中的对视</h2>
-          <p class="side-body">银杏叶落了一地金黄，
-我们在树林里对视，
-什么都不用说，
-就已经懂了彼此。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%93%B6%E6%9D%8F%E6%A0%91%E6%9E%97%E5%AF%B9%E8%A7%86_7.75%E5%88%86.jpg" alt="银杏树林对视" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide" data-layout="split-left" data-timeline="4">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2025.10.25 · 第五站</div>
-          <div class="side-label">Laughter</div>
-          <h2 class="side-title">红叶林里的笑声</h2>
-          <p class="side-body">你笑得那么开心，
-连红叶都失色了。
-我想让这样的笑容，
-一辈子都属于我。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E7%BA%A2%E5%8F%B6%E6%9E%97%E5%A4%A7%E7%AC%91%E6%AF%94%E8%80%B6_8.55%E5%88%86.jpg" alt="红叶林大笑" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="5">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2025.11.30 · 第六站</div>
-          <div class="side-label">Selfie</div>
-          <h2 class="side-title">红叶林里的依偎</h2>
-          <p class="side-body">我们自拍的时候，
-你总是喜欢靠着我。
-那是我最骄傲的依靠。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E7%BA%A2%E5%8F%B6%E6%9E%97%E4%BE%9D%E5%81%BE%E8%87%AA%E6%8B%8D_8.55%E5%88%86.jpg" alt="红叶林依偎自拍" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide" data-layout="split-left" data-timeline="6">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2025.12.31 · 第七站</div>
-          <div class="side-label">Winter Magic</div>
-          <h2 class="side-title">雪景自拍</h2>
-          <p class="side-body">雪落在我们的头发上，
-像偷偷给我们的祝福。
-白头，是这样开始的。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%9B%AA%E6%99%AF%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.50%E5%88%86.jpg" alt="雪景自拍依偎" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="7">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.02.14 · 第八站</div>
-          <div class="side-label">Snow Joy</div>
-          <h2 class="side-title">雪地里的大笑</h2>
-          <p class="side-body">冷风吹红了脸，
-但你的笑容比阳光还暖。
-和你在一起的冬天，
-从来不冷。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E9%9B%AA%E6%99%AF%E9%9B%BE%E5%87%87%E6%AF%94%E8%80%B6B_7.75%E5%88%86.jpg" alt="雪景雾凇比耶" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide chapter-slide" data-layout="chapter">
-      <div class="slide-content">
-        <div class="chapter-number">Chapter III</div>
-        <h2 class="chapter-title">想和你去<br>更多地方</h2>
-      </div>
-    </section>
-
-    <section class="slide split-slide" data-layout="split-left" data-timeline="8">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.03.20 · 第九站</div>
-          <div class="side-label">Mountain Peak</div>
-          <h2 class="side-title">三峡之巅大笑</h2>
-          <p class="side-body">站在山顶，风很大，
-但你笑得更大声。
-好像只要在一起，
-哪里都是最好的风景。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B8%89%E5%B3%A1%E4%B9%8B%E5%B7%85%E5%A4%A7%E7%AC%91_7.65%E5%88%86.jpg" alt="三峡之巅大笑" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="9">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.04.10 · 第十站</div>
-          <div class="side-label">Lake Joy</div>
-          <h2 class="side-title">九寨沟湖边大笑</h2>
-          <p class="side-body">湖水蓝得像梦，
-你的笑声是梦里最真的声音。
-我希望能收藏你所有的笑声。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B9%9D%E5%AF%A8%E6%B2%9F%E6%B9%96%E8%BE%B9%E5%A4%A7%E7%AC%91_8.35%E5%88%86.jpg" alt="九寨沟湖边大笑" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide" data-layout="split-left" data-timeline="10">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.04.30 · 第十一站</div>
-          <div class="side-label">Heart Sign</div>
-          <h2 class="side-title">雕塑前的比心</h2>
-          <p class="side-body">我们比心的样子，
-和雕塑一样笨拙又可爱。
-但我的心意，是真的。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E9%87%91%E9%9B%95%E9%9B%95%E5%A1%91%E6%AF%94%E5%BF%83_8.25%E5%88%86.jpg" alt="金雕雕塑比心" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="11">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.05.15 · 第十二站</div>
-          <div class="side-label">Park Love</div>
-          <h2 class="side-title">城市公园草坪</h2>
-          <p class="side-body">躺在城市公园的草坪上，
-阳光很好，你也在。
-平凡的下午，
-因为你的存在变得珍贵。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E5%9F%8E%E5%B8%82%E5%85%AC%E5%9B%AD%E8%8D%89%E5%9D%AA%E4%BE%9D%E5%81%BEB_7.90%E5%88%86.jpg" alt="城市公园草坪依偎" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide" data-layout="split-left" data-timeline="12">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.05.25 · 第十三站</div>
-          <div class="side-label">Buddha Blessing</div>
-          <h2 class="side-title">乐山大佛前</h2>
-          <p class="side-body">大佛前，我们许过愿吗？
-我记得我的心愿，
-和你有关。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E4%B9%90%E5%B1%B1%E5%A4%A7%E4%BD%9B%E5%89%8D_7.60%E5%88%86.jpg" alt="乐山大佛前" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="13">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.06.08 · 第十四站</div>
-          <div class="side-label">Framed</div>
-          <h2 class="side-title">相框里的雪景</h2>
-          <p class="side-body">如果把我们最幸福的瞬间，
-都装进相框，
-可能需要一面很大的墙。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%9B%B8%E6%A1%86%E9%9B%AA%E6%99%AF_7.60%E5%88%86.jpg" alt="相框雪景" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide split-slide" data-layout="split-left" data-timeline="14">
-      <div class="slide-content">
-        <div class="text-side">
-          <div class="photo-date-badge"><span class="dot"></span>2026.06.18 · 第十五站</div>
-          <div class="side-label">Outdoor Us</div>
-          <h2 class="side-title">户外的我们</h2>
-          <p class="side-body">无论是在雪山、红叶林，
-还是城市公园，
-只要是和你，就是最好的地方。</p>
-        </div>
-        <div class="image-side">
-          <div class="photo-card portrait">
-            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E6%88%B7%E5%A4%96%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.30%E5%88%86.jpg" alt="户外自拍依偎" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide heartwall-slide" data-layout="heartwall">
+<section class="slide heartwall-slide" data-layout="heartwall">
       <div class="slide-content">
         <div class="heartwall-title">我的心，装满了你</div>
         <div class="heartwall-subtitle">每一张照片，都是我爱你的证据</div>
@@ -1076,46 +810,218 @@
   </div>
 
   <script>
+    const photoPages = [
+      { type: 'pair', src: ['mmexport1741595537727.jpg', 'retouch_2025052400135401.jpg'], orientation: ['landscape', 'landscape'], date: '2025.03.09', station: 1, label: 'You & Me', title: '你的样子，我都喜欢', body: '即使不在同一个画面里，\n心也在一起。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B9%9D%E5%AF%A8%E6%B2%9F%E6%B9%96%E8%BE%B9%E5%A4%A7%E7%AC%91_8.35%E5%88%86.jpg', orientation: 'portrait', date: '2025.04.30', station: 2, label: 'Memory', title: '每一步都是故事', body: '和你走过的路，都是最美的风景。\n因为有你，平凡的地方也有了意义。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%88%B1%E5%BF%83%E7%9F%B3%E9%9B%AA%E5%B1%B1_8.10%E5%88%86.jpg', orientation: 'portrait', date: '2025.05.02', station: 3, label: 'Moment', title: '时光里最温柔的画面', body: '世界很大，但我的眼里只有你。\n再大的人流，我也能一眼找到你。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E6%88%B7%E5%A4%96%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.30%E5%88%86.jpg', orientation: 'portrait', date: '2025.05.02', station: 4, label: 'Together', title: '有你的地方就是家', body: '感谢时间，让我们相遇。\n更感谢命运，让我们没有错过。' },
+      { type: 'couple', src: '110APPLE_IMG_0020.jpg', orientation: 'landscape', date: '2025.05.10', station: 5, label: 'Us', title: '想把这一刻定格', body: '只要和你在一起，哪里都是晴天。\n哪怕是下雨天，也觉得浪漫。' },
+      { type: 'couple', src: 'IMG_20250511_170129.jpg', orientation: 'landscape', date: '2025.05.11', station: 6, label: 'Forever', title: '最好的我们', body: '想把这一刻定格，\n放进我们的回忆里，永远珍藏。' },
+      { type: 'couple', src: 'IMG_20250525_221852.jpg', orientation: 'portrait', date: '2025.05.25', station: 7, label: 'Sunshine', title: '世界很大，眼里只有你', body: '你笑起来的样子，\n是我见过最美的风景。' },
+      { type: 'pair', src: ['IMG_20250530_165640.jpg', 'IMG_20250809_175936.jpg'], orientation: ['portrait', 'portrait'], date: '2025.05.30', station: 8, label: 'Two Souls', title: '一个人的镜头，两个人的故事', body: '你的每一面，我都想珍藏。\n因为都是你，所以都喜欢。' },
+      { type: 'couple', src: 'IMG_20250705_201036.jpg', orientation: 'portrait', date: '2025.07.05', station: 9, label: 'Sweet', title: '只要在一起，哪里都是晴天', body: '不需要去哪里，\n只要你在身边，就是最好的旅行。' },
+      { type: 'couple', src: 'IMG_20250809_192822.jpg', orientation: 'landscape', date: '2025.08.09', station: 10, label: 'Treasure', title: '你笑起来，风都温柔', body: '时间过得很快，\n但和你在一起的每一秒，我都想慢一点。' },
+      { type: 'couple', src: 'IMG_20250817_104404.jpg', orientation: 'portrait', date: '2025.08.17', station: 11, label: 'Bliss', title: '这一刻，就是永远', body: '世界喧嚣，我们安静相爱。\n这就是我最想要的幸福。' },
+      { type: 'couple', src: 'IMG_20251002_132901.jpg', orientation: 'portrait', date: '2025.10.02', station: 12, label: 'Warmth', title: '牵手走过的路，都是浪漫', body: '牵着你的手，\n我就知道，这条路我想一直走下去。' },
+      { type: 'couple', src: 'IMG_1184.jpg', orientation: 'landscape', date: '2025.10.02', station: 13, label: 'Love', title: '你的眼里，有整片星空', body: '你的眼神里有光，\n那是我最想停留的地方。' },
+      { type: 'couple', src: 'IMG_1275.jpg', orientation: 'landscape', date: '2025.10.04', station: 14, label: 'Radiance', title: '平凡的日子，因为有你而发光', body: '和你在一起的时候，\n连空气都是甜的。' },
+      { type: 'pair', src: ['IMG_20251004_175939.jpg', 'IMG_20251004_175959.jpg'], orientation: ['portrait', 'portrait'], date: '2025.10.04', station: 15, label: 'Both Sides', title: '不同的角度，同样的爱', body: '两个人，各自精彩。\n合在一起，就是最美好的我们。' },
+      { type: 'couple', src: 'retouch_2025100722025775.jpg', orientation: 'portrait', date: '2025.10.07', station: 16, label: 'Dream', title: '想和你一起，慢慢变老', body: '遇见你之前，我没想过结婚。\n遇见你之后，结婚我没想过别人。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E5%9F%8E%E5%B8%82%E5%85%AC%E5%9B%AD%E8%8D%89%E5%9D%AA%E4%BE%9D%E5%81%BEB_7.90%E5%88%86.jpg', orientation: 'portrait', date: '2025.11.15', station: 17, label: 'Promise', title: '故事还长，我们慢慢讲', body: '我们的故事很长，\n长到要用一辈子去慢慢讲。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%93%B6%E6%9D%8F%E6%A0%91%E6%9E%97%E5%AF%B9%E8%A7%86_7.75%E5%88%86.jpg', orientation: 'portrait', date: '2025.11.15', station: 18, label: 'Eternity', title: '有你在身边，什么都不怕', body: '有你在身边，\n我什么都不怕，什么都敢。' },
+      { type: 'couple', src: 'IMG_20251129_164829.jpg', orientation: 'landscape', date: '2025.11.29', station: 19, label: 'Heart', title: '你的存在，就是最好的礼物', body: '你的存在，就是我最好的礼物。\n不需要节日，每天都想珍惜。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E7%BA%A2%E5%8F%B6%E6%9E%97%E5%A4%A7%E7%AC%91%E6%AF%94%E8%80%B6_8.55%E5%88%86.jpg', orientation: 'portrait', date: '2025.11.30', station: 20, label: 'Soul', title: '人间烟火，最抚人心', body: '人间烟火，最抚人心。\n而你，最抚我心。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E7%BA%A2%E5%8F%B6%E6%9E%97%E4%BE%9D%E5%81%BE%E8%87%AA%E6%8B%8D_8.55%E5%88%86.jpg', orientation: 'portrait', date: '2025.11.30', station: 21, label: 'Magic', title: '与你有关，皆是浪漫', body: '与你有关，皆是浪漫。\n哪怕是日常，也闪闪发光。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B8%89%E5%B3%A1%E4%B9%8B%E5%B7%85%E5%A4%A7%E7%AC%91_7.65%E5%88%86.jpg', orientation: 'portrait', date: '2026.02.23', station: 22, label: 'Wonder', title: '喜欢是选择，爱是非你不可', body: '喜欢是选择，爱是非你不可。\n而我，非你不可。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E5%A4%95%E9%98%B3%E5%8F%A4%E5%A1%94%E6%AF%94%E8%80%B6_8.85%E5%88%86.jpg', orientation: 'portrait', date: '2026.04.30', station: 23, label: 'Smile', title: '从此朝暮，都有人陪', body: '从此朝暮，都有人陪。\n这是我最大的心安。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E9%87%91%E9%9B%95%E9%9B%95%E5%A1%91%E6%AF%94%E5%BF%83_8.25%E5%88%86.jpg', orientation: 'portrait', date: '2026.04.30', station: 24, label: 'Glow', title: '我们的故事，未完待续', body: '我们的故事，未完待续。\n而我，迫不及待想写下去。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E7%88%B1%E5%BF%83%E6%A1%86%E5%90%88%E7%85%A7_8.20%E5%88%86.jpg', orientation: 'portrait', date: '2026.04.30', station: 25, label: 'Bloom', title: '余生请多指教', body: '余生请多指教。\n我会用每一天来爱你。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%9B%B8%E6%A1%86%E9%9B%AA%E6%99%AF_7.60%E5%88%86.jpg', orientation: 'portrait', date: '2026.04.30', station: 26, label: 'Breeze', title: '山河远阔，人间烟火', body: '山河远阔，人间烟火。\n无一是你，无一不是你。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E4%B9%90%E5%B1%B1%E5%A4%A7%E4%BD%9B%E5%89%8D_7.60%E5%88%86.jpg', orientation: 'portrait', date: '2026.04.30', station: 27, label: 'Sparkle', title: '遇见你，世界都温柔了', body: '遇见你，世界都温柔了。\n因为你，我学会了温柔。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%9B%AA%E6%99%AF%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.50%E5%88%86.jpg', orientation: 'portrait', date: '2026.04.30', station: 28, label: 'Harmony', title: '有幸相遇，恰好合拍', body: '有幸相遇，恰好合拍。\n这就是最好的爱情吧。' },
+      { type: 'couple', src: '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E9%9B%AA%E6%99%AF%E9%9B%BE%E5%87%87%E6%AF%94%E8%80%B6B_7.75%E5%88%86.jpg', orientation: 'portrait', date: '2026.04.30', station: 29, label: 'Destiny', title: '你是我的心之所向', body: '你是我的心之所向。\n无论走多远，终点都是你。' },
+      { type: 'couple', src: 'psc.jpeg', orientation: 'landscape', date: '2026.06.22', station: 30, label: 'Serendipity', title: '所有美好，都与你有关', body: '所有美好，都与你有关。\n所有期待，都是你。' },
+      { type: 'couple', src: 'psc%20%281%29.jpeg', orientation: 'landscape', date: '2026.06.22', station: 31, label: 'Journey', title: '和你一起，风景更美', body: '那一天，阳光正好，你笑得正好。\n我站在你身边，觉得整个世界都安静了。' },
+      { type: 'couple', src: 'psc%20%282%29.jpeg', orientation: 'landscape', date: '2026.06.22', station: 32, label: 'Memory', title: '每一步都是故事', body: '和你走过的路，都是最美的风景。\n因为有你，平凡的地方也有了意义。' },
+      { type: 'pair', src: ['psc%20%3D2.jpeg', 'psc%20%3D3-2.jpeg'], orientation: ['portrait', 'portrait'], date: '2026.06.22', station: 33, label: 'Both Sides', title: '不同的角度，同样的爱', body: '两个人，各自精彩。\n合在一起，就是最美好的我们。' },
+      { type: 'pair', src: ['psc%20%283%29.jpeg', 'psc%20%284%29.jpeg'], orientation: ['portrait', 'portrait'], date: '2026.06.22', station: 34, label: 'Reflections', title: '你在这边，我在那边', body: '你在镜头前笑，\n我在镜头里心动。' },
+      { type: 'pair', src: ['psc%20%285%29.jpeg', 'psc%20%286%29.jpeg'], orientation: ['portrait', 'portrait'], date: '2026.06.22', station: 35, label: 'His & Hers', title: '各自闪耀，彼此照亮', body: '不同的照片，同一个故事。\n故事的名字，叫我们。' },
+      { type: 'couple', src: 'psc%20%287%29.jpeg', orientation: 'landscape', date: '2026.06.22', station: 36, label: 'Forever', title: '最好的我们', body: '想把这一刻定格，\n放进我们的回忆里，永远珍藏。' },
+    ];
+
+    function buildPhotoSlides() {
+      const container = document.getElementById('photoSlides');
+      if (!container) return;
+
+      const chapterTitles = [
+        { number: 'Chapter I', title: '我们的旅程\n开始了' },
+        { number: 'Chapter II', title: '走过更多的风景' },
+        { number: 'Chapter III', title: '未来还很长' }
+      ];
+
+      const ch1End = 12;
+      const ch2End = 24;
+
+      const chapterSlide = (chapter) => {
+        const section = document.createElement('section');
+        section.className = 'slide chapter-slide';
+        section.dataset.layout = 'chapter';
+        section.innerHTML = `<div class="slide-content"><div class="chapter-number">${chapter.number}</div><h2 class="chapter-title">${chapter.title}</h2></div>`;
+        return section;
+      };
+
+      const singleSlide = (page, reverse) => {
+        const section = document.createElement('section');
+        section.className = 'slide split-slide' + (reverse ? ' reverse' : '');
+        section.dataset.layout = reverse ? 'split-right' : 'split-left';
+        section.dataset.timeline = (page.station - 1).toString();
+        const cardClass = 'photo-card ' + (page.orientation === 'landscape' ? 'landscape' : 'portrait');
+        section.innerHTML = `
+          <div class="slide-content">
+            <div class="text-side">
+              <div class="photo-date-badge"><span class="dot"></span>${page.date} · 第${page.station}站</div>
+              <div class="side-label">${page.label}</div>
+              <h2 class="side-title">${page.title}</h2>
+              <p class="side-body">${page.body}</p>
+            </div>
+            <div class="image-side">
+              <div class="${cardClass}">
+                <img src="lihao.img/${page.src}" alt="photo ${page.station}" loading="lazy">
+              </div>
+            </div>
+          </div>`;
+        return section;
+      };
+
+      const pairSlide = (page) => {
+        const section = document.createElement('section');
+        section.className = 'slide pair-slide';
+        section.dataset.layout = 'pair';
+        section.dataset.timeline = (page.station - 1).toString();
+        const c1 = 'photo-card ' + (page.orientation[0] === 'landscape' ? 'landscape' : 'portrait');
+        const c2 = 'photo-card ' + (page.orientation[1] === 'landscape' ? 'landscape' : 'portrait');
+        section.innerHTML = `
+          <div class="slide-content">
+            <div class="pair-header">
+              <div class="photo-date-badge"><span class="dot"></span>${page.date} · 第${page.station}站</div>
+              <div class="side-label">${page.label}</div>
+              <h2 class="side-title">${page.title}</h2>
+              <p class="side-body">${page.body}</p>
+            </div>
+            <div class="pair-photos">
+              <div class="${c1}"><img src="lihao.img/${page.src[0]}" alt="photo ${page.station}a" loading="lazy"></div>
+              <div class="pair-connector">&</div>
+              <div class="${c2}"><img src="lihao.img/${page.src[1]}" alt="photo ${page.station}b" loading="lazy"></div>
+            </div>
+          </div>`;
+        return section;
+      };
+
+      let built = 0;
+      photoPages.forEach((page, i) => {
+        if (i === 0) container.appendChild(chapterSlide(chapterTitles[0]));
+        if (i === ch1End) container.appendChild(chapterSlide(chapterTitles[1]));
+        if (i === ch2End) container.appendChild(chapterSlide(chapterTitles[2]));
+        if (page.type === 'couple') {
+          container.appendChild(singleSlide(page, built % 2 === 1));
+          built++;
+        } else {
+          container.appendChild(pairSlide(page));
+          built++;
+        }
+      });
+    }
+
+    buildPhotoSlides();
+
     const meetDate = new Date('2024-12-30T00:00:00+08:00');
     const loveDate = new Date('2025-05-10T00:00:00+08:00');
 
     const timelineEvents = [
       { date: '2024.12.30', label: '相识', milestone: true },
       { date: '2025.05.10', label: '相恋', milestone: true },
-      { date: '2025.05.20', label: '第一站' },
-      { date: '2025.06.08', label: '第二站' },
-      { date: '2025.07.15', label: '第三站' },
-      { date: '2025.09.20', label: '第四站' },
-      { date: '2025.10.25', label: '第五站' },
-      { date: '2025.11.30', label: '第六站' },
-      { date: '2025.12.31', label: '第七站' },
-      { date: '2026.02.14', label: '第八站' },
-      { date: '2026.03.20', label: '第九站' },
-      { date: '2026.04.10', label: '第十站' },
-      { date: '2026.04.30', label: '第十一站' },
-      { date: '2026.05.15', label: '第十二站' },
-      { date: '2026.05.25', label: '第十三站' },
-      { date: '2026.06.08', label: '第十四站' },
-      { date: '2026.06.18', label: '第十五站' },
+      { date: '2025.03.09', label: '第1站' },
+      { date: '2025.04.30', label: '第2站' },
+      { date: '2025.05.02', label: '第3站' },
+      { date: '2025.05.02', label: '第4站' },
+      { date: '2025.05.10', label: '第5站' },
+      { date: '2025.05.11', label: '第6站' },
+      { date: '2025.05.25', label: '第7站' },
+      { date: '2025.05.30', label: '第8站' },
+      { date: '2025.07.05', label: '第9站' },
+      { date: '2025.08.09', label: '第10站' },
+      { date: '2025.08.17', label: '第11站' },
+      { date: '2025.10.02', label: '第12站' },
+      { date: '2025.10.02', label: '第13站' },
+      { date: '2025.10.04', label: '第14站' },
+      { date: '2025.10.04', label: '第15站' },
+      { date: '2025.10.07', label: '第16站' },
+      { date: '2025.11.15', label: '第17站' },
+      { date: '2025.11.15', label: '第18站' },
+      { date: '2025.11.29', label: '第19站' },
+      { date: '2025.11.30', label: '第20站' },
+      { date: '2025.11.30', label: '第21站' },
+      { date: '2026.02.23', label: '第22站' },
+      { date: '2026.04.30', label: '第23站' },
+      { date: '2026.04.30', label: '第24站' },
+      { date: '2026.04.30', label: '第25站' },
+      { date: '2026.04.30', label: '第26站' },
+      { date: '2026.04.30', label: '第27站' },
+      { date: '2026.04.30', label: '第28站' },
+      { date: '2026.04.30', label: '第29站' },
+      { date: '2026.06.22', label: '第30站' },
+      { date: '2026.06.22', label: '第31站' },
+      { date: '2026.06.22', label: '第32站' },
+      { date: '2026.06.22', label: '第33站' },
+      { date: '2026.06.22', label: '第34站' },
+      { date: '2026.06.22', label: '第35站' },
+      { date: '2026.06.22', label: '第36站' },
       { date: '2026.06.22', label: '今天', milestone: true }
     ];
 
     const photos = [
-      "lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%88%B1%E5%BF%83%E7%9F%B3%E9%9B%AA%E5%B1%B1_8.10%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E7%88%B1%E5%BF%83%E6%A1%86%E5%90%88%E7%85%A7_8.20%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E5%A4%95%E9%98%B3%E5%8F%A4%E5%A1%94%E6%AF%94%E8%80%B6_8.85%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%93%B6%E6%9D%8F%E6%A0%91%E6%9E%97%E5%AF%B9%E8%A7%86_7.75%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E7%BA%A2%E5%8F%B6%E6%9E%97%E5%A4%A7%E7%AC%91%E6%AF%94%E8%80%B6_8.55%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E7%BA%A2%E5%8F%B6%E6%9E%97%E4%BE%9D%E5%81%BE%E8%87%AA%E6%8B%8D_8.55%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%9B%AA%E6%99%AF%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.50%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E9%9B%AA%E6%99%AF%E9%9B%BE%E5%87%87%E6%AF%94%E8%80%B6B_7.75%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B8%89%E5%B3%A1%E4%B9%8B%E5%B7%85%E5%A4%A7%E7%AC%91_7.65%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B9%9D%E5%AF%A8%E6%B2%9F%E6%B9%96%E8%BE%B9%E5%A4%A7%E7%AC%91_8.35%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E9%87%91%E9%9B%95%E9%9B%95%E5%A1%91%E6%AF%94%E5%BF%83_8.25%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E5%9F%8E%E5%B8%82%E5%85%AC%E5%9B%AD%E8%8D%89%E5%9D%AA%E4%BE%9D%E5%81%BEB_7.90%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E4%B9%90%E5%B1%B1%E5%A4%A7%E4%BD%9B%E5%89%8D_7.60%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%9B%B8%E6%A1%86%E9%9B%AA%E6%99%AF_7.60%E5%88%86.jpg",
-      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E6%88%B7%E5%A4%96%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.30%E5%88%86.jpg"
+      'mmexport1741595537727.jpg',
+      '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B9%9D%E5%AF%A8%E6%B2%9F%E6%B9%96%E8%BE%B9%E5%A4%A7%E7%AC%91_8.35%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%88%B1%E5%BF%83%E7%9F%B3%E9%9B%AA%E5%B1%B1_8.10%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E6%88%B7%E5%A4%96%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.30%E5%88%86.jpg',
+      '110APPLE_IMG_0020.jpg',
+      'IMG_20250511_170129.jpg',
+      'retouch_2025052400135401.jpg',
+      'IMG_20250525_221852.jpg',
+      'IMG_20250530_165640.jpg',
+      'IMG_20250705_201036.jpg',
+      'IMG_20250809_175936.jpg',
+      'IMG_20250809_192822.jpg',
+      'IMG_20250817_104404.jpg',
+      'IMG_20251002_132901.jpg',
+      'IMG_1184.jpg',
+      'IMG_1275.jpg',
+      'IMG_20251004_175939.jpg',
+      'IMG_20251004_175959.jpg',
+      'retouch_2025100722025775.jpg',
+      '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E5%9F%8E%E5%B8%82%E5%85%AC%E5%9B%AD%E8%8D%89%E5%9D%AA%E4%BE%9D%E5%81%BEB_7.90%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%93%B6%E6%9D%8F%E6%A0%91%E6%9E%97%E5%AF%B9%E8%A7%86_7.75%E5%88%86.jpg',
+      'IMG_20251129_164829.jpg',
+      '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E7%BA%A2%E5%8F%B6%E6%9E%97%E5%A4%A7%E7%AC%91%E6%AF%94%E8%80%B6_8.55%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E7%BA%A2%E5%8F%B6%E6%9E%97%E4%BE%9D%E5%81%BE%E8%87%AA%E6%8B%8D_8.55%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B8%89%E5%B3%A1%E4%B9%8B%E5%B7%85%E5%A4%A7%E7%AC%91_7.65%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E5%A4%95%E9%98%B3%E5%8F%A4%E5%A1%94%E6%AF%94%E8%80%B6_8.85%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E9%87%91%E9%9B%95%E9%9B%95%E5%A1%91%E6%AF%94%E5%BF%83_8.25%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E7%88%B1%E5%BF%83%E6%A1%86%E5%90%88%E7%85%A7_8.20%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%9B%B8%E6%A1%86%E9%9B%AA%E6%99%AF_7.60%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E4%B9%90%E5%B1%B1%E5%A4%A7%E4%BD%9B%E5%89%8D_7.60%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%9B%AA%E6%99%AF%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.50%E5%88%86.jpg',
+      '%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E9%9B%AA%E6%99%AF%E9%9B%BE%E5%87%87%E6%AF%94%E8%80%B6B_7.75%E5%88%86.jpg',
+      'psc.jpeg',
+      'psc%20%281%29.jpeg',
+      'psc%20%282%29.jpeg',
+      'psc%20%3D2.jpeg',
+      'psc%20%3D3-2.jpeg',
+      'psc%20%283%29.jpeg',
+      'psc%20%284%29.jpeg',
+      'psc%20%285%29.jpeg',
+      'psc%20%286%29.jpeg',
+      'psc%20%287%29.jpeg',
     ];
 
     const slides = document.querySelectorAll('.slide');
@@ -1156,7 +1062,7 @@
       const timelineIndex = active.dataset.timeline;
 
       // Show timeline rail on timeline intro, photo slides, and timer page
-      if (layout === 'split-left' || layout === 'split-right' || timelineAttr === 'intro' || timelineAttr === 'timer') {
+      if (layout === 'split-left' || layout === 'split-right' || layout === 'pair' || timelineAttr === 'intro' || timelineAttr === 'timer') {
         timelineRail.classList.add('visible');
       } else {
         timelineRail.classList.remove('visible');
