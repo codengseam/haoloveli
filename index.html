@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>写给你的信 | 求婚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --rose-pale: #FFF8F9;
+      --rose-cream: #FFEDF1;
+      --rose-blush: #FFDEE6;
+      --rose-soft: #F8C1CE;
+      --rose-gold: #D4A5A5;
+      --rose-text: #8B4A5E;
+      --rose-text-light: #B87888;
+      --gold: #D4AF7A;
+      --champagne: #F5E6D3;
+    }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: 'Noto Serif SC', 'Playfair Display', serif;
+      color: var(--rose-text);
+      background: #000;
+    }
+    .stage {
+      position: relative;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(145deg, #FFF8F9 0%, #FFEDF1 30%, #FFDEE6 60%, #F8C9D4 90%, #F0B8C5 100%);
+      background-size: 400% 400%;
+      animation: skyFlow 20s ease infinite;
+    }
+    @keyframes skyFlow {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+    .glow {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(255, 220, 225, 0.8) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(255, 200, 210, 0.7) 0%, transparent 45%),
+        radial-gradient(circle at 50% 95%, rgba(255, 235, 220, 0.6) 0%, transparent 50%);
+      animation: glowPulse 10s ease-in-out infinite alternate;
+    }
+    @keyframes glowPulse {
+      0% { opacity: 0.8; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.08); }
+    }
+    .hearts {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+    }
+    .heart {
+      position: absolute; top: -10%; font-size: 1rem;
+      opacity: 0; animation: fall linear infinite;
+      text-shadow: 0 0 12px rgba(255, 160, 170, 0.6);
+    }
+    @keyframes fall {
+      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.7; }
+      100% { transform: translateY(110vh) translateX(80px) rotate(360deg); opacity: 0; }
+    }
+    .slide {
+      position: absolute; inset: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.4s;
+      padding: 5vh 5vw 5vh 10vw;
+    }
+    .slide.active { opacity: 1; visibility: visible; }
+    .slide-content {
+      width: 100%; max-width: 1400px; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+
+    /* Timeline - left side */
+    .timeline-rail {
+      position: fixed; left: 2.5vw; top: 50%; transform: translateY(-50%);
+      z-index: 90; width: 90px; height: 72vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      opacity: 0; transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+    .timeline-rail.visible { opacity: 1; }
+    .timeline-line {
+      position: absolute; left: 50%; top: 12px; bottom: 12px; width: 2px; transform: translateX(-50%);
+      background: linear-gradient(180deg, rgba(212,165,165,0.25), rgba(139,74,94,0.18), rgba(212,165,165,0.25));
+      border-radius: 1px;
+    }
+    .timeline-node {
+      position: relative; width: 12px; height: 12px; border-radius: 50%;
+      background: #fff; border: 2px solid rgba(212, 165, 165, 0.6);
+      transition: all 0.5s ease; z-index: 2;
+      box-shadow: 0 2px 8px rgba(139, 74, 94, 0.08);
+    }
+    .timeline-node.active {
+      background: var(--rose-text); border-color: var(--rose-text);
+      transform: scale(1.5);
+      box-shadow: 0 0 0 8px rgba(139, 74, 94, 0.1), 0 0 20px rgba(139, 74, 94, 0.2);
+    }
+    .timeline-node.milestone {
+      width: 16px; height: 16px; background: var(--gold); border-color: var(--gold);
+    }
+    .timeline-node.milestone.active {
+      background: var(--rose-text); border-color: var(--rose-text);
+      box-shadow: 0 0 0 10px rgba(212, 175, 122, 0.15), 0 0 24px rgba(139, 74, 94, 0.25);
+    }
+    .timeline-label {
+      position: absolute; left: 32px; top: 50%; transform: translateY(-50%);
+      white-space: nowrap; font-family: 'Cormorant Garamond', serif; font-size: 0.8rem;
+      letter-spacing: 0.12em; color: var(--rose-text-light); opacity: 0;
+      transition: all 0.5s ease; font-weight: 500; pointer-events: none;
+    }
+    .timeline-node.active .timeline-label { opacity: 1; color: var(--rose-text); transform: translateY(-50%) translateX(4px); }
+    .timeline-node.milestone .timeline-label { color: var(--gold); opacity: 0; }
+    .timeline-node.milestone.active .timeline-label { color: var(--rose-text); opacity: 1; }
+
+    /* Cover */
+    .cover-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
+    .cover-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; letter-spacing: 0.5em; text-transform: uppercase;
+      color: var(--rose-text-light); margin-bottom: 2rem;
+      opacity: 0; animation: fadeInUp 1.5s ease 0.3s forwards;
+    }
+    .cover-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      font-weight: 500; letter-spacing: 0.2em; color: var(--rose-text);
+      line-height: 1.15; margin-bottom: 1rem;
+      opacity: 0; animation: fadeInUp 1.5s ease 0.6s forwards;
+    }
+    .cover-script {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      color: var(--rose-gold); opacity: 0;
+      animation: fadeInUp 1.5s ease 0.9s forwards;
+      margin-bottom: 2.5rem;
+    }
+    .cover-ornament {
+      width: 180px; height: 50px; margin: 0 auto 2rem; opacity: 0;
+      animation: fadeInUp 1.5s ease 1.2s forwards;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 50'%3E%3Cpath d='M90 25 L25 25 M155 25 L90 25' stroke='%23D4A5A5' stroke-width='1'/%3E%3Cpath d='M90 20 C86 16 82 16 80 19 C78 22 80 26 90 32 C100 26 102 22 100 19 C98 16 94 16 90 20' fill='%23D4A5A5'/%3E%3C/svg%3E") no-repeat center;
+      background-size: contain;
+    }
+    .cover-date {
+      font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+      letter-spacing: 0.3em; color: var(--rose-text-light); opacity: 0;
+      animation: fadeInUp 1.5s ease 1.5s forwards;
+    }
+    .scroll-hint {
+      position: absolute; bottom: 5vh; left: 50%; transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif; font-size: 0.85rem;
+      letter-spacing: 0.2em; color: var(--rose-text-light); opacity: 0;
+      animation: fadeInUp 1.5s ease 2s forwards, float 2s ease infinite 3s;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(10px); }
+    }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Timeline intro */
+    .timeline-intro .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
+    .timeline-intro-title {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 500; color: var(--rose-text); margin-bottom: 3vh; opacity: 0;
+      transform: translateY(30px); transition: all 1s ease 0.2s;
+    }
+    .timeline-intro-sub {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+      letter-spacing: 0.3em; color: var(--rose-gold); margin-bottom: 6vh; opacity: 0;
+      transform: translateY(20px); transition: all 1s ease 0.4s;
+    }
+    .slide.active .timeline-intro-title, .slide.active .timeline-intro-sub { opacity: 1; transform: translateY(0); }
+    .timeline-hero {
+      display: flex; align-items: center; justify-content: center; gap: 6vw;
+      opacity: 0; transform: scale(0.95); transition: all 1.2s ease 0.6s;
+    }
+    .slide.active .timeline-hero { opacity: 1; transform: scale(1); }
+    .timeline-event {
+      text-align: center; position: relative;
+    }
+    .timeline-event-dot {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--gold); margin: 0 auto 1.2rem;
+      box-shadow: 0 0 0 10px rgba(212, 175, 122, 0.15); position: relative;
+    }
+    .timeline-event-dot::after {
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
+      border: 1px solid rgba(139, 74, 94, 0.2); animation: pulseRing 2s ease infinite;
+    }
+    @keyframes pulseRing {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .timeline-event-date {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600;
+      letter-spacing: 0.15em; color: var(--rose-text); margin-bottom: 0.6rem;
+    }
+    .timeline-event-label {
+      font-family: 'Noto Serif SC', serif; font-size: 1.2rem; color: var(--rose-text-light);
+    }
+    .timeline-event.together .timeline-event-dot { background: var(--rose-text); box-shadow: 0 0 0 10px rgba(139, 74, 94, 0.12); }
+    .timeline-event.together .timeline-event-date { color: var(--rose-text); }
+    .timeline-connector {
+      width: 80px; height: 1px; background: linear-gradient(90deg, var(--gold), var(--rose-text-light));
+      position: relative; top: -12px;
+    }
+    .timeline-connector::after {
+      content: '♥'; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      font-size: 0.8rem; color: var(--rose-gold); background: var(--rose-pale); padding: 0 8px;
+    }
+    .timeline-caption {
+      margin-top: 6vh; font-family: 'Noto Serif SC', serif; font-size: 1.1rem;
+      color: var(--rose-text-light); opacity: 0; transition: opacity 1s ease 1s;
+    }
+    .slide.active .timeline-caption { opacity: 1; }
+
+    /* Chapters */
+    .chapter-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
+    .chapter-number {
+      font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+      letter-spacing: 0.4em; color: var(--rose-gold); margin-bottom: 1.5rem;
+      opacity: 0; transform: translateY(30px); transition: all 1s ease 0.2s;
+    }
+    .chapter-title {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 500; color: var(--rose-text); line-height: 1.5;
+      opacity: 0; transform: translateY(30px); transition: all 1s ease 0.4s;
+    }
+    .slide.active .chapter-number, .slide.active .chapter-title { opacity: 1; transform: translateY(0); }
+
+    /* Photo slides */
+    .split-slide .slide-content { gap: 5vw; align-items: center; }
+    .split-slide.reverse .slide-content { flex-direction: row-reverse; }
+    .text-side {
+      flex: 1; max-width: 560px; opacity: 0;
+      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+    }
+    .split-slide .text-side { transform: translateX(-50px); }
+    .split-slide.reverse .text-side { transform: translateX(50px); }
+    .slide.active .text-side { opacity: 1; transform: translateX(0); }
+    .photo-date-badge {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: 'Cormorant Garamond', serif; font-size: 0.9rem;
+      letter-spacing: 0.18em; color: var(--rose-text);
+      margin-bottom: 2rem; padding: 0.6rem 1.4rem;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(212, 165, 165, 0.35);
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(139, 74, 94, 0.06);
+      opacity: 0; transform: translateY(-20px);
+      transition: all 0.8s ease 0.2s;
+      position: relative;
+    }
+    .photo-date-badge::before {
+      content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+      width: 3px; height: 60%; background: var(--gold); border-radius: 0 2px 2px 0;
+    }
+    .slide.active .photo-date-badge { opacity: 1; transform: translateY(0); }
+    .photo-date-badge .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--gold); box-shadow: 0 0 0 4px rgba(212, 175, 122, 0.2);
+    }
+    .side-label {
+      font-family: 'Cormorant Garamond', serif; font-size: 0.85rem;
+      letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--rose-gold); margin-bottom: 1.2rem;
+    }
+    .side-title {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 500; color: var(--rose-text); line-height: 1.4;
+      margin-bottom: 1.5rem;
+    }
+    .side-body {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+      line-height: 2.2; color: var(--rose-text-light); font-weight: 400;
+      white-space: pre-line;
+    }
+    .image-side {
+      flex: 0 0 auto; opacity: 0;
+      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+    }
+    .split-slide .image-side { transform: translateX(50px) scale(0.95); }
+    .split-slide.reverse .image-side { transform: translateX(-50px) scale(0.95); }
+    .slide.active .image-side { opacity: 1; transform: translateX(0) scale(1); }
+    .photo-card {
+      position: relative; background: linear-gradient(145deg, #fff 0%, #fff8f9 100%); padding: 18px;
+      box-shadow: 0 30px 80px rgba(122, 68, 88, 0.14), 0 10px 25px rgba(122, 68, 88, 0.07), inset 0 0 0 1px rgba(212, 165, 165, 0.18);
+      border-radius: 4px; overflow: hidden;
+      transform: rotate(1.2deg);
+      transition: transform 0.6s ease, box-shadow 0.6s ease;
+    }
+    .photo-card:hover { transform: rotate(0deg) scale(1.03); box-shadow: 0 40px 100px rgba(122, 68, 88, 0.18), 0 15px 35px rgba(122, 68, 88, 0.1), inset 0 0 0 1px rgba(212, 165, 165, 0.25); }
+    .photo-card.portrait { width: 360px; }
+    .photo-card.portrait img { width: 100%; height: 480px; object-fit: cover; object-position: center 15%; }
+    .photo-card.landscape { width: 640px; }
+    .photo-card.landscape img { width: 100%; height: 400px; object-fit: cover; object-position: center 25%; }
+    .photo-card img {
+      filter: sepia(5%) saturate(108%) contrast(102%) brightness(102%);
+      border-radius: 2px; display: block;
+    }
+    .photo-card::before {
+      content: ''; position: absolute; inset: 12px; pointer-events: none;
+      border: 1px solid rgba(212, 165, 165, 0.35); border-radius: 2px; z-index: 1;
+    }
+    .photo-card::after {
+      content: ''; position: absolute; inset: 18px; pointer-events: none;
+      border: 1px solid rgba(212, 165, 165, 0.2); border-radius: 2px; z-index: 1;
+    }
+    .photo-caption {
+      text-align: center; margin-top: 1rem; font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem; letter-spacing: 0.2em; color: var(--rose-text-light);
+    }
+
+    /* Heart wall */
+    .heartwall-slide .slide-content { flex-direction: column; padding-left: 5vw; }
+    .heartwall-title {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 500; color: var(--rose-text); text-align: center; margin-bottom: 2vh;
+      opacity: 0; transform: translateY(30px); transition: all 1s ease 0.2s;
+    }
+    .heartwall-subtitle {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
+      letter-spacing: 0.3em; color: var(--rose-gold); text-align: center; margin-bottom: 3vh;
+      opacity: 0; transform: translateY(20px); transition: all 1s ease 0.4s;
+    }
+    .slide.active .heartwall-title, .slide.active .heartwall-subtitle { opacity: 1; transform: translateY(0); }
+    .heartwall-container {
+      position: relative; width: 100%; max-width: 1100px; height: 60vh;
+      opacity: 0; transform: scale(0.9); transition: all 1.5s ease 0.6s;
+    }
+    .slide.active .heartwall-container { opacity: 1; transform: scale(1); }
+    .heartwall-photo {
+      position: absolute; width: 95px; height: 120px; background: #fff; padding: 6px;
+      box-shadow: 0 8px 24px rgba(122, 68, 88, 0.18); border-radius: 2px;
+      transform: translate(-50%, -50%) scale(0) rotate(var(--rot));
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) var(--delay), opacity 0.8s ease var(--delay);
+      opacity: 0;
+    }
+    .slide.active .heartwall-photo {
+      transform: translate(-50%, -50%) scale(1) rotate(var(--rot));
+      opacity: 1;
+    }
+    .heartwall-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; border-radius: 1px; }
+
+    /* Proposal */
+    .proposal-slide .slide-content { flex-direction: column; padding-left: 5vw; }
+    .proposal-frame {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 48px;
+      padding: 6vh 5vw; max-width: 850px; width: 100%;
+      box-shadow: 0 50px 120px rgba(122, 68, 88, 0.1);
+      text-align: center; opacity: 0; transform: translateY(50px) scale(0.96);
+      transition: all 1.3s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+      position: relative;
+    }
+    .proposal-frame::before {
+      content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+      border-radius: 50px; background: linear-gradient(135deg, rgba(255,200,210,0.7), rgba(212,165,165,0.5), rgba(255,220,200,0.7));
+      z-index: -1; opacity: 0.6;
+    }
+    .slide.active .proposal-frame { opacity: 1; transform: translateY(0) scale(1); }
+    .proposal-frame h2 {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 500; color: var(--rose-text); margin-bottom: 2rem;
+    }
+    .proposal-frame p {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(1.1rem, 2vw, 1.4rem);
+      line-height: 2.1; color: var(--rose-text-light); margin-bottom: 3rem;
+    }
+    .yes-btn {
+      font-family: 'Noto Serif SC', serif; font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--rose-text) 0%, #9B5E70 100%);
+      color: #fff; border: none; padding: 1.2rem 4rem; border-radius: 50px;
+      cursor: pointer; letter-spacing: 0.2em;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 12px 45px rgba(122, 68, 88, 0.3);
+    }
+    .yes-btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 20px 70px rgba(122, 68, 88, 0.4);
+    }
+
+    /* Letter */
+    .letter-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
+    .letter-paper {
+      background: rgba(255, 255, 255, 0.85); max-width: 760px; width: 100%;
+      padding: 5vh 4vw; border-radius: 24px;
+      box-shadow: 0 40px 100px rgba(122, 68, 88, 0.1);
+      opacity: 0; transform: translateY(40px);
+      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+    }
+    .slide.active .letter-paper { opacity: 1; transform: translateY(0); }
+    .letter-title {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 500; color: var(--rose-text); margin-bottom: 2rem;
+    }
+    .letter-body {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(1.1rem, 2vw, 1.4rem);
+      line-height: 2.4; color: var(--rose-text-light); white-space: pre-line;
+    }
+    .letter-line {
+      opacity: 0; transform: translateY(20px);
+      transition: all 0.8s ease var(--delay);
+    }
+    .slide.active .letter-line { opacity: 1; transform: translateY(0); }
+
+    /* Closing */
+    .closing-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
+    .closing-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(3.5rem, 8vw, 6.5rem);
+      font-weight: 500; color: var(--rose-text); white-space: nowrap;
+      letter-spacing: 0.15em; opacity: 0; transform: scale(0.9);
+      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+    }
+    .slide.active .closing-title { opacity: 1; transform: scale(1); }
+    .closing-sub {
+      font-family: 'Great Vibes', cursive; font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--rose-gold); margin-top: 1.5rem; opacity: 0; transition: opacity 1s ease 1s;
+    }
+    .slide.active .closing-sub { opacity: 1; }
+
+    /* Timer final page */
+    .timer-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
+    .timer-eyebrow {
+      font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+      letter-spacing: 0.5em; color: var(--rose-text-light); margin-bottom: 1.5rem;
+      opacity: 0; transform: translateY(20px); transition: all 1s ease 0.2s;
+    }
+    .timer-title {
+      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 500; color: var(--rose-text); margin-bottom: 4vh; opacity: 0;
+      transform: translateY(30px); transition: all 1s ease 0.4s;
+    }
+    .slide.active .timer-eyebrow, .slide.active .timer-title { opacity: 1; transform: translateY(0); }
+    .timer-cards {
+      display: flex; gap: 4vw; justify-content: center; align-items: stretch;
+      opacity: 0; transform: scale(0.95); transition: all 1.2s ease 0.6s;
+      flex-wrap: wrap;
+    }
+    .slide.active .timer-cards { opacity: 1; transform: scale(1); }
+    .timer-card {
+      background: rgba(255, 255, 255, 0.78); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 36px;
+      padding: 4vh 3vw; min-width: 340px; max-width: 440px; flex: 1;
+      box-shadow: 0 40px 100px rgba(122, 68, 88, 0.1);
+      position: relative; overflow: hidden;
+    }
+    .timer-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--gold), var(--rose-soft), var(--gold));
+    }
+    .timer-card-label {
+      font-family: 'Cormorant Garamond', serif; font-size: 0.95rem;
+      letter-spacing: 0.3em; color: var(--rose-gold); margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+    .timer-card-date {
+      font-family: 'Noto Serif SC', serif; font-size: 1.1rem; color: var(--rose-text-light);
+      margin-bottom: 2rem;
+    }
+    .timer-number {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 8vw, 6rem);
+      font-weight: 600; color: var(--rose-text); line-height: 1;
+      margin-bottom: 0.8rem; animation: heartbeat 2s ease infinite;
+      display: flex; align-items: baseline; justify-content: center; gap: 0.15em;
+    }
+    .timer-unit-suffix {
+      font-size: 0.35em; font-weight: 500; color: var(--rose-gold);
+      letter-spacing: 0.1em;
+    }
+    .timer-units {
+      display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;
+      font-family: 'Cormorant Garamond', serif; font-size: 0.95rem;
+      letter-spacing: 0.1em; color: var(--rose-text-light);
+    }
+    .timer-unit { text-align: center; }
+    .timer-unit span { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--rose-text); }
+    .timer-card-words {
+      font-family: 'Noto Serif SC', serif; font-size: 1.05rem; color: var(--rose-text-light);
+      line-height: 1.8;
+    }
+    .timer-bottom {
+      margin-top: 4vh; font-family: 'Great Vibes', cursive; font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--rose-gold); opacity: 0; transition: opacity 1s ease 1s;
+    }
+    .slide.active .timer-bottom { opacity: 1; }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    /* Sparkles */
+    .sparkle {
+      position: fixed; pointer-events: none; z-index: 1000;
+      font-size: 1.3rem; color: var(--rose-soft);
+      animation: sparkleOut 1.8s ease-out forwards;
+    }
+    @keyframes sparkleOut {
+      0% { opacity: 1; transform: translate(0,0) scale(0.5); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(30deg); }
+    }
+
+    /* Controls */
+    .controls {
+      position: fixed; bottom: 3vh; right: 3vw; z-index: 100;
+      display: flex; gap: 12px; align-items: center;
+      transition: opacity 0.5s ease;
+    }
+    .controls button {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid rgba(122, 68, 88, 0.15); background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(10px); cursor: pointer; color: var(--rose-text);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all 0.3s ease;
+    }
+    .controls button:hover { background: rgba(255,255,255,0.95); transform: scale(1.1); }
+    .progress {
+      position: fixed; bottom: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--rose-gold), var(--gold)); z-index: 100;
+      transition: width 0.5s ease;
+    }
+    .nav-dots {
+      position: fixed; left: 2vw; top: 50%; transform: translateY(-50%);
+      z-index: 100; display: flex; flex-direction: column; gap: 12px;
+    }
+    .nav-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(122, 68, 88, 0.15); cursor: pointer; transition: all 0.3s ease;
+    }
+    .nav-dot.active { background: var(--rose-gold); transform: scale(1.4); }
+    .loading {
+      position: fixed; inset: 0; z-index: 9999; background: var(--rose-pale);
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      transition: opacity 0.6s ease;
+    }
+    .loading.hidden { opacity: 0; pointer-events: none; }
+    .loading-heart { font-size: 3rem; animation: heartbeat 1.5s ease infinite; margin-bottom: 1rem; color: var(--rose-text); }
+    .loading-text { font-family: 'Cormorant Garamond', serif; color: var(--rose-text-light); letter-spacing: 0.3em; }
+
+    /* Start overlay */
+    .start-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(255, 250, 252, 0.92);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
+      cursor: pointer;
+    }
+    .start-overlay.hidden {
+      opacity: 0; visibility: hidden; pointer-events: none;
+    }
+    .start-content {
+      text-align: center; animation: fadeInUp 1.2s ease;
+    }
+    .start-title {
+      font-family: 'Noto Serif SC', 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      color: var(--rose-text); margin-bottom: 1rem;
+      letter-spacing: 0.15em;
+    }
+    .start-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 2.2vw, 1.5rem);
+      color: var(--rose-text-light);
+      letter-spacing: 0.2em; margin-bottom: 2.5rem;
+    }
+    .start-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 12px;
+      padding: 1rem 2.5rem;
+      border: 1px solid var(--rose-gold);
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--rose-text);
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.2em;
+      box-shadow: 0 10px 40px rgba(139, 74, 94, 0.15);
+      animation: pulse-gentle 2.5s ease infinite;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .start-btn:hover { transform: scale(1.05); box-shadow: 0 14px 50px rgba(139, 74, 94, 0.22); }
+    .start-hint {
+      margin-top: 2rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem;
+      color: var(--rose-text-light);
+      letter-spacing: 0.15em;
+    }
+    @keyframes pulse-gentle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 5vh 5vw; }
+      .timeline-rail { display: none; }
+      .split-slide .slide-content { flex-direction: column !important; gap: 4vh; }
+      .text-side { max-width: 100%; }
+      .image-side { flex: 0 0 auto !important; }
+      .photo-card.portrait { width: 280px; }
+      .photo-card.portrait img { height: 360px; }
+      .photo-card.landscape { width: 90vw; }
+      .photo-card.landscape img { height: 260px; }
+      .nav-dots { display: none; }
+      .closing-title { white-space: normal; font-size: clamp(2.5rem, 12vw, 4rem); }
+      .timer-cards { flex-direction: column; gap: 3vh; }
+      .timer-card { min-width: 280px; width: 90vw; }
+      .timeline-hero { flex-direction: column; gap: 4vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <div class="loading-heart">♥</div>
+    <div class="loading-text">LOADING LOVE</div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="glow"></div>
+    <div class="hearts" id="hearts"></div>
+
+    <div class="timeline-rail" id="timelineRail">
+      <div class="timeline-line"></div>
+      <div id="timelineNodes"></div>
+    </div>
+
+    <div class="progress" id="progress"></div>
+    <div class="nav-dots" id="navDots"></div>
+    <div class="controls">
+      <button id="musicBtn" title="音乐">♪</button>
+      <button id="playBtn" title="自动播放">▶</button>
+      <button id="prevBtn" title="上一页">‹</button>
+      <button id="nextBtn" title="下一页">›</button>
+    </div>
+
+    <section class="slide cover-slide active" data-layout="cover">
+      <div class="slide-content">
+        <div class="cover-eyebrow">A Love Story</div>
+        <h1 class="cover-title">写给你的信</h1>
+        <div class="cover-script">Every moment with you is a heart beating</div>
+        <div class="cover-ornament"></div>
+        <div class="cover-date">2026 · 我们的故事</div>
+        <div class="scroll-hint">点击屏幕继续</div>
+      </div>
+    </section>
+
+    <section class="slide timeline-intro" data-layout="timeline" data-timeline="intro">
+      <div class="slide-content">
+        <div class="timeline-intro-title">我们的故事</div>
+        <div class="timeline-intro-sub">TIME HAS WITNESSED EVERYTHING</div>
+        <div class="timeline-hero">
+          <div class="timeline-event">
+            <div class="timeline-event-dot"></div>
+            <div class="timeline-event-date">2024.12.30</div>
+            <div class="timeline-event-label">我们相识</div>
+          </div>
+          <div class="timeline-connector"></div>
+          <div class="timeline-event together">
+            <div class="timeline-event-dot"></div>
+            <div class="timeline-event-date">2025.05.10</div>
+            <div class="timeline-event-label">我们相恋</div>
+          </div>
+          <div class="timeline-connector"></div>
+          <div class="timeline-event">
+            <div class="timeline-event-dot"></div>
+            <div class="timeline-event-date">2026.06.22</div>
+            <div class="timeline-event-label">今天 · 求婚</div>
+          </div>
+        </div>
+        <div class="timeline-caption">从相遇的那一刻起，时间就开始为我们写故事</div>
+      </div>
+    </section>
+
+    <section class="slide chapter-slide" data-layout="chapter">
+      <div class="slide-content">
+        <div class="chapter-number">Chapter I</div>
+        <h2 class="chapter-title">我们的旅程<br>开始了</h2>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="0">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2025.05.20 · 第一站</div>
+          <div class="side-label">First Journey</div>
+          <h2 class="side-title">爱心石前的约定</h2>
+          <p class="side-body">还记得那次旅行吗？
+站在雪山前，你说这颗爱心石真美。
+我没看石头，只看着你。
+那一刻，我想永远这样看着你。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%88%B1%E5%BF%83%E7%9F%B3%E9%9B%AA%E5%B1%B1_8.10%E5%88%86.jpg" alt="爱心石雪山" loading="eager">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="1">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2025.06.08 · 第二站</div>
+          <div class="side-label">Love Frame</div>
+          <h2 class="side-title">被框住的幸福</h2>
+          <p class="side-body">这个爱心框里，是我们两个人的笑容。
+如果幸福有形，大概就是这样。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E7%88%B1%E5%BF%83%E6%A1%86%E5%90%88%E7%85%A7_8.20%E5%88%86.jpg" alt="爱心框合照" loading="eager">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="2">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2025.07.15 · 第三站</div>
+          <div class="side-label">Golden Hour</div>
+          <h2 class="side-title">夕阳下的古塔</h2>
+          <p class="side-body">夕阳把我们的影子拉得很长，
+古塔静默，时光也温柔。
+你比夕阳更让我心动。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E5%A4%95%E9%98%B3%E5%8F%A4%E5%A1%94%E6%AF%94%E8%80%B6_8.85%E5%88%86.jpg" alt="夕阳古塔" loading="eager">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide chapter-slide" data-layout="chapter">
+      <div class="slide-content">
+        <div class="chapter-number">Chapter II</div>
+        <h2 class="chapter-title">每一个瞬间<br>都是永恒</h2>
+      </div>
+    </section>
+
+    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="3">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2025.09.20 · 第四站</div>
+          <div class="side-label">Autumn Whisper</div>
+          <h2 class="side-title">银杏林中的对视</h2>
+          <p class="side-body">银杏叶落了一地金黄，
+我们在树林里对视，
+什么都不用说，
+就已经懂了彼此。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%93%B6%E6%9D%8F%E6%A0%91%E6%9E%97%E5%AF%B9%E8%A7%86_7.75%E5%88%86.jpg" alt="银杏树林对视" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="4">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2025.10.25 · 第五站</div>
+          <div class="side-label">Laughter</div>
+          <h2 class="side-title">红叶林里的笑声</h2>
+          <p class="side-body">你笑得那么开心，
+连红叶都失色了。
+我想让这样的笑容，
+一辈子都属于我。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E7%BA%A2%E5%8F%B6%E6%9E%97%E5%A4%A7%E7%AC%91%E6%AF%94%E8%80%B6_8.55%E5%88%86.jpg" alt="红叶林大笑" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="5">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2025.11.30 · 第六站</div>
+          <div class="side-label">Selfie</div>
+          <h2 class="side-title">红叶林里的依偎</h2>
+          <p class="side-body">我们自拍的时候，
+你总是喜欢靠着我。
+那是我最骄傲的依靠。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E7%BA%A2%E5%8F%B6%E6%9E%97%E4%BE%9D%E5%81%BE%E8%87%AA%E6%8B%8D_8.55%E5%88%86.jpg" alt="红叶林依偎自拍" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="6">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2025.12.31 · 第七站</div>
+          <div class="side-label">Winter Magic</div>
+          <h2 class="side-title">雪景自拍</h2>
+          <p class="side-body">雪落在我们的头发上，
+像偷偷给我们的祝福。
+白头，是这样开始的。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%9B%AA%E6%99%AF%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.50%E5%88%86.jpg" alt="雪景自拍依偎" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="7">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.02.14 · 第八站</div>
+          <div class="side-label">Snow Joy</div>
+          <h2 class="side-title">雪地里的大笑</h2>
+          <p class="side-body">冷风吹红了脸，
+但你的笑容比阳光还暖。
+和你在一起的冬天，
+从来不冷。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E9%9B%AA%E6%99%AF%E9%9B%BE%E5%87%87%E6%AF%94%E8%80%B6B_7.75%E5%88%86.jpg" alt="雪景雾凇比耶" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide chapter-slide" data-layout="chapter">
+      <div class="slide-content">
+        <div class="chapter-number">Chapter III</div>
+        <h2 class="chapter-title">想和你去<br>更多地方</h2>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="8">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.03.20 · 第九站</div>
+          <div class="side-label">Mountain Peak</div>
+          <h2 class="side-title">三峡之巅大笑</h2>
+          <p class="side-body">站在山顶，风很大，
+但你笑得更大声。
+好像只要在一起，
+哪里都是最好的风景。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B8%89%E5%B3%A1%E4%B9%8B%E5%B7%85%E5%A4%A7%E7%AC%91_7.65%E5%88%86.jpg" alt="三峡之巅大笑" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="9">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.04.10 · 第十站</div>
+          <div class="side-label">Lake Joy</div>
+          <h2 class="side-title">九寨沟湖边大笑</h2>
+          <p class="side-body">湖水蓝得像梦，
+你的笑声是梦里最真的声音。
+我希望能收藏你所有的笑声。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B9%9D%E5%AF%A8%E6%B2%9F%E6%B9%96%E8%BE%B9%E5%A4%A7%E7%AC%91_8.35%E5%88%86.jpg" alt="九寨沟湖边大笑" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="10">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.04.30 · 第十一站</div>
+          <div class="side-label">Heart Sign</div>
+          <h2 class="side-title">雕塑前的比心</h2>
+          <p class="side-body">我们比心的样子，
+和雕塑一样笨拙又可爱。
+但我的心意，是真的。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E9%87%91%E9%9B%95%E9%9B%95%E5%A1%91%E6%AF%94%E5%BF%83_8.25%E5%88%86.jpg" alt="金雕雕塑比心" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="11">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.05.15 · 第十二站</div>
+          <div class="side-label">Park Love</div>
+          <h2 class="side-title">城市公园草坪</h2>
+          <p class="side-body">躺在城市公园的草坪上，
+阳光很好，你也在。
+平凡的下午，
+因为你的存在变得珍贵。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E5%9F%8E%E5%B8%82%E5%85%AC%E5%9B%AD%E8%8D%89%E5%9D%AA%E4%BE%9D%E5%81%BEB_7.90%E5%88%86.jpg" alt="城市公园草坪依偎" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="12">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.05.25 · 第十三站</div>
+          <div class="side-label">Buddha Blessing</div>
+          <h2 class="side-title">乐山大佛前</h2>
+          <p class="side-body">大佛前，我们许过愿吗？
+我记得我的心愿，
+和你有关。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E4%B9%90%E5%B1%B1%E5%A4%A7%E4%BD%9B%E5%89%8D_7.60%E5%88%86.jpg" alt="乐山大佛前" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide reverse" data-layout="split-right" data-timeline="13">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.06.08 · 第十四站</div>
+          <div class="side-label">Framed</div>
+          <h2 class="side-title">相框里的雪景</h2>
+          <p class="side-body">如果把我们最幸福的瞬间，
+都装进相框，
+可能需要一面很大的墙。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%9B%B8%E6%A1%86%E9%9B%AA%E6%99%AF_7.60%E5%88%86.jpg" alt="相框雪景" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide split-slide" data-layout="split-left" data-timeline="14">
+      <div class="slide-content">
+        <div class="text-side">
+          <div class="photo-date-badge"><span class="dot"></span>2026.06.18 · 第十五站</div>
+          <div class="side-label">Outdoor Us</div>
+          <h2 class="side-title">户外的我们</h2>
+          <p class="side-body">无论是在雪山、红叶林，
+还是城市公园，
+只要是和你，就是最好的地方。</p>
+        </div>
+        <div class="image-side">
+          <div class="photo-card portrait">
+            <img src="lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E6%88%B7%E5%A4%96%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.30%E5%88%86.jpg" alt="户外自拍依偎" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide heartwall-slide" data-layout="heartwall">
+      <div class="slide-content">
+        <div class="heartwall-title">我的心，装满了你</div>
+        <div class="heartwall-subtitle">每一张照片，都是我爱你的证据</div>
+        <div class="heartwall-container" id="heartwall"></div>
+      </div>
+    </section>
+
+    <section class="slide proposal-slide" data-layout="proposal">
+      <div class="slide-content">
+        <div class="proposal-frame">
+          <h2>你愿意嫁给我吗？</h2>
+          <p>遇见你，是我一生最幸运的事。
+我想和你一起，看遍世间所有风景。
+从日出到日落，从青春到白头。</p>
+          <button class="yes-btn" id="yesBtn">我愿意</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide letter-slide" data-layout="letter">
+      <div class="slide-content">
+        <div class="letter-paper">
+          <div class="letter-title">写给你的信</div>
+          <div class="letter-body" id="letterBody">
+            <div class="letter-line" style="--delay:0.4s">亲爱的：</div>
+            <div class="letter-line" style="--delay:0.8s">遇见你，是我一生最幸运的事。</div>
+            <div class="letter-line" style="--delay:1.2s">我想和你一起，看遍世间所有风景。</div>
+            <div class="letter-line" style="--delay:1.6s">从日出到日落，从青春到白头。</div>
+            <div class="letter-line" style="--delay:2.0s">你愿意嫁给我吗？</div>
+            <div class="letter-line" style="--delay:2.4s">永远爱你。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide closing-slide" data-layout="closing">
+      <div class="slide-content">
+        <h2 class="closing-title">我爱你，永远</h2>
+        <div class="closing-sub">Forever & Always</div>
+      </div>
+    </section>
+
+    <section class="slide timer-slide" data-layout="timer" data-timeline="timer">
+      <div class="slide-content">
+        <div class="timer-eyebrow">TIME HAS WITNESSED OUR LOVE</div>
+        <div class="timer-title">时间，是我们相爱的证据</div>
+        <div class="timer-cards">
+          <div class="timer-card">
+            <div class="timer-card-label">Since We Met</div>
+            <div class="timer-card-date">2024年12月30日 · 我们相识</div>
+            <div class="timer-number"><span id="metDays">0</span><span class="timer-unit-suffix">天</span></div>
+            <div class="timer-units">
+              <div class="timer-unit"><span id="metHours">0</span>时</div>
+              <div class="timer-unit"><span id="metMinutes">0</span>分</div>
+              <div class="timer-unit"><span id="metSeconds">0</span>秒</div>
+            </div>
+            <div class="timer-card-words">从第一次相视而笑开始，<br>你便成了我世界里的光。</div>
+          </div>
+          <div class="timer-card">
+            <div class="timer-card-label">Since We Fell In Love</div>
+            <div class="timer-card-date">2025年5月10日 · 我们相恋</div>
+            <div class="timer-number"><span id="loveDays">0</span><span class="timer-unit-suffix">天</span></div>
+            <div class="timer-units">
+              <div class="timer-unit"><span id="loveHours">0</span>时</div>
+              <div class="timer-unit"><span id="loveMinutes">0</span>分</div>
+              <div class="timer-unit"><span id="loveSeconds">0</span>秒</div>
+            </div>
+            <div class="timer-card-words">从牵手那天起，<br>每一秒都在说我愿意。</div>
+          </div>
+        </div>
+        <div class="timer-bottom">未来的每一天，都想和你一起</div>
+      </div>
+    </section>
+
+    <audio id="bgMusic" loop src="lovebgm.mp3"></audio>
+  </div>
+
+  <div class="start-overlay" id="startOverlay">
+    <div class="start-content">
+      <div class="start-title">我们的故事</div>
+      <div class="start-subtitle">A Love Story Begins</div>
+      <div class="start-btn">开启浪漫旅程 ♪</div>
+      <div class="start-hint">点击屏幕任意处开始 · 音乐与画面将自动播放</div>
+    </div>
+  </div>
+
+  <script>
+    const meetDate = new Date('2024-12-30T00:00:00+08:00');
+    const loveDate = new Date('2025-05-10T00:00:00+08:00');
+
+    const timelineEvents = [
+      { date: '2024.12.30', label: '相识', milestone: true },
+      { date: '2025.05.10', label: '相恋', milestone: true },
+      { date: '2025.05.20', label: '第一站' },
+      { date: '2025.06.08', label: '第二站' },
+      { date: '2025.07.15', label: '第三站' },
+      { date: '2025.09.20', label: '第四站' },
+      { date: '2025.10.25', label: '第五站' },
+      { date: '2025.11.30', label: '第六站' },
+      { date: '2025.12.31', label: '第七站' },
+      { date: '2026.02.14', label: '第八站' },
+      { date: '2026.03.20', label: '第九站' },
+      { date: '2026.04.10', label: '第十站' },
+      { date: '2026.04.30', label: '第十一站' },
+      { date: '2026.05.15', label: '第十二站' },
+      { date: '2026.05.25', label: '第十三站' },
+      { date: '2026.06.08', label: '第十四站' },
+      { date: '2026.06.18', label: '第十五站' },
+      { date: '2026.06.22', label: '今天', milestone: true }
+    ];
+
+    const photos = [
+      "lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%88%B1%E5%BF%83%E7%9F%B3%E9%9B%AA%E5%B1%B1_8.10%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E7%88%B1%E5%BF%83%E6%A1%86%E5%90%88%E7%85%A7_8.20%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E5%A4%95%E9%98%B3%E5%8F%A4%E5%A1%94%E6%AF%94%E8%80%B6_8.85%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%93%B6%E6%9D%8F%E6%A0%91%E6%9E%97%E5%AF%B9%E8%A7%86_7.75%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E7%BA%A2%E5%8F%B6%E6%9E%97%E5%A4%A7%E7%AC%91%E6%AF%94%E8%80%B6_8.55%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E7%BA%A2%E5%8F%B6%E6%9E%97%E4%BE%9D%E5%81%BE%E8%87%AA%E6%8B%8D_8.55%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E9%9B%AA%E6%99%AF%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.50%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E9%9B%AA%E6%99%AF%E9%9B%BE%E5%87%87%E6%AF%94%E8%80%B6B_7.75%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B8%89%E5%B3%A1%E4%B9%8B%E5%B7%85%E5%A4%A7%E7%AC%91_7.65%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%AC%A2%E4%B9%90_%E4%B9%9D%E5%AF%A8%E6%B2%9F%E6%B9%96%E8%BE%B9%E5%A4%A7%E7%AC%91_8.35%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E7%89%B9%E8%89%B2_%E9%87%91%E9%9B%95%E9%9B%95%E5%A1%91%E6%AF%94%E5%BF%83_8.25%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E5%9F%8E%E5%B8%82%E5%85%AC%E5%9B%AD%E8%8D%89%E5%9D%AA%E4%BE%9D%E5%81%BEB_7.90%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E4%B9%90%E5%B1%B1%E5%A4%A7%E4%BD%9B%E5%89%8D_7.60%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E5%94%AF%E7%BE%8E_%E7%9B%B8%E6%A1%86%E9%9B%AA%E6%99%AF_7.60%E5%88%86.jpg",
+      "lihao.img/%E6%83%85%E4%BE%A3%E6%B5%AA%E6%BC%AB_%E6%88%B7%E5%A4%96%E8%87%AA%E6%8B%8D%E4%BE%9D%E5%81%BE_7.30%E5%88%86.jpg"
+    ];
+
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+    let autoPlay = false;
+    let timer = null;
+    let started = false;
+    const music = document.getElementById('bgMusic');
+    const stage = document.getElementById('stage');
+    const timelineRail = document.getElementById('timelineRail');
+    const timelineNodes = document.getElementById('timelineNodes');
+    const startOverlay = document.getElementById('startOverlay');
+    const playBtn = document.getElementById('playBtn');
+    const musicBtn = document.getElementById('musicBtn');
+
+    // Build timeline nodes
+    timelineEvents.forEach((ev, i) => {
+      const node = document.createElement('div');
+      node.className = 'timeline-node' + (ev.milestone ? ' milestone' : '');
+      node.dataset.index = i;
+      node.innerHTML = `<div class="timeline-label">${ev.date} · ${ev.label}</div>`;
+      timelineNodes.appendChild(node);
+    });
+
+    const navDots = document.getElementById('navDots');
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goTo(i);
+      navDots.appendChild(dot);
+    });
+
+    function updateTimeline() {
+      const active = slides[current];
+      const layout = active.dataset.layout;
+      const timelineAttr = active.dataset.timeline;
+      const timelineIndex = active.dataset.timeline;
+
+      // Show timeline rail on timeline intro, photo slides, and timer page
+      if (layout === 'split-left' || layout === 'split-right' || timelineAttr === 'intro' || timelineAttr === 'timer') {
+        timelineRail.classList.add('visible');
+      } else {
+        timelineRail.classList.remove('visible');
+      }
+
+      // Update active node
+      document.querySelectorAll('.timeline-node').forEach(n => n.classList.remove('active'));
+      let activeNodeIndex = -1;
+      if (timelineAttr === 'intro') activeNodeIndex = 1; // highlight love date
+      else if (timelineAttr === 'timer') activeNodeIndex = timelineEvents.length - 1;
+      else if (timelineIndex !== undefined) activeNodeIndex = parseInt(timelineIndex) + 2; // +2 for met and love milestones
+
+      if (activeNodeIndex >= 0 && activeNodeIndex < timelineEvents.length) {
+        const node = timelineNodes.children[activeNodeIndex];
+        if (node) node.classList.add('active');
+      }
+    }
+
+    function updateTimer() {
+      if (!slides[current].classList.contains('timer-slide')) return;
+      const now = new Date();
+
+      function updateSet(startDate, prefix) {
+        const diff = now - startDate;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById(prefix + 'Days').textContent = days;
+        document.getElementById(prefix + 'Hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById(prefix + 'Minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById(prefix + 'Seconds').textContent = seconds.toString().padStart(2, '0');
+      }
+
+      updateSet(meetDate, 'met');
+      updateSet(loveDate, 'love');
+    }
+
+    function update() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+      document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+      updateTimeline();
+      updateTimer();
+    }
+
+    function setAutoPlay(enabled) {
+      autoPlay = enabled;
+      playBtn.textContent = autoPlay ? '❚❚' : '▶';
+      clearInterval(timer);
+      if (autoPlay) timer = setInterval(next, 7000);
+    }
+
+    function startExperience() {
+      if (started) return;
+      started = true;
+      startOverlay.classList.add('hidden');
+      music.play().then(() => {
+        musicBtn.textContent = '♫';
+      }).catch(() => {
+        musicBtn.textContent = '♪';
+      });
+      setAutoPlay(true);
+    }
+
+    function next() {
+      if (current < total - 1) { current++; update(); }
+      else if (autoPlay) { setAutoPlay(false); }
+      if (autoPlay) { clearInterval(timer); timer = setInterval(next, 7000); }
+    }
+    function prev() {
+      if (current > 0) { current--; update(); }
+      if (autoPlay) { clearInterval(timer); timer = setInterval(next, 7000); }
+    }
+    function goTo(i) {
+      current = i;
+      update();
+      if (autoPlay) { clearInterval(timer); timer = setInterval(next, 7000); }
+    }
+
+    document.getElementById('nextBtn').onclick = (e) => { e.stopPropagation(); startExperience(); next(); };
+    document.getElementById('prevBtn').onclick = (e) => { e.stopPropagation(); startExperience(); prev(); };
+    playBtn.onclick = (e) => { e.stopPropagation(); startExperience(); setAutoPlay(!autoPlay); };
+    musicBtn.onclick = (e) => { e.stopPropagation(); startExperience(); if (music.paused) { music.play(); musicBtn.textContent = '♫'; } else { music.pause(); musicBtn.textContent = '♪'; } };
+
+    startOverlay.addEventListener('click', startExperience);
+
+    document.getElementById('yesBtn').onclick = (e) => {
+      e.stopPropagation();
+      const symbols = ['❤', '♥', '💖', '✨', '💕', '💗'];
+      for (let i = 0; i < 50; i++) {
+        const el = document.createElement('div'); el.className = 'sparkle';
+        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        const rect = e.target.getBoundingClientRect();
+        el.style.left = (rect.left + rect.width/2) + 'px';
+        el.style.top = (rect.top + rect.height/2) + 'px';
+        const angle = (i / 50) * Math.PI * 2;
+        const dist = 120 + Math.random() * 240;
+        el.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+        el.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+        document.body.appendChild(el); setTimeout(() => el.remove(), 1800);
+      }
+    };
+
+    document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { startExperience(); next(); } if (e.key === 'ArrowLeft') { startExperience(); prev(); } });
+    document.getElementById('stage').addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('.heartwall-container')) return;
+      startExperience();
+      next();
+    });
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => { const diff = e.changedTouches[0].clientX - touchStartX; if (Math.abs(diff) > 50) { startExperience(); diff < 0 ? next() : prev(); } });
+
+    const hearts = document.getElementById('hearts');
+    const heartChars = ['❤', '♥', '💕'];
+    for (let i = 0; i < 24; i++) {
+      const h = document.createElement('div'); h.className = 'heart';
+      h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+      h.style.left = Math.random() * 100 + 'vw';
+      h.style.fontSize = (0.7 + Math.random() * 0.9) + 'rem';
+      h.style.animationDelay = Math.random() * 12 + 's';
+      h.style.animationDuration = (12 + Math.random() * 10) + 's';
+      h.style.opacity = 0.4 + Math.random() * 0.4;
+      h.style.color = Math.random() > 0.5 ? 'rgba(255,150,170,0.8)' : 'rgba(212,165,165,0.8)';
+      hearts.appendChild(h);
+    }
+
+    document.querySelectorAll('.photo-card img').forEach(img => {
+      img.onload = function() {
+        const card = this.closest('.photo-card');
+        if (!card) return;
+        const isPortrait = this.naturalHeight > this.naturalWidth;
+        const isLandscape = this.naturalWidth > this.naturalHeight;
+        card.classList.remove('portrait', 'landscape');
+        if (isPortrait) card.classList.add('portrait');
+        else if (isLandscape) card.classList.add('landscape');
+        else card.classList.add('portrait');
+      };
+      if (img.complete) img.onload.call(img);
+    });
+
+    const heartwall = document.getElementById('heartwall');
+    const containerW = 1100, containerH = 540;
+    function heartPoint(t, scale) {
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+      return {
+        x: containerW/2 + x * scale,
+        y: containerH/2 + y * scale - 20
+      };
+    }
+    photos.forEach((src, i) => {
+      const t = (i / photos.length) * Math.PI * 2 + 0.2;
+      const scale = 14 + Math.sin(t * 3) * 2;
+      const pos = heartPoint(t, scale);
+      const el = document.createElement('div');
+      el.className = 'heartwall-photo';
+      el.style.left = pos.x + 'px';
+      el.style.top = pos.y + 'px';
+      el.style.setProperty('--rot', (Math.random() * 20 - 10) + 'deg');
+      el.style.setProperty('--delay', (0.3 + i * 0.08) + 's');
+      el.innerHTML = `<img src="${src}" alt="photo ${i+1}" loading="lazy">`;
+      heartwall.appendChild(el);
+    });
+
+    // Live timer updates
+    setInterval(updateTimer, 1000);
+
+    // preload
+    const images = Array.from(document.querySelectorAll('img')).map(img => new Promise(r => { if (img.complete) r(); img.onload = r; img.onerror = r; }));
+    Promise.all(images).then(() => { setTimeout(() => document.getElementById('loading').classList.add('hidden'), 800); });
+
+    update();
+  </script>
+</body>
+</html>
