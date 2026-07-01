@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>haoloveli | 豪❤力</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,13 +24,14 @@
     html, body {
       width: 100%; height: 100%;
       overflow: hidden;
+      overscroll-behavior: none;
       font-family: 'Noto Serif SC', 'Playfair Display', serif;
       color: var(--rose-text);
       background: #000;
     }
     .stage {
       position: relative;
-      width: 100vw; height: 100vh;
+      width: 100%; height: 100vh; height: 100dvh;
       overflow: hidden;
       background: linear-gradient(145deg, #FFF8F9 0%, #FFEDF1 30%, #FFDEE6 60%, #F8C9D4 90%, #F0B8C5 100%);
       background-size: 400% 400%;
@@ -169,7 +170,7 @@
       animation: fadeInUp 1.5s ease 1.5s forwards;
     }
     .scroll-hint {
-      position: absolute; bottom: 5vh; left: 50%; transform: translateX(-50%);
+      position: absolute; bottom: 5vh; bottom: calc(5vh + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
       font-family: 'Cormorant Garamond', serif; font-size: 0.85rem;
       letter-spacing: 0.2em; color: var(--rose-text-light); opacity: 0;
       animation: fadeInUp 1.5s ease 2s forwards, float 2s ease infinite 3s;
@@ -350,7 +351,7 @@
     }
     .slide.active .heartwall-title, .slide.active .heartwall-subtitle { opacity: 1; transform: translateY(0); }
     .heartwall-container {
-      position: relative; width: 100%; max-width: 1100px; height: 60vh;
+      position: relative; width: 100%; max-width: 1100px; height: 60vh; height: 60svh;
       opacity: 0; transform: scale(0.9); transition: all 1.5s ease 0.6s;
     }
     .slide.active .heartwall-container { opacity: 1; transform: scale(1); }
@@ -530,7 +531,7 @@
 
     /* Controls */
     .controls {
-      position: fixed; bottom: 3vh; right: 3vw; z-index: 100;
+      position: fixed; bottom: 3vh; bottom: max(3vh, env(safe-area-inset-bottom)); right: 3vw; right: max(3vw, env(safe-area-inset-right)); z-index: 100;
       display: flex; gap: 12px; align-items: center;
       transition: opacity 0.5s ease;
     }
@@ -543,7 +544,7 @@
     }
     .controls button:hover { background: rgba(255,255,255,0.95); transform: scale(1.1); }
     .progress {
-      position: fixed; bottom: 0; left: 0; height: 3px;
+      position: fixed; bottom: 0; bottom: env(safe-area-inset-bottom, 0); left: 0; height: 3px;
       background: linear-gradient(90deg, var(--rose-gold), var(--gold)); z-index: 100;
       transition: width 0.5s ease;
     }
@@ -633,20 +634,45 @@
     }
 
     @media (max-width: 900px) {
-      .slide { padding: 5vh 5vw; }
+      .slide {
+        padding: 5vh 5vw;
+        padding-top: max(5vh, env(safe-area-inset-top));
+        padding-bottom: max(5vh, env(safe-area-inset-bottom));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        align-items: safe center;
+      }
+      /* Reset desktop-only left padding (clears the hidden timeline rail) so content is centered */
+      .slide-content { padding-left: 0 !important; height: auto; min-height: 100%; }
       .timeline-rail { display: none; }
       .split-slide .slide-content { flex-direction: column !important; gap: 4vh; }
       .text-side { max-width: 100%; }
       .image-side { flex: 0 0 auto !important; }
-      .photo-card.portrait { width: 280px; }
-      .photo-card.portrait img { height: 360px; }
-      .photo-card.landscape { width: 90vw; }
-      .photo-card.landscape img { height: 260px; }
+      .photo-card { padding: 10px; }
+      .photo-card::before { inset: 7px; }
+      .photo-card::after { inset: 10px; }
+      .photo-card.portrait { width: min(78vw, 300px); }
+      .photo-card.portrait img { height: auto; aspect-ratio: 3 / 4; }
+      .photo-card.landscape { width: 88vw; }
+      .photo-card.landscape img { height: auto; aspect-ratio: 16 / 10; }
+      .pair-photos .photo-card.landscape { width: 82vw; }
+      .pair-photos .photo-card.landscape img { height: auto; aspect-ratio: 16 / 10; }
       .nav-dots { display: none; }
       .closing-title { white-space: normal; font-size: clamp(2.5rem, 12vw, 4rem); }
-      .timer-cards { flex-direction: column; gap: 3vh; }
-      .timer-card { min-width: 280px; width: 90vw; }
-      .timeline-hero { flex-direction: column; gap: 4vh; }
+      .timer-cards { flex-direction: column; gap: 2.5vh; }
+      .timer-card { min-width: 0; width: 90vw; max-width: 420px; padding: 2.5vh 5vw; }
+      .timer-number { font-size: clamp(2.2rem, 9vw, 3rem); }
+      .timer-card-words { font-size: 0.95rem; line-height: 1.7; }
+      .timeline-hero { flex-direction: column; gap: 3vh; }
+      .timeline-connector { width: 1px; height: 36px; top: 0; }
+      .timeline-connector::after { padding: 4px 0; }
+      .timeline-event-date { font-size: 1.15rem; }
+      .side-body { line-height: 1.9; }
+      .letter-body { line-height: 2.0; }
+      .proposal-frame p { line-height: 1.9; }
+      .heartwall-photo { width: clamp(46px, 13vw, 80px); height: clamp(58px, 16vw, 100px); padding: 4px; }
+      .controls { gap: 8px; }
+      .controls button { width: 48px; height: 48px; }
     }
   
     /* Pair slides */
@@ -677,6 +703,64 @@
     @media (max-width: 900px) {
       .pair-photos { flex-direction: column; gap: 3vh; }
       .pair-connector { transform: rotate(90deg); }
+      /* Repeated here so it overrides the global 480px rule above (equal specificity, later source order wins) */
+      .pair-photos .photo-card.landscape { width: 82vw; }
+      .pair-photos .photo-card.landscape img { height: auto; aspect-ratio: 16 / 10; }
+    }
+
+    /* Touch-specific: only affects touch devices, desktop untouched */
+    @media (hover: none) and (pointer: coarse) {
+      .stage { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+      body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+      /* Touch has no hover to brighten controls, so keep the fullscreen exit button more visible */
+      html.is-fullscreen .controls { opacity: 0.85; }
+      html.is-pseudo-fullscreen .controls { opacity: 0.85; }
+    }
+
+    /* Fullscreen button */
+    .fs-btn { position: relative; }
+    .fs-btn svg { display: block; }
+    .fs-btn .fs-exit { display: none; }
+
+    /* Fullscreen mode: hide chrome, keep fs-btn as the exit, slim progress for position sense */
+    html.is-fullscreen .nav-dots,
+    html.is-fullscreen .timeline-rail,
+    html.is-fullscreen .controls #musicBtn,
+    html.is-fullscreen .controls #playBtn,
+    html.is-fullscreen .controls #prevBtn,
+    html.is-fullscreen .controls #nextBtn { display: none; }
+    html.is-fullscreen .controls { bottom: max(2vh, env(safe-area-inset-bottom)); right: max(2vw, env(safe-area-inset-right)); opacity: 0.55; transition: opacity 0.4s ease; }
+    html.is-fullscreen .controls:hover { opacity: 1; }
+    html.is-fullscreen .fs-btn { background: rgba(139, 74, 94, 0.85); color: #fff; border-color: rgba(139, 74, 94, 0.9); }
+    html.is-fullscreen .fs-btn .fs-enter { display: none; }
+    html.is-fullscreen .fs-btn .fs-exit { display: block; }
+    html.is-fullscreen .progress { height: 2px; opacity: 0.6; }
+
+    /* Pseudo-fullscreen (iOS Safari fallback): only hides in-page UI, cannot hide browser chrome */
+    html.is-pseudo-fullscreen .nav-dots,
+    html.is-pseudo-fullscreen .timeline-rail,
+    html.is-pseudo-fullscreen .controls #musicBtn,
+    html.is-pseudo-fullscreen .controls #playBtn,
+    html.is-pseudo-fullscreen .controls #prevBtn,
+    html.is-pseudo-fullscreen .controls #nextBtn { display: none; }
+    html.is-pseudo-fullscreen .fs-btn { background: rgba(139, 74, 94, 0.85); color: #fff; border-color: rgba(139, 74, 94, 0.9); }
+    html.is-pseudo-fullscreen .fs-btn .fs-enter { display: none; }
+    html.is-pseudo-fullscreen .fs-btn .fs-exit { display: block; }
+
+    /* First-time fullscreen hint toast */
+    .fs-hint {
+      position: fixed; left: 50%; bottom: max(10vh, env(safe-area-inset-bottom));
+      transform: translateX(-50%); z-index: 200;
+      padding: 0.7rem 1.4rem; border-radius: 999px;
+      background: rgba(139, 74, 94, 0.82); color: #fff;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      font-family: 'Noto Serif SC', serif; font-size: 0.9rem; letter-spacing: 0.08em;
+      opacity: 0; pointer-events: none; white-space: nowrap;
+      transition: opacity 0.4s ease;
+    }
+    .fs-hint.show { opacity: 1; }
+    @media (max-width: 900px) {
+      .fs-hint { font-size: 0.82rem; padding: 0.6rem 1.1rem; max-width: 90vw; white-space: normal; text-align: center; }
     }
 
   </style>
@@ -699,11 +783,16 @@
     <div class="progress" id="progress"></div>
     <div class="nav-dots" id="navDots"></div>
     <div class="controls">
-      <button id="musicBtn" title="音乐">♪</button>
-      <button id="playBtn" title="自动播放">▶</button>
-      <button id="prevBtn" title="上一页">‹</button>
-      <button id="nextBtn" title="下一页">›</button>
+      <button id="musicBtn" title="音乐" aria-label="音乐">♪</button>
+      <button id="playBtn" title="自动播放" aria-label="自动播放">▶</button>
+      <button id="prevBtn" title="上一页" aria-label="上一页">‹</button>
+      <button id="nextBtn" title="下一页" aria-label="下一页">›</button>
+      <button id="fsBtn" class="fs-btn" title="全屏" aria-label="全屏">
+        <svg class="fs-enter" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
+        <svg class="fs-exit" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M9 4v2H5v4H3V4h6zm6 0h6v6h-2V6h-4V4zM3 14h2v4h4v2H3v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
+      </button>
     </div>
+    <div class="fs-hint" id="fsHint">点击屏幕翻到下一页 · 再次点击 ⛶ 或按 Esc 退出全屏</div>
 
     <section class="slide cover-slide active" data-layout="cover">
       <div class="slide-content">
@@ -1193,6 +1282,77 @@
     playBtn.onclick = (e) => { e.stopPropagation(); startExperience(); setAutoPlay(!autoPlay); };
     musicBtn.onclick = (e) => { e.stopPropagation(); startExperience(); if (music.paused) { music.play(); musicBtn.textContent = '♫'; } else { music.pause(); musicBtn.textContent = '♪'; } };
 
+    // ---- Fullscreen (Fullscreen API + iOS Safari pseudo-fullscreen fallback) ----
+    const fsBtn = document.getElementById('fsBtn');
+    const fsHint = document.getElementById('fsHint');
+    const fsTarget = stage;            // stage is the fullscreen element (audio + controls live inside it)
+    let pseudoFs = false;              // iOS Safari cannot hide browser chrome, only in-page UI
+    let fsHintShown = false;
+    try { if (localStorage.getItem('haoloveli_fsHintShown') === '1') fsHintShown = true; } catch (_) {}
+
+    function getFsElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+    function enterFullscreen() {
+      if (fsTarget.requestFullscreen) {
+        // Standard API (returns a Promise on modern browsers)
+        const p = fsTarget.requestFullscreen();
+        if (p && p.catch) p.catch(() => enterPseudoFullscreen());
+      } else if (fsTarget.webkitRequestFullscreen) {
+        // Old Safari: synchronous throw is rare; async rejection fires webkitfullscreenerror
+        const onError = () => { enterPseudoFullscreen(); document.removeEventListener('webkitfullscreenerror', onError); };
+        document.addEventListener('webkitfullscreenerror', onError);
+        try { fsTarget.webkitRequestFullscreen(); } catch (_) { onError(); }
+      } else {
+        enterPseudoFullscreen();
+      }
+    }
+    function exitFullscreen() {
+      if (getFsElement()) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+      if (pseudoFs) pseudoFs = false;
+      syncFsUI();
+    }
+    function enterPseudoFullscreen() {
+      pseudoFs = true;
+      syncFsUI();
+      showFsHint();
+    }
+    function syncFsUI() {
+      const realFs = !!getFsElement();
+      document.documentElement.classList.toggle('is-fullscreen', realFs);
+      document.documentElement.classList.toggle('is-pseudo-fullscreen', pseudoFs);
+      if (fsBtn) {
+        fsBtn.setAttribute('aria-pressed', String(realFs || pseudoFs));
+        fsBtn.title = (realFs || pseudoFs) ? '退出全屏' : '全屏';
+      }
+    }
+    function showFsHint() {
+      if (fsHintShown || !fsHint) return;
+      fsHintShown = true;
+      try { localStorage.setItem('haoloveli_fsHintShown', '1'); } catch (_) {}
+      // iOS pseudo-fullscreen has no keyboard, so don't mention Esc there
+      fsHint.textContent = pseudoFs
+        ? '点击屏幕翻到下一页 · 再次点击 ⛶ 退出全屏'
+        : '点击屏幕翻到下一页 · 再次点击 ⛶ 或按 Esc 退出全屏';
+      fsHint.classList.add('show');
+      setTimeout(() => { fsHint.classList.remove('show'); }, 3200);
+    }
+    function toggleFullscreen() {
+      startExperience();               // reuse user gesture to unlock audio + dismiss overlay
+      if (getFsElement() || pseudoFs) exitFullscreen();
+      else enterFullscreen();
+    }
+    function onFsChange() {
+      syncFsUI();
+      if (getFsElement()) showFsHint();   // just entered real fullscreen
+    }
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+    if (fsBtn) fsBtn.onclick = (e) => { e.stopPropagation(); toggleFullscreen(); };
+
     startOverlay.addEventListener('click', startExperience);
 
     document.getElementById('yesBtn').onclick = (e) => {
@@ -1208,19 +1368,44 @@
         const dist = 120 + Math.random() * 240;
         el.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
         el.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-        document.body.appendChild(el); setTimeout(() => el.remove(), 1800);
+        // In real fullscreen, <body>'s children are hidden behind the fullscreen element (top layer),
+        // so attach sparkles to the stage to keep them visible during the proposal climax.
+        const sparkleParent = (getFsElement() || pseudoFs) ? fsTarget : document.body;
+        sparkleParent.appendChild(el); setTimeout(() => el.remove(), 1800);
       }
     };
 
-    document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { startExperience(); next(); } if (e.key === 'ArrowLeft') { startExperience(); prev(); } });
-    document.getElementById('stage').addEventListener('click', (e) => {
+    // Keyboard navigation (Arrow/Space) + Esc to exit pseudo-fullscreen (iOS)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { startExperience(); next(); }
+      if (e.key === 'ArrowLeft') { startExperience(); prev(); }
+      if (e.key === 'Escape' && document.documentElement.classList.contains('is-pseudo-fullscreen')) { exitFullscreen(); }
+    });
+
+    // Tap / click on stage → next page (guarded against swipe-induced synthetic click)
+    let touchStartX = 0, touchStartY = 0, suppressClick = false;
+    stage.addEventListener('click', (e) => {
+      if (suppressClick) return;
       if (e.target.closest('button') || e.target.closest('.heartwall-container')) return;
       startExperience();
       next();
     });
-    let touchStartX = 0;
-    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
-    document.addEventListener('touchend', (e) => { const diff = e.changedTouches[0].clientX - touchStartX; if (Math.abs(diff) > 50) { startExperience(); diff < 0 ? next() : prev(); } });
+    stage.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    stage.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      // Only horizontal-dominant swipes flip pages; vertical scroll is left alone
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        startExperience();
+        dx < 0 ? next() : prev();
+        // Suppress the synthetic click that follows a swipe to prevent double-paging
+        suppressClick = true;
+        setTimeout(() => { suppressClick = false; }, 350);
+      }
+    }, { passive: true });
 
     const hearts = document.getElementById('hearts');
     const heartChars = ['❤', '♥', '💕'];
