@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>爱的小窝 · 师豪 ❤ 佳力</title>
+<meta name="description" content="爱的小窝 · 长期主义的人生合伙仪表盘：相恋天数、本月目标、今日金句、人生里程碑与情感经营。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+</head>
+<body data-page="dashboard">
+<main>
+
+<!-- ========== HERO · 仪表盘 ========== -->
+<section class="hero" id="hero">
+  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="hero__inner">
+    <p class="hero__kicker kicker reveal">A Life Dashboard · The Infinite Game</p>
+    <h1 class="hero__title reveal" data-delay="1">我们相爱的第 <span id="loveDays">—</span> 天</h1>
+    <p class="hero__names reveal" data-delay="1">师豪 <span class="heart">❤</span> 佳力</p>
+
+    <div class="counter reveal" data-delay="2">
+      <div class="counter__num"><span id="counterDays">0</span><small>天</small></div>
+      <div class="counter__label" id="counterLive">已携手走过 <span id="liveHMS">0 时 0 分 0 秒</span></div>
+      <div class="counter__live"><span class="dot"></span> 实时更新 · 自 2025.05.10 相恋</div>
+    </div>
+
+    <div class="hero__actions reveal" data-delay="3">
+      <a href="#stats" class="btn btn--primary">看看我们在哪里</a>
+      <a href="#modules" class="btn btn--ghost">进入爱的小窝</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 今日金句 ========== -->
+<section class="section" id="quote">
+  <div class="container">
+    <div class="reveal">
+      <p class="kicker center" style="margin-bottom:18px">Today · 今日金句</p>
+      <blockquote class="quote" id="dailyQuote">
+        <p>加载中…</p>
+        <cite id="dailyQuoteCite"></cite>
+      </blockquote>
+      <p class="center faint" style="margin-top:22px;font-size:.82rem">每日轮换一句关于爱与婚姻的心理学名言 · 同一天稳定显示</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 当前阶段与统计 ========== -->
+<section class="section section--tint" id="stats">
+  <div class="section__head reveal">
+    <span class="section__num">01</span>
+    <h2 class="section__title">当前阶段 · 我们走到哪里</h2>
+    <p class="section__desc">婚礼是一天的项目，婚姻是一场无限游戏。</p>
+  </div>
+  <div class="container">
+
+    <div class="card card--rose reveal" style="margin-bottom:26px">
+      <div class="flex aic gap-2 wrap jcb">
+        <div>
+          <p class="kicker" style="margin-bottom:6px">当前阶段</p>
+          <h3 id="phaseName" style="font-size:1.5rem;margin-bottom:4px">—</h3>
+          <p id="phaseDesc" class="muted">—</p>
+        </div>
+        <div style="min-width:220px;flex:1;max-width:360px">
+          <div class="flex aic jcb mb-1">
+            <span class="faint" style="font-size:.8rem">阶段进度</span>
+            <span id="phasePct" class="faint" style="font-size:.8rem">—%</span>
+          </div>
+          <div class="progress progress--rose"><span id="phaseBar" style="width:0%"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats reveal" data-delay="1" id="statsRow">
+      <!-- 由 JS 渲染 -->
+    </div>
+
+    <p class="center faint reveal" data-delay="2" style="margin-top:24px;font-size:.84rem">
+      婚姻进度按 80 年（金婚之上）丈量——把短期焦虑，换成长期视角。
+    </p>
+  </div>
+</section>
+
+<!-- ========== 本月目标 ========== -->
+<section class="section" id="goals">
+  <div class="section__head reveal">
+    <span class="section__num">02</span>
+    <h2 class="section__title">本月共同目标</h2>
+    <p class="section__desc">不必宏大，能一起完成的小事，就是最好的存款。</p>
+  </div>
+  <div class="container">
+    <div class="card card--plain reveal" style="max-width:680px;margin:0 auto">
+      <div class="flex aic gap-2 mb-2 wrap">
+        <span class="tag tag--sage" id="goalMonth">本月</span>
+        <h3 id="goalTitle" style="font-size:1.2rem">—</h3>
+      </div>
+      <div id="goalList"></div>
+      <p class="faint" style="font-size:.8rem;margin-top:14px">勾选会自动保存 · 完成一件，就奖励自己一次拥抱。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 每周微习惯 ========== -->
+<section class="section section--tint" id="habits">
+  <div class="section__head reveal">
+    <span class="section__num">03</span>
+    <h2 class="section__title">每周微习惯 · 复利</h2>
+    <p class="section__desc">戈特曼 · 每周 5 小时。小而稳定的连接，胜过偶尔的大动作。</p>
+  </div>
+  <div class="container">
+    <div class="grid grid--3 reveal" id="habitsGrid">
+      <!-- 由 JS 渲染 -->
+    </div>
+  </div>
+</section>
+
+<!-- ========== 今日深度问题 ========== -->
+<section class="section" id="today">
+  <div class="container">
+    <div class="card card--sage reveal" style="max-width:720px;margin:0 auto">
+      <p class="kicker center" style="margin-bottom:10px">Today's Question · 今日一问</p>
+      <blockquote class="quote" id="todayQuestion">
+        <p>加载中…</p>
+      </blockquote>
+      <p class="center faint" style="margin-top:14px;font-size:.82rem" id="todaySource">—</p>
+      <div class="center" style="margin-top:18px">
+        <a id="todayLink" href="love-map.html" class="btn btn--small btn--primary">去爱情地图，聊聊这一问 →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 六大模块入口 ========== -->
+<section class="section section--tint" id="modules">
+  <div class="section__head reveal">
+    <span class="section__num">04</span>
+    <h2 class="section__title">爱的小窝 · 六个房间</h2>
+    <p class="section__desc">点开任何一间，都在等我们一起走进去。</p>
+  </div>
+  <div class="container">
+    <div class="grid grid--3 reveal" id="modulesGrid">
+      <!-- 由 JS 渲染 -->
+    </div>
+  </div>
+</section>
+
+<!-- ========== 接下来去哪 ========== -->
+<section class="section" id="next">
+  <div class="section__head reveal">
+    <span class="section__num">05</span>
+    <h2 class="section__title">接下来 · 从哪里开始</h2>
+  </div>
+  <div class="container">
+    <div class="crosslinks reveal">
+      <a class="crosslink" href="love-map.html">
+        <span class="crosslink__icon">🗺</span>
+        <span class="crosslink__title">先画一张爱情地图</span>
+        <span class="crosslink__desc">了解彼此此刻的压力、梦想与雷区——这是所有幸福的地基。</span>
+        <span class="crosslink__arrow">→ love-map</span>
+      </a>
+      <a class="crosslink" href="bank.html">
+        <span class="crosslink__icon">🏦</span>
+        <span class="crosslink__title">存一笔今天的情感</span>
+        <span class="crosslink__desc">记下今天 ta 为你做的一件小事。余额，是日积月累的。</span>
+        <span class="crosslink__arrow">→ bank</span>
+      </a>
+      <a class="crosslink" href="milestones.html">
+        <span class="crosslink__icon">🪴</span>
+        <span class="crosslink__title">看看我们走到哪里</span>
+        <span class="crosslink__desc">从 2024 相识到 2027 婚礼，再到婚后第一年——婚礼只是其中一站。</span>
+        <span class="crosslink__arrow">→ milestones</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="shared/nav.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Fallback data (page works even if fetch fails on file://) ---------- */
+  const FALLBACK_SITE = {
+    brand: "爱的小窝", subtitle: "豪 ❤ 力 · Our Life OS",
+    couple: { him: "师豪", her: "佳力", symbol: "❤" },
+    dates: { met: "2024-12-30", love: "2025-05-10", engaged: "2026-02-14", wedding_plan: "2027-07" },
+    milestone_span_years: 80, tagline: "婚礼是一天的项目，婚姻是一场无限游戏。"
+  };
+  const FALLBACK_DASH = {
+    phase: { label: "当前阶段", name: "蓄力 · 婚礼筹备期", desc: "从求婚成功走向婚礼，同时为婚后生活打基础。", progress_pct: 42 },
+    monthly_goals: [{ month: "2026-07", title: "本月共同目标", goals: [
+      { text: "一起看一部想看很久的电影", done: false },
+      { text: "完成一次 30 分钟的深度沟通（用爱情地图本周问题）", done: false }
+    ]}],
+    weekly_micro_habits: [
+      { text: "每天早晨分开前，了解对方今天一件重要的事", source: "Gottman · Magic 5 Hours" },
+      { text: "每天睡前一句具体的感谢", source: "Covey · 小事存款" },
+      { text: "每周一次约会或无干扰散步", source: "Gottman · 约会时间" }
+    ],
+    stats: [
+      { label: "相恋天数", type: "love_days" },
+      { label: "距婚礼", type: "wedding_countdown" },
+      { label: "情感账户存款", type: "bank_balance" },
+      { label: "已记录里程碑", type: "milestone_count" }
+    ],
+    today_question: { text: "你最近最大的压力源是什么？我能怎么帮你分担一点？", source: "Gottman · Love Map 本周深度问题", link: "love-map.html" }
+  };
+  const FALLBACK_QUOTES = { quotes: [
+    { text: "爱不在于彼此凝视，而在于共同朝同一个方向眺望。", author: "安东尼·德·圣埃克苏佩里", source: "《风沙星辰》" },
+    { text: "你应当这样去爱：让对方感到自由。", author: "一行禅师", source: "《真正的爱》" },
+    { text: "爱是一个动词。爱——那种感觉——是爱这个动作结出的果实。", author: "史蒂芬·柯维", source: "《高效能人士的七个习惯》" },
+    { text: "爱的拯救在于爱之中，并通过爱而实现。", author: "维克多·弗兰克尔", source: "《活出生命的意义》" },
+    { text: "爱一个人不只是一份强烈的情感——它是一个决定、一个判断、一个承诺。", author: "埃里希·弗洛姆", source: "《爱的艺术》" },
+    { text: "他人之所为可能是我感受的诱因，但永远不是原因。", author: "马歇尔·卢森堡", source: "《非暴力沟通》" },
+    { text: "幸福婚姻建立在深厚的友谊之上。", author: "约翰·戈特曼", source: "《幸福的婚姻》" }
+  ]};
+
+  /* 模块卡定义（对应 nav.js 的 NAV） */
+  const MODULES = [
+    { href: "love-map.html",   icon: "🗺", title: "爱情地图",   desc: "深度了解彼此的内心世界——喜好、雷区、梦想、本周一问。" },
+    { href: "bank.html",       icon: "🏦", title: "情感账户",   desc: "记录日常的存款与取款，储蓄信任的余额。" },
+    { href: "milestones.html", icon: "🪴", title: "人生里程碑", desc: "按阶段规划我们的人生，婚礼只是其中一个节点。" },
+    { href: "family.html",     icon: "🏠", title: "家庭关系网", desc: "双方父母档案、节日走动、男方主导的连接行动。" },
+    { href: "peace.html",      icon: "🕊", title: "停战协议",   desc: "安全词、底线、修复仪式——为冲突装好安全气囊。" }
+  ];
+
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  /* ---------- 实时计数器 ---------- */
+  function tickCounter(loveDateStr) {
+    const start = new Date(loveDateStr + "T00:00:00");
+    const now = new Date();
+    const ms = Math.max(0, now - start);
+    const days = Math.floor(ms / 86400000);
+    const hours = Math.floor((ms % 86400000) / 3600000);
+    const mins = Math.floor((ms % 3600000) / 60000);
+    const secs = Math.floor((ms % 60000) / 1000);
+    const dEl = document.getElementById("counterDays");
+    const lEl = document.getElementById("loveDays");
+    const hms = document.getElementById("liveHMS");
+    if (dEl) dEl.textContent = days.toLocaleString();
+    if (lEl) lEl.textContent = days.toLocaleString();
+    if (hms) hms.textContent = `${hours} 时 ${mins} 分 ${secs} 秒`;
+  }
+
+  /* ---------- 今日金句（按日期稳定轮换） ---------- */
+  function renderQuote(quotes) {
+    const list = quotes.quotes || [];
+    if (!list.length) return;
+    const idx = LoveNest.dayIndex() % list.length;
+    const q = list[idx];
+    const body = document.getElementById("dailyQuote");
+    const cite = document.getElementById("dailyQuoteCite");
+    if (body) body.innerHTML = "<p>" + esc(q.text) + "</p>";
+    if (cite) cite.textContent = (q.author || "") + (q.source ? " · " + q.source : "");
+  }
+
+  /* ---------- 阶段卡 + 阶段进度 ---------- */
+  function renderPhase(phase, dates) {
+    document.getElementById("phaseName").textContent = phase.name || "—";
+    document.getElementById("phaseDesc").textContent = phase.desc || "";
+    const pct = Math.max(0, Math.min(100, phase.progress_pct || 0));
+    document.getElementById("phasePct").textContent = pct + "%";
+    document.getElementById("phaseBar").style.width = pct + "%";
+  }
+
+  /* ---------- 统计行 ---------- */
+  function renderStats(statsDef, dates, bankBalance, milestoneCount) {
+    const row = document.getElementById("statsRow");
+    if (!row) return;
+    const loveDays = LoveNest.daysSince(dates.love);
+    const weddingDate = (dates.wedding_plan || "2027-07") + "-01";
+    const wStart = new Date(weddingDate + "T00:00:00");
+    const daysToWedding = Math.ceil((wStart - new Date()) / 86400000);
+    const span = dates.milestone_span_years || 80;
+    const loveStart = new Date(dates.love + "T00:00:00");
+    const totalMs = span * 365.25 * 86400000;
+    const lifePct = Math.max(0, Math.min(100, ((new Date() - loveStart) / totalMs) * 100));
+
+    const cells = (statsDef || []).map(s => {
+      let num = "—", label = s.label;
+      if (s.type === "love_days") num = loveDays.toLocaleString();
+      else if (s.type === "wedding_countdown") num = (daysToWedding > 0 ? daysToWedding : 0).toLocaleString();
+      else if (s.type === "bank_balance") num = (bankBalance >= 0 ? "+" : "") + bankBalance;
+      else if (s.type === "milestone_count") num = milestoneCount;
+      return `<div class="stat"><div class="stat__num">${esc(num)}</div><div class="stat__label">${esc(label)}</div></div>`;
+    });
+    row.innerHTML = cells.join("");
+  }
+
+  /* ---------- 本月目标（localStorage 勾选） ---------- */
+  function renderGoals(monthly) {
+    if (!monthly || !monthly.length) return;
+    const m = monthly[0];
+    document.getElementById("goalMonth").textContent = m.month || "本月";
+    document.getElementById("goalTitle").textContent = m.title || "本月共同目标";
+    const list = document.getElementById("goalList");
+    const storeKey = "dash-goals-" + (m.month || "current");
+    const saved = LoveNest.store.get(storeKey, {});
+    list.innerHTML = (m.goals || []).map((g, i) => {
+      const checked = saved[i] ? "checked" : "";
+      return `<div class="check-item"><input type="checkbox" id="goal-${i}" ${checked}><label for="goal-${i}">${esc(g.text)}</label></div>`;
+    }).join("");
+    list.querySelectorAll('input[type="checkbox"]').forEach((cb, i) => {
+      cb.addEventListener("change", () => {
+        const cur = LoveNest.store.get(storeKey, {});
+        cur[i] = cb.checked;
+        LoveNest.store.set(storeKey, cur);
+      });
+    });
+  }
+
+  /* ---------- 每周微习惯 ---------- */
+  function renderHabits(habits) {
+    const grid = document.getElementById("habitsGrid");
+    if (!grid) return;
+    grid.innerHTML = (habits || []).map(h => `
+      <article class="card card--plain">
+        <div class="flex aic gap-1 mb-1"><span class="tag tag--sage">微习惯</span></div>
+        <h3 style="font-size:1.05rem">${esc(h.text)}</h3>
+        <p class="faint" style="font-size:.8rem;margin-top:8px">${esc(h.source || "")}</p>
+      </article>`).join("");
+  }
+
+  /* ---------- 今日一问 ---------- */
+  function renderTodayQuestion(q) {
+    if (!q) return;
+    const body = document.getElementById("todayQuestion");
+    if (body) body.innerHTML = "<p>" + esc(q.text) + "</p>";
+    const src = document.getElementById("todaySource");
+    if (src) src.textContent = "— " + (q.source || "");
+    const link = document.getElementById("todayLink");
+    if (link) link.href = q.link || "love-map.html";
+  }
+
+  /* ---------- 模块入口卡 ---------- */
+  function renderModules() {
+    const grid = document.getElementById("modulesGrid");
+    if (!grid) return;
+    grid.innerHTML = MODULES.map(m => `
+      <a class="card" href="${m.href}" style="text-decoration:none;display:block">
+        <div style="font-size:1.8rem;margin-bottom:8px">${m.icon}</div>
+        <h3>${esc(m.title)}</h3>
+        <p>${esc(m.desc)}</p>
+        <p class="faint" style="font-size:.78rem;margin-top:14px;font-family:var(--ff-accent);font-style:italic">进入 →</p>
+      </a>`).join("");
+  }
+
+  /* ---------- 异步加载所有数据 ---------- */
+  async function loadAll() {
+    const [site, dash, quotes] = await Promise.all([
+      LoveNest.getJSON("data/site.json", FALLBACK_SITE),
+      LoveNest.getJSON("data/dashboard.json", FALLBACK_DASH),
+      LoveNest.getJSON("data/quotes.json", FALLBACK_QUOTES)
+    ]);
+
+    const dates = site.dates || FALLBACK_SITE.dates;
+
+    // 实时计数器（每秒）
+    tickCounter(dates.love);
+    setInterval(() => tickCounter(dates.love), 1000);
+
+    renderQuote(quotes);
+    renderPhase(dash.phase || FALLBACK_DASH.phase, dates);
+
+    // 加载 bank + milestones 用于统计行（并行，失败用 0）
+    let bankBalance = 0;
+    let milestoneCount = 0;
+    try {
+      const bank = await LoveNest.getJSON("data/bank.json", null);
+      if (bank && bank.seed_records) {
+        const userRecords = LoveNest.store.get("bank-records", []);
+        const all = bank.seed_records.concat(userRecords);
+        bankBalance = all.reduce((sum, r) => sum + (r.type === "deposit" ? (r.weight || 1) : -(r.weight || 1)), 0);
+      }
+    } catch (e) {}
+    try {
+      const ms = await LoveNest.getJSON("data/milestones.json", null);
+      if (ms && ms.phases) milestoneCount = ms.phases.reduce((n, p) => n + (p.items ? p.items.length : 0), 0);
+    } catch (e) {}
+
+    renderStats(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneCount);
+    renderGoals(dash.monthly_goals || FALLBACK_DASH.monthly_goals);
+    renderHabits(dash.weekly_micro_habits || FALLBACK_DASH.weekly_micro_habits);
+    renderTodayQuestion(dash.today_question || FALLBACK_DASH.today_question);
+    renderModules();
+
+    // 动态插入的 .reveal 重新触发动画
+    if (LoveNest.initReveal) LoveNest.initReveal();
+  }
+
+  document.addEventListener("DOMContentLoaded", loadAll);
+})();
+</script>
+</body>
+</html>

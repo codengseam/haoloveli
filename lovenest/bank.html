@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>情感账户 · 师豪 ❤ 佳力</title>
+<meta name="description" content="情感账户：基于柯维理论，记录日常的存款与取款，储蓄信任的余额。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+</head>
+<body data-page="bank">
+<main>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__inner">
+      <p class="kicker hero__kicker">Emotional Bank Account</p>
+      <h1 class="hero__title">情感账户</h1>
+      <p class="hero__sub">情感账户 (Emotional Bank Account) 来自史蒂芬·柯维：每一次被看见、被兑现、被善待，都是一次存款；每一次失信、忽视、伤害，都是一次取款。取款远大于存款——所以日常的小确幸，才是关系的真正底气。</p>
+      <div class="hero__actions">
+        <a href="#add" class="btn btn--primary">记一笔存款</a>
+        <a href="#deposits" class="btn btn--ghost">六种存款</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 当前余额 -->
+  <section id="balance" class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">01</span>
+        <h2 class="section__title">当前余额</h2>
+        <p class="section__desc">每一笔被看见、被兑现、被善待，都在累积信任的余额。</p>
+      </div>
+      <div id="balance-region"></div>
+    </div>
+  </section>
+
+  <!-- 02 柯维 · 六种存款 -->
+  <section id="deposits" class="section section--tint">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">02</span>
+        <h2 class="section__title">柯维 · 六种存款</h2>
+        <p class="section__desc">信任不是一次性的大动作，而是日复一日的小储蓄。</p>
+      </div>
+      <div class="grid grid--3" id="deposits-grid"></div>
+      <div class="mt-4 reveal">
+        <div class="callout">取款远大于存款——平时存得够多，吵架才不至于透支。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 记一笔 -->
+  <section id="add" class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">03</span>
+        <h2 class="section__title">记一笔 · 存款或取款</h2>
+        <p class="section__desc">今天发生了什么？哪怕只是一杯水、一句晚安，都值得被记下。</p>
+      </div>
+      <div class="card reveal">
+        <div class="quick-add">
+          <select id="bk-type" aria-label="类型"></select>
+          <select id="bk-who" aria-label="谁"></select>
+          <input type="date" id="bk-date" aria-label="日期" />
+          <select id="bk-weight" aria-label="金额"></select>
+          <input type="text" id="bk-event" placeholder="今天发生了什么…" aria-label="事件" />
+          <button class="btn btn--primary" id="bk-save" type="button">存入</button>
+        </div>
+        <div class="mt-3 flex gap-2 wrap aic">
+          <button class="btn btn--ghost btn--small" id="bk-clear" type="button">清空我的记录</button>
+          <span class="faint" style="font-size:.8rem">仅清空你添加的记录，种子记录不受影响</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 感恩与取款 · 时间轴 -->
+  <section id="log" class="section section--tint">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">04</span>
+        <h2 class="section__title">感恩与取款 · 时间轴</h2>
+        <p class="section__desc">最近的存款与取款，按时间倒序排列——最近的在上。</p>
+      </div>
+      <div class="bank-list" id="bk-list"></div>
+      <div class="mt-4 reveal">
+        <div class="callout callout--rose">争吵是取款——但记录它，是为了不再重复，而非记账翻旧账。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 灵感与知识库 -->
+  <section id="knowledge" class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">05</span>
+        <h2 class="section__title">灵感与知识库</h2>
+        <p class="section__desc">关于情感账户与婚姻经营的延伸阅读。</p>
+      </div>
+      <div class="grid grid--3" data-content-for="bank"></div>
+    </div>
+  </section>
+
+  <!-- 06 继续探索 (Crosslinks) -->
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">06</span>
+        <h2 class="section__title">继续探索</h2>
+        <p class="section__desc">把存款，存到对的地方。</p>
+      </div>
+      <div class="crosslinks reveal">
+        <a class="crosslink" href="love-map.html">
+          <span class="crosslink__icon">🗺️</span>
+          <span class="crosslink__title">基于了解的存款</span>
+          <span class="crosslink__desc">知道 ta 在意什么，才能存到点上</span>
+          <span class="crosslink__arrow">前往爱情地图 →</span>
+        </a>
+        <a class="crosslink" href="milestones.html">
+          <span class="crosslink__icon">⛰️</span>
+          <span class="crosslink__title">为里程碑储蓄</span>
+          <span class="crosslink__desc">每个重要时刻，都该有一笔存款</span>
+          <span class="crosslink__arrow">前往里程碑 →</span>
+        </a>
+        <a class="crosslink" href="index.html">
+          <span class="crosslink__icon">🏡</span>
+          <span class="crosslink__title">回到仪表盘</span>
+          <span class="crosslink__desc">看看爱的小窝整体状态</span>
+          <span class="crosslink__arrow">回到首页 →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="shared/nav.js"></script>
+<script src="shared/data.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    /* ---------- 完整内联 fallback (与 data/bank.json 同步) ---------- */
+    const FALLBACK = {
+      intro: "情感账户 (Emotional Bank Account) 来自史蒂芬·柯维：每一次被看见、被兑现、被善待，都是一次存款；每一次失信、忽视、伤害，都是一次取款。取款远大于存款——所以日常的小确幸，才是关系的真正底气。",
+      deposits: [
+        { name: "理解对方 (Understand)", desc: "先去了解 ta 真正在意的，而不是把你的以为套上去。" },
+        { name: "关注小事 (Little Things)", desc: "小事即大事——一杯水、一句晚安、一个拥抱。" },
+        { name: "信守承诺 (Commitments)", desc: "答应了就做到；做不到就提前说，而不是事后补。" },
+        { name: "澄清期望 (Clarify Expectations)", desc: "把“你应该懂”变成“我希望”——期待不明是大部分冲突的根源。" },
+        { name: "正直忠诚 (Integrity)", desc: "言行一致；不在背后说对方的不是，包括对家人。" },
+        { name: "真诚道歉 (Apologize)", desc: "不附带“如果你觉得”的道歉，才是真正的存款。" }
+      ],
+      ratio_note: "戈特曼的数据：幸福伴侣的正向与负向互动比约为 5:1。这不是说不能吵架，而是平时存得够多，吵架才不至于透支。",
+      seed_records: [
+        { date: "2025-05-10", type: "deposit", who: "both", event: "在缙云山第一次见面后，正式成为恋人。", weight: 5 },
+        { date: "2025-07-15", type: "deposit", who: "her", event: "高三期末改卷最累的那周，给我留了手写小纸条。", weight: 3 },
+        { date: "2025-08-09", type: "deposit", who: "him", event: "记住她随口提过想吃的乐山小吃，周末带她去了。", weight: 3 },
+        { date: "2025-10-04", type: "deposit", who: "both", event: "稻城亚丁，第一次一起看到雪山日出，相拥无言。", weight: 5 },
+        { date: "2026-02-14", type: "deposit", who: "him", event: "求婚成功。把这一年走过的路，做成了一个网页送给她。", weight: 5 },
+        { date: "2026-05-20", type: "deposit", who: "her", event: "主动提出一起列婚礼筹备清单，让我感受到她在和我一起推进。", weight: 3 },
+        { date: "2026-06-12", type: "withdraw", who: "him", event: "她压力大时我急着给方案，被觉得“你不懂我”。（取款——但也提醒我：先共情后解决）", weight: 2 },
+        { date: "2026-06-20", type: "deposit", who: "him", event: "为这次冲突写了道歉，并约定以后先问“你需要建议，还是陪伴？”", weight: 3 }
+      ],
+      types: {
+        deposit: { label: "存款", icon: "＋", weight_label: "金额" },
+        withdraw: { label: "取款", icon: "－", weight_label: "金额" }
+      },
+      weight_options: [1, 2, 3, 5],
+      who_options: [
+        { value: "him", label: "我 · 师豪" },
+        { value: "her", label: "她 · 佳力" },
+        { value: "both", label: "我们共同" }
+      ]
+    };
+
+    const data = await LoveNest.getJSON('data/bank.json', FALLBACK);
+    let userRecords = LoveNest.store.get('bank-records', []);
+
+    /* ---------- 工具 ---------- */
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+    function whoLabel(who) {
+      const o = (data.who_options || []).find(o => o.value === who);
+      return o ? o.label : (who || '');
+    }
+    function mergeRecords() {
+      const seeds = Array.isArray(data.seed_records) ? data.seed_records : [];
+      return seeds.concat(userRecords).sort((a, b) =>
+        (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)
+      );
+    }
+    function revealIn(scope) {
+      scope.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    }
+
+    /* ---------- 渲染：余额 ---------- */
+    function renderBalance() {
+      const all = mergeRecords();
+      const deposits = all.filter(r => r.type === 'deposit');
+      const withdraws = all.filter(r => r.type === 'withdraw');
+      const depSum = deposits.reduce((s, r) => s + (Number(r.weight) || 0), 0);
+      const wdSum = withdraws.reduce((s, r) => s + (Number(r.weight) || 0), 0);
+      const balance = depSum - wdSum;
+      const total = depSum + wdSum;
+      const ratio = total > 0 ? Math.min(100, Math.round(depSum / total * 100)) : 0;
+      const balNum = balance >= 0 ? '+' + balance : String(balance);
+      const negClass = balance < 0 ? ' neg' : '';
+      const now = new Date();
+      const ym = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+      const monthCount = all.filter(r => r.date && String(r.date).startsWith(ym)).length;
+
+      const html =
+        '<div class="balance reveal">' +
+          '<div>' +
+            '<div class="balance__num' + negClass + '">' + balNum + '</div>' +
+            '<div class="balance__label">信任余额 · 存款金额 - 取款金额</div>' +
+          '</div>' +
+          '<div class="balance__ratio">' +
+            '<b>5:1</b>' +
+            '<div class="balance__label">幸福伴侣正负比 (Gottman)</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="progress reveal mt-3"><span style="width:' + ratio + '%"></span></div>' +
+        '<p class="faint mt-1" style="font-size:.8rem">存款占比 ' + ratio + '% · 存 ' + depSum + ' / 取 ' + wdSum + '</p>' +
+        '<div class="stats mt-3">' +
+          '<div class="stat reveal"><div class="stat__num">' + deposits.length + '</div><div class="stat__label">总存款笔数</div></div>' +
+          '<div class="stat reveal"><div class="stat__num">' + withdraws.length + '</div><div class="stat__label">总取款笔数</div></div>' +
+          '<div class="stat reveal"><div class="stat__num">' + monthCount + '</div><div class="stat__label">本月新增</div></div>' +
+        '</div>' +
+        (data.ratio_note ? '<div class="callout reveal mt-3">' + escapeHtml(data.ratio_note) + '</div>' : '');
+
+      const region = document.getElementById('balance-region');
+      region.innerHTML = html;
+      revealIn(region);
+    }
+
+    /* ---------- 渲染：六种存款 ---------- */
+    function renderDeposits() {
+      const grid = document.getElementById('deposits-grid');
+      const items = Array.isArray(data.deposits) ? data.deposits : [];
+      grid.innerHTML = items.map((d, i) =>
+        '<div class="card card--sage reveal" data-delay="' + ((i % 3) + 1) + '">' +
+          '<h3>' + escapeHtml(d.name) + '</h3>' +
+          '<p>' + escapeHtml(d.desc) + '</p>' +
+        '</div>'
+      ).join('');
+      revealIn(grid);
+    }
+
+    /* ---------- 渲染：时间轴 ---------- */
+    function renderLog() {
+      const all = mergeRecords();
+      const list = document.getElementById('bk-list');
+      if (!all.length) {
+        list.innerHTML = '<p class="muted center">还没有记录——先去上面记一笔吧 ✿</p>';
+        return;
+      }
+      list.innerHTML = all.map(r => {
+        const t = (data.types && data.types[r.type]) || { label: r.type, icon: '·' };
+        return '<div class="bank-item bank-item--' + r.type + '">' +
+          '<div class="bank-item__icon">' + escapeHtml(t.icon) + '</div>' +
+          '<div class="bank-item__body">' +
+            '<div class="bank-item__head">' +
+              '<span class="bank-item__date">' + escapeHtml(r.date) + '</span>' +
+              '<span class="bank-item__type">' + escapeHtml(t.label) + '</span>' +
+            '</div>' +
+            '<div class="bank-item__event">' + escapeHtml(r.event) + '</div>' +
+            '<div class="bank-item__who">' + escapeHtml(whoLabel(r.who)) + ' · 金额 ' + (Number(r.weight) || 1) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* ---------- 表单 ---------- */
+    function wireForm() {
+      const typeSel = document.getElementById('bk-type');
+      const whoSel = document.getElementById('bk-who');
+      const weightSel = document.getElementById('bk-weight');
+      const dateInput = document.getElementById('bk-date');
+      const eventInput = document.getElementById('bk-event');
+      const saveBtn = document.getElementById('bk-save');
+      const clearBtn = document.getElementById('bk-clear');
+
+      const types = data.types || {};
+      typeSel.innerHTML = Object.keys(types).map(k =>
+        '<option value="' + escapeHtml(k) + '">' + escapeHtml(types[k].label) + '</option>'
+      ).join('');
+      whoSel.innerHTML = (data.who_options || []).map(o =>
+        '<option value="' + escapeHtml(o.value) + '">' + escapeHtml(o.label) + '</option>'
+      ).join('');
+      weightSel.innerHTML = (data.weight_options || []).map(w =>
+        '<option value="' + w + '">' + w + '</option>'
+      ).join('');
+      dateInput.value = LoveNest.todayISO();
+
+      saveBtn.addEventListener('click', () => {
+        const event = eventInput.value.trim();
+        const date = dateInput.value;
+        if (!event) {
+          LoveNest.openModal('差一点点', '<p>记一笔吧，哪怕只是“她笑了”——都是值得存的。</p>');
+          eventInput.focus();
+          return;
+        }
+        if (!date) {
+          LoveNest.openModal('差一点点', '<p>请选择一个日期。</p>');
+          dateInput.focus();
+          return;
+        }
+        const rec = {
+          date: date,
+          type: typeSel.value,
+          who: whoSel.value,
+          event: event,
+          weight: parseInt(weightSel.value, 10) || 1
+        };
+        userRecords.push(rec);
+        LoveNest.store.set('bank-records', userRecords);
+        eventInput.value = '';
+        eventInput.focus();
+        renderBalance();
+        renderLog();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        if (!userRecords.length) {
+          LoveNest.openModal('暂无我的记录', '<p>你还没有添加任何个人记录——种子记录不受影响。</p>');
+          return;
+        }
+        if (confirm('确定清空你添加的所有记录吗？种子记录不受影响。')) {
+          userRecords = [];
+          LoveNest.store.set('bank-records', []);
+          renderBalance();
+          renderLog();
+        }
+      });
+    }
+
+    /* ---------- 初始化 ---------- */
+    renderDeposits();
+    renderBalance();
+    renderLog();
+    wireForm();
+    LoveNest.loadContentForPage('bank');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+{
+  "_readme": "内容清单 — 给页面和 md 打标签的适配系统。新增内容: 把 md 放进 docs/, 然后在这里登记一条。pages 字段决定它出现在哪些页面; tags 字段供 [data-content-tag] 进一步过滤。md 文件内的 frontmatter 会覆盖这里(若存在)。",
+  "items": [
+    {
+      "id": "gottman-seven-principles",
+      "file": "docs/books/gottman-seven-principles.md",
+      "title": "《幸福的婚姻》— 戈特曼的七项原则",
+      "author": "约翰·戈特曼 / 南·西尔弗",
+      "type": "book",
+      "tags": ["love-map", "peace", "knowledge"],
+      "pages": ["love-map", "peace"],
+      "summary": "基于“爱情实验室”40 年研究的婚姻保鲜指南：爱情地图、欣赏、转向、影响、解问题、破僵局、共同意义。"
+    },
+    {
+      "id": "fromm-art-of-loving",
+      "file": "docs/books/fromm-art-of-loving.md",
+      "title": "《爱的艺术》— 爱是一种能力",
+      "author": "埃里希·弗洛姆",
+      "type": "book",
+      "tags": ["love-map", "peace", "knowledge"],
+      "pages": ["love-map", "peace"],
+      "summary": "爱不是被偶然击中的情感，而是一门需要学习的艺术。它是决定、判断与承诺，而非心跳。"
+    },
+    {
+      "id": "nvc-four-steps",
+      "file": "docs/notes/nvc-four-steps.md",
+      "title": "非暴力沟通 · 四步法",
+      "author": "马歇尔·卢森堡",
+      "type": "note",
+      "tags": ["peace", "knowledge"],
+      "pages": ["peace"],
+      "summary": "观察 → 感受 → 需要 → 请求。把“你总是…”变成“我看到…我感到…我需要…你愿意…吗？”"
+    },
+    {
+      "id": "magic-five-hours",
+      "file": "docs/notes/magic-five-hours.md",
+      "title": "每周 5 小时 · 婚姻保鲜的复利",
+      "author": "约翰·戈特曼",
+      "type": "note",
+      "tags": ["love-map", "bank", "knowledge"],
+      "pages": ["love-map", "bank"],
+      "summary": "幸福伴侣每周只需约 5 小时的刻意连接：晨别、重聚、欣赏、约会、复盘——小而稳定的复利。"
+    },
+    {
+      "id": "four-horsemen",
+      "file": "docs/notes/four-horsemen.md",
+      "title": "末日四骑士 · 婚姻的四个杀手",
+      "author": "约翰·戈特曼",
+      "type": "note",
+      "tags": ["peace", "knowledge"],
+      "pages": ["peace"],
+      "summary": "批评、蔑视、防御、筑墙——以及各自的解药。蔑视是最强的离婚预测因子。"
+    },
+    {
+      "id": "covey-emotional-bank-account",
+      "file": "docs/books/covey-emotional-bank-account.md",
+      "title": "《高效能人士的七个习惯》— 情感账户",
+      "author": "史蒂芬·柯维",
+      "type": "book",
+      "tags": ["bank", "knowledge"],
+      "pages": ["bank"],
+      "summary": "六种存款：理解、小事、承诺、澄清期望、正直、道歉。信任是日积月累的余额。"
+    },
+    {
+      "id": "wedding-photo-decision",
+      "file": "docs/planning/wedding-photo-decision.md",
+      "title": "婚拍决策 · 时间 × 气候 × 预算",
+      "author": "师豪整理",
+      "type": "planning",
+      "tags": ["milestones", "wedding"],
+      "pages": ["milestones"],
+      "summary": "丽江 vs 重庆 vs 川西，雨季与教师假期的硬约束，三旋钮决策框架。完整版见《婚拍决策手记》。"
+    }
+  ]
+}

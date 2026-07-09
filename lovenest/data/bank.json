@@ -1,0 +1,32 @@
+{
+  "intro": "情感账户 (Emotional Bank Account) 来自史蒂芬·柯维：每一次被看见、被兑现、被善待，都是一次存款；每一次失信、忽视、伤害，都是一次取款。取款远大于存款——所以日常的小确幸，才是关系的真正底气。",
+  "deposits": [
+    { "name": "理解对方 (Understand)", "desc": "先去了解 ta 真正在意的，而不是把你的以为套上去。" },
+    { "name": "关注小事 (Little Things)", "desc": "小事即大事——一杯水、一句晚安、一个拥抱。" },
+    { "name": "信守承诺 (Commitments)", "desc": "答应了就做到；做不到就提前说，而不是事后补。" },
+    { "name": "澄清期望 (Clarify Expectations)", "desc": "把“你应该懂”变成“我希望”——期待不明是大部分冲突的根源。" },
+    { "name": "正直忠诚 (Integrity)", "desc": "言行一致；不在背后说对方的不是，包括对家人。" },
+    { "name": "真诚道歉 (Apologize)", "desc": "不附带“如果你觉得”的道歉，才是真正的存款。" }
+  ],
+  "ratio_note": "戈特曼的数据：幸福伴侣的正向与负向互动比约为 5:1。这不是说不能吵架，而是平时存得够多，吵架才不至于透支。",
+  "seed_records": [
+    { "date": "2025-05-10", "type": "deposit", "who": "both", "event": "在缙云山第一次见面后，正式成为恋人。", "weight": 5 },
+    { "date": "2025-07-15", "type": "deposit", "who": "her", "event": "高三期末改卷最累的那周，给我留了手写小纸条。", "weight": 3 },
+    { "date": "2025-08-09", "type": "deposit", "who": "him", "event": "记住她随口提过想吃的乐山小吃，周末带她去了。", "weight": 3 },
+    { "date": "2025-10-04", "type": "deposit", "who": "both", "event": "稻城亚丁，第一次一起看到雪山日出，相拥无言。", "weight": 5 },
+    { "date": "2026-02-14", "type": "deposit", "who": "him", "event": "求婚成功。把这一年走过的路，做成了一个网页送给她。", "weight": 5 },
+    { "date": "2026-05-20", "type": "deposit", "who": "her", "event": "主动提出一起列婚礼筹备清单，让我感受到她在和我一起推进。", "weight": 3 },
+    { "date": "2026-06-12", "type": "withdraw", "who": "him", "event": "她压力大时我急着给方案，被觉得“你不懂我”。（取款——但也提醒我：先共情后解决）", "weight": 2 },
+    { "date": "2026-06-20", "type": "deposit", "who": "him", "event": "为这次冲突写了道歉，并约定以后先问“你需要建议，还是陪伴？”", "weight": 3 }
+  ],
+  "types": {
+    "deposit": { "label": "存款", "icon": "＋", "weight_label": "金额" },
+    "withdraw": { "label": "取款", "icon": "－", "weight_label": "金额" }
+  },
+  "weight_options": [1, 2, 3, 5],
+  "who_options": [
+    { "value": "him", "label": "我 · 师豪" },
+    { "value": "her", "label": "她 · 佳力" },
+    { "value": "both", "label": "我们共同" }
+  ]
+}

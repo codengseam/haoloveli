@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>人生里程碑 · 师豪 ❤ 佳力</title>
+<meta name="description" content="人生里程碑：按阶段规划我们的人生——婚礼只是其中一个节点。包含婚礼筹备子项目。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+</head>
+<body data-page="milestones">
+<main>
+
+  <!-- ============== Hero ============== -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__inner">
+      <p class="kicker hero__kicker">Milestones · The Long Game</p>
+      <h1 class="hero__title">人生里程碑</h1>
+      <div class="hero__names">师豪 <span class="heart">❤</span> 佳力</div>
+      <p class="hero__sub" id="hero-sub">婚礼只是人生长河中的一个里程碑，不是终点。把人生按阶段而非严格日期来规划，更能看清我们走到哪里、要往哪里去。</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#wedding">查看婚礼筹备</a>
+        <a class="btn btn--ghost" href="index.html">回到仪表盘</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 01 · 阶段时间轴 ============== -->
+  <section class="section" id="timeline">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">01</span>
+        <h2 class="section__title">按阶段，不按日期</h2>
+        <p class="section__desc">把人生按阶段而非严格日期来规划——看清我们走到哪里、要往哪里去。</p>
+      </div>
+      <div id="phases-region"></div>
+    </div>
+  </section>
+
+  <!-- ============== 02 · 婚礼筹备子项目 ============== -->
+  <section class="section section--tint" id="wedding">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">02</span>
+        <h2 class="section__title" id="wedding-title">婚礼筹备子项目</h2>
+        <p class="lead" id="wedding-lead">婚礼筹备是“冲刺期—圆满期”的子模块，不是一个独立顶级模块。详细决策工具见 → 婚拍决策手记。</p>
+      </div>
+      <div id="wedding-region"></div>
+    </div>
+  </section>
+
+  <!-- ============== 03 · 相关规划与文档 ============== -->
+  <section class="section" id="knowledge">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">03</span>
+        <h2 class="section__title">相关规划与文档</h2>
+        <p class="section__desc">里程碑背后的思考与笔记——点开任意一篇可阅读全文。</p>
+      </div>
+      <div class="grid grid--3" data-content-for="milestones"></div>
+    </div>
+  </section>
+
+  <!-- ============== Crosslinks ============== -->
+  <section class="section section--tint" id="next">
+    <div class="container">
+      <div class="section__head reveal">
+        <h2 class="section__title">继续这趟旅程</h2>
+        <p class="section__desc">里程碑不是孤岛——它连着家庭、账户与冲突的处理。</p>
+      </div>
+      <div class="crosslinks reveal">
+        <a class="crosslink" href="family.html">
+          <span class="crosslink__icon">🏡</span>
+          <span class="crosslink__title">家庭融合里程碑</span>
+          <span class="crosslink__desc">两个家庭的连接也是里程碑。</span>
+          <span class="crosslink__arrow">家庭关系网 →</span>
+        </a>
+        <a class="crosslink" href="bank.html">
+          <span class="crosslink__icon">💰</span>
+          <span class="crosslink__title">为里程碑储蓄</span>
+          <span class="crosslink__desc">每个重要时刻，先存一笔信任。</span>
+          <span class="crosslink__arrow">情感账户 →</span>
+        </a>
+        <a class="crosslink" href="peace.html">
+          <span class="crosslink__icon">🕊</span>
+          <span class="crosslink__title">冲突也是关系的里程碑</span>
+          <span class="crosslink__desc">吵得对，关系也会往前走。</span>
+          <span class="crosslink__arrow">停战协议 →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="shared/nav.js"></script>
+<script src="shared/data.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  "use strict";
+
+  /* ---------- FULL inline fallback (matches data/milestones.json) ---------- */
+  const FALLBACK = JSON.parse(`{
+  "intro": "婚礼只是人生长河中的一个里程碑，不是终点。把人生按阶段而非严格日期来规划，更能看清我们走到哪里、要往哪里去。",
+  "phases": [
+    {
+      "year": "2024",
+      "label": "筑基期",
+      "title": "相识 · 家庭破冰",
+      "status": "done",
+      "items": [
+        { "date": "2024-12-30", "title": "第一次见面", "desc": "缙云山，冬天的开始。", "tag": "相识", "done": true },
+        { "date": "2024 冬", "title": "两家庭初次建立联系", "desc": "以节日问候与互赠心意破冰，营造“被欢迎”的氛围。", "tag": "家庭", "done": true }
+      ]
+    },
+    {
+      "year": "2025",
+      "label": "蓄力期",
+      "title": "相恋 · 考察 · 领证",
+      "status": "done",
+      "items": [
+        { "date": "2025-05-10", "title": "正式相恋", "desc": "在雪山前，成为恋人。", "tag": "相恋", "done": true },
+        { "date": "2025 夏秋", "title": "目的地考察", "desc": "稻城、乐山、四面山、金佛山、泸沽湖——边走边看哪种风景属于我们。", "tag": "考察", "done": true },
+        { "date": "2025-10", "title": "稻城亚丁", "desc": "雪山日出，确认了“我们想要这样的画面”。", "tag": "考察", "done": true }
+      ]
+    },
+    {
+      "year": "2026",
+      "label": "冲刺期",
+      "title": "求婚 · 婚纱照 · 答谢宴安排",
+      "status": "now",
+      "items": [
+        { "date": "2026-02-14", "title": "求婚成功", "desc": "用一封网页情书，在亲友见证下完成求婚。", "tag": "求婚", "done": true, "highlight": true },
+        { "date": "2026 下半年", "title": "婚纱照拍摄", "desc": "在气候窗与教师假期窗的交集里锁定拍摄档期（详见婚礼筹备）。", "tag": "婚礼筹备", "done": false, "link": "wedding" },
+        { "date": "2026-12 前", "title": "选定四大金刚", "desc": "摄影 / 摄像 / 司仪 / 化妆，按预算与口碑筛定。", "tag": "婚礼筹备", "done": false, "link": "wedding" }
+      ]
+    },
+    {
+      "year": "2027",
+      "label": "圆满期",
+      "title": "婚礼 · 蜜月",
+      "status": "todo",
+      "items": [
+        { "date": "2027-07~08", "title": "婚礼", "desc": "目的地婚礼 + 双城答谢宴（重庆 / 女方家乡）。", "tag": "婚礼", "done": false, "highlight": true, "link": "wedding" },
+        { "date": "2027 婚后", "title": "蜜月", "desc": "暂定国内深度游（待定），避开高三补课期。", "tag": "蜜月", "done": false }
+      ]
+    },
+    {
+      "year": "2027+",
+      "label": "远期",
+      "title": "婚后第一年 · 安居 · 职业平衡",
+      "status": "todo",
+      "items": [
+        { "date": "2027-2028", "title": "婚后第一年适应期", "desc": "建立共同生活节奏、家务分工、家庭预算月度复盘。", "tag": "婚后", "done": false },
+        { "date": "2028", "title": "买房 / 安居计划", "desc": "在重庆落定属于我们的小窝，靠近通勤与父母。", "tag": "安居", "done": false },
+        { "date": "待定", "title": "职业转型与家庭平衡", "desc": "我的换工作决策以“家庭总收益”而非“单点薪资”评估。", "tag": "职业", "done": false }
+      ]
+    }
+  ],
+  "wedding_prep": {
+    "title": "婚礼筹备子项目",
+    "intro": "婚礼筹备是“冲刺期—圆满期”的子模块，不是一个独立顶级模块。详细决策工具见 → 婚拍决策手记。",
+    "external_link": "../wedding/index.html",
+    "external_label": "打开《婚拍决策手记》",
+    "cards": [
+      {
+        "title": "目的地婚礼构想",
+        "desc": "雪山 / 旷野 / 花海——把稻城那次的心动，变成正式仪式的画面。",
+        "tags": ["仪式", "目的地"]
+      },
+      {
+        "title": "双城答谢宴方案",
+        "desc": "重庆（男方）+ 女方家乡。体面、高效，遵循《商务礼仪》规范，重体验不重排场。",
+        "tags": ["答谢宴", "双城"]
+      },
+      {
+        "title": "四大金刚筛选",
+        "desc": "摄影 / 摄像 / 司仪 / 化妆。按“资质可验证 + 价格透明 + 履约样本”三维筛选。",
+        "tags": ["四大金刚", "预算"]
+      },
+      {
+        "title": "预算规划",
+        "desc": "总预算分项：仪式 / 答谢宴 / 四大金刚 / 婚纱照 / 蜜月。预留 15% 应急。",
+        "tags": ["预算"]
+      }
+    ]
+  }
+}`);
+
+  /* ---------- Helpers ---------- */
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function tlItemClass(item) {
+    if (item.done) return "tl-item tl-item--done";
+    if (item.highlight) return "tl-item tl-item--now";
+    return "tl-item";
+  }
+
+  function tagClass(item) {
+    return item.highlight ? "tag tag--rose" : "tag tag--sage";
+  }
+
+  /* ---------- Render phases + timeline ---------- */
+  function renderPhases(phases) {
+    const region = document.getElementById("phases-region");
+    if (!region) return;
+
+    const html = phases.map(function (phase) {
+      const itemsHtml = (phase.items || []).map(function (item) {
+        const linkBtn = item.link === "wedding"
+          ? '<a class="btn btn--ghost btn--small" href="../wedding/index.html" target="_blank" rel="noopener">查看筹备 →</a>'
+          : "";
+        return '' +
+          '<div class="' + tlItemClass(item) + '">' +
+            '<div class="tl-item__date">' + esc(item.date) + '</div>' +
+            '<div class="tl-item__title">' + esc(item.title) + '</div>' +
+            '<div class="tl-item__desc">' + esc(item.desc) + '</div>' +
+            '<div class="tl-item__tag">' +
+              '<span class="' + tagClass(item) + '">' + esc(item.tag) + '</span>' +
+              linkBtn +
+            '</div>' +
+          '</div>';
+      }).join("");
+
+      return '' +
+        '<div class="phase reveal">' +
+          '<div class="phase__head">' +
+            '<span class="phase__year">' + esc(phase.year) + '</span>' +
+            '<span class="phase__label">' + esc(phase.label) + '</span>' +
+            '<span class="phase__title">' + esc(phase.title) + '</span>' +
+          '</div>' +
+          '<div class="timeline">' + itemsHtml + '</div>' +
+        '</div>';
+    }).join("");
+
+    region.innerHTML = html +
+      '<div class="callout reveal">婚礼只是其中一个节点，权重与其他人生目标平等——别让它吞掉整个未来。</div>';
+  }
+
+  /* ---------- Render wedding prep sub-module ---------- */
+  function renderWeddingPrep(wp) {
+    const region = document.getElementById("wedding-region");
+    if (!wp) return;
+
+    // sync section head with data
+    const tEl = document.getElementById("wedding-title");
+    if (tEl && wp.title) tEl.textContent = wp.title;
+    const lEl = document.getElementById("wedding-lead");
+    if (lEl && wp.intro) lEl.textContent = wp.intro;
+
+    const cardsHtml = (wp.cards || []).map(function (c, i) {
+      const tags = (c.tags || []).map(function (t) {
+        return '<span class="tag tag--sage">' + esc(t) + '</span>';
+      }).join("");
+      return '' +
+        '<article class="card reveal" data-delay="' + ((i % 4) + 1) + '">' +
+          '<h3>' + esc(c.title) + '</h3>' +
+          '<p>' + esc(c.desc) + '</p>' +
+          '<div class="tl-item__tag">' + tags + '</div>' +
+        '</article>';
+    }).join("");
+
+    const link = wp.external_link || "../wedding/index.html";
+    const label = wp.external_label || "打开《婚拍决策手记》";
+
+    region.innerHTML =
+      '<div class="card card--rose reveal">' +
+        '<h3>详细决策工具</h3>' +
+        '<p>' +
+          '<a class="btn btn--primary" href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(label) + '</a>' +
+          ' <span class="faint">（独立页面 · 可逐条勾选并自动保存）</span>' +
+        '</p>' +
+      '</div>' +
+      '<div class="grid grid--2" style="margin-top:24px">' + cardsHtml + '</div>';
+  }
+
+  /* ---------- Load + render ---------- */
+  let data;
+  try {
+    data = await LoveNest.getJSON("data/milestones.json", FALLBACK);
+  } catch (e) {
+    data = FALLBACK;
+  }
+  if (!data) data = FALLBACK;
+
+  // keep hero sub in sync with data (degrades to hardcoded default if absent)
+  const heroSub = document.getElementById("hero-sub");
+  if (heroSub && data.intro) heroSub.textContent = data.intro;
+
+  renderPhases(data.phases || []);
+  renderWeddingPrep(data.wedding_prep);
+
+  // wire scroll-reveal for newly injected elements
+  if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+
+  // render related planning docs (wedding-photo-decision) into [data-content-for="milestones"]
+  if (typeof LoveNest.loadContentForPage === "function") {
+    LoveNest.loadContentForPage("milestones");
+  }
+});
+</script>
+</body>
+</html>

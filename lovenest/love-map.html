@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>爱情地图 · 师豪 ❤ 佳力</title>
+<meta name="description" content="爱情地图：基于戈特曼理论，深度了解彼此的内心世界——喜好、雷区、共同梦想。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* 仅补一个中性翻转背面（用于「我们」卡）与彩色项目符号，沿用既有 Morandi 变量 */
+  .flip__back--neutral{background:var(--bg-soft);border-color:var(--line-soft)}
+  .flip__back--rose .flip__list li::before{color:var(--rose-deep)}
+  .flip__back--neutral .flip__list li::before{color:var(--taupe)}
+</style>
+</head>
+<body data-page="love-map">
+<!-- nav.js injects topbar + mobile-nav + footer; do NOT write them yourself -->
+<main>
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__inner">
+      <p class="kicker hero__kicker">Love Maps · 深度了解</p>
+      <h1 class="hero__title">爱情地图</h1>
+      <p class="hero__names">师豪 <span class="heart">❤</span> 佳力</p>
+      <p class="hero__sub">爱情地图 (Love Map) 是戈特曼提出的概念：幸福伴侣对彼此的内心世界有一张不断更新的、细致的地图——不只是生日和喜好，而是当下的压力、梦想、雷区、与谁亲近、为何受伤。这张地图是婚姻友谊的地基。</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#weekly">查看本周深度问题</a>
+        <a class="btn btn--ghost" href="#knowledge">了解戈特曼</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 声音关系屋 ============ -->
+  <section class="section" id="house">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">01</span>
+        <h2 class="section__title">声音关系屋 · 友谊的地基</h2>
+        <p class="section__desc">戈特曼的「声音关系屋」——婚姻友谊由下而上层层累积，地基正是了解彼此的世界。</p>
+      </div>
+      <div class="timeline" id="house-timeline" style="max-width:720px;margin:0 auto"></div>
+      <div class="callout reveal" style="max-width:720px;margin:8px auto 0">
+        <strong>两层承重墙：信任与承诺。</strong>
+        戈特曼把这座屋的两侧称为承重墙——信任是相信对方会顾及你的利益，承诺是选择对方、与世界对抗也站在你这边。地基是友谊，屋顶是共同意义。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 翻转卡片 ============ -->
+  <section class="section section--tint" id="cards">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">02</span>
+        <h2 class="section__title">喜好 · 雷区 · 梦想</h2>
+        <p class="section__desc">把心里的地图摊开来看——她喜欢什么、我踩不得什么、我们一起往哪走。悬停或点击即可翻转。</p>
+      </div>
+      <div class="grid grid--3" id="cards-grid"></div>
+      <div class="callout reveal" style="max-width:720px;margin:28px auto 0">
+        人会变，地图要定期重画——<strong>每年纪念日来更新一次。</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 本周深度问题 ============ -->
+  <section class="section" id="weekly">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">03</span>
+        <h2 class="section__title">本周深度问题</h2>
+        <p class="section__desc">每周一题，慢慢更新这张地图。这周轮到这一题——按周稳定轮换，不会天天换。</p>
+      </div>
+      <div id="weekly-quote" class="reveal"></div>
+      <div class="callout callout--rose reveal" style="max-width:680px;margin:30px auto 0">
+        建议线下聊——这页只是提醒，不是答案。
+      </div>
+      <div class="divider"></div>
+      <p class="kicker center mb-3">接下来几周 · 轮换预览</p>
+      <div class="grid grid--3" id="weekly-teasers"></div>
+    </div>
+  </section>
+
+  <!-- ============ 04 每周 5 小时 ============ -->
+  <section class="section section--tint" id="fivehours">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">04</span>
+        <h2 class="section__title">每周 5 小时 · 复利</h2>
+        <p class="section__desc">幸福伴侣每周只需约 5 小时刻意连接——小而稳定的复利，远胜偶尔的大动作。</p>
+      </div>
+      <div class="grid grid--3" id="fivehours-grid"></div>
+      <div class="callout reveal" style="max-width:720px;margin:28px auto 0">
+        一天 10 分钟，10 年就是 <strong>600 多小时</strong>——别人看不见的余额。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 灵感与知识库 ============ -->
+  <section class="section" id="knowledge">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">05</span>
+        <h2 class="section__title">灵感与知识库</h2>
+        <p class="section__desc">支撑这张地图的理论与实践——点开阅读全文，理解我们为什么这么做。</p>
+      </div>
+      <div class="grid grid--3" data-content-for="love-map"></div>
+    </div>
+  </section>
+
+  <!-- ============ Crosslinks ============ -->
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section__head reveal">
+        <h2 class="section__title">接下来</h2>
+        <p class="section__desc">把了解变成行动——下一站去哪。</p>
+      </div>
+      <div class="crosslinks reveal">
+        <a class="crosslink" href="bank.html">
+          <span class="crosslink__icon">💌</span>
+          <span class="crosslink__title">把今天的发现存进情感账户</span>
+          <span class="crosslink__desc">了解越深，存款越准。</span>
+          <span class="crosslink__arrow">情感账户 →</span>
+        </a>
+        <a class="crosslink" href="peace.html">
+          <span class="crosslink__icon">🕊</span>
+          <span class="crosslink__title">了解雷区，才能不踩雷</span>
+          <span class="crosslink__desc">冲突时回到这张地图。</span>
+          <span class="crosslink__arrow">停战协议 →</span>
+        </a>
+        <a class="crosslink" href="index.html">
+          <span class="crosslink__icon">🏡</span>
+          <span class="crosslink__title">回到仪表盘</span>
+          <span class="crosslink__desc">相恋天数与今日金句。</span>
+          <span class="crosslink__arrow">首页 →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="shared/nav.js"></script>
+<script src="shared/data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* 完整内联回退：与 data/love-map.json 同形，确保 file:// 直开也有真实内容 */
+  var FALLBACK = {
+    "intro": "爱情地图 (Love Map) 是戈特曼提出的概念：幸福伴侣对彼此的内心世界有一张不断更新的、细致的地图——不只是生日和喜好，而是当下的压力、梦想、雷区、与谁亲近、为何受伤。这张地图是婚姻友谊的地基。",
+    "sound_house": [
+      { "level": "地基 · 爱情地图", "desc": "了解彼此的世界，并持续更新。" },
+      { "level": "表达喜爱与欣赏", "desc": "日常表达尊重与珍惜，而非理所当然。" },
+      { "level": "转向彼此 (Turn Toward)", "desc": "回应对方每一次小小的连接尝试。" },
+      { "level": "积极视角", "desc": "由前三层累积出善意解读对方的能力。" },
+      { "level": "管理冲突", "desc": "区分可解决 vs 永久问题，用修复代替升级。" },
+      { "level": "实现人生梦想", "desc": "支持彼此的抱负与人生目标。" },
+      { "level": "创造共同意义", "desc": "通过仪式、角色、目标建立关系文化。" }
+    ],
+    "cards": [
+      {
+        "id": "her-likes",
+        "side": "her",
+        "title": "她的喜好",
+        "items": ["被看见、被认真倾听（不要急着给方案）", "仪式感与小惊喜", "旅行时拍下属于我们的画面", "被牵着手散步", "认真被对待的感觉"],
+        "back_note": "提示：定期更新这张地图，人会变。"
+      },
+      {
+        "id": "her-landmines",
+        "side": "her",
+        "title": "她的雷区",
+        "items": ["高三压力大时被否定情绪（“这有什么”）", "被冷处理/沉默", "被当众纠正或贬低", "承诺了又落空", "被拿去和别人比较"],
+        "back_note": "了解雷区，是为了不去踩，而非拿去攻击。"
+      },
+      {
+        "id": "his-likes",
+        "side": "him",
+        "title": "我的喜好",
+        "items": ["被肯定推进与主动性", "理性被看见而不被当作冷漠", "一起做规划与复盘", "安静的陪伴", "被需要的感觉"],
+        "back_note": "我也需要被了解，不要总当“坚强的一方”。"
+      },
+      {
+        "id": "his-landmines",
+        "side": "him",
+        "title": "我的雷区",
+        "items": ["付出不被看见时的失落", "被一句“你都不…”全盘否定", "冲突中被翻旧账", "被催促立刻做决定", "我的家人被冒犯"],
+        "back_note": "说出来，不是软弱，是邀请你懂我。"
+      },
+      {
+        "id": "shared-dreams",
+        "side": "both",
+        "title": "我们共同的梦想",
+        "items": ["一次只属于两个人的目的地婚礼", "婚后每年一次“无手机”旅行", "买房安一个属于我们的小窝", "一起把两个家庭温柔地连起来", "老了还能手牵手散步"],
+        "back_note": "梦想会长大，每年纪念日来更新一次。"
+      },
+      {
+        "id": "shared-values",
+        "side": "both",
+        "title": "我们共同在意的事",
+        "items": ["真诚胜过体面", "主动胜过被催", "长期主义胜过短期满足", "小确幸也是大事", "家是用来休息的，不是战场"],
+        "back_note": "价值观是底座，冲突时回到这里。"
+      }
+    ],
+    "weekly_questions": [
+      { "id": "q1", "text": "你最近最大的压力源是什么？我能怎么帮你分担一点？" },
+      { "id": "q2", "text": "这周有什么事让你觉得被支持/不被支持？" },
+      { "id": "q3", "text": "你最近在期待什么？在害怕什么？" },
+      { "id": "q4", "text": "我们之间有没有什么未被说开的小疙瘩？" },
+      { "id": "q5", "text": "如果这一年只能一起完成一件事，你最希望是哪件？" },
+      { "id": "q6", "text": "你理想中“被爱”的样子，具体是什么样的？" },
+      { "id": "q7", "text": "有什么我想为你做、但一直没做对的事？" },
+      { "id": "q8", "text": "我们最近一次发自内心的笑，是因为什么？" }
+    ],
+    "magic_five_hours": [
+      { "part": "晨别 · ~10 分钟/周", "desc": "分开前了解对方今天一件重要的事。" },
+      { "part": "重聚 · ~1 小时 40 分/周", "desc": "下班“减压对话”——只共情，不解决问题。" },
+      { "part": "欣赏 · ~35 分钟/周", "desc": "每天找一个真实的理由表达欣赏。" },
+      { "part": "约会 · ~2 小时/周", "desc": "无干扰的两人时间，问开放性问题更新地图。" },
+      { "part": "复盘 · ~1 小时/周", "desc": "每周一次“国情咨文”：一句感谢 + 一个待解决。" }
+    ]
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  /* 01 声音关系屋 → 纵向时间线 */
+  function renderHouse(data) {
+    var el = document.getElementById("house-timeline");
+    if (!el) return;
+    var items = data.sound_house || [];
+    el.innerHTML = items.map(function (it, i) {
+      return '<div class="tl-item reveal" data-delay="' + ((i % 4) + 1) + '">'
+        + '<div class="tl-item__date">第 ' + (i + 1) + ' 层</div>'
+        + '<h3 class="tl-item__title">' + esc(it.level) + '</h3>'
+        + '<p class="tl-item__desc">' + esc(it.desc) + '</p>'
+        + '</div>';
+    }).join("");
+  }
+
+  /* 02 翻转卡片 → 6 张 flip */
+  function renderCards(data) {
+    var el = document.getElementById("cards-grid");
+    if (!el) return;
+    var cards = data.cards || [];
+    el.innerHTML = cards.map(function (c, i) {
+      var tagCls, tagLabel, backCls;
+      if (c.side === "her") {
+        tagCls = "tag tag--her"; tagLabel = "她";
+        backCls = "flip__face flip__back flip__back--rose";
+      } else if (c.side === "him") {
+        tagCls = "tag tag--him"; tagLabel = "我";
+        backCls = "flip__face flip__back";
+      } else {
+        tagCls = "tag tag--both"; tagLabel = "我们";
+        backCls = "flip__face flip__back flip__back--neutral";
+      }
+      var items = (c.items || []).map(function (it) {
+        return "<li>" + esc(it) + "</li>";
+      }).join("");
+      return '<div class="flip reveal" data-delay="' + ((i % 3) + 1) + '">'
+        + '<div class="flip__inner">'
+        + '<div class="flip__face flip__front">'
+        + '<span class="' + tagCls + '">' + tagLabel + '</span>'
+        + '<h3 class="flip__title">' + esc(c.title) + '</h3>'
+        + '<span class="flip__hint">悬停或点击翻转 ↻</span>'
+        + '</div>'
+        + '<div class="' + backCls + '">'
+        + '<ul class="flip__list">' + items + '</ul>'
+        + '<span class="flip__hint">' + esc(c.back_note) + '</span>'
+        + '</div>'
+        + '</div></div>';
+    }).join("");
+  }
+
+  /* 03 本周深度问题 → quote + 接下来 3 题预览 */
+  function renderWeekly(data) {
+    var qEl = document.getElementById("weekly-quote");
+    var tEl = document.getElementById("weekly-teasers");
+    var qs = data.weekly_questions || [];
+    if (!qs.length) {
+      if (qEl) qEl.innerHTML = '<p class="muted center">暂无问题。</p>';
+      return;
+    }
+    var idx = Math.floor(LoveNest.dayIndex() / 7) % qs.length;
+    var cur = qs[idx];
+    if (qEl) {
+      qEl.innerHTML = '<blockquote class="quote">' + esc(cur.text)
+        + '<cite>Gottman · Love Map</cite></blockquote>';
+    }
+    if (tEl) {
+      var html = "";
+      for (var k = 1; k <= 3; k++) {
+        var j = (idx + k) % qs.length;
+        html += '<article class="card reveal" data-delay="' + k + '">'
+          + '<span class="kicker">第 ' + (j + 1) + ' 题 · 下周</span>'
+          + '<p class="mt-1">' + esc(qs[j].text) + '</p>'
+          + '</article>';
+      }
+      tEl.innerHTML = html;
+    }
+  }
+
+  /* 04 每周 5 小时 → 5 张 plain 卡 */
+  function renderFiveHours(data) {
+    var el = document.getElementById("fivehours-grid");
+    if (!el) return;
+    var parts = data.magic_five_hours || [];
+    el.innerHTML = parts.map(function (p, i) {
+      return '<article class="card card--plain reveal" data-delay="' + ((i % 3) + 1) + '">'
+        + '<h3>' + esc(p.part) + '</h3>'
+        + '<p>' + esc(p.desc) + '</p>'
+        + '</article>';
+    }).join("");
+  }
+
+  /* 触摸翻转：桌面 hover 由 CSS 处理，此处补点击切换 */
+  function wireFlip() {
+    document.querySelectorAll(".flip").forEach(function (f) {
+      f.addEventListener("click", function () {
+        f.classList.toggle("flipped");
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    var data = await LoveNest.getJSON("data/love-map.json", FALLBACK);
+    renderHouse(data);
+    renderCards(data);
+    renderWeekly(data);
+    renderFiveHours(data);
+    LoveNest.loadContentForPage("love-map");
+    wireFlip();
+    /* 动态注入的 .reveal 需要重新挂观察者，才会按滚动淡入 */
+    if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+  });
+})();
+</script>
+</body>
+</html>
