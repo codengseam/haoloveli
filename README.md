@@ -20,12 +20,6 @@ deployspec:
   entry_file: index.html
 license: Apache License 2.0
 ---
-#### Clone with HTTP
-```bash
- git clone https://www.modelscope.cn/studios/codengseam/haoloveli.git
-```
-
----
 
 # haoloveli 💍
 

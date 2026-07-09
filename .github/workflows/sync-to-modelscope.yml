@@ -1,0 +1,51 @@
+name: Sync to ModelScope
+
+# 每次 push 到 master 分支，自动把代码镜像同步到魔搭创空间 haoloveli
+# 魔搭创空间会在收到 push 后自动重新部署静态站点（由 README 顶部 front matter 中的 deployspec 驱动）
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v4
+        with:
+          path: github
+
+      - name: Clone ModelScope repo
+        env:
+          MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
+        run: |
+          git clone "https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git" modelscope
+
+      - name: Sync working tree (preserve ModelScope .gitattributes)
+        run: |
+          # 用 GitHub 仓库内容覆盖魔搭仓库工作树，保留魔搭的 .git 与 .gitattributes
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='.gitattributes' \
+            github/ modelscope/
+
+      - name: Commit and push to ModelScope
+        env:
+          MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
+        run: |
+          cd modelscope
+          git config user.email "codengseam@modelscope.cn"
+          git config user.name "codengseam"
+          git remote set-url origin "https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to sync to ModelScope."
+          else
+            git commit -m "Sync from GitHub: ${GITHUB_SHA::7} ${GITHUB_REF_NAME}"
+            git push origin master
+            echo "Pushed to ModelScope."
+          fi
