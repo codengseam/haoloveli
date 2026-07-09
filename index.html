@@ -3,1479 +3,392 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>haoloveli | 豪❤力</title>
+  <title>haoloveli · 豪❤力 | 我们的故事集</title>
+  <meta name="description" content="师豪 ❤ 佳力 · 好爱你。我们的故事集入口：求婚现场、爱的小窝、婚拍决策手记。" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     img { image-orientation: from-image; }
     :root {
-      --rose-pale: #FFF8F9;
-      --rose-cream: #FFEDF1;
-      --rose-blush: #FFDEE6;
-      --rose-soft: #F8C1CE;
-      --rose-gold: #D4A5A5;
-      --rose-text: #8B4A5E;
-      --rose-text-light: #B87888;
-      --gold: #D4AF7A;
-      --champagne: #F5E6D3;
+      --ivory: #FBF6EE;
+      --cream: #F3EADB;
+      --champagne: #E8D9BE;
+      --rose: #C98B9A;
+      --rose-deep: #A0607A;
+      --sage: #8A9A80;
+      --sage-deep: #6E8067;
+      --taupe: #A8957F;
+      --taupe-deep: #8A7762;
+      --ink: #3A332E;
+      --ink-soft: #5A5048;
+      --muted: #8A8076;
+      --hair: rgba(58,51,46,.12);
     }
     html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
-      overscroll-behavior: none;
-      font-family: 'Noto Serif SC', 'Playfair Display', serif;
-      color: var(--rose-text);
-      background: #000;
+      width: 100%; min-height: 100%;
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      color: var(--ink);
+      background: var(--ivory);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
-    .stage {
+    body { overflow-x: hidden; }
+
+    /* ---------- HERO ---------- */
+    .hero {
       position: relative;
       width: 100%; height: 100vh; height: 100dvh;
       overflow: hidden;
-      background: linear-gradient(145deg, #FFF8F9 0%, #FFEDF1 30%, #FFDEE6 60%, #F8C9D4 90%, #F0B8C5 100%);
-      background-size: 400% 400%;
-      animation: skyFlow 20s ease infinite;
+      display: flex; align-items: center; justify-content: center;
+      color: #FBF6EE;
+      isolation: isolate;
     }
-    @keyframes skyFlow {
-      0% { background-position: 0% 0%; }
-      50% { background-position: 100% 100%; }
-      100% { background-position: 0% 0%; }
+    .hero__photo {
+      position: absolute; inset: 0; z-index: -2;
+      background: url('lihao.img/夜晚-花海相拥.jpg') center/cover no-repeat;
+      transform: scale(1.06);
+      animation: kenburns 24s ease-in-out infinite alternate;
     }
-    .glow {
-      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    @keyframes kenburns {
+      0%   { transform: scale(1.06) translate(0,0); }
+      100% { transform: scale(1.18) translate(-1.5%,-1.5%); }
+    }
+    .hero__veil {
+      position: absolute; inset: 0; z-index: -1;
       background:
-        radial-gradient(circle at 15% 25%, rgba(255, 220, 225, 0.8) 0%, transparent 40%),
-        radial-gradient(circle at 85% 65%, rgba(255, 200, 210, 0.7) 0%, transparent 45%),
-        radial-gradient(circle at 50% 95%, rgba(255, 235, 220, 0.6) 0%, transparent 50%);
-      animation: glowPulse 10s ease-in-out infinite alternate;
+        radial-gradient(ellipse at 50% 40%, rgba(120,70,90,.30) 0%, rgba(40,30,40,.62) 55%, rgba(20,15,20,.78) 100%),
+        linear-gradient(180deg, rgba(30,22,28,.35) 0%, rgba(30,22,28,.15) 35%, rgba(20,15,20,.55) 100%);
     }
-    @keyframes glowPulse {
-      0% { opacity: 0.8; transform: scale(1); }
-      100% { opacity: 1; transform: scale(1.08); }
+    .hero__grain {
+      position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      opacity: .10; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
-    .hearts {
-      position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+    .hero__inner {
+      text-align: center;
+      padding: 0 8vw;
+      max-width: 920px;
     }
-    .heart {
-      position: absolute; top: -10%; font-size: 1rem;
-      opacity: 0; animation: fall linear infinite;
-      text-shadow: 0 0 12px rgba(255, 160, 170, 0.6);
-    }
-    @keyframes fall {
-      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.8; }
-      90% { opacity: 0.7; }
-      100% { transform: translateY(110vh) translateX(80px) rotate(360deg); opacity: 0; }
-    }
-    .slide {
-      position: absolute; inset: 0; z-index: 10;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; visibility: hidden;
-      transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.4s;
-      padding: 5vh 5vw 5vh 10vw;
-    }
-    .slide.active { opacity: 1; visibility: visible; }
-    .slide-content {
-      width: 100%; max-width: 1400px; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-    }
-
-    /* Timeline - left side */
-    .timeline-rail {
-      position: fixed; left: 2.5vw; top: 50%; transform: translateY(-50%);
-      z-index: 90; width: 90px; height: 72vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      opacity: 0; transition: opacity 0.8s ease;
-      pointer-events: none;
-    }
-    .timeline-rail.visible { opacity: 1; }
-    .timeline-line {
-      position: absolute; left: 50%; top: 12px; bottom: 12px; width: 2px; transform: translateX(-50%);
-      background: linear-gradient(180deg, rgba(212,165,165,0.25), rgba(139,74,94,0.18), rgba(212,165,165,0.25));
-      border-radius: 1px;
-    }
-    .timeline-node {
-      position: relative; width: 12px; height: 12px; border-radius: 50%;
-      background: #fff; border: 2px solid rgba(212, 165, 165, 0.6);
-      transition: all 0.5s ease; z-index: 2;
-      box-shadow: 0 2px 8px rgba(139, 74, 94, 0.08);
-    }
-    .timeline-node.active {
-      background: var(--rose-text); border-color: var(--rose-text);
-      transform: scale(1.5);
-      box-shadow: 0 0 0 8px rgba(139, 74, 94, 0.1), 0 0 20px rgba(139, 74, 94, 0.2);
-    }
-    .timeline-node.milestone {
-      width: 16px; height: 16px; background: var(--gold); border-color: var(--gold);
-    }
-    .timeline-node.milestone.active {
-      background: var(--rose-text); border-color: var(--rose-text);
-      box-shadow: 0 0 0 10px rgba(212, 175, 122, 0.15), 0 0 24px rgba(139, 74, 94, 0.25);
-    }
-    .timeline-label {
-      position: absolute; left: 32px; top: 50%; transform: translateY(-50%);
-      white-space: nowrap; font-family: 'Cormorant Garamond', serif; font-size: 0.8rem;
-      letter-spacing: 0.12em; color: var(--rose-text-light); opacity: 0;
-      transition: all 0.5s ease; font-weight: 500; pointer-events: none;
-    }
-    .timeline-node.active .timeline-label { opacity: 1; color: var(--rose-text); transform: translateY(-50%) translateX(4px); }
-    .timeline-node.milestone .timeline-label { color: var(--gold); opacity: 0; }
-    .timeline-node.milestone.active .timeline-label { color: var(--rose-text); opacity: 1; }
-
-    /* Cover */
-    .cover-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
-    .cover-eyebrow {
+    .kicker {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem; letter-spacing: 0.5em; text-transform: uppercase;
-      color: var(--rose-text-light); margin-bottom: 2rem;
-      opacity: 0; animation: fadeInUp 1.5s ease 0.3s forwards;
-    }
-    .cover-title {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(3.5rem, 9vw, 7rem);
-      font-weight: 500; letter-spacing: 0.2em; color: var(--rose-text);
-      line-height: 1.15; margin-bottom: 1rem;
-      opacity: 0; animation: fadeInUp 1.5s ease 0.6s forwards;
-    }
-    .cover-names {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 400; color: var(--rose-text);
-      margin-bottom: 1.5rem;
-      opacity: 0; animation: fadeInUp 1.5s ease 0.75s forwards;
-    }
-    .heart-icon {
-      color: #e74c3c;
-      margin: 0 0.3em;
-      animation: heartbeat 1.5s ease infinite;
-    }
-    .cover-script {
-      font-family: 'Great Vibes', cursive;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      color: var(--rose-gold); opacity: 0;
-      animation: fadeInUp 1.5s ease 0.9s forwards;
-      margin-bottom: 2.5rem;
-    }
-    .cover-ornament {
-      width: 180px; height: 50px; margin: 0 auto 2rem; opacity: 0;
-      animation: fadeInUp 1.5s ease 1.2s forwards;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 50'%3E%3Cpath d='M90 25 L25 25 M155 25 L90 25' stroke='%23D4A5A5' stroke-width='1'/%3E%3Cpath d='M90 20 C86 16 82 16 80 19 C78 22 80 26 90 32 C100 26 102 22 100 19 C98 16 94 16 90 20' fill='%23D4A5A5'/%3E%3C/svg%3E") no-repeat center;
-      background-size: contain;
-    }
-    .cover-date {
-      font-family: 'Cormorant Garamond', serif; font-size: 1rem;
-      letter-spacing: 0.3em; color: var(--rose-text-light); opacity: 0;
-      animation: fadeInUp 1.5s ease 1.5s forwards;
-    }
-    .scroll-hint {
-      position: absolute; bottom: 5vh; bottom: calc(5vh + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
-      font-family: 'Cormorant Garamond', serif; font-size: 0.85rem;
-      letter-spacing: 0.2em; color: var(--rose-text-light); opacity: 0;
-      animation: fadeInUp 1.5s ease 2s forwards, float 2s ease infinite 3s;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(10px); }
-    }
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(30px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Timeline intro */
-    .timeline-intro .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
-    .timeline-intro-title {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: 500; color: var(--rose-text); margin-bottom: 3vh; opacity: 0;
-      transform: translateY(30px); transition: all 1s ease 0.2s;
-    }
-    .timeline-intro-sub {
-      font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
-      letter-spacing: 0.3em; color: var(--rose-gold); margin-bottom: 6vh; opacity: 0;
-      transform: translateY(20px); transition: all 1s ease 0.4s;
-    }
-    .slide.active .timeline-intro-title, .slide.active .timeline-intro-sub { opacity: 1; transform: translateY(0); }
-    .timeline-hero {
-      display: flex; align-items: center; justify-content: center; gap: 6vw;
-      opacity: 0; transform: scale(0.95); transition: all 1.2s ease 0.6s;
-    }
-    .slide.active .timeline-hero { opacity: 1; transform: scale(1); }
-    .timeline-event {
-      text-align: center; position: relative;
-    }
-    .timeline-event-dot {
-      width: 24px; height: 24px; border-radius: 50%; background: var(--gold); margin: 0 auto 1.2rem;
-      box-shadow: 0 0 0 10px rgba(212, 175, 122, 0.15); position: relative;
-    }
-    .timeline-event-dot::after {
-      content: ''; position: absolute; inset: 0; border-radius: 50%;
-      border: 1px solid rgba(139, 74, 94, 0.2); animation: pulseRing 2s ease infinite;
-    }
-    @keyframes pulseRing {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(2.2); opacity: 0; }
-    }
-    .timeline-event-date {
-      font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600;
-      letter-spacing: 0.15em; color: var(--rose-text); margin-bottom: 0.6rem;
-    }
-    .timeline-event-label {
-      font-family: 'Noto Serif SC', serif; font-size: 1.2rem; color: var(--rose-text-light);
-    }
-    .timeline-event.together .timeline-event-dot { background: var(--rose-text); box-shadow: 0 0 0 10px rgba(139, 74, 94, 0.12); }
-    .timeline-event.together .timeline-event-date { color: var(--rose-text); }
-    .timeline-connector {
-      width: 80px; height: 1px; background: linear-gradient(90deg, var(--gold), var(--rose-text-light));
-      position: relative; top: -12px;
-    }
-    .timeline-connector::after {
-      content: '♥'; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-      font-size: 0.8rem; color: var(--rose-gold); background: var(--rose-pale); padding: 0 8px;
-    }
-    .timeline-caption {
-      margin-top: 6vh; font-family: 'Noto Serif SC', serif; font-size: 1.1rem;
-      color: var(--rose-text-light); opacity: 0; transition: opacity 1s ease 1s;
-    }
-    .slide.active .timeline-caption { opacity: 1; }
-
-    /* Chapters */
-    .chapter-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
-    .chapter-number {
-      font-family: 'Cormorant Garamond', serif; font-size: 1rem;
-      letter-spacing: 0.4em; color: var(--rose-gold); margin-bottom: 1.5rem;
-      opacity: 0; transform: translateY(30px); transition: all 1s ease 0.2s;
-    }
-    .chapter-title {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(2.5rem, 5vw, 4.5rem);
-      font-weight: 500; color: var(--rose-text); line-height: 1.5;
-      opacity: 0; transform: translateY(30px); transition: all 1s ease 0.4s;
-    }
-    .slide.active .chapter-number, .slide.active .chapter-title { opacity: 1; transform: translateY(0); }
-
-    /* Photo slides */
-    .split-slide .slide-content { gap: 5vw; align-items: center; }
-    .split-slide.reverse .slide-content { flex-direction: row-reverse; }
-    .text-side {
-      flex: 1; max-width: 560px; opacity: 0;
-      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
-    }
-    .split-slide .text-side { transform: translateX(-50px); }
-    .split-slide.reverse .text-side { transform: translateX(50px); }
-    .slide.active .text-side { opacity: 1; transform: translateX(0); }
-    .photo-date-badge {
-      display: inline-flex; align-items: center; gap: 12px;
-      font-family: 'Cormorant Garamond', serif; font-size: 0.9rem;
-      letter-spacing: 0.18em; color: var(--rose-text);
-      margin-bottom: 2rem; padding: 0.6rem 1.4rem;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid rgba(212, 165, 165, 0.35);
-      border-radius: 4px;
-      box-shadow: 0 4px 20px rgba(139, 74, 94, 0.06);
-      opacity: 0; transform: translateY(-20px);
-      transition: all 0.8s ease 0.2s;
-      position: relative;
-    }
-    .photo-date-badge::before {
-      content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-      width: 3px; height: 60%; background: var(--gold); border-radius: 0 2px 2px 0;
-    }
-    .slide.active .photo-date-badge { opacity: 1; transform: translateY(0); }
-    .photo-date-badge .dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--gold); box-shadow: 0 0 0 4px rgba(212, 175, 122, 0.2);
-    }
-    .side-label {
-      font-family: 'Cormorant Garamond', serif; font-size: 0.85rem;
-      letter-spacing: 0.35em; text-transform: uppercase;
-      color: var(--rose-gold); margin-bottom: 1.2rem;
-    }
-    .side-title {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 3.5vw, 3rem);
-      font-weight: 500; color: var(--rose-text); line-height: 1.4;
-      margin-bottom: 1.5rem;
-    }
-    .side-body {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(1.05rem, 1.7vw, 1.25rem);
-      line-height: 2.2; color: var(--rose-text-light); font-weight: 400;
-      white-space: pre-line;
-    }
-    .image-side {
-      flex: 0 0 auto; opacity: 0;
-      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
-    }
-    .split-slide .image-side { transform: translateX(50px) scale(0.95); }
-    .split-slide.reverse .image-side { transform: translateX(-50px) scale(0.95); }
-    .slide.active .image-side { opacity: 1; transform: translateX(0) scale(1); }
-    .photo-card {
-      position: relative; background: linear-gradient(145deg, #fff 0%, #fff8f9 100%); padding: 18px;
-      box-shadow: 0 30px 80px rgba(122, 68, 88, 0.14), 0 10px 25px rgba(122, 68, 88, 0.07), inset 0 0 0 1px rgba(212, 165, 165, 0.18);
-      border-radius: 4px; overflow: hidden;
-      transform: rotate(1.2deg);
-      transition: transform 0.6s ease, box-shadow 0.6s ease;
-    }
-    .photo-card:hover { transform: rotate(0deg) scale(1.03); box-shadow: 0 40px 100px rgba(122, 68, 88, 0.18), 0 15px 35px rgba(122, 68, 88, 0.1), inset 0 0 0 1px rgba(212, 165, 165, 0.25); }
-    .photo-card.portrait { width: 360px; }
-    .photo-card.portrait img { width: 100%; height: 480px; object-fit: cover; object-position: center 15%; }
-    .photo-card.landscape { width: 640px; }
-    .photo-card.landscape img { width: 100%; height: 400px; object-fit: cover; object-position: center 25%; }
-    .photo-card img {
-      filter: sepia(5%) saturate(108%) contrast(102%) brightness(102%);
-      border-radius: 2px; display: block;
-    }
-    .photo-card::before {
-      content: ''; position: absolute; inset: 12px; pointer-events: none;
-      border: 1px solid rgba(212, 165, 165, 0.35); border-radius: 2px; z-index: 1;
-    }
-    .photo-card::after {
-      content: ''; position: absolute; inset: 18px; pointer-events: none;
-      border: 1px solid rgba(212, 165, 165, 0.2); border-radius: 2px; z-index: 1;
-    }
-    .photo-caption {
-      text-align: center; margin-top: 1rem; font-family: 'Cormorant Garamond', serif;
-      font-size: 0.85rem; letter-spacing: 0.2em; color: var(--rose-text-light);
-    }
-
-    /* Heart wall */
-    .heartwall-slide .slide-content { flex-direction: column; padding-left: 5vw; }
-    .heartwall-title {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 500; color: var(--rose-text); text-align: center; margin-bottom: 2vh;
-      opacity: 0; transform: translateY(30px); transition: all 1s ease 0.2s;
-    }
-    .heartwall-subtitle {
-      font-family: 'Cormorant Garamond', serif; font-size: 1.1rem;
-      letter-spacing: 0.3em; color: var(--rose-gold); text-align: center; margin-bottom: 3vh;
-      opacity: 0; transform: translateY(20px); transition: all 1s ease 0.4s;
-    }
-    .slide.active .heartwall-title, .slide.active .heartwall-subtitle { opacity: 1; transform: translateY(0); }
-    .heartwall-container {
-      position: relative; width: 100%; max-width: 1100px; height: 60vh; height: 60svh;
-      opacity: 0; transform: scale(0.9); transition: all 1.5s ease 0.6s;
-    }
-    .slide.active .heartwall-container { opacity: 1; transform: scale(1); }
-    .heartwall-photo {
-      position: absolute; width: 95px; height: 120px; background: #fff; padding: 6px;
-      box-shadow: 0 8px 24px rgba(122, 68, 88, 0.18); border-radius: 2px;
-      transform: translate(-50%, -50%) scale(0) rotate(var(--rot));
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) var(--delay), opacity 0.8s ease var(--delay);
-      opacity: 0;
-    }
-    .slide.active .heartwall-photo {
-      transform: translate(-50%, -50%) scale(1) rotate(var(--rot));
-      opacity: 1;
-    }
-    .heartwall-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; border-radius: 1px; }
-
-    /* Proposal */
-    .proposal-slide .slide-content { flex-direction: column; padding-left: 5vw; }
-    .proposal-frame {
-      background: rgba(255, 255, 255, 0.82);
-      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      border-radius: 48px;
-      padding: 6vh 5vw; max-width: 850px; width: 100%;
-      box-shadow: 0 50px 120px rgba(122, 68, 88, 0.1);
-      text-align: center; opacity: 0; transform: translateY(50px) scale(0.96);
-      transition: all 1.3s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
-      position: relative;
-    }
-    .proposal-frame::before {
-      content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-      border-radius: 50px; background: linear-gradient(135deg, rgba(255,200,210,0.7), rgba(212,165,165,0.5), rgba(255,220,200,0.7));
-      z-index: -1; opacity: 0.6;
-    }
-    .slide.active .proposal-frame { opacity: 1; transform: translateY(0) scale(1); }
-    .proposal-frame h2 {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: 500; color: var(--rose-text); margin-bottom: 2rem;
-    }
-    .proposal-frame p {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(1.1rem, 2vw, 1.4rem);
-      line-height: 2.1; color: var(--rose-text-light); margin-bottom: 3rem;
-    }
-    .yes-btn {
-      font-family: 'Noto Serif SC', serif; font-size: 1.2rem;
-      background: linear-gradient(135deg, var(--rose-text) 0%, #9B5E70 100%);
-      color: #fff; border: none; padding: 1.2rem 4rem; border-radius: 50px;
-      cursor: pointer; letter-spacing: 0.2em;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 12px 45px rgba(122, 68, 88, 0.3);
-    }
-    .yes-btn:hover {
-      transform: translateY(-4px) scale(1.05);
-      box-shadow: 0 20px 70px rgba(122, 68, 88, 0.4);
-    }
-
-    /* Letter */
-    .letter-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
-    .letter-paper {
-      background: rgba(255, 255, 255, 0.85); max-width: 760px; width: 100%;
-      padding: 5vh 4vw; border-radius: 24px;
-      box-shadow: 0 40px 100px rgba(122, 68, 88, 0.1);
-      opacity: 0; transform: translateY(40px);
-      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
-    }
-    .slide.active .letter-paper { opacity: 1; transform: translateY(0); }
-    .letter-title {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 500; color: var(--rose-text); margin-bottom: 2rem;
-    }
-    .letter-body {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(1.1rem, 2vw, 1.4rem);
-      line-height: 2.4; color: var(--rose-text-light); white-space: pre-line;
-    }
-    .letter-line {
-      opacity: 0; transform: translateY(20px);
-      transition: all 0.8s ease var(--delay);
-    }
-    .slide.active .letter-line { opacity: 1; transform: translateY(0); }
-
-    /* Closing */
-    .closing-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
-    .closing-title {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(3.5rem, 8vw, 6.5rem);
-      font-weight: 500; color: var(--rose-text); white-space: nowrap;
-      letter-spacing: 0.15em; opacity: 0; transform: scale(0.9);
-      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
-    }
-    .slide.active .closing-title { opacity: 1; transform: scale(1); }
-    .closing-sub {
-      font-family: 'Great Vibes', cursive; font-size: clamp(2rem, 5vw, 3.5rem);
-      color: var(--rose-gold); margin-top: 1.5rem; opacity: 0; transition: opacity 1s ease 1s;
-    }
-    .slide.active .closing-sub { opacity: 1; }
-
-    /* Timer final page */
-    .timer-slide .slide-content { flex-direction: column; text-align: center; padding-left: 5vw; }
-    .timer-eyebrow {
-      font-family: 'Cormorant Garamond', serif; font-size: 1rem;
-      letter-spacing: 0.5em; color: var(--rose-text-light); margin-bottom: 1.5rem;
-      opacity: 0; transform: translateY(20px); transition: all 1s ease 0.2s;
-    }
-    .timer-title {
-      font-family: 'Noto Serif SC', serif; font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 500; color: var(--rose-text); margin-bottom: 4vh; opacity: 0;
-      transform: translateY(30px); transition: all 1s ease 0.4s;
-    }
-    .slide.active .timer-eyebrow, .slide.active .timer-title { opacity: 1; transform: translateY(0); }
-    .timer-cards {
-      display: flex; gap: 2.5vw; justify-content: center; align-items: stretch;
-      opacity: 0; transform: scale(0.95); transition: all 1.2s ease 0.6s;
-      flex-wrap: wrap;
-    }
-    .slide.active .timer-cards { opacity: 1; transform: scale(1); }
-    .timer-card {
-      background: rgba(255, 255, 255, 0.78); backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 36px;
-      padding: 4vh 2.5vw; min-width: 300px; max-width: 400px; flex: 1;
-      box-shadow: 0 40px 100px rgba(122, 68, 88, 0.1);
-      position: relative; overflow: hidden;
-    }
-    .timer-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-      background: linear-gradient(90deg, var(--gold), var(--rose-soft), var(--gold));
-    }
-    .timer-card-label {
-      font-family: 'Cormorant Garamond', serif; font-size: 0.95rem;
-      letter-spacing: 0.3em; color: var(--rose-gold); margin-bottom: 1.5rem;
+      font-style: italic;
+      font-size: clamp(.95rem, 2vw, 1.35rem);
+      letter-spacing: .42em;
       text-transform: uppercase;
+      color: rgba(251,246,238,.82);
+      margin-bottom: 1.6rem;
+      opacity: 0; animation: rise 1.2s .2s forwards;
     }
-    .timer-card-date {
-      font-family: 'Noto Serif SC', serif; font-size: 1.1rem; color: var(--rose-text-light);
-      margin-bottom: 2rem;
+    .hero__names {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(3.4rem, 12vw, 8.5rem);
+      line-height: 1;
+      letter-spacing: .01em;
+      text-shadow: 0 6px 40px rgba(0,0,0,.45);
+      opacity: 0; animation: rise 1.4s .45s forwards;
     }
-    .timer-number {
-      font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 6vw, 5rem);
-      font-weight: 600; color: var(--rose-text); line-height: 1;
-      margin-bottom: 0.8rem; animation: heartbeat 2s ease infinite;
-      display: flex; align-items: baseline; justify-content: center; gap: 0.15em;
+    .hero__names .heart {
+      display: inline-block;
+      color: #F4B8C4;
+      font-size: .72em;
+      margin: 0 .12em;
+      animation: beat 2.6s ease-in-out infinite;
+      text-shadow: 0 0 24px rgba(244,184,196,.6);
     }
-    .timer-unit-suffix {
-      font-size: 0.35em; font-weight: 500; color: var(--rose-gold);
-      letter-spacing: 0.1em;
+    @keyframes beat {
+      0%,100% { transform: scale(1); }
+      14% { transform: scale(1.18); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.12); }
     }
-    .timer-units {
-      display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;
-      font-family: 'Cormorant Garamond', serif; font-size: 0.95rem;
-      letter-spacing: 0.1em; color: var(--rose-text-light);
-    }
-    .timer-unit { text-align: center; }
-    .timer-unit span { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--rose-text); }
-    .timer-card-words {
-      font-family: 'Noto Serif SC', serif; font-size: 1.05rem; color: var(--rose-text-light);
-      line-height: 1.8;
-    }
-    .timer-bottom {
-      margin-top: 4vh; font-family: 'Great Vibes', cursive; font-size: clamp(2rem, 4vw, 3rem);
-      color: var(--rose-gold); opacity: 0; transition: opacity 1s ease 1s;
-    }
-    .slide.active .timer-bottom { opacity: 1; }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-    }
-
-    /* Sparkles */
-    .sparkle {
-      position: fixed; pointer-events: none; z-index: 1000;
-      font-size: 1.3rem; color: var(--rose-soft);
-      animation: sparkleOut 1.8s ease-out forwards;
-    }
-    @keyframes sparkleOut {
-      0% { opacity: 1; transform: translate(0,0) scale(0.5); }
-      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(30deg); }
-    }
-
-    /* Controls */
-    .controls {
-      position: fixed; bottom: 3vh; bottom: max(3vh, env(safe-area-inset-bottom)); right: 3vw; right: max(3vw, env(safe-area-inset-right)); z-index: 100;
-      display: flex; gap: 12px; align-items: center;
-      transition: opacity 0.5s ease;
-    }
-    .controls button {
-      width: 44px; height: 44px; border-radius: 50%;
-      border: 1px solid rgba(122, 68, 88, 0.15); background: rgba(255,255,255,0.78);
-      backdrop-filter: blur(10px); cursor: pointer; color: var(--rose-text);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; transition: all 0.3s ease;
-    }
-    .controls button:hover { background: rgba(255,255,255,0.95); transform: scale(1.1); }
-    .progress {
-      position: fixed; bottom: 0; bottom: env(safe-area-inset-bottom, 0); left: 0; height: 3px;
-      background: linear-gradient(90deg, var(--rose-gold), var(--gold)); z-index: 100;
-      transition: width 0.5s ease;
-    }
-    .nav-dots {
-      position: fixed; left: 2vw; top: 50%; transform: translateY(-50%);
-      z-index: 100; display: flex; flex-direction: column; gap: 12px;
-    }
-    .nav-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: rgba(122, 68, 88, 0.15); cursor: pointer; transition: all 0.3s ease;
-    }
-    .nav-dot.active { background: var(--rose-gold); transform: scale(1.4); }
-    .loading {
-      position: fixed; inset: 0; z-index: 9999; background: var(--rose-pale);
-      display: flex; align-items: center; justify-content: center; flex-direction: column;
-      transition: opacity 0.6s ease;
-    }
-    .loading.hidden { opacity: 0; pointer-events: none; }
-    .loading-heart { font-size: 3rem; animation: heartbeat 1.5s ease infinite; margin-bottom: 1rem; color: var(--rose-text); }
-    .loading-text { font-family: 'Cormorant Garamond', serif; color: var(--rose-text-light); letter-spacing: 0.3em; }
-
-    /* Start overlay */
-    .start-overlay {
-      position: fixed; inset: 0; z-index: 1000;
-      background: rgba(255, 250, 252, 0.92);
-      backdrop-filter: blur(12px);
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      transition: opacity 1.2s ease, visibility 1.2s ease;
-      cursor: pointer;
-    }
-    .start-overlay.hidden {
-      opacity: 0; visibility: hidden; pointer-events: none;
-    }
-    .start-content {
-      text-align: center; animation: fadeInUp 1.2s ease;
-    }
-    .start-title {
-      font-family: 'Noto Serif SC', 'Playfair Display', serif;
-      font-size: clamp(2.2rem, 6vw, 4rem);
-      color: var(--rose-text); margin-bottom: 0.5rem;
-      letter-spacing: 0.15em;
-    }
-    .start-names {
-      font-family: 'Noto Serif SC', serif;
-      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
-      font-weight: 400; color: var(--rose-text);
-      margin-bottom: 1rem;
-      letter-spacing: 0.1em;
-    }
-    .start-subtitle {
+    .hero__sub {
+      margin-top: 1.4rem;
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1rem, 2.2vw, 1.5rem);
-      color: var(--rose-text-light);
-      letter-spacing: 0.2em; margin-bottom: 2.5rem;
+      font-size: clamp(1.05rem, 2.4vw, 1.6rem);
+      font-style: italic;
+      letter-spacing: .04em;
+      color: rgba(251,246,238,.9);
+      opacity: 0; animation: rise 1.2s .75s forwards;
     }
-    .start-btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      gap: 12px;
-      padding: 1rem 2.5rem;
-      border: 1px solid var(--rose-gold);
-      border-radius: 50px;
-      background: rgba(255, 255, 255, 0.7);
-      color: var(--rose-text);
+    .hero__zh {
+      margin-top: .7rem;
+      font-size: clamp(.95rem, 1.8vw, 1.2rem);
+      letter-spacing: .5em;
+      padding-left: .5em;
+      color: rgba(251,246,238,.72);
+      opacity: 0; animation: rise 1.2s .95s forwards;
+    }
+    .hero__meta {
+      margin-top: 2.6rem;
+      display: flex; gap: 2.2rem; justify-content: center; flex-wrap: wrap;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: .95rem;
+      letter-spacing: .08em;
+      color: rgba(251,246,238,.66);
+      opacity: 0; animation: rise 1.2s 1.2s forwards;
+    }
+    .hero__meta b { font-weight: 500; color: rgba(251,246,238,.88); }
+    .scroll-hint {
+      position: absolute; bottom: 2.4rem; left: 50%; transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: .85rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: rgba(251,246,238,.6);
+      opacity: 0; animation: rise 1s 1.6s forwards, bob 2.2s 2.6s ease-in-out infinite;
+    }
+    .scroll-hint::after {
+      content: ''; display: block; width: 1px; height: 30px;
+      margin: .7rem auto 0; background: rgba(251,246,238,.4);
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bob {
+      0%,100% { transform: translate(-50%,0); }
+      50%     { transform: translate(-50%,8px); }
+    }
+
+    /* ---------- DIRECTORY ---------- */
+    .directory {
+      position: relative;
+      padding: clamp(5rem, 10vw, 9rem) 6vw clamp(4rem,8vw,7rem);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(201,139,154,.10), transparent 40%),
+        radial-gradient(circle at 88% 92%, rgba(138,154,128,.10), transparent 42%),
+        var(--ivory);
+    }
+    .directory__head {
+      max-width: 1080px; margin: 0 auto 4.5rem;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--hair);
+      padding-bottom: 1.6rem;
+    }
+    .directory__title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 600;
+      letter-spacing: -.01em;
+      line-height: 1.05;
+    }
+    .directory__title em {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--rose-deep);
+    }
+    .directory__lead {
+      max-width: 380px;
+      font-size: .98rem;
+      line-height: 1.9;
+      color: var(--ink-soft);
+    }
+
+    .entries {
+      max-width: 1080px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .entry {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: clamp(1.6rem, 4vw, 3.4rem);
+      padding: clamp(2rem,4vw,3.2rem) 0;
+      border-top: 1px solid var(--hair);
+      text-decoration: none;
+      color: inherit;
+      transition: transform .55s cubic-bezier(.22,.61,.36,1), padding .55s;
+      opacity: 0; transform: translateY(30px);
+    }
+    .entry.is-in { opacity: 1; transform: translateY(0); }
+    .entry:last-child { border-bottom: 1px solid var(--hair); }
+    .entry:hover { transform: translateY(-4px); }
+    .entry__num {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: 1;
+      color: var(--cream);
+      transition: color .5s;
+      min-width: clamp(3rem,8vw,5rem);
+    }
+    .entry:hover .entry__num { color: var(--accent); }
+    .entry__body { min-width: 0; }
+    .entry__label {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: .92rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+    .entry__title {
       font-family: 'Noto Serif SC', serif;
+      font-size: clamp(1.5rem, 3.6vw, 2.3rem);
+      font-weight: 600;
+      letter-spacing: .04em;
+      line-height: 1.2;
+      margin-bottom: .7rem;
+    }
+    .entry__desc {
+      font-size: .96rem;
+      line-height: 1.85;
+      color: var(--ink-soft);
+      max-width: 52ch;
+    }
+    .entry__go {
+      position: relative;
+      display: inline-flex; align-items: center; gap: .6rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
       font-size: 1.1rem;
-      letter-spacing: 0.2em;
-      box-shadow: 0 10px 40px rgba(139, 74, 94, 0.15);
-      animation: pulse-gentle 2.5s ease infinite;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      letter-spacing: .12em;
+      color: var(--accent);
+      white-space: nowrap;
     }
-    .start-btn:hover { transform: scale(1.05); box-shadow: 0 14px 50px rgba(139, 74, 94, 0.22); }
-    .start-hint {
-      margin-top: 2rem;
+    .entry__go::after {
+      content: '→';
+      transition: transform .45s cubic-bezier(.22,.61,.36,1);
+    }
+    .entry:hover .entry__go::after { transform: translateX(8px); }
+    /* accent line grows on hover */
+    .entry::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px; background: var(--accent);
+      transform: scaleY(0); transform-origin: top;
+      transition: transform .55s cubic-bezier(.22,.61,.36,1);
+    }
+    .entry:hover::before { transform: scaleY(1); }
+    .entry:hover { padding-left: 1.2rem; }
+
+    /* per-entry accents */
+    .entry--proposal { --accent: var(--rose-deep); }
+    .entry--nest     { --accent: var(--sage-deep); }
+    .entry--wedding  { --accent: var(--taupe-deep); }
+
+    /* ---------- FOOTER ---------- */
+    .foot {
+      text-align: center;
+      padding: 3rem 6vw 4rem;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 0.9rem;
-      color: var(--rose-text-light);
-      letter-spacing: 0.15em;
+      font-style: italic;
+      color: var(--muted);
+      font-size: .95rem;
+      letter-spacing: .04em;
     }
-    @keyframes pulse-gentle {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 900px) {
-      .slide {
-        padding: 5vh 5vw;
-        padding-top: max(5vh, env(safe-area-inset-top));
-        padding-bottom: max(5vh, env(safe-area-inset-bottom));
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        align-items: safe center;
-      }
-      /* Reset desktop-only left padding (clears the hidden timeline rail) so content is centered */
-      .slide-content { padding-left: 0 !important; height: auto; min-height: 100%; }
-      .timeline-rail { display: none; }
-      .split-slide .slide-content { flex-direction: column !important; gap: 4vh; }
-      .text-side { max-width: 100%; }
-      .image-side { flex: 0 0 auto !important; }
-      .photo-card { padding: 10px; }
-      .photo-card::before { inset: 7px; }
-      .photo-card::after { inset: 10px; }
-      .photo-card.portrait { width: min(78vw, 300px); }
-      .photo-card.portrait img { height: auto; aspect-ratio: 3 / 4; }
-      .photo-card.landscape { width: 88vw; }
-      .photo-card.landscape img { height: auto; aspect-ratio: 16 / 10; }
-      .pair-photos .photo-card.landscape { width: 82vw; }
-      .pair-photos .photo-card.landscape img { height: auto; aspect-ratio: 16 / 10; }
-      .nav-dots { display: none; }
-      .closing-title { white-space: normal; font-size: clamp(2.5rem, 12vw, 4rem); }
-      .timer-cards { flex-direction: column; gap: 2.5vh; }
-      .timer-card { min-width: 0; width: 90vw; max-width: 420px; padding: 2.5vh 5vw; }
-      .timer-number { font-size: clamp(2.2rem, 9vw, 3rem); }
-      .timer-card-words { font-size: 0.95rem; line-height: 1.7; }
-      .timeline-hero { flex-direction: column; gap: 3vh; }
-      .timeline-connector { width: 1px; height: 36px; top: 0; }
-      .timeline-connector::after { padding: 4px 0; }
-      .timeline-event-date { font-size: 1.15rem; }
-      .side-body { line-height: 1.9; }
-      .letter-body { line-height: 2.0; }
-      .proposal-frame p { line-height: 1.9; }
-      .heartwall-photo { width: clamp(46px, 13vw, 80px); height: clamp(58px, 16vw, 100px); padding: 4px; }
-      .controls { gap: 8px; }
-      .controls button { width: 48px; height: 48px; }
-    }
-  
-    /* Pair slides */
-    .pair-slide .slide-content {
-      flex-direction: column; align-items: center; justify-content: center;
-      gap: 3vh; padding-left: 5vw;
-    }
-    .pair-header {
-      text-align: center; opacity: 0; transform: translateY(-30px);
-      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
-    }
-    .slide.active .pair-header { opacity: 1; transform: translateY(0); }
-    .pair-photos {
-      display: flex; align-items: center; justify-content: center; gap: 3vw;
-      opacity: 0; transform: scale(0.95);
-      transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
-      flex-wrap: wrap; max-width: 100%;
-    }
-    .slide.active .pair-photos { opacity: 1; transform: scale(1); }
-    .pair-photos .photo-card { transform: rotate(-1deg); }
-    .pair-photos .photo-card:last-of-type { transform: rotate(1deg); }
-    .pair-photos .photo-card.landscape { width: 480px; }
-    .pair-photos .photo-card.landscape img { height: 300px; }
-    .pair-connector {
-      font-family: 'Cormorant Garamond', serif; font-size: 2rem;
-      color: var(--rose-gold); opacity: 0.8;
-    }
-    @media (max-width: 900px) {
-      .pair-photos { flex-direction: column; gap: 3vh; }
-      .pair-connector { transform: rotate(90deg); }
-      /* Repeated here so it overrides the global 480px rule above (equal specificity, later source order wins) */
-      .pair-photos .photo-card.landscape { width: 82vw; }
-      .pair-photos .photo-card.landscape img { height: auto; aspect-ratio: 16 / 10; }
+    .foot .sig {
+      font-family: 'Great Vibes', cursive;
+      font-style: normal;
+      font-size: 1.8rem;
+      color: var(--rose-deep);
+      display: block;
+      margin-bottom: .6rem;
     }
 
-    /* Touch-specific: only affects touch devices, desktop untouched */
-    @media (hover: none) and (pointer: coarse) {
-      .stage { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-      body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-      /* Touch has no hover to brighten controls, so keep the fullscreen exit button more visible */
-      html.is-fullscreen .controls { opacity: 0.85; }
-      html.is-pseudo-fullscreen .controls { opacity: 0.85; }
+    @media (max-width: 640px) {
+      .entry { grid-template-columns: auto 1fr; }
+      .entry__go { grid-column: 2; margin-top: 1rem; }
+      .hero__meta { gap: 1.1rem; }
     }
-
-    /* Fullscreen button */
-    .fs-btn { position: relative; }
-    .fs-btn svg { display: block; }
-    .fs-btn .fs-exit { display: none; }
-
-    /* Fullscreen mode: hide chrome, keep fs-btn as the exit, slim progress for position sense */
-    html.is-fullscreen .nav-dots,
-    html.is-fullscreen .timeline-rail,
-    html.is-fullscreen .controls #musicBtn,
-    html.is-fullscreen .controls #playBtn,
-    html.is-fullscreen .controls #prevBtn,
-    html.is-fullscreen .controls #nextBtn { display: none; }
-    html.is-fullscreen .controls { bottom: max(2vh, env(safe-area-inset-bottom)); right: max(2vw, env(safe-area-inset-right)); opacity: 0.55; transition: opacity 0.4s ease; }
-    html.is-fullscreen .controls:hover { opacity: 1; }
-    html.is-fullscreen .fs-btn { background: rgba(139, 74, 94, 0.85); color: #fff; border-color: rgba(139, 74, 94, 0.9); }
-    html.is-fullscreen .fs-btn .fs-enter { display: none; }
-    html.is-fullscreen .fs-btn .fs-exit { display: block; }
-    html.is-fullscreen .progress { height: 2px; opacity: 0.6; }
-
-    /* Pseudo-fullscreen (iOS Safari fallback): only hides in-page UI, cannot hide browser chrome */
-    html.is-pseudo-fullscreen .nav-dots,
-    html.is-pseudo-fullscreen .timeline-rail,
-    html.is-pseudo-fullscreen .controls #musicBtn,
-    html.is-pseudo-fullscreen .controls #playBtn,
-    html.is-pseudo-fullscreen .controls #prevBtn,
-    html.is-pseudo-fullscreen .controls #nextBtn { display: none; }
-    html.is-pseudo-fullscreen .fs-btn { background: rgba(139, 74, 94, 0.85); color: #fff; border-color: rgba(139, 74, 94, 0.9); }
-    html.is-pseudo-fullscreen .fs-btn .fs-enter { display: none; }
-    html.is-pseudo-fullscreen .fs-btn .fs-exit { display: block; }
-
-    /* First-time fullscreen hint toast */
-    .fs-hint {
-      position: fixed; left: 50%; bottom: max(10vh, env(safe-area-inset-bottom));
-      transform: translateX(-50%); z-index: 200;
-      padding: 0.7rem 1.4rem; border-radius: 999px;
-      background: rgba(139, 74, 94, 0.82); color: #fff;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      font-family: 'Noto Serif SC', serif; font-size: 0.9rem; letter-spacing: 0.08em;
-      opacity: 0; pointer-events: none; white-space: nowrap;
-      transition: opacity 0.4s ease;
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .entry { opacity: 1; transform: none; }
     }
-    .fs-hint.show { opacity: 1; }
-    @media (max-width: 900px) {
-      .fs-hint { font-size: 0.82rem; padding: 0.6rem 1.1rem; max-width: 90vw; white-space: normal; text-align: center; }
-    }
-
   </style>
 </head>
 <body>
-  <div class="loading" id="loading">
-    <div class="loading-heart">♥</div>
-    <div class="loading-text">LOADING LOVE</div>
-  </div>
 
-  <div class="stage" id="stage">
-    <div class="glow"></div>
-    <div class="hearts" id="hearts"></div>
-
-    <div class="timeline-rail" id="timelineRail">
-      <div class="timeline-line"></div>
-      <div id="timelineNodes"></div>
-    </div>
-
-    <div class="progress" id="progress"></div>
-    <div class="nav-dots" id="navDots"></div>
-    <div class="controls">
-      <button id="musicBtn" title="音乐" aria-label="音乐">♪</button>
-      <button id="playBtn" title="自动播放" aria-label="自动播放">▶</button>
-      <button id="prevBtn" title="上一页" aria-label="上一页">‹</button>
-      <button id="nextBtn" title="下一页" aria-label="下一页">›</button>
-      <button id="fsBtn" class="fs-btn" title="全屏" aria-label="全屏">
-        <svg class="fs-enter" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
-        <svg class="fs-exit" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M9 4v2H5v4H3V4h6zm6 0h6v6h-2V6h-4V4zM3 14h2v4h4v2H3v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
-      </button>
-    </div>
-    <div class="fs-hint" id="fsHint">点击屏幕翻到下一页 · 再次点击 ⛶ 或按 Esc 退出全屏</div>
-
-    <section class="slide cover-slide active" data-layout="cover">
-      <div class="slide-content">
-        <div class="cover-eyebrow">A Love Story</div>
-        <h1 class="cover-title">写给你的信</h1>
-        <div class="cover-names">师豪 <span class="heart-icon">❤</span> 佳力</div>
-        <div class="cover-script">Every moment with you is a heart beating</div>
-        <div class="cover-ornament"></div>
-        <div class="cover-date" id="coverDate">2026 · 我们的故事</div>
-        <div class="scroll-hint">点击屏幕继续</div>
-      </div>
-    </section>
-
-    <section class="slide timeline-intro" data-layout="timeline" data-timeline="intro">
-      <div class="slide-content">
-        <div class="timeline-intro-title">我们的故事</div>
-        <div class="timeline-intro-sub">TIME HAS WITNESSED EVERYTHING</div>
-        <div class="timeline-hero">
-          <div class="timeline-event">
-            <div class="timeline-event-dot"></div>
-            <div class="timeline-event-date">2024.12.30</div>
-            <div class="timeline-event-label">我们相识</div>
-          </div>
-          <div class="timeline-connector"></div>
-          <div class="timeline-event together">
-            <div class="timeline-event-dot"></div>
-            <div class="timeline-event-date">2025.05.10</div>
-            <div class="timeline-event-label">我们相恋</div>
-          </div>
-          <div class="timeline-connector"></div>
-          <div class="timeline-event">
-            <div class="timeline-event-dot"></div>
-            <div class="timeline-event-date" id="proposalTimelineDate">2026.06.22</div>
-            <div class="timeline-event-label">今天 · 求婚</div>
-          </div>
-        </div>
-        <div class="timeline-caption">从相遇的那一刻起，时间就开始为我们写故事</div>
-      </div>
-    </section>
-
-        <div id="photoSlides"></div>
-
-<section class="slide heartwall-slide" data-layout="heartwall">
-      <div class="slide-content">
-        <div class="heartwall-title">我的心，装满了你</div>
-        <div class="heartwall-subtitle">每一张照片，都是我爱你的证据</div>
-        <div class="heartwall-container" id="heartwall"></div>
-      </div>
-    </section>
-
-    <section class="slide proposal-slide" data-layout="proposal">
-      <div class="slide-content">
-        <div class="proposal-frame">
-          <h2>你愿意嫁给我吗？</h2>
-          <p>从缙云山的初见，到稻城亚丁的雪山，
-从乐山大佛前的许愿，到泸沽湖畔的日出，
-我们一起走过了四季，走过了山川。
-佳力，余生请多指教，嫁给我好吗？</p>
-          <button class="yes-btn" id="yesBtn">我愿意</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide letter-slide" data-layout="letter">
-      <div class="slide-content">
-        <div class="letter-paper">
-          <div class="letter-title">致佳力</div>
-          <div class="letter-body" id="letterBody">
-            <div class="letter-line" style="--delay:0.4s">亲爱的佳力：</div>
-            <div class="letter-line" style="--delay:0.8s">从遇见你的那天起，你就住进了我的心里。</div>
-            <div class="letter-line" style="--delay:1.2s">我想和你一起，看遍世间所有风景。</div>
-            <div class="letter-line" style="--delay:1.6s">从日出到日落，从青春到白头。</div>
-            <div class="letter-line" style="--delay:2.0s">今天，我想亲口对你说——</div>
-            <div class="letter-line" style="--delay:2.4s">嫁给我，好吗？</div>
-            <div class="letter-line" style="--delay:2.8s">永远爱你的，师豪。</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide closing-slide" data-layout="closing">
-      <div class="slide-content">
-        <h2 class="closing-title">我爱你，永远</h2>
-        <div class="closing-sub">Forever & Always</div>
-      </div>
-    </section>
-
-    <section class="slide timer-slide" data-layout="timer" data-timeline="timer">
-      <div class="slide-content">
-        <div class="timer-eyebrow">TIME HAS WITNESSED OUR LOVE</div>
-        <div class="timer-title">时间，是我们相爱的证据</div>
-        <div class="timer-cards">
-          <div class="timer-card">
-            <div class="timer-card-label">Since We Met</div>
-            <div class="timer-card-date">2024年12月30日 · 我们相识</div>
-            <div class="timer-number"><span id="metDays">0</span><span class="timer-unit-suffix">天</span></div>
-            <div class="timer-units">
-              <div class="timer-unit"><span id="metHours">0</span>时</div>
-              <div class="timer-unit"><span id="metMinutes">0</span>分</div>
-              <div class="timer-unit"><span id="metSeconds">0</span>秒</div>
-            </div>
-            <div class="timer-card-words">从第一次相视而笑开始，<br>你便成了我世界里的光。</div>
-          </div>
-          <div class="timer-card">
-            <div class="timer-card-label">Since We Fell In Love</div>
-            <div class="timer-card-date">2025年5月10日 · 我们相恋</div>
-            <div class="timer-number"><span id="loveDays">0</span><span class="timer-unit-suffix">天</span></div>
-            <div class="timer-units">
-              <div class="timer-unit"><span id="loveHours">0</span>时</div>
-              <div class="timer-unit"><span id="loveMinutes">0</span>分</div>
-              <div class="timer-unit"><span id="loveSeconds">0</span>秒</div>
-            </div>
-            <div class="timer-card-words">从牵手那天起，<br>每一秒都在说我愿意。</div>
-          </div>
-          <div class="timer-card">
-            <div class="timer-card-label">Since I Proposed</div>
-            <div class="timer-card-date" id="proposalTimerDate">今天 · 求婚</div>
-            <div class="timer-number"><span id="proposalDays">0</span><span class="timer-unit-suffix">天</span></div>
-            <div class="timer-units">
-              <div class="timer-unit"><span id="proposalHours">0</span>时</div>
-              <div class="timer-unit"><span id="proposalMinutes">0</span>分</div>
-              <div class="timer-unit"><span id="proposalSeconds">0</span>秒</div>
-            </div>
-            <div class="timer-card-words">从你说"我愿意"的那一刻起，<br>我们的永远，正式开始。</div>
-          </div>
-        </div>
-        <div class="timer-bottom">未来的每一天，都想和你一起</div>
-      </div>
-    </section>
-
-    <audio id="bgMusic" loop src="lovebgm.mp3"></audio>
-  </div>
-
-  <div class="start-overlay" id="startOverlay">
-    <div class="start-content">
-      <div class="start-title">我们的故事</div>
-      <div class="start-names">师豪 <span class="heart-icon">❤</span> 佳力</div>
-      <div class="start-subtitle">A Love Story Begins</div>
-      <div class="start-btn">开启浪漫旅程 ♪</div>
-      <div class="start-hint">点击屏幕任意处开始 · 音乐与画面将自动播放</div>
+<!-- ========== HERO · 入口封面 ========== -->
+<section class="hero" id="hero">
+  <div class="hero__photo" aria-hidden="true"></div>
+  <div class="hero__veil" aria-hidden="true"></div>
+  <div class="hero__grain" aria-hidden="true"></div>
+  <div class="hero__inner">
+    <p class="kicker">haoloveli · 好爱你</p>
+    <h1 class="hero__names">师豪<span class="heart">❤</span>佳力</h1>
+    <p class="hero__sub">A little universe of us — our stories, gathered here.</p>
+    <p class="hero__zh">我 们 的 故 事 集</p>
+    <div class="hero__meta">
+      <span>相识 · <b>2024.12.30</b></span>
+      <span>相恋 · <b>2025.05.10</b></span>
+      <span>求婚 · <b>正在进行</b></span>
     </div>
   </div>
+  <div class="scroll-hint">Enter</div>
+</section>
 
-  <script>
-    const photoPages = [
-      { type: 'couple', src: "2025 年 2 月第一次见面缙云山.jpg", orientation: "portrait", date: "2025年2月", station: 1, label: "You & Me", title: "第一次相见", body: "2024年的冬天，\n我们在缙云山第一次见面。\n从那一刻起，故事开始了。" },
-      { type: 'couple', src: "mmexport1741595537727.jpg", orientation: "landscape", date: "2025年3月10日", station: 2, label: "Memory", title: "每一步都是故事", body: "和你走过的路，都是最美的风景。\n因为有你，平凡的地方也有了意义。" },
-      { type: 'couple', src: "2025 年 5 月_爱心石雪山_8.10分.jpg", orientation: "portrait", date: "2025年5月", station: 3, label: "Moment", title: "爱心石雪山", body: "雪山脚下，爱心石前，\n我的心意，早已不言而喻。" },
-      { type: 'couple', src: "2025 年 5 月阿坝州.jpeg", orientation: "landscape", date: "2025年5月", station: 4, label: "Together", title: "阿坝州的风", body: "阿坝州的风吹过，\n你在我身旁，\n世界都变得辽阔。" },
-      { type: 'couple', src: "2025 年 5 月.jpg", orientation: "portrait", date: "2025年5月", station: 5, label: "Us", title: "想把这一刻定格", body: "只要和你在一起，哪里都是晴天。\n哪怕是下雨天，也觉得浪漫。" },
-      { type: 'couple', src: "2025 年 5 月 10 号表白成为恋人.jpg", orientation: "landscape", date: "2025年5月10日", station: 6, label: "Forever", title: "成为恋人的那一天", body: "2025年5月10日，\n我鼓起勇气向你表白。\n你说愿意，我的世界从此亮了起来。" },
-      { type: 'couple', src: "IMG_20250511_170129.jpg", orientation: "landscape", date: "2025年5月11日", station: 7, label: "Sunshine", title: "世界很大，眼里只有你", body: "你笑起来的样子，\n是我见过最美的风景。" },
-      { type: 'couple', src: "IMG_20250525_221852.jpg", orientation: "portrait", date: "2025年5月24日", station: 8, label: "Two Souls", title: "一个人的镜头，两个人的故事", body: "你的每一面，我都想珍藏。\n因为都是你，所以都喜欢。" },
-      { type: 'couple', src: "IMG_20250530_165640.jpg", orientation: "portrait", date: "2025年5月30日", station: 9, label: "Sweet", title: "最好的旅行", body: "不需要去哪里，\n只要你在身边，就是最好的旅行。" },
-      { type: 'couple', src: "2025 年 7 月-1.jpg", orientation: "portrait", date: "2025年7月", station: 10, label: "Treasure", title: "你笑起来，风都温柔", body: "时间过得很快，\n但和你在一起的每一秒，我都想慢一点。" },
-      { type: 'couple', src: "2025 年 7 月.jpg", orientation: "portrait", date: "2025年7月", station: 11, label: "Bliss", title: "牵手走过的路，都是浪漫", body: "牵着你的手，\n我就知道，这条路我想一直走下去。" },
-      { type: 'couple', src: "2025 年 7 月_乐山大佛前_7.60分.jpg", orientation: "portrait", date: "2025年7月", station: 12, label: "Warmth", title: "乐山大佛前", body: "站在乐山大佛前，\n许愿余生都有你。" },
-      { type: 'couple', src: "IMG_20250705_201036.jpg", orientation: "portrait", date: "2025年7月5日", station: 13, label: "Love", title: "你的眼里，有整片星空", body: "你的眼神里有光，\n那是我最想停留的地方。" },
-      { type: 'couple', src: "IMG_20250809_192822.jpg", orientation: "landscape", date: "2025年8月9日", station: 14, label: "Radiance", title: "平凡的日子，因为有你而发光", body: "和你在一起的时候，\n连空气都是甜的。" },
-      { type: 'couple', src: "IMG_20250809_175936.jpg", orientation: "portrait", date: "2025年8月9日", station: 15, label: "Both Sides", title: "不同的角度，同样的爱", body: "两个人，各自精彩。\n合在一起，就是最美好的我们。" },
-      { type: 'couple', src: "IMG_20250817_104404.jpg", orientation: "portrait", date: "2025年8月17日", station: 16, label: "Dream", title: "想和你一起，慢慢变老", body: "遇见你之前，我没想过结婚。\n遇见你之后，结婚我没想过别人。" },
-      { type: 'couple', src: "2025 年 10 月泸沽湖日出.jpg", orientation: "portrait", date: "2025年10月", station: 17, label: "Promise", title: "泸沽湖日出", body: "泸沽湖的日出，\n和你一起等待。\n那一刻，时间仿佛静止。" },
-      { type: 'couple', src: "泸沽湖-走婚桥.jpg", orientation: "portrait", date: "2025年10月", station: 18, label: "Eternity", title: "走婚桥上", body: "走婚桥上的风，\n吹过我们的故事。\n一桥两端，都是我们。" },
-      { type: 'couple', src: "2025 年 10 月稻城亚丁.jpg", orientation: "landscape", date: "2025年10月", station: 19, label: "Heart", title: "稻城亚丁", body: "在稻城亚丁，\n和你一起看雪山、海子、蓝天。\n只要有你在，哪里都是天堂。" },
-      { type: 'couple', src: "IMG_20251002_132901.jpg", orientation: "portrait", date: "2025年10月2日", station: 20, label: "Soul", title: "你的存在，就是最好的礼物", body: "你的存在，就是我最好的礼物。\n不需要节日，每天都想珍惜。" },
-      { type: 'couple', src: "IMG_20251004_175939.jpg", orientation: "portrait", date: "2025年10月4日", station: 21, label: "Magic", title: "人间烟火，最抚人心", body: "人间烟火，最抚人心。\n而你，最抚我心。" },
-      { type: 'couple', src: "IMG_20251004_175959.jpg", orientation: "portrait", date: "2025年10月4日", station: 22, label: "Wonder", title: "与你有关，皆是浪漫", body: "与你有关，皆是浪漫。\n哪怕是日常，也闪闪发光。" },
-      { type: 'couple', src: "情侣浪漫_城市公园草坪依偾B_7.90分.jpg", orientation: "portrait", date: "2025年11月15日", station: 23, label: "Smile", title: "从此朝暮，都有人陪", body: "从此朝暮，都有人陪。\n这是我最大的心安。" },
-      { type: 'couple', src: "IMG_20251129_164829.jpg", orientation: "landscape", date: "2025年11月29日", station: 24, label: "Glow", title: "我们的故事，未完待续", body: "我们的故事，未完待续。\n而我，迫不及待想写下去。" },
-      { type: 'couple', src: "情侣欢乐_红叶林大笑比耶_8.55分.jpg", orientation: "portrait", date: "2025年11月30日", station: 25, label: "Bloom", title: "红叶纷飞", body: "红叶漫天，\n而你是我眼中最美的风景。" },
-      { type: 'couple', src: "情侣浪漫_红叶林依偾自拍_8.55分.jpg", orientation: "portrait", date: "2025年11月30日", station: 26, label: "Breeze", title: "红叶下的我们", body: "依偎在红叶树下，\n这一刻，岁月静好。" },
-      { type: 'couple', src: "情侣欢乐_三峡之巅大笑_7.65分.jpg", orientation: "portrait", date: "2026年2月23日", station: 27, label: "Sparkle", title: "三峡之巅", body: "在三峡之巅大笑，\n那是我们最美的模样。" },
-      { type: 'couple', src: "情侣浪漫_雪景自拍依偾_7.50分.jpg", orientation: "portrait", date: "2026年", station: 28, label: "Harmony", title: "雪中的我们", body: "雪落在你的头发上，\n我想和你一起，从青丝到白头。" },
-      { type: 'couple', src: "情侣特色_爱心框合照_8.20分.jpg", orientation: "portrait", date: "2026年", station: 29, label: "Destiny", title: "爱心框里", body: "爱心框里，我们的笑容，\n是最美的告白。" },
-      { type: 'couple', src: "情侣特色_金雕雕塑比心_8.25分.jpg", orientation: "portrait", date: "2026年", station: 30, label: "Serendipity", title: "金雕雕塑前", body: "那一天，阳光正好，你笑得正好。\n我站在你身边，觉得整个世界都安静了。" },
-      { type: 'couple', src: "夜晚-花海相拥.jpg", orientation: "landscape", date: "2026年", station: 31, label: "Journey", title: "夜晚的花海", body: "夜晚的花海，\n拥你入怀，\n这一刻就是永恒。" },
-      { type: 'couple', src: "psc (2).jpeg", orientation: "landscape", date: "2026年", station: 32, label: "Reflections", title: "你的样子，我都喜欢", body: "即使不在同一个画面里，\n心也在一起。" },
-      { type: 'pair', src: ["有情-女左.jpeg", "有情-男右.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 33, label: "His & Hers", title: "有情人", body: "有情人终成眷属，\n你就是我的情之所钟。" },
-      { type: 'pair', src: ["金佛山-金龟朝阳-女左.jpeg", "金佛山-金龟朝阳-男右.jpeg"], orientation: ["landscape", "landscape"], date: "2026年", station: 34, label: "You & Me", title: "金佛山上", body: "金佛山上看朝阳，\n你比朝阳更耀眼。" },
-      { type: 'pair', src: ["四面山瀑布-女.jpeg", "四面山瀑布-男.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 35, label: "Memory", title: "四面山瀑布", body: "瀑布飞流而下，\n我的爱，只为你奔涌。" },
-      { type: 'pair', src: ["马尿水瀑布-男左.jpeg", "马尿水瀑布—女右.jpeg"], orientation: ["portrait", "portrait"], date: "2026年", station: 36, label: "Moment", title: "马尿水瀑布", body: "瀑布边有你，\n风景才有了声音。" }
-    ];
+<!-- ========== DIRECTORY · 故事目录 ========== -->
+<section class="directory" id="directory">
+  <header class="directory__head">
+    <h2 class="directory__title">我们的<em>故事集</em></h2>
+    <p class="directory__lead">三个小天地，记录着我们从相识到未来的每一段。挑一个，走进去看看吧。</p>
+  </header>
 
-    function buildPhotoSlides() {
-      const container = document.getElementById('photoSlides');
-      if (!container) return;
+  <nav class="entries" aria-label="站点目录">
 
-      const chapterTitles = [
-        { number: 'Chapter I', title: '我们的旅程\n开始了' },
-        { number: 'Chapter II', title: '走过更多的风景' },
-        { number: 'Chapter III', title: '未来还很长' }
-      ];
+    <a class="entry entry--proposal" href="proposal/">
+      <span class="entry__num">01</span>
+      <div class="entry__body">
+        <p class="entry__label">The Proposal · 求婚现场</p>
+        <h3 class="entry__title">大屏求婚演示</h3>
+        <p class="entry__desc">全屏幻灯片，串联我们相识、相恋与每一站的足迹，以心形照片墙抵达高潮。为那一个"愿意"而准备的浪漫一页。</p>
+      </div>
+      <span class="entry__go">进入</span>
+    </a>
 
-      const ch1End = 12;
-      const ch2End = 24;
+    <a class="entry entry--nest" href="lovenest/">
+      <span class="entry__num">02</span>
+      <div class="entry__body">
+        <p class="entry__label">Love Nest · 爱的小窝</p>
+        <h3 class="entry__title">长期主义人生仪表盘</h3>
+        <p class="entry__desc">相恋天数、今日金句、人生里程碑、情感银行与关系经营——把婚姻当作一场无限游戏来经营的家。</p>
+      </div>
+      <span class="entry__go">进入</span>
+    </a>
 
-      const chapterSlide = (chapter) => {
-        const section = document.createElement('section');
-        section.className = 'slide chapter-slide';
-        section.dataset.layout = 'chapter';
-        section.innerHTML = `<div class="slide-content"><div class="chapter-number">${chapter.number}</div><h2 class="chapter-title">${chapter.title}</h2></div>`;
-        return section;
-      };
+    <a class="entry entry--wedding" href="wedding/">
+      <span class="entry__num">03</span>
+      <div class="entry__body">
+        <p class="entry__label">Wedding Journal · 婚拍手记</p>
+        <h3 class="entry__title">婚拍决策手记</h3>
+        <p class="entry__desc">在时间、雨季与假期之间，慢慢把"选哪家、什么时候去"想清楚。我们一起边看边写边决定的小天地。</p>
+      </div>
+      <span class="entry__go">进入</span>
+    </a>
 
-      const singleSlide = (page, reverse) => {
-        const section = document.createElement('section');
-        section.className = 'slide split-slide' + (reverse ? ' reverse' : '');
-        section.dataset.layout = reverse ? 'split-right' : 'split-left';
-        section.dataset.timeline = (page.station - 1).toString();
-        const cardClass = 'photo-card ' + (page.orientation === 'landscape' ? 'landscape' : 'portrait');
-        section.innerHTML = `
-          <div class="slide-content">
-            <div class="text-side">
-              <div class="photo-date-badge"><span class="dot"></span>${page.date} · 第${page.station}站</div>
-              <div class="side-label">${page.label}</div>
-              <h2 class="side-title">${page.title}</h2>
-              <p class="side-body">${page.body}</p>
-            </div>
-            <div class="image-side">
-              <div class="${cardClass}">
-                <img src="lihao.img/${page.src}" alt="photo ${page.station}" loading="lazy">
-              </div>
-            </div>
-          </div>`;
-        return section;
-      };
+  </nav>
+</section>
 
-      const pairSlide = (page) => {
-        const section = document.createElement('section');
-        section.className = 'slide pair-slide';
-        section.dataset.layout = 'pair';
-        section.dataset.timeline = (page.station - 1).toString();
-        const c1 = 'photo-card ' + (page.orientation[0] === 'landscape' ? 'landscape' : 'portrait');
-        const c2 = 'photo-card ' + (page.orientation[1] === 'landscape' ? 'landscape' : 'portrait');
-        section.innerHTML = `
-          <div class="slide-content">
-            <div class="pair-header">
-              <div class="photo-date-badge"><span class="dot"></span>${page.date} · 第${page.station}站</div>
-              <div class="side-label">${page.label}</div>
-              <h2 class="side-title">${page.title}</h2>
-              <p class="side-body">${page.body}</p>
-            </div>
-            <div class="pair-photos">
-              <div class="${c1}"><img src="lihao.img/${page.src[0]}" alt="photo ${page.station}a" loading="lazy"></div>
-              <div class="pair-connector">❤</div>
-              <div class="${c2}"><img src="lihao.img/${page.src[1]}" alt="photo ${page.station}b" loading="lazy"></div>
-            </div>
-          </div>`;
-        return section;
-      };
+<footer class="foot">
+  <span class="sig">haoloveli</span>
+  豪❤力 · 好爱你 · 愿我们一直走下去
+</footer>
 
-      let built = 0;
-      photoPages.forEach((page, i) => {
-        if (i === 0) container.appendChild(chapterSlide(chapterTitles[0]));
-        if (i === ch1End) container.appendChild(chapterSlide(chapterTitles[1]));
-        if (i === ch2End) container.appendChild(chapterSlide(chapterTitles[2]));
-        if (page.type === 'couple') {
-          container.appendChild(singleSlide(page, built % 2 === 1));
-          built++;
-        } else {
-          container.appendChild(pairSlide(page));
-          built++;
-        }
-      });
-    }
-
-    buildPhotoSlides();
-
-    const meetDate = new Date('2024-12-30T00:00:00+08:00');
-    const loveDate = new Date('2025-05-10T00:00:00+08:00');
-    const proposalDate = new Date();
-    proposalDate.setHours(0, 0, 0, 0);
-    const pad2 = (n) => String(n).padStart(2, '0');
-    const todayStr = proposalDate.getFullYear() + '.' + pad2(proposalDate.getMonth()+1) + '.' + pad2(proposalDate.getDate());
-    const todayCN = proposalDate.getFullYear() + '年' + (proposalDate.getMonth()+1) + '月' + proposalDate.getDate() + '日';
-    document.getElementById('coverDate').textContent = proposalDate.getFullYear() + ' · 我们的故事';
-    document.getElementById('proposalTimelineDate').textContent = todayStr;
-    document.getElementById('proposalTimerDate').textContent = todayCN + ' · 求婚';
-
-    const timelineEvents = [
-      { date: "2024.12.30", label: "相识", milestone: true },
-      { date: "2025.05.10", label: "相恋", milestone: true },
-      { date: "2025年2月", label: "第1站" },
-      { date: "2025年3月10日", label: "第2站" },
-      { date: "2025年5月", label: "第3站" },
-      { date: "2025年5月", label: "第4站" },
-      { date: "2025年5月", label: "第5站" },
-      { date: "2025年5月10日", label: "第6站" },
-      { date: "2025年5月11日", label: "第7站" },
-      { date: "2025年5月24日", label: "第8站" },
-      { date: "2025年5月30日", label: "第9站" },
-      { date: "2025年7月", label: "第10站" },
-      { date: "2025年7月", label: "第11站" },
-      { date: "2025年7月", label: "第12站" },
-      { date: "2025年7月5日", label: "第13站" },
-      { date: "2025年8月9日", label: "第14站" },
-      { date: "2025年8月9日", label: "第15站" },
-      { date: "2025年8月17日", label: "第16站" },
-      { date: "2025年10月", label: "第17站" },
-      { date: "2025年10月", label: "第18站" },
-      { date: "2025年10月", label: "第19站" },
-      { date: "2025年10月2日", label: "第20站" },
-      { date: "2025年10月4日", label: "第21站" },
-      { date: "2025年10月4日", label: "第22站" },
-      { date: "2025年11月15日", label: "第23站" },
-      { date: "2025年11月29日", label: "第24站" },
-      { date: "2025年11月30日", label: "第25站" },
-      { date: "2025年11月30日", label: "第26站" },
-      { date: "2026年2月23日", label: "第27站" },
-      { date: "2026年", label: "第28站" },
-      { date: "2026年", label: "第29站" },
-      { date: "2026年", label: "第30站" },
-      { date: "2026年", label: "第31站" },
-      { date: "2026年", label: "第32站" },
-      { date: "2026年", label: "第33站" },
-      { date: "2026年", label: "第34站" },
-      { date: "2026年", label: "第35站" },
-      { date: "2026年", label: "第36站" },
-      { date: todayStr, label: "今天", milestone: true }
-    ];
-
-    const photos = [
-      "2025 年 2 月第一次见面缙云山.jpg",
-      "mmexport1741595537727.jpg",
-      "2025 年 5 月_爱心石雪山_8.10分.jpg",
-      "2025 年 5 月阿坝州.jpeg",
-      "2025 年 5 月.jpg",
-      "2025 年 5 月 10 号表白成为恋人.jpg",
-      "IMG_20250511_170129.jpg",
-      "IMG_20250525_221852.jpg",
-      "IMG_20250530_165640.jpg",
-      "2025 年 7 月-1.jpg",
-      "2025 年 7 月.jpg",
-      "2025 年 7 月_乐山大佛前_7.60分.jpg",
-      "IMG_20250705_201036.jpg",
-      "IMG_20250809_192822.jpg",
-      "IMG_20250809_175936.jpg",
-      "IMG_20250817_104404.jpg",
-      "2025 年 10 月泸沽湖日出.jpg",
-      "泸沽湖-走婚桥.jpg",
-      "2025 年 10 月稻城亚丁.jpg",
-      "IMG_20251002_132901.jpg",
-      "IMG_20251004_175939.jpg",
-      "IMG_20251004_175959.jpg",
-      "情侣浪漫_城市公园草坪依偾B_7.90分.jpg",
-      "IMG_20251129_164829.jpg",
-      "情侣欢乐_红叶林大笑比耶_8.55分.jpg",
-      "情侣浪漫_红叶林依偾自拍_8.55分.jpg",
-      "情侣欢乐_三峡之巅大笑_7.65分.jpg",
-      "情侣浪漫_雪景自拍依偾_7.50分.jpg",
-      "情侣特色_爱心框合照_8.20分.jpg",
-      "情侣特色_金雕雕塑比心_8.25分.jpg",
-      "夜晚-花海相拥.jpg",
-      "psc (2).jpeg",
-      "有情-女左.jpeg",
-      "有情-男右.jpeg",
-      "金佛山-金龟朝阳-女左.jpeg",
-      "金佛山-金龟朝阳-男右.jpeg",
-      "四面山瀑布-女.jpeg",
-      "四面山瀑布-男.jpeg",
-      "马尿水瀑布-男左.jpeg",
-      "马尿水瀑布—女右.jpeg"
-    ];
-
-    const slides = document.querySelectorAll('.slide');
-    const total = slides.length;
-    let current = 0;
-    let autoPlay = false;
-    let timer = null;
-    let started = false;
-    const music = document.getElementById('bgMusic');
-    const stage = document.getElementById('stage');
-    const timelineRail = document.getElementById('timelineRail');
-    const timelineNodes = document.getElementById('timelineNodes');
-    const startOverlay = document.getElementById('startOverlay');
-    const playBtn = document.getElementById('playBtn');
-    const musicBtn = document.getElementById('musicBtn');
-
-    // Build timeline nodes
-    timelineEvents.forEach((ev, i) => {
-      const node = document.createElement('div');
-      node.className = 'timeline-node' + (ev.milestone ? ' milestone' : '');
-      node.dataset.index = i;
-      node.innerHTML = `<div class="timeline-label">${ev.date} · ${ev.label}</div>`;
-      timelineNodes.appendChild(node);
+<script>
+  // 入场动画：滚动到目录时逐条浮现
+  const entries = document.querySelectorAll('.entry');
+  const io = new IntersectionObserver((items) => {
+    items.forEach((it, i) => {
+      if (it.isIntersecting) {
+        const idx = Array.from(entries).indexOf(it.target);
+        it.target.style.transitionDelay = (idx * 0.12) + 's';
+        it.target.classList.add('is-in');
+        io.unobserve(it.target);
+      }
     });
+  }, { threshold: 0.2 });
+  entries.forEach(e => io.observe(e));
+</script>
 
-    const navDots = document.getElementById('navDots');
-    slides.forEach((_, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-      dot.onclick = (e) => { e.stopPropagation(); goTo(i); };
-      navDots.appendChild(dot);
-    });
-
-    function updateTimeline() {
-      const active = slides[current];
-      const layout = active.dataset.layout;
-      const timelineAttr = active.dataset.timeline;
-
-      // Show timeline rail on timeline intro, photo slides, and timer page
-      if (layout === 'split-left' || layout === 'split-right' || layout === 'pair' || timelineAttr === 'intro' || timelineAttr === 'timer') {
-        timelineRail.classList.add('visible');
-      } else {
-        timelineRail.classList.remove('visible');
-      }
-
-      // Update active node
-      document.querySelectorAll('.timeline-node').forEach(n => n.classList.remove('active'));
-      let activeNodeIndex = -1;
-      if (timelineAttr === 'intro') activeNodeIndex = 1; // highlight love date
-      else if (timelineAttr === 'timer') activeNodeIndex = timelineEvents.length - 1;
-      else if (timelineAttr !== undefined) activeNodeIndex = parseInt(timelineAttr) + 2; // +2 for met and love milestones
-
-      if (activeNodeIndex >= 0 && activeNodeIndex < timelineEvents.length) {
-        const node = timelineNodes.children[activeNodeIndex];
-        if (node) node.classList.add('active');
-      }
-    }
-
-    function updateTimer() {
-      if (!slides[current].classList.contains('timer-slide')) return;
-      const now = new Date();
-
-      function updateSet(startDate, prefix) {
-        const diff = now - startDate;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        document.getElementById(prefix + 'Days').textContent = days;
-        document.getElementById(prefix + 'Hours').textContent = hours.toString().padStart(2, '0');
-        document.getElementById(prefix + 'Minutes').textContent = minutes.toString().padStart(2, '0');
-        document.getElementById(prefix + 'Seconds').textContent = seconds.toString().padStart(2, '0');
-      }
-
-      updateSet(meetDate, 'met');
-      updateSet(loveDate, 'love');
-      updateSet(proposalDate, 'proposal');
-    }
-
-    function update() {
-      slides.forEach((s, i) => s.classList.toggle('active', i === current));
-      document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
-      document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
-      updateTimeline();
-      updateTimer();
-    }
-
-    function setAutoPlay(enabled) {
-      autoPlay = enabled;
-      playBtn.textContent = autoPlay ? '❚❚' : '▶';
-      clearInterval(timer);
-      if (autoPlay) timer = setInterval(next, 7000);
-    }
-
-    function startExperience() {
-      if (started) return;
-      started = true;
-      startOverlay.classList.add('hidden');
-      music.play().then(() => {
-        musicBtn.textContent = '♫';
-      }).catch(() => {
-        musicBtn.textContent = '♪';
-      });
-      setAutoPlay(true);
-    }
-
-    function next() {
-      if (current < total - 1) { current++; update(); }
-      else if (autoPlay) { setAutoPlay(false); }
-      if (autoPlay) { clearInterval(timer); timer = setInterval(next, 7000); }
-    }
-    function prev() {
-      if (current > 0) { current--; update(); }
-      if (autoPlay) { clearInterval(timer); timer = setInterval(next, 7000); }
-    }
-    function goTo(i) {
-      current = i;
-      update();
-      if (autoPlay) { clearInterval(timer); timer = setInterval(next, 7000); }
-    }
-
-    document.getElementById('nextBtn').onclick = (e) => { e.stopPropagation(); startExperience(); next(); };
-    document.getElementById('prevBtn').onclick = (e) => { e.stopPropagation(); startExperience(); prev(); };
-    playBtn.onclick = (e) => { e.stopPropagation(); startExperience(); setAutoPlay(!autoPlay); };
-    musicBtn.onclick = (e) => { e.stopPropagation(); startExperience(); if (music.paused) { music.play(); musicBtn.textContent = '♫'; } else { music.pause(); musicBtn.textContent = '♪'; } };
-
-    // ---- Fullscreen (Fullscreen API + iOS Safari pseudo-fullscreen fallback) ----
-    const fsBtn = document.getElementById('fsBtn');
-    const fsHint = document.getElementById('fsHint');
-    const fsTarget = stage;            // stage is the fullscreen element (audio + controls live inside it)
-    let pseudoFs = false;              // iOS Safari cannot hide browser chrome, only in-page UI
-    let fsHintShown = false;
-    try { if (localStorage.getItem('haoloveli_fsHintShown') === '1') fsHintShown = true; } catch (_) {}
-
-    function getFsElement() {
-      return document.fullscreenElement || document.webkitFullscreenElement || null;
-    }
-    function enterFullscreen() {
-      if (fsTarget.requestFullscreen) {
-        // Standard API (returns a Promise on modern browsers)
-        const p = fsTarget.requestFullscreen();
-        if (p && p.catch) p.catch(() => enterPseudoFullscreen());
-      } else if (fsTarget.webkitRequestFullscreen) {
-        // Old Safari: synchronous throw is rare; async rejection fires webkitfullscreenerror
-        const onError = () => { enterPseudoFullscreen(); document.removeEventListener('webkitfullscreenerror', onError); };
-        document.addEventListener('webkitfullscreenerror', onError);
-        try { fsTarget.webkitRequestFullscreen(); } catch (_) { onError(); }
-      } else {
-        enterPseudoFullscreen();
-      }
-    }
-    function exitFullscreen() {
-      if (getFsElement()) {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      }
-      if (pseudoFs) pseudoFs = false;
-      syncFsUI();
-    }
-    function enterPseudoFullscreen() {
-      pseudoFs = true;
-      syncFsUI();
-      showFsHint();
-    }
-    function syncFsUI() {
-      const realFs = !!getFsElement();
-      document.documentElement.classList.toggle('is-fullscreen', realFs);
-      document.documentElement.classList.toggle('is-pseudo-fullscreen', pseudoFs);
-      if (fsBtn) {
-        fsBtn.setAttribute('aria-pressed', String(realFs || pseudoFs));
-        fsBtn.title = (realFs || pseudoFs) ? '退出全屏' : '全屏';
-      }
-    }
-    function showFsHint() {
-      if (fsHintShown || !fsHint) return;
-      fsHintShown = true;
-      try { localStorage.setItem('haoloveli_fsHintShown', '1'); } catch (_) {}
-      // iOS pseudo-fullscreen has no keyboard, so don't mention Esc there
-      fsHint.textContent = pseudoFs
-        ? '点击屏幕翻到下一页 · 再次点击 ⛶ 退出全屏'
-        : '点击屏幕翻到下一页 · 再次点击 ⛶ 或按 Esc 退出全屏';
-      fsHint.classList.add('show');
-      setTimeout(() => { fsHint.classList.remove('show'); }, 3200);
-    }
-    function toggleFullscreen() {
-      startExperience();               // reuse user gesture to unlock audio + dismiss overlay
-      if (getFsElement() || pseudoFs) exitFullscreen();
-      else enterFullscreen();
-    }
-    function onFsChange() {
-      syncFsUI();
-      if (getFsElement()) showFsHint();   // just entered real fullscreen
-    }
-    document.addEventListener('fullscreenchange', onFsChange);
-    document.addEventListener('webkitfullscreenchange', onFsChange);
-    if (fsBtn) fsBtn.onclick = (e) => { e.stopPropagation(); toggleFullscreen(); };
-
-    startOverlay.addEventListener('click', startExperience);
-
-    document.getElementById('yesBtn').onclick = (e) => {
-      e.stopPropagation();
-      const symbols = ['❤', '♥', '💖', '✨', '💕', '💗'];
-      for (let i = 0; i < 50; i++) {
-        const el = document.createElement('div'); el.className = 'sparkle';
-        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        const rect = e.target.getBoundingClientRect();
-        el.style.left = (rect.left + rect.width/2) + 'px';
-        el.style.top = (rect.top + rect.height/2) + 'px';
-        const angle = (i / 50) * Math.PI * 2;
-        const dist = 120 + Math.random() * 240;
-        el.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
-        el.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-        // In real fullscreen, <body>'s children are hidden behind the fullscreen element (top layer),
-        // so attach sparkles to the stage to keep them visible during the proposal climax.
-        const sparkleParent = (getFsElement() || pseudoFs) ? fsTarget : document.body;
-        sparkleParent.appendChild(el); setTimeout(() => el.remove(), 1800);
-      }
-    };
-
-    // Keyboard navigation (Arrow/Space) + Esc to exit pseudo-fullscreen (iOS)
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') { startExperience(); next(); }
-      if (e.key === 'ArrowLeft') { startExperience(); prev(); }
-      if (e.key === 'Escape' && document.documentElement.classList.contains('is-pseudo-fullscreen')) { exitFullscreen(); }
-    });
-
-    // Tap / click on stage → next page (guarded against swipe-induced synthetic click)
-    let touchStartX = 0, touchStartY = 0, suppressClick = false;
-    stage.addEventListener('click', (e) => {
-      if (suppressClick) return;
-      if (e.target.closest('button') || e.target.closest('.heartwall-container')) return;
-      startExperience();
-      next();
-    });
-    stage.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-    stage.addEventListener('touchend', (e) => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      // Only horizontal-dominant swipes flip pages; vertical scroll is left alone
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-        startExperience();
-        dx < 0 ? next() : prev();
-        // Suppress the synthetic click that follows a swipe to prevent double-paging
-        suppressClick = true;
-        setTimeout(() => { suppressClick = false; }, 350);
-      }
-    }, { passive: true });
-
-    const hearts = document.getElementById('hearts');
-    const heartChars = ['❤', '♥', '💕'];
-    for (let i = 0; i < 24; i++) {
-      const h = document.createElement('div'); h.className = 'heart';
-      h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
-      h.style.left = Math.random() * 100 + 'vw';
-      h.style.fontSize = (0.7 + Math.random() * 0.9) + 'rem';
-      h.style.animationDelay = Math.random() * 12 + 's';
-      h.style.animationDuration = (12 + Math.random() * 10) + 's';
-      h.style.opacity = 0.4 + Math.random() * 0.4;
-      h.style.color = Math.random() > 0.5 ? 'rgba(255,150,170,0.8)' : 'rgba(212,165,165,0.8)';
-      hearts.appendChild(h);
-    }
-
-    const heartwall = document.getElementById('heartwall');
-    function buildHeartwall() {
-      heartwall.innerHTML = '';
-      const rect = heartwall.getBoundingClientRect();
-      const containerW = rect.width || 1100;
-      const containerH = rect.height || 540;
-      const baseScale = Math.min(containerW / 80, containerH / 40);
-      function heartPoint(t, scale) {
-        const x = 16 * Math.pow(Math.sin(t), 3);
-        const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-        return {
-          x: containerW/2 + x * scale,
-          y: containerH/2 + y * scale - 10
-        };
-      }
-      photos.forEach((src, i) => {
-        const t = (i / photos.length) * Math.PI * 2 + 0.2;
-        const scale = baseScale + Math.sin(t * 3) * (baseScale * 0.15);
-        const pos = heartPoint(t, scale);
-        const el = document.createElement('div');
-        el.className = 'heartwall-photo';
-        el.style.left = pos.x + 'px';
-        el.style.top = pos.y + 'px';
-        el.style.setProperty('--rot', (Math.random() * 20 - 10) + 'deg');
-        el.style.setProperty('--delay', (0.3 + i * 0.08) + 's');
-        el.innerHTML = `<img src="lihao.img/${src}" alt="photo ${i+1}" loading="lazy">`;
-        heartwall.appendChild(el);
-      });
-    }
-    buildHeartwall();
-    let heartwallResizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(heartwallResizeTimer);
-      heartwallResizeTimer = setTimeout(buildHeartwall, 300);
-    });
-
-    // Live timer updates
-    setInterval(updateTimer, 1000);
-
-    // preload with timeout to avoid stuck loading screen
-    function hideLoading() {
-      const loading = document.getElementById('loading');
-      if (loading) loading.classList.add('hidden');
-    }
-    const images = Array.from(document.querySelectorAll('img')).map(img => new Promise(r => {
-      if (img.complete) return r();
-      img.onload = r;
-      img.onerror = r;
-      img.onabort = r;
-    }));
-    Promise.all(images).then(hideLoading).catch(hideLoading);
-    // Force hide loading after 5 seconds no matter what
-    setTimeout(hideLoading, 5000);
-
-    update();
-  </script>
 </body>
 </html>
