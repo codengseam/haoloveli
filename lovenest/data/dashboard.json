@@ -27,7 +27,7 @@
     { "label": "已记录里程碑", "type": "milestone_count" }
   ],
   "today_question": {
-    "text": "你最近最大的压力源是什么？我能怎么帮你分担一点？",
+    "text": "你最近最大的压力源是什么？对方能怎么帮你分担一点？",
     "source": "Gottman · Love Map 本周深度问题",
     "link": "love-map.html"
   }

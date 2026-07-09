@@ -72,7 +72,7 @@
           <button class="btn btn--primary" id="bk-save" type="button">存入</button>
         </div>
         <div class="mt-3 flex gap-2 wrap aic">
-          <button class="btn btn--ghost btn--small" id="bk-clear" type="button">清空我的记录</button>
+          <button class="btn btn--ghost btn--small" id="bk-clear" type="button">清空个人记录</button>
           <span class="faint" style="font-size:.8rem">仅清空你添加的记录，种子记录不受影响</span>
         </div>
       </div>
@@ -158,12 +158,12 @@
       ratio_note: "戈特曼的数据：幸福伴侣的正向与负向互动比约为 5:1。这不是说不能吵架，而是平时存得够多，吵架才不至于透支。",
       seed_records: [
         { date: "2025-05-10", type: "deposit", who: "both", event: "在缙云山第一次见面后，正式成为恋人。", weight: 5 },
-        { date: "2025-07-15", type: "deposit", who: "her", event: "高三期末改卷最累的那周，给我留了手写小纸条。", weight: 3 },
-        { date: "2025-08-09", type: "deposit", who: "him", event: "记住她随口提过想吃的乐山小吃，周末带她去了。", weight: 3 },
+        { date: "2025-07-15", type: "deposit", who: "her", event: "高三期末改卷最累的那周，给师豪留了手写小纸条。", weight: 3 },
+        { date: "2025-08-09", type: "deposit", who: "him", event: "记住佳力随口提过想吃的乐山小吃，周末带佳力去了。", weight: 3 },
         { date: "2025-10-04", type: "deposit", who: "both", event: "稻城亚丁，第一次一起看到雪山日出，相拥无言。", weight: 5 },
-        { date: "2026-02-14", type: "deposit", who: "him", event: "求婚成功。把这一年走过的路，做成了一个网页送给她。", weight: 5 },
-        { date: "2026-05-20", type: "deposit", who: "her", event: "主动提出一起列婚礼筹备清单，让我感受到她在和我一起推进。", weight: 3 },
-        { date: "2026-06-12", type: "withdraw", who: "him", event: "她压力大时我急着给方案，被觉得“你不懂我”。（取款——但也提醒我：先共情后解决）", weight: 2 },
+        { date: "2026-02-14", type: "deposit", who: "him", event: "求婚成功。把这一年走过的路，做成了一个网页送给佳力。", weight: 5 },
+        { date: "2026-05-20", type: "deposit", who: "her", event: "主动提出一起列婚礼筹备清单，让师豪感受到佳力在和他一起推进。", weight: 3 },
+        { date: "2026-06-12", type: "withdraw", who: "him", event: "佳力压力大时师豪急着给方案，被觉得“你不懂我”。（取款——但也提醒师豪：先共情后解决）", weight: 2 },
         { date: "2026-06-20", type: "deposit", who: "him", event: "为这次冲突写了道歉，并约定以后先问“你需要建议，还是陪伴？”", weight: 3 }
       ],
       types: {
@@ -172,8 +172,8 @@
       },
       weight_options: [1, 2, 3, 5],
       who_options: [
-        { value: "him", label: "我 · 师豪" },
-        { value: "her", label: "她 · 佳力" },
+        { value: "him", label: "师豪" },
+        { value: "her", label: "佳力" },
         { value: "both", label: "我们共同" }
       ]
     };
@@ -305,7 +305,7 @@
         const event = eventInput.value.trim();
         const date = dateInput.value;
         if (!event) {
-          LoveNest.openModal('差一点点', '<p>记一笔吧，哪怕只是“她笑了”——都是值得存的。</p>');
+          LoveNest.openModal('差一点点', '<p>记一笔吧，哪怕只是“对方笑了”——都是值得存的。</p>');
           eventInput.focus();
           return;
         }
