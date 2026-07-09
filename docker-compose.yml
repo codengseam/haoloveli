@@ -13,17 +13,17 @@ services:
     image: love-nest:latest
 
     container_name: love-nest
-    # 本地访问：http://localhost:8080/lovenest/index.html
-    # 生产/魔搭无需改此端口（魔搭直接读 Dockerfile，EXPOSE 80 即可）
+    # 本地访问：http://localhost:8080/
+    # 魔搭 Docker 创空间强制要求容器监听 7860（见 Dockerfile / nginx.conf）
     ports:
-      - "8080:80"
+      - "8080:7860"
 
     # 容器挂掉自动重启（除非手动 stop）
     restart: unless-stopped
 
     # 健康检查沿用 Dockerfile 中的 HEALTHCHECK
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost/lovenest/index.html || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7860/ || exit 1"]
       interval: 30s
       timeout: 3s
       retries: 3
