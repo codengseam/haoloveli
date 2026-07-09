@@ -1,0 +1,30 @@
+# =========================================================================
+# docker-compose.yml · 爱的小窝
+# 一键本地启动：docker compose up --build
+# 说明：魔搭 ModelSpace 部署读 Dockerfile，不读本文件；本文件仅用于本地一键运行/调试
+# =========================================================================
+
+services:
+  web:
+    # 基于仓库根的 Dockerfile 构建（nginx:alpine 多阶段）
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: love-nest:latest
+
+    container_name: love-nest
+    # 本地访问：http://localhost:8080/lovenest/index.html
+    # 生产/魔搭无需改此端口（魔搭直接读 Dockerfile，EXPOSE 80 即可）
+    ports:
+      - "8080:80"
+
+    # 容器挂掉自动重启（除非手动 stop）
+    restart: unless-stopped
+
+    # 健康检查沿用 Dockerfile 中的 HEALTHCHECK
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/lovenest/index.html || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
