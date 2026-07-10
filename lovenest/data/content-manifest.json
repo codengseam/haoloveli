@@ -70,6 +70,46 @@
       "tags": ["milestones", "wedding"],
       "pages": ["milestones"],
       "summary": "丽江 vs 重庆 vs 川西，雨季与教师假期的硬约束，三旋钮决策框架。完整版见《婚拍决策手记》。"
+    },
+    {
+      "id": "minfa-marriage-core",
+      "file": "docs/notes/minfa-marriage-core.md",
+      "title": "民法典婚姻家庭编 · 备婚核心条款",
+      "author": "师豪整理",
+      "type": "note",
+      "tags": ["family", "milestones", "knowledge"],
+      "pages": ["family", "milestones"],
+      "summary": "结婚五条红线、无效与可撤销婚姻、共同财产 vs 个人财产的四个易混点、共债共签原则——领证前最该过一遍的法条。"
+    },
+    {
+      "id": "bayu-wedding-customs",
+      "file": "docs/notes/bayu-wedding-customs.md",
+      "title": "巴渝婚俗总览 · 一条长江串起的三种婚礼",
+      "author": "师豪整理",
+      "type": "note",
+      "tags": ["family", "milestones", "knowledge"],
+      "pages": ["family", "milestones"],
+      "summary": "巴渝婚俗源流、三书六礼简化为四步（提亲/订婚/定日子/接亲）、主城/忠县/彭水三地差异与融合主轴。"
+    },
+    {
+      "id": "chapman-five-love-languages",
+      "file": "docs/books/chapman-five-love-languages.md",
+      "title": "《爱的五种语言》— 你说爱，他听不懂",
+      "author": "盖瑞·查普曼",
+      "type": "book",
+      "tags": ["love-map", "bank", "knowledge"],
+      "pages": ["love-map", "bank"],
+      "summary": "肯定言词/精心时刻/接受礼物/服务行动/身体接触——很多人不是不爱，是用错了语言。说对方的母语，比一万句“我爱你”都管用。"
+    },
+    {
+      "id": "marriage-first-principles",
+      "file": "docs/notes/marriage-first-principles.md",
+      "title": "婚姻本质 · 第一性原理",
+      "author": "师豪整理",
+      "type": "note",
+      "tags": ["dashboard", "love-map", "knowledge"],
+      "pages": ["dashboard", "love-map"],
+      "summary": "婚姻=合伙契约(理)+情感共同体(情)+家族联结(面)三角俱全才稳；爱情/责任/利益动态平衡；斯滕伯格激情/亲密/承诺三角与仪式感日常化。"
     }
   ]
 }

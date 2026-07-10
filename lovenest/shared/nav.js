@@ -25,7 +25,7 @@
   ---------------------------------------------------------------- */
   const AUTH = {
     accounts: { "djl": "19990108", "dxsh": "19980720" },
-    names: { "djl": "师豪", "dxsh": "佳力" },
+    names: { "djl": "佳力", "dxsh": "师豪" },
     key: "auth",
     _read() {
       try { return JSON.parse(localStorage.getItem("lovenest:" + this.key) || "null"); }
