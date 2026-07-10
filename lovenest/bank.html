@@ -64,12 +64,27 @@
       </div>
       <div class="card reveal">
         <div class="quick-add">
-          <select id="bk-type" aria-label="类型"></select>
-          <select id="bk-who" aria-label="谁"></select>
-          <input type="date" id="bk-date" aria-label="日期" />
-          <select id="bk-weight" aria-label="金额"></select>
-          <input type="text" id="bk-event" placeholder="今天发生了什么…" aria-label="事件" />
-          <button class="btn btn--primary" id="bk-save" type="button">存入</button>
+          <div class="quick-add__field">
+            <label for="bk-type" class="quick-add__label">类型</label>
+            <select id="bk-type" aria-label="类型"></select>
+          </div>
+          <div class="quick-add__field">
+            <label for="bk-who" class="quick-add__label">谁</label>
+            <select id="bk-who" aria-label="谁"></select>
+          </div>
+          <div class="quick-add__field">
+            <label for="bk-date" class="quick-add__label">日期</label>
+            <input type="date" id="bk-date" aria-label="日期" />
+          </div>
+          <div class="quick-add__field">
+            <label for="bk-weight" class="quick-add__label">金额</label>
+            <select id="bk-weight" aria-label="金额"></select>
+          </div>
+          <div class="quick-add__field quick-add__field--event">
+            <label for="bk-event" class="quick-add__label">今天发生了什么</label>
+            <input type="text" id="bk-event" placeholder="哪怕只是一个微笑、一杯水……" aria-label="事件" />
+          </div>
+          <button class="btn btn--primary quick-add__save" id="bk-save" type="button">存入</button>
         </div>
         <div class="mt-3 flex gap-2 wrap aic">
           <button class="btn btn--ghost btn--small" id="bk-clear" type="button">清空我的记录</button>

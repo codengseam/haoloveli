@@ -2,6 +2,15 @@ name: Sync to ModelScope
 
 # 每次 push 到 master 分支，自动把代码镜像同步到魔搭创空间 haoloveli
 # 魔搭创空间会在收到 push 后自动重新部署静态站点（由 README 顶部 front matter 中的 deployspec 驱动）
+#
+# 与 ReUp 项目采用同一套稳健推送方案：
+# - 直接把 GitHub 仓库推送到魔搭 remote（不再用 rsync+clone+commit 的旧方式）
+# - fetch-depth: 0 取完整历史，避免浅克隆导致 push 被拒
+# - http.postBuffer 调大到 500MB，缓解 40 张大图（约 116MB，未走 LFS）造成的大包 RPC "curl 18" 中断
+# - push_with_retry：5 次指数退避重试（10s -> 20s -> 40s -> 80s -> 160s）
+# - 仍被拒时，浅拉 modelscope/master 并以 --allow-unrelated-histories -X ours 合并后重试
+#   （GitHub 与魔搭两侧历史相互独立，必须允许无关历史合并）
+# - haoloveli 的默认分支是 master（不是 main），所以推送目标是 master
 on:
   push:
     branches: [master]
@@ -14,38 +23,40 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout GitHub repo
+      - name: Checkout GitHub repository
         uses: actions/checkout@v4
         with:
-          path: github
+          fetch-depth: 0
 
-      - name: Clone ModelScope repo
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync to ModelScope
         env:
           MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
         run: |
-          git clone "https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git" modelscope
-
-      - name: Sync working tree (preserve ModelScope .gitattributes)
-        run: |
-          # 用 GitHub 仓库内容覆盖魔搭仓库工作树，保留魔搭的 .git 与 .gitattributes
-          rsync -a --delete \
-            --exclude='.git' \
-            --exclude='.gitattributes' \
-            github/ modelscope/
-
-      - name: Commit and push to ModelScope
-        env:
-          MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
-        run: |
-          cd modelscope
-          git config user.email "codengseam@modelscope.cn"
-          git config user.name "codengseam"
-          git remote set-url origin "https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git"
-          git add -A
-          if git diff --staged --quiet; then
-            echo "No changes to sync to ModelScope."
-          else
-            git commit -m "Sync from GitHub: ${GITHUB_SHA::7} ${GITHUB_REF_NAME}"
-            git push origin master
-            echo "Pushed to ModelScope."
+          git config http.postBuffer 524288000
+          git remote add modelscope https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git
+          push_with_retry() {
+            local max=5 delay=10
+            for i in $(seq 1 $max); do
+              if git push modelscope "${GITHUB_REF_NAME}:master"; then
+                echo "Push succeeded on attempt $i"
+                return 0
+              fi
+              echo "Push attempt $i/$max failed, retrying in ${delay}s..."
+              [ "$i" -lt "$max" ] && sleep "$delay"
+              delay=$((delay * 2))
+            done
+            echo "All $max push attempts failed"
+            return 1
+          }
+          if ! push_with_retry; then
+            echo "Push rejected, shallow-fetching modelscope/master and merging with unrelated histories..."
+            git fetch modelscope master --depth=1
+            git merge --no-edit --allow-unrelated-histories -X ours modelscope/master
+            push_with_retry
           fi
+          git push modelscope --delete main || true

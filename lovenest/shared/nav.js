@@ -18,6 +18,62 @@
 
   const BRAND = { mark: "❀", name: "爱的小窝", sub: "豪 ❤ 力 · Our Life OS" };
 
+  /* ---------- Auth (pure frontend gate · localStorage) ----------
+     固定账号：djl / 19990108、dxsh / 19980720
+     仅作小窝入口的轻量门禁，非真正安全鉴权。登录态写入 localStorage，
+     各 lovenest 页面在 nav.js 自动初始化时校验，未登录则跳转 login.html。
+  ---------------------------------------------------------------- */
+  const AUTH = {
+    accounts: { "djl": "19990108", "dxsh": "19980720" },
+    names: { "djl": "师豪", "dxsh": "佳力" },
+    key: "auth",
+    _read() {
+      try { return JSON.parse(localStorage.getItem("lovenest:" + this.key) || "null"); }
+      catch (e) { return null; }
+    },
+    isLoggedIn() {
+      const a = this._read();
+      return !!(a && a.user && this.accounts[a.user] !== undefined);
+    },
+    current() { return this._read(); },
+    displayName() {
+      const a = this._read();
+      if (!a || !a.user) return "";
+      return this.names[a.user] || a.user;
+    },
+    login(user, pwd) {
+      if (this.accounts[user] && this.accounts[user] === pwd) {
+        localStorage.setItem("lovenest:" + this.key, JSON.stringify({ user: user, ts: Date.now() }));
+        return true;
+      }
+      return false;
+    },
+    logout() {
+      localStorage.removeItem("lovenest:" + this.key);
+    },
+    /* 未登录则跳转登录页（相对路径，lovenest 同级目录） */
+    requireAuth() {
+      if (!this.isLoggedIn()) {
+        location.replace("login.html");
+        return false;
+      }
+      return true;
+    }
+  };
+
+  function escAttr(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  /* 尽早鉴权：未登录立即隐藏页面并跳转登录页，减少受保护内容闪现。
+     nav.js 在 <body> 末尾同步执行，此处比 DOMContentLoaded 更早触发。 */
+  var AUTHED = AUTH.isLoggedIn();
+  if (!AUTHED) {
+    document.documentElement.style.visibility = "hidden";
+    location.replace("login.html");
+  }
+
   /* ---------- Build top bar ---------- */
   function buildTopbar(activeId) {
     const navHtml = NAV.map(n =>
@@ -28,6 +84,17 @@
       `<a href="${n.href}" class="${n.id === activeId ? "is-active" : ""}">${n.label}<small>${n.desc}</small></a>`
     ).join("");
 
+    // 登录态：右上角显示昵称 + 退出（桌面），移动端抽屉末尾追加退出项
+    const user = AUTH.current();
+    const who = AUTH.displayName();
+    const desktopAuth = user
+      ? `<span class="auth-chip" title="已登录：${escAttr(user.user)}">${escAttr(who)}</span>`
+        + `<button class="auth-logout" id="logoutBtn" type="button" aria-label="退出登录">退出</button>`
+      : "";
+    const mobileAuth = user
+      ? `<a href="#" id="logoutBtnM" class="nav-logout"><span>${escAttr(who)} · 退出登录</span><small>只在小窝内退出，不影响求婚页</small></a>`
+      : "";
+
     return `
     <header class="topbar">
       <div class="topbar__inner">
@@ -36,10 +103,11 @@
           <span class="brand__name">${BRAND.name}<small>${BRAND.sub}</small></span>
         </a>
         <nav class="topnav" aria-label="主导航">${navHtml}</nav>
+        <div class="topbar__auth">${desktopAuth}</div>
         <button class="nav-toggle" id="navToggle" aria-label="展开导航" aria-expanded="false">☰</button>
       </div>
     </header>
-    <div class="mobile-nav" id="mobileNav" aria-hidden="true">${mobileHtml}</div>`;
+    <div class="mobile-nav" id="mobileNav" aria-hidden="true">${mobileHtml}${mobileAuth}</div>`;
   }
 
   /* ---------- Build footer ---------- */
@@ -93,6 +161,24 @@
         toggle.textContent = "☰";
       })
     );
+
+    // 退出登录（桌面 + 移动抽屉共用逻辑）
+    const doLogout = (e) => {
+      e.preventDefault();
+      AUTH.logout();
+      location.replace("login.html");
+    };
+    const deskBtn = document.getElementById("logoutBtn");
+    const mobBtn = document.getElementById("logoutBtnM");
+    if (deskBtn) deskBtn.addEventListener("click", doLogout);
+    if (mobBtn) {
+      mobBtn.addEventListener("click", (e) => {
+        drawer.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.textContent = "☰";
+        doLogout(e);
+      });
+    }
   }
 
   /* ---------- Scroll reveal (IntersectionObserver) ---------- */
@@ -165,6 +251,7 @@
     initReveal,
     openModal,
     closeModal,
+    auth: AUTH,
     /* localStorage helpers */
     store: {
       get(key, fallback) {
@@ -214,6 +301,8 @@
 
   /* ---------- Auto-init on DOMContentLoaded ---------- */
   document.addEventListener("DOMContentLoaded", () => {
+    // 未登录：跳转已发起，停止渲染
+    if (!AUTHED) return;
     const pageId = document.body.getAttribute("data-page") || "dashboard";
     inject(pageId);
     buildModal();

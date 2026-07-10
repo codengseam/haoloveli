@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>登录 · 爱的小窝</title>
+<meta name="description" content="爱的小窝 · 登录入口" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* 登录页专属样式 · 复用 Morandi 设计令牌 */
+  html,body{height:100%}
+  body{
+    margin:0;min-height:100dvh;display:flex;align-items:center;justify-content:center;
+    padding:24px 16px;
+  }
+  .login-bg{
+    position:fixed;inset:0;z-index:-1;
+    background:
+      radial-gradient(900px 520px at 12% 0%,rgba(157,174,147,.28),transparent 60%),
+      radial-gradient(720px 480px at 88% 28%,rgba(198,163,154,.24),transparent 55%),
+      radial-gradient(600px 600px at 50% 120%,rgba(176,162,143,.18),transparent 60%),
+      linear-gradient(180deg,var(--bg-cream),var(--bg-deep));
+    background-attachment:fixed;
+  }
+  /* 细微纸纹颗粒，呼应全站质感 */
+  .login-bg::after{
+    content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+    background-image:radial-gradient(rgba(58,54,49,.04) 1px,transparent 1px);
+    background-size:3px 3px;
+  }
+
+  .login-card{
+    width:100%;max-width:400px;
+    background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:var(--r-lg);padding:40px 32px 30px;
+    box-shadow:0 18px 60px rgba(58,54,49,.12);
+    position:relative;
+    animation:loginRise .7s var(--ease) both;
+  }
+  @keyframes loginRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+  /* 卡片左上角小印章 */
+  .login-card::before{
+    content:"❀";position:absolute;top:-22px;left:32px;
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));
+    color:var(--white);display:grid;place-items:center;font-size:1rem;
+    box-shadow:var(--shadow);
+  }
+
+  .login-brand{font-family:var(--ff-display);font-weight:600;font-size:1.18rem;color:var(--ink);letter-spacing:.01em}
+  .login-brand small{display:block;font-family:var(--ff-accent);font-style:italic;font-weight:400;font-size:.74rem;color:var(--muted);letter-spacing:.1em;margin-top:2px}
+
+  .login-title{font-family:var(--ff-display);font-weight:500;font-size:clamp(1.6rem,6vw,2.05rem);color:var(--ink);margin:18px 0 6px;line-height:1.2}
+  .login-sub{color:var(--muted);font-size:.92rem;line-height:1.7;margin-bottom:22px}
+
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:.78rem;letter-spacing:.04em;color:var(--faint);margin-bottom:6px;font-family:var(--ff-accent);font-style:italic}
+  .field__control{
+    position:relative;display:flex;align-items:center;
+    background:var(--white);border:1px solid var(--line);border-radius:var(--r-sm);
+    transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+  }
+  .field__control:focus-within{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint)}
+  .field__control input{
+    flex:1;min-width:0;border:none;background:none;outline:none;
+    padding:13px 14px;font-family:inherit;font-size:.98rem;color:var(--text);
+    min-height:44px;             /* 触控目标 ≥44px，与 .quick-add 一致 */
+  }
+  .field__control input::placeholder{color:var(--faint)}
+  .field__toggle{
+    flex-shrink:0;border:none;background:none;cursor:pointer;
+    padding:0 14px;color:var(--faint);font-size:.9rem;transition:color .2s var(--ease);
+  }
+  .field__toggle:hover{color:var(--sage-deep)}
+
+  .login-error{
+    display:none;align-items:center;gap:8px;
+    background:var(--rose-tint);border:1px solid var(--rose-soft);color:var(--rose-deep);
+    border-radius:var(--r-sm);padding:10px 14px;font-size:.84rem;margin-bottom:14px;
+  }
+  .login-error.show{display:flex;animation:shake .4s var(--ease)}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+  .login-submit{
+    display:flex;width:100%;margin-top:4px;padding:14px 24px;font-size:1rem;font-weight:500;
+  }
+  .login-submit:active{transform:scale(.99)}
+
+  .login-meta{margin-top:22px;padding-top:18px;border-top:1px solid var(--line-soft);text-align:center}
+  .login-names{font-family:var(--ff-display);font-size:1.05rem;color:var(--ink)}
+  .login-names .heart{color:var(--rose-deep)}
+  .login-note{font-size:.76rem;color:var(--faint);margin-top:6px;line-height:1.6}
+
+  /* 大屏微调：让卡片更挺拔 */
+  @media (min-width:640px){
+    .login-card{padding:46px 38px 34px}
+  }
+  /* 小屏：减小留白、按钮触感更大 */
+  @media (max-width:420px){
+    .login-card{padding:34px 22px 26px;border-radius:var(--r-md)}
+    .login-card::before{left:22px}
+    .field__control input{padding:14px 12px;font-size:1rem}
+  }
+</style>
+</head>
+<body data-page="login">
+  <div class="login-bg" aria-hidden="true"></div>
+
+  <main class="login-card" role="main">
+    <div class="login-brand">爱的小窝<small>豪 ❤ 力 · Our Life OS</small></div>
+
+    <h1 class="login-title">欢迎回家</h1>
+    <p class="login-sub">请用我们的专属账号进入小窝——这里只属于我们两个人。</p>
+
+    <form id="loginForm" novalidate autocomplete="on">
+      <div class="field">
+        <label for="username">账号</label>
+        <div class="field__control">
+          <input type="text" id="username" name="username" autocomplete="username"
+                 placeholder="输入账号" autocapitalize="none" autocorrect="off" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">密码</label>
+        <div class="field__control">
+          <input type="password" id="password" name="password" autocomplete="current-password"
+                 placeholder="输入密码" required />
+          <button class="field__toggle" type="button" id="togglePw" aria-label="显示/隐藏密码" aria-pressed="false">显示</button>
+        </div>
+      </div>
+
+      <div class="login-error" id="loginError" role="alert">
+        <span aria-hidden="true">⚠</span><span id="loginErrorText">账号或密码不对，再试试？</span>
+      </div>
+
+      <button class="btn btn--primary login-submit" id="loginSubmit" type="submit">进入小窝</button>
+    </form>
+
+    <div class="login-meta">
+      <p class="login-names">师豪 <span class="heart">❤</span> 佳力</p>
+      <p class="login-note">只属于我们的小窝 · 婚礼是一天的项目，婚姻是一场无限游戏。</p>
+    </div>
+  </main>
+
+<script>
+(function () {
+  "use strict";
+
+  // 与 nav.js 的 AUTH 同源（固定账号）
+  var ACCOUNTS = { "djl": "19990108", "dxsh": "19980720" };
+  var AUTH_KEY = "lovenest:auth";
+
+  // 已登录则直接进小窝，避免登录页反复出现
+  try {
+    var cur = JSON.parse(localStorage.getItem(AUTH_KEY) || "null");
+    if (cur && cur.user && ACCOUNTS[cur.user] !== undefined) {
+      location.replace("index.html");
+      return;
+    }
+  } catch (e) {}
+
+  var form = document.getElementById("loginForm");
+  var userInput = document.getElementById("username");
+  var passInput = document.getElementById("password");
+  var errBox = document.getElementById("loginError");
+  var errText = document.getElementById("loginErrorText");
+  var togglePw = document.getElementById("togglePw");
+  var submitBtn = document.getElementById("loginSubmit");
+
+  // 显示/隐藏密码
+  togglePw.addEventListener("click", function () {
+    var show = passInput.type === "password";
+    passInput.type = show ? "text" : "password";
+    togglePw.textContent = show ? "隐藏" : "显示";
+    togglePw.setAttribute("aria-pressed", show ? "true" : "false");
+    passInput.focus();
+  });
+
+  function showError(msg) {
+    if (msg) errText.textContent = msg;
+    errBox.classList.add("show");
+    // 重新触发抖动动画
+    errBox.style.animation = "none";
+    void errBox.offsetWidth;
+    errBox.style.animation = "";
+  }
+  function hideError() { errBox.classList.remove("show"); }
+
+  // 输入时清除错误提示
+  [userInput, passInput].forEach(function (el) {
+    el.addEventListener("input", hideError);
+  });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var u = (userInput.value || "").trim();
+    var p = passInput.value || "";
+
+    if (!u || !p) {
+      showError("账号和密码都要填哦。");
+      (!u ? userInput : passInput).focus();
+      return;
+    }
+    if (ACCOUNTS[u] && ACCOUNTS[u] === p) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "正在进入…";
+      try {
+        localStorage.setItem(AUTH_KEY, JSON.stringify({ user: u, ts: Date.now() }));
+      } catch (e) {}
+      // 短暂延迟，让"正在进入"反馈可见
+      setTimeout(function () { location.replace("index.html"); }, 280);
+    } else {
+      showError("账号或密码不对，再试试？");
+      passInput.value = "";
+      passInput.focus();
+      // 重新抖动提交按钮
+      submitBtn.style.animation = "none";
+      void submitBtn.offsetWidth;
+      submitBtn.style.animation = "shake .4s var(--ease)";
+    }
+  });
+
+  // 自动聚焦账号输入框（移动端避免自动弹键盘的体验问题：仅桌面聚焦）
+  if (window.matchMedia("(min-width: 641px)").matches) {
+    userInput.focus();
+  }
+})();
+</script>
+</body>
+</html>
