@@ -1063,14 +1063,23 @@
 
     const meetDate = new Date('2024-12-30T00:00:00+08:00');
     const loveDate = new Date('2025-05-10T00:00:00+08:00');
-    const proposalDate = new Date();
-    proposalDate.setHours(0, 0, 0, 0);
+    // 求婚时刻：当她点击"我愿意"时记录到 localStorage，之后永久计数；未记录则求婚尚未发生
+    const PROPOSAL_KEY = 'haoloveli:proposedAt';
+    let proposalDate = null;
+    let proposalDone = false;
+    try {
+      const ts = localStorage.getItem(PROPOSAL_KEY);
+      if (ts) { proposalDate = new Date(parseInt(ts, 10)); proposalDone = true; }
+    } catch (e) {}
     const pad2 = (n) => String(n).padStart(2, '0');
-    const todayStr = proposalDate.getFullYear() + '.' + pad2(proposalDate.getMonth()+1) + '.' + pad2(proposalDate.getDate());
-    const todayCN = proposalDate.getFullYear() + '年' + (proposalDate.getMonth()+1) + '月' + proposalDate.getDate() + '日';
-    document.getElementById('coverDate').textContent = proposalDate.getFullYear() + ' · 我们的故事';
+    const today = new Date();
+    const todayStr = today.getFullYear() + '.' + pad2(today.getMonth()+1) + '.' + pad2(today.getDate());
+    const todayCN = today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日';
+    document.getElementById('coverDate').textContent = today.getFullYear() + ' · 我们的故事';
     document.getElementById('proposalTimelineDate').textContent = todayStr;
-    document.getElementById('proposalTimerDate').textContent = todayCN + ' · 求婚';
+    document.getElementById('proposalTimerDate').textContent = proposalDone
+      ? (proposalDate.getFullYear() + '年' + (proposalDate.getMonth()+1) + '月' + proposalDate.getDate() + '日 · 求婚')
+      : '等她说「我愿意」的那一刻';
 
     const timelineEvents = [
       { date: "2024.12.30", label: "相识", milestone: true },
@@ -1232,7 +1241,15 @@
 
       updateSet(meetDate, 'met');
       updateSet(loveDate, 'love');
-      updateSet(proposalDate, 'proposal');
+      if (proposalDate) {
+        updateSet(proposalDate, 'proposal');
+      } else {
+        // 求婚尚未发生：占位等待，不计数
+        ['Days','Hours','Minutes','Seconds'].forEach(function(u){
+          var el = document.getElementById('proposal' + u);
+          if (el) el.textContent = '—';
+        });
+      }
     }
 
     function update() {
@@ -1373,6 +1390,17 @@
         const sparkleParent = (getFsElement() || pseudoFs) ? fsTarget : document.body;
         sparkleParent.appendChild(el); setTimeout(() => el.remove(), 1800);
       }
+      // 记录求婚时刻（仅首次点击生效），随后翻向下一页（情书）
+      if (!proposalDone) {
+        proposalDone = true;
+        proposalDate = new Date();
+        try { localStorage.setItem(PROPOSAL_KEY, String(proposalDate.getTime())); } catch (e) {}
+        var pd = proposalDate;
+        document.getElementById('proposalTimerDate').textContent =
+          pd.getFullYear() + '年' + (pd.getMonth()+1) + '月' + pd.getDate() + '日 · 求婚';
+        updateTimer();
+      }
+      setTimeout(next, 1100);
     };
 
     // Keyboard navigation (Arrow/Space) + Esc to exit pseudo-fullscreen (iOS)
