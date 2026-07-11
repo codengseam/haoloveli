@@ -46,9 +46,7 @@ saved_model/**/* filter=lfs diff=lfs merge=lfs -text
 *.zst filter=lfs diff=lfs merge=lfs -text
 *tfevents* filter=lfs diff=lfs merge=lfs -text
 
-# 大图与音频用 LFS，避免魔搭 push 因大包中断 (curl 18)
-*.jpg filter=lfs diff=lfs merge=lfs -text
-*.jpeg filter=lfs diff=lfs merge=lfs -text
-*.png filter=lfs diff=lfs merge=lfs -text
-*.mp3 filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
+# 注意：图片/音频 (*.jpg/*.jpeg/*.png/*.mp3/*.mp4) 不走 LFS，直接作为普通 git 对象提交。
+# 原因：两个部署 workflow（GitHub Pages / 魔搭同步）均未安装 git-lfs，LFS 指针会导致生产环境图片/音频损坏。
+# 魔搭大包 push 的 "curl 18" 由 sync-to-modelscope.yml 的 http.postBuffer=500MB + 指数退避重试兜底，无需 LFS。
+# 历史教训：曾因这里声明了 LFS 规则但未对存量文件做 migrate，导致被改动的图片提交成 132 字节指针且对象未推送，全站图片损坏。
