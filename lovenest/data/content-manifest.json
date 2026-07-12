@@ -7,9 +7,9 @@
       "title": "《幸福的婚姻》— 戈特曼的七项原则",
       "author": "约翰·戈特曼 / 南·西尔弗",
       "type": "book",
-      "tags": ["love-map", "peace", "knowledge"],
+      "tags": ["love-map", "peace", "knowledge", "jingdu"],
       "pages": ["love-map", "peace"],
-      "summary": "基于“爱情实验室”40 年研究的婚姻保鲜指南：爱情地图、欣赏、转向、影响、解问题、破僵局、共同意义。"
+      "summary": "40 年“爱情实验室”的硬数据告诉我们——幸福婚姻靠的不是不吵架，而是深厚的友谊与持续的修复能力。"
     },
     {
       "id": "fromm-art-of-loving",
@@ -17,9 +17,89 @@
       "title": "《爱的艺术》— 爱是一种能力",
       "author": "埃里希·弗洛姆",
       "type": "book",
-      "tags": ["love-map", "peace", "knowledge"],
+      "tags": ["love-map", "peace", "knowledge", "jingdu"],
       "pages": ["love-map", "peace"],
-      "summary": "爱不是被偶然击中的情感，而是一门需要学习的艺术。它是决定、判断与承诺，而非心跳。"
+      "summary": "爱不是被偶然击中的情感，而是一门需要学习的艺术——是动词、是能力、是承诺。"
+    },
+    {
+      "id": "chapman-five-love-languages",
+      "file": "docs/books/chapman-five-love-languages.md",
+      "title": "《爱的五种语言》— 你说爱，他听不懂",
+      "author": "盖瑞·查普曼",
+      "type": "book",
+      "tags": ["love-map", "bank", "peace", "knowledge", "jingdu"],
+      "pages": ["love-map", "bank", "peace"],
+      "summary": "肯定言词/精心时刻/接受礼物/服务行动/身体接触——爱语不通不是不爱，是用错了语言。"
+    },
+    {
+      "id": "covey-emotional-bank-account",
+      "file": "docs/books/covey-emotional-bank-account.md",
+      "title": "《高效能人士的七个习惯》— 情感账户",
+      "author": "史蒂芬·柯维",
+      "type": "book",
+      "tags": ["bank", "peace", "knowledge", "jingdu"],
+      "pages": ["bank", "peace"],
+      "summary": "信任是账户余额，六种存款决定关系的底子，取款永远比存款更贵。"
+    },
+    {
+      "id": "nvc-nonviolent-communication",
+      "file": "docs/books/nvc-nonviolent-communication.md",
+      "title": "《非暴力沟通》— 让爱融入生活",
+      "author": "马歇尔·卢森堡",
+      "type": "book",
+      "tags": ["peace", "knowledge", "jingdu"],
+      "pages": ["peace"],
+      "summary": "四步把指责翻译成需要——观察、感受、需要、请求，让对话从对抗回到连接。"
+    },
+    {
+      "id": "miller-intimate-relationships",
+      "file": "docs/books/miller-intimate-relationships.md",
+      "title": "《亲密关系》— 爱情是一门可以学习的科学",
+      "author": "罗兰·米勒",
+      "type": "book",
+      "tags": ["love-map", "peace", "knowledge", "jingdu"],
+      "pages": ["love-map", "peace"],
+      "summary": "激情会衰退，亲密靠投资——长久关系的底层逻辑是自我表露、积极错觉与持续投入。"
+    },
+    {
+      "id": "gottman-trust-blueprint",
+      "file": "docs/books/gottman-trust-blueprint.md",
+      "title": "《爱的博弈》— 信任的科学",
+      "author": "约翰·戈特曼 / 娜恩·西尔弗",
+      "type": "book",
+      "tags": ["peace", "love-map", "knowledge", "jingdu"],
+      "pages": ["peace", "love-map"],
+      "summary": "用博弈论和数据模型拆解“信任”，告诉伴侣背叛从来不是一瞬，而是千万次滑动门被关上的累积。"
+    },
+    {
+      "id": "exupery-little-prince",
+      "file": "docs/books/exupery-little-prince.md",
+      "title": "《小王子》— 驯养与责任的童话",
+      "author": "安托万·德·圣埃克苏佩里",
+      "type": "book",
+      "tags": ["peace", "love-map", "knowledge", "jingdu"],
+      "pages": ["peace", "love-map"],
+      "summary": "一个来自 B612 的小人儿，用狐狸的“驯养”和玫瑰的“独一无二”告诉大人——爱是甘愿为一个人花时间，并为此负责到底。"
+    },
+    {
+      "id": "frankl-meaning-of-life",
+      "file": "docs/books/frankl-meaning-of-life.md",
+      "title": "《活出生命的意义》— 在绝境中选择态度的自由",
+      "author": "维克多·E. 弗兰克尔",
+      "type": "book",
+      "tags": ["peace", "love-map", "knowledge", "jingdu"],
+      "pages": ["peace", "love-map"],
+      "summary": "一个奥斯维辛幸存的精神科医生，用集中营的极端处境证明——人最后的自由，是在任何境遇中选择自己的态度。"
+    },
+    {
+      "id": "levine-attached",
+      "file": "docs/books/levine-attached.md",
+      "title": "《依恋》— 成人依恋与亲密关系的新科学",
+      "author": "阿米尔·莱文 / 蕾切尔·S.F. 赫勒",
+      "type": "book",
+      "tags": ["love-map", "peace", "knowledge", "jingdu"],
+      "pages": ["love-map", "peace"],
+      "summary": "把发展心理学的依恋理论搬进成人爱情——你的“作”或“冷”不是性格缺陷，是一套可识别、可调节的生理性依恋系统。"
     },
     {
       "id": "nvc-four-steps",
@@ -52,16 +132,6 @@
       "summary": "批评、蔑视、防御、筑墙——以及各自的解药。蔑视是最强的离婚预测因子。"
     },
     {
-      "id": "covey-emotional-bank-account",
-      "file": "docs/books/covey-emotional-bank-account.md",
-      "title": "《高效能人士的七个习惯》— 情感账户",
-      "author": "史蒂芬·柯维",
-      "type": "book",
-      "tags": ["bank", "knowledge"],
-      "pages": ["bank"],
-      "summary": "六种存款：理解、小事、承诺、澄清期望、正直、道歉。信任是日积月累的余额。"
-    },
-    {
       "id": "wedding-photo-decision",
       "file": "docs/planning/wedding-photo-decision.md",
       "title": "婚拍决策 · 时间 × 气候 × 预算",
@@ -90,16 +160,6 @@
       "tags": ["family", "milestones", "knowledge"],
       "pages": ["family", "milestones"],
       "summary": "巴渝婚俗源流、三书六礼简化为四步（提亲/订婚/定日子/接亲）、主城/忠县/彭水三地差异与融合主轴。"
-    },
-    {
-      "id": "chapman-five-love-languages",
-      "file": "docs/books/chapman-five-love-languages.md",
-      "title": "《爱的五种语言》— 你说爱，他听不懂",
-      "author": "盖瑞·查普曼",
-      "type": "book",
-      "tags": ["love-map", "bank", "knowledge"],
-      "pages": ["love-map", "bank"],
-      "summary": "肯定言词/精心时刻/接受礼物/服务行动/身体接触——很多人不是不爱，是用错了语言。说对方的母语，比一万句“我爱你”都管用。"
     },
     {
       "id": "marriage-first-principles",
