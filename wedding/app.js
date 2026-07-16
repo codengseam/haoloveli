@@ -354,10 +354,10 @@
     var clr = document.getElementById("clearBtn");
     if(btn) btn.addEventListener("click", exportPlan);
     if(clr) clr.addEventListener("click", function(){
-      if(confirm("确定清空全部已保存内容？（避坑勾选、旋钮、规划笔记、待办都会被删除）")){
+      if(confirm("确定清空全部已保存内容？（避坑勾选、旋钮、规划笔记、待办、风格选择都会被删除）")){
         localStorage.removeItem(STORE);
         state = {};
-        renderPitfalls(); initKnobs(); initPlan(); renderTodos();
+        renderPitfalls(); initStyles(); initKnobs(); initPlan(); renderTodos();
         location.reload();
       }
     });
@@ -377,7 +377,12 @@
     var txt = "# 我们的婚拍规划\n\n师豪 ❤ 佳力\n生成于 " + new Date().toLocaleString("zh-CN") + "\n\n";
     txt += "## 三旋钮选择\n";
     txt += "- " + L["1. 婚期是否可动"] + "\n- " + L["2. 目的地"] + "\n- " + L["3. 风险偏好"] + "\n\n";
-    txt += "## 先回答的 4 个问题\n";
+    txt += "## 心仪拍照风格\n";
+    var styleKeys = Object.keys(state.styles || {}).filter(function(k){ return state.styles[k]; });
+    if(styleKeys.length){
+      styleKeys.forEach(function(k){ txt += "- " + (STYLE_LABELS[k] || k) + "\n"; });
+    }else{ txt += "（未选）\n"; }
+    txt += "\n## 先回答的 4 个问题\n";
     ["q1","q2","q3","q4"].forEach(function(k, i){
       txt += (i+1) + ". " + (state.plan[k] || "（空）") + "\n";
     });
@@ -464,10 +469,79 @@
     });
   }
 
+  /* ---------- 拍照风格选择 ---------- */
+  var STYLE_LABELS = {
+    ballgown: "大裙摆",
+    snowmountain: "雪山远景",
+    flowersea: "花海",
+    nightview: "夜景",
+    xiuhe: "中式秀禾",
+    casual: "日常纪实"
+  };
+  function initStyles(){
+    state.styles = state.styles || {};
+    var selectedEl = document.getElementById("styleSelected");
+    var boxes = document.querySelectorAll("[data-style-key]");
+    function updateSelected(){
+      var keys = Object.keys(state.styles).filter(function(k){ return state.styles[k]; });
+      if(!selectedEl) return;
+      if(!keys.length){
+        selectedEl.innerHTML = '<p>已选风格会自动保存，到店咨询时直接给摄影师看～</p>';
+      }else{
+        var names = keys.map(function(k){ return '<b>' + (STYLE_LABELS[k] || k) + '</b>'; }).join("、");
+        selectedEl.innerHTML = '<p>已心仪 ' + names + ' —— 共 ' + keys.length + ' 套风格，自动保存中。</p>';
+      }
+    }
+    function syncCardUI(el){
+      var card = el.closest(".style-card");
+      if(card) card.classList.toggle("is-checked", el.checked);
+    }
+    boxes.forEach(function(el){
+      var key = el.getAttribute("data-style-key");
+      if(state.styles[key]) el.checked = true;
+      syncCardUI(el);
+      el.addEventListener("change", function(){
+        state.styles[key] = el.checked;
+        syncCardUI(el);
+        save(state);
+        updateSelected();
+        flashSave();
+      });
+    });
+    if(!state.styles.ballgown){
+      state.styles.ballgown = true;
+      var bg = document.querySelector('[data-style-key="ballgown"]');
+      if(bg){ bg.checked = true; syncCardUI(bg); }
+      save(state);
+    }
+    updateSelected();
+
+    var styleImgs = document.querySelectorAll(".style-card__img img");
+    function rebindSrc(img){
+      var sep = img.src.indexOf("?") > -1 ? "&" : "?";
+      img.src = img.src.replace(/[?&](t|r)=\d+/g,'') + sep + "r=" + Date.now();
+    }
+    styleImgs.forEach(function(img){
+      var retries = 0;
+      function reveal(){ img.classList.add("loaded"); }
+      img.addEventListener("load", function(){
+        if(img.naturalWidth > 200){ reveal(); return; }
+        retries++;
+        if(retries < 5){
+          setTimeout(function(){ rebindSrc(img); }, 3500);
+        }else{ reveal(); }
+      });
+      img.addEventListener("error", function(){
+        setTimeout(function(){ rebindSrc(img); }, 3000);
+      });
+    });
+  }
+
   /* ---------- 启动 ---------- */
   document.addEventListener("DOMContentLoaded", function(){
     renderPitfalls();
     renderDocGrid();
+    initStyles();
     initKnobs();
     initPlan();
     initTodos();
