@@ -9,6 +9,96 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* 家族树样式 */
+  .family-tree{display:flex;flex-direction:column;align-items:center;gap:32px;padding:20px 0}
+  .tree-level{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;position:relative}
+  .tree-node{
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    padding:14px 20px;text-align:center;cursor:pointer;transition:all .3s var(--ease);
+    min-width:140px;position:relative;
+  }
+  .tree-node:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--sage)}
+  .tree-node--him{border-top:3px solid var(--terracotta)}
+  .tree-node--her{border-top:3px solid var(--rose)}
+  .tree-node--couple{border-top:3px solid var(--sage-deep);background:linear-gradient(135deg,var(--bg-card),var(--bg-tint))}
+  .tree-node__avatar{
+    width:48px;height:48px;border-radius:50%;margin:0 auto 8px;
+    display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff;font-size:1.1rem;
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));
+  }
+  .tree-node--him .tree-node__avatar{background:linear-gradient(135deg,var(--terracotta),#a55d47)}
+  .tree-node--her .tree-node__avatar{background:linear-gradient(135deg,var(--rose),var(--rose-deep))}
+  .tree-node__name{font-weight:600;color:var(--ink);font-size:1rem;margin-bottom:2px}
+  .tree-node__role{font-size:.78rem;color:var(--muted)}
+  .tree-connector{
+    width:2px;height:24px;background:var(--line);margin:0 auto;
+  }
+  .tree-bridge{
+    display:flex;justify-content:center;position:relative;height:24px;
+  }
+  .tree-bridge::before{
+    content:"";position:absolute;left:25%;right:25%;top:50%;height:2px;background:var(--line);
+  }
+  .tree-bridge::after{
+    content:"❤";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    color:var(--rose);background:var(--bg);padding:0 8px;font-size:1rem;
+  }
+
+  /* 编辑模式样式 */
+  .editing .profile__view{display:none}
+  .profile__edit{display:none}
+  .editing .profile__edit{display:block}
+  .edit-field{margin-bottom:12px}
+  .edit-field label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px;font-weight:500}
+  .edit-field input,.edit-field textarea{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);
+    font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);
+    transition:border-color .2s;
+  }
+  .edit-field input:focus,.edit-field textarea:focus{outline:none;border-color:var(--sage)}
+  .edit-field textarea{min-height:80px;resize:vertical;line-height:1.6}
+  .toolbar{
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;
+    max-width:1200px;margin:0 auto 20px;padding:0 20px;
+  }
+  .toolbar .btn{margin:0}
+  .btn--sm{padding:8px 14px;font-size:.82rem}
+  .sync-hint{
+    max-width:760px;margin:16px auto 0;padding:14px 18px;
+    background:var(--bg-tint);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    font-size:.84rem;color:var(--muted);line-height:1.7;
+  }
+  .sync-hint strong{color:var(--sage-deep)}
+  .sync-hint code{
+    background:rgba(0,0,0,.05);padding:2px 6px;border-radius:4px;font-size:.82em;
+    font-family:ui-monospace,Consolas,monospace;
+  }
+
+  /* 新增成员弹窗 */
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-row--full{grid-template-columns:1fr}
+  @media (max-width:640px){.form-row{grid-template-columns:1fr}}
+
+  .empty-state{
+    text-align:center;padding:40px 20px;color:var(--muted);
+    border:2px dashed var(--line-soft);border-radius:var(--r-md);
+  }
+  .empty-state p{margin-top:8px;font-size:.9rem}
+
+  /* 档案详情弹窗样式 */
+  .detail-avatar{
+    width:80px;height:80px;border-radius:50%;margin:0 auto 16px;
+    display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff;font-size:1.8rem;
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));
+  }
+  .detail-header{text-align:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+  .detail-name{font-size:1.4rem;font-weight:600;color:var(--ink);margin-bottom:4px}
+  .detail-role{font-size:.9rem;color:var(--sage-deep)}
+  .detail-section{margin-bottom:18px}
+  .detail-section h4{font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:500;letter-spacing:.04em}
+  .detail-section p{font-size:.94rem;color:var(--ink);line-height:1.75;white-space:pre-wrap}
+</style>
 </head>
 <body data-page="family">
 <main>
@@ -20,10 +110,10 @@
       <p class="kicker hero__kicker reveal">Family Ties · 两个家庭的纽带</p>
       <h1 class="hero__title reveal" data-delay="1">家庭关系网</h1>
       <p class="hero__names reveal" data-delay="2">师豪 <span class="heart">❤</span> 佳力</p>
-      <p class="hero__sub reveal" data-delay="2" id="hero-intro">家庭关系网用“正面建设”的框架：只写感恩与连接，不写矛盾。两个家庭从“各自”走向“我们”，需要被主动经营——这是我主动承担的部分，不是顺其自然。</p>
+      <p class="hero__sub reveal" data-delay="2" id="hero-intro">家庭关系网用"正面建设"的框架：只写感恩与连接，不写矛盾。两个家庭从"各自"走向"我们"，需要被主动经营——这是我主动承担的部分，不是顺其自然。</p>
       <div class="hero__actions reveal" data-delay="3">
-        <a href="#holidays" class="btn btn--primary">查看节日计划</a>
-        <a href="#parents" class="btn btn--ghost">父母档案</a>
+        <a href="#family-tree" class="btn btn--primary">查看家族树</a>
+        <a href="#parents" class="btn btn--ghost">成员档案</a>
       </div>
     </div>
   </section>
@@ -34,11 +124,25 @@
       <div class="section__head reveal">
         <p class="kicker">Principle · 底线</p>
         <h2 class="section__title">原则 · 只记感恩与连接</h2>
-        <p class="section__desc">这一页只存正面，把分歧交给线下的真诚对话。</p>
+        <p class="section__desc">这一页只存正面，把分歧交给线下的真诚沟通。</p>
       </div>
       <div style="max-width:680px;margin:0 auto">
         <div class="callout reveal" data-delay="1" id="principle-text">只记录感恩与连接，把分歧留给线下真诚沟通。</div>
         <p class="lead reveal" data-delay="2" style="margin-top:18px">把感恩与连接写下来，会被反复看见、反复强化；把分歧写下来，只会被反复回放、反复放大。所以这里只留前者——后者交给夫妻间的《停战协议》与面对面的温柔沟通。这是给两个家庭共同留下的体面，也是我主动承担的边界。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ 00 家族树 ============================ -->
+  <section class="section section--tint" id="family-tree">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">00</span>
+        <h2 class="section__title">家族树 · 我们的大家庭</h2>
+        <p class="section__desc">点击任意成员，查看 TA 的档案详情。</p>
+      </div>
+      <div class="reveal" id="tree-container">
+        <!-- 家族树由 JS 渲染 -->
       </div>
     </div>
   </section>
@@ -48,12 +152,29 @@
     <div class="container">
       <div class="section__head reveal">
         <span class="section__num">01</span>
-        <h2 class="section__title">双方父母档案 · 用心记住</h2>
-        <p class="section__desc">把生日、喜好、忌口、尺码一一记下，是“把对方家人请进生命”的第一步。</p>
+        <h2 class="section__title">家庭成员档案 · 用心记住</h2>
+        <p class="section__desc">把生日、喜好、忌口、尺码一一记下，是"把对方家人请进生命"的第一步。</p>
       </div>
+
+      <!-- 工具栏：编辑/新增/导入导出 -->
+      <div class="toolbar reveal" id="profile-toolbar">
+        <button class="btn btn--ghost btn--sm" id="btnToggleEdit" type="button">✎ 编辑模式</button>
+        <button class="btn btn--ghost btn--sm" id="btnAddMember" type="button">+ 新增成员</button>
+        <button class="btn btn--ghost btn--sm" id="btnExport" type="button">⬇ 导出 JSON</button>
+        <button class="btn btn--ghost btn--sm" id="btnImport" type="button">⬆ 导入 JSON</button>
+        <input type="file" id="fileImport" accept=".json" style="display:none" />
+      </div>
+
+      <div class="sync-hint reveal" id="syncHint" style="display:none">
+        <p>💡 <strong>数据保存说明</strong>（因站点部署在 GitHub Pages / 魔搭空间，均为纯静态托管）：</p>
+        <p>① 编辑时点击「<strong>保存修改</strong>」会立即保存到浏览器 <code>localStorage</code>，刷新不丢失；</p>
+        <p>② 若要<strong>永久保存并跨设备同步</strong>：点击「⬇ 导出 JSON」→ 将得到的 <code>family.json</code> 替换仓库中 <code>lovenest/data/family.json</code> → 提交到 Git，重新部署即生效；</p>
+        <p>③ 换新设备时：用「⬆ 导入 JSON」上传此前导出的文件即可恢复。</p>
+      </div>
+
       <div class="grid grid--2" id="parents-grid"><!-- rendered by JS --></div>
       <div class="reveal" data-delay="1" style="max-width:760px;margin:36px auto 0">
-        <div class="callout">把“待补充”一项项填满的过程，本身就是把两个家庭请进生命的过程。</div>
+        <div class="callout">把"待补充"一项项填满的过程，本身就是把两个家庭请进生命的过程。</div>
       </div>
     </div>
   </section>
@@ -79,11 +200,11 @@
       <div class="section__head reveal">
         <span class="section__num">03</span>
         <h2 class="section__title">关系建设行动 · 我主导</h2>
-        <p class="section__desc">主动汇报进度 &gt; 被动等问——让两边父母都感到“孩子们在好好往前走”。</p>
+        <p class="section__desc">主动汇报进度 &gt; 被动等问——让两边父母都感到"孩子们在好好往前走"。</p>
       </div>
       <div class="grid grid--3" id="actions-grid"><!-- rendered by JS --></div>
       <div class="reveal" data-delay="1" style="max-width:760px;margin:36px auto 0">
-        <div class="callout">主动汇报进度 &gt; 被动等问——让两边父母感到“孩子们在好好往前走”。</div>
+        <div class="callout">主动汇报进度 &gt; 被动等问——让两边父母感到"孩子们在好好往前走"。</div>
       </div>
     </div>
   </section>
@@ -127,30 +248,31 @@
 
   /* ---------- Full inline fallback (mirrors data/family.json) ---------- */
   const FALLBACK = {
-    "intro": "家庭关系网用“正面建设”的框架：只写感恩与连接，不写矛盾。两个家庭从“各自”走向“我们”，需要被主动经营——这是我主动承担的部分，不是顺其自然。",
+    "intro": "家庭关系网用\"正面建设\"的框架：只写感恩与连接，不写矛盾。两个家庭从\"各自\"走向\"我们\"，需要被主动经营——这是我主动承担的部分，不是顺其自然。",
     "principle": "只记录感恩与连接，把分歧留给线下真诚沟通。",
     "parents": [
-      { "id": "his-dad",  "side": "him", "role": "我的父亲", "initial": "爸", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "忠县汉族、巴渝老礼。偏好可循：本地白酒（认牌子）、茶叶、香烟（重庆社交硬通货，敬长辈用）；聘礼讲究肉酒糖烟四色礼齐整。可进一步了解是否好下棋、钓鱼、看新闻联播。", "diet": "川渝家常口味，偏重油重辣；中老年留意三高（血压/血糖/血脂），宴席敬酒宜控量，少油少盐为宜。", "size": "（待补充：需你填写衣服/鞋码——下次回忠县留意衣柜标签或购物小票）", "notes": "忠县父系话事，大事由父亲拍板、母亲操持。相处要点：敬重他的“面子”与“礼数周全”（提亲/聘礼/接亲/回门四步礼不能塌）；敬酒敬烟先敬他；祭祖、看时辰等礼数请他主持并给足主导权；经济决策提前通气、不先斩后奏。用心记下他随口提过的小事，比节日大礼更打动人。" },
-      { "id": "his-mom",  "side": "him", "role": "我的母亲", "initial": "妈", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "忠县汉族家庭，礼数偏中原化、重“礼数周全”。可了解是否爱广场舞、邻里串门、腌菜晒酱、追剧；送实用兼体面的小物（丝巾、茶叶、保健品）更显用心。", "diet": "川渝家常口味，做菜偏回锅肉/烧白一类；关注体检（乳腺/妇科/骨密度）与情绪起伏。", "size": "（待补充：需你填写衣服/鞋码——留意她常穿的尺码）", "notes": "忠县母亲操持日常但大事听父亲的，冲突倾向内化（冷战不外放）。相处要点：多夸她做的菜（“妈做的回锅肉就是香”），夸在先、提意见在后；健康体检主动安排、别等她开口；她若挑剔菜咸淡或带娃方式，把“挑剔”翻译成“想参与”，由儿子出面担责沟通，不让媳妇当面顶撞留面子。" },
-      { "id": "her-dad",  "side": "her", "role": "你的父亲", "initial": "爸", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "彭水苗族土家族自治县。先确认家族以苗族还是土家族为主（看过什么节、说什么话、唱什么歌）：苗族家庭可留意芦笙/苗歌/银饰，土家族家庭可留意摆手舞/西兰卡普。偏好可循：苞谷酒/米酒、油茶；女婿上门带两瓶好酒最对路。", "diet": "彭水菜酸汤、糟辣、腊味重；饮酒习惯需了解（拦门酒/认亲酒要双手接、能饮则饮）。", "size": "（待补充：需你填写衣服/鞋码——回彭水时留意）", "notes": "彭水母系遗存，岳母说话有分量、岳父可能寡言但态度关键。相处要点：女婿定位“贵客+自家人”，进门先叫“爸”、放下东西先陪他坐十分钟聊身体/庄稼/生意；他敬酒双手接、能饮则饮不能饮请能喝的伴郎顶；忌说“我们忠县是这么做的”，把决策权交给他、说“您看这事怎么处理合适”。称呼随你；第一次上门带忠县特产体现尊重。" },
-      { "id": "her-mom",  "side": "her", "role": "你的母亲", "initial": "妈", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "彭水苗族土家族自治县（女儿是高三老师，工作压力大，母亲多牵挂）。先分清苗族 vs 土家族再选礼：苗族家庭可送苗绣小件/银饰小物（苗族银饰锻制是国家级非遗，勿与土家族织锦混）；土家族家庭可送西兰卡普织锦小物。爱腌菜可带好酱/好醋；护手霜、丝巾温润，记你随口夸过的东西。", "diet": "酸辣口味（酸汤鱼/腊肉/油茶/糯米粑）；留意高血压与肠胃，少食多餐为宜。", "size": "（待补充：需你填写衣服/鞋码——留意她常穿衣物的标签）", "notes": "彭水母系色彩重，岳母在家族事务里说话有分量、冲突外放当场好。相处要点：她在厨房操持时主动问“妈要不要我帮忙切菜”（姿态比帮忙本身重要）；菜“少食多赞”，每道尝两口夸一句，绝不当面说“不习惯”（在岳母听来是“你们家不行”）；她若强势，理解是家族文化而非针对你；节庆（牛王节/踩花山/苗年）主动参与、不中途玩手机回屋。" }
+      { "id": "his-dad",  "side": "him", "role": "我的父亲", "relation": "father", "initial": "爸", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "忠县汉族、巴渝老礼。偏好可循：本地白酒（认牌子）、茶叶、香烟（重庆社交硬通货，敬长辈用）；聘礼讲究肉酒糖烟四色礼齐整。可进一步了解是否好下棋、钓鱼、看新闻联播。", "diet": "川渝家常口味，偏重油重辣；中老年留意三高（血压/血糖/血脂），宴席敬酒宜控量，少油少盐为宜。", "size": "（待补充：需你填写衣服/鞋码——下次回忠县留意衣柜标签或购物小票）", "notes": "忠县父系话事，大事由父亲拍板、母亲操持。相处要点：敬重他的\"面子\"与\"礼数周全\"（提亲/聘礼/接亲/回门四步礼不能塌）；敬酒敬烟先敬他；祭祖、看时辰等礼数请他主持并给足主导权；经济决策提前通气、不先斩后奏。用心记下他随口提过的小事，比节日大礼更打动人。" },
+      { "id": "his-mom",  "side": "him", "role": "我的母亲", "relation": "mother", "initial": "妈", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "忠县汉族家庭，礼数偏中原化、重\"礼数周全\"。可了解是否爱广场舞、邻里串门、腌菜晒酱、追剧；送实用兼体面的小物（丝巾、茶叶、保健品）更显用心。", "diet": "川渝家常口味，做菜偏回锅肉/烧白一类；关注体检（乳腺/妇科/骨密度）与情绪起伏。", "size": "（待补充：需你填写衣服/鞋码——留意她常穿的尺码）", "notes": "忠县母亲操持日常但大事听父亲的，冲突倾向内化（冷战不外放）。相处要点：多夸她做的菜（\"妈做的回锅肉就是香\"），夸在先、提意见在后；健康体检主动安排、别等她开口；她若挑剔菜咸淡或带娃方式，把\"挑剔\"翻译成\"想参与\"，由儿子出面担责沟通，不让媳妇当面顶撞留面子。" },
+      { "id": "her-dad",  "side": "her", "role": "你的父亲", "relation": "father", "initial": "爸", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "彭水苗族土家族自治县。先确认家族以苗族还是土家族为主（看过什么节、说什么话、唱什么歌）：苗族家庭可留意芦笙/苗歌/银饰，土家族家庭可留意摆手舞/西兰卡普。偏好可循：苞谷酒/米酒、油茶；女婿上门带两瓶好酒最对路。", "diet": "彭水菜酸汤、糟辣、腊味重；饮酒习惯需了解（拦门酒/认亲酒要双手接、能饮则饮）。", "size": "（待补充：需你填写衣服/鞋码——回彭水时留意）", "notes": "彭水母系遗存，岳母说话有分量、岳父可能寡言但态度关键。相处要点：女婿定位\"贵客+自家人\"，进门先叫\"爸\"、放下东西先陪他坐十分钟聊身体/庄稼/生意；他敬酒双手接、能饮则饮不能饮请能喝的伴郎顶；忌说\"我们忠县是这么做的\"，把决策权交给他、说\"您看这事怎么处理合适\"。称呼随你；第一次上门带忠县特产体现尊重。" },
+      { "id": "her-mom",  "side": "her", "role": "你的母亲", "relation": "mother", "initial": "妈", "name": "（待补充：需你填写）", "birthday": "（待补充：需你填写）", "likes": "彭水苗族土家族自治县（女儿是高三老师，工作压力大，母亲多牵挂）。先分清苗族 vs 土家族再选礼：苗族家庭可送苗绣小件/银饰小物（苗族银饰锻制是国家级非遗，勿与土家族织锦混）；土家族家庭可送西兰卡普织锦小物。爱腌菜可带好酱/好醋；护手霜、丝巾温润，记你随口夸过的东西。", "diet": "酸辣口味（酸汤鱼/腊肉/油茶/糯米粑）；留意高血压与肠胃，少食多餐为宜。", "size": "（待补充：需你填写衣服/鞋码——留意她常穿衣物的标签）", "notes": "彭水母系色彩重，岳母在家族事务里说话有分量、冲突外放当场好。相处要点：她在厨房操持时主动问\"妈要不要我帮忙切菜\"（姿态比帮忙本身重要）；菜\"少食多赞\"，每道尝两口夸一句，绝不当面说\"不习惯\"（在岳母听来是\"你们家不行\"）；她若强势，理解是家族文化而非针对你；节庆（牛王节/踩花山/苗年）主动参与、不中途玩手机回屋。" }
     ],
     "holiday_plans": [
       { "id": "mid-autumn",       "name": "中秋节",     "date": "农历八月十五", "plan": "提前 2 周定好两边都不为难的走访顺序；月饼按各自口味分别准备；带你回我家 / 或分头看望，提前与两边说清。", "checklist": [ "提前 2 周与两边父母确认时间", "分别准备符合各自口味的礼物", "安排好交通，避免节日当天奔波" ] },
-      { "id": "spring-festival",  "name": "春节",       "date": "农历正月初一", "plan": "按“年三十—初一—初二”节奏：年三十陪一方、初一拜年、初二回门。两边轮换，今年在这家明年去那家，公平透明。", "checklist": [ "提前 1 个月与两边确认轮值方案", "准备给两边父母的红包金额一致", "留出“两人独处”的半天" ] },
-      { "id": "parents-birthday", "name": "父母生日",   "date": "各自生日",     "plan": "提前 7 天提醒；礼物重“用心”不重贵；当天打电话，关键节日亲自到场。两边父母生日红包金额大致对称。", "checklist": [ "提前 7 天日历提醒", "礼物按个人喜好（非统一礼品）", "当天致电 / 到场" ] },
-      { "id": "huimen-xieke",     "name": "回门与谢客", "date": "婚后第三天（归宁礼）", "plan": "婚后第三天新郎陪新娘回彭水娘家，正式以“女婿”身份在女方家族认门认人。回门礼物双数是铁律（烟酒糖茶水果），彭水苗土家庭可在标准礼上加本民族特色物：苗族加苗绣小件或米酒两坛，土家族加苞谷酒或土家糕点两份。回门宴 3-5 桌由女方家摆，新郎逐一敬酒认长辈。谢客在婚礼后 1-2 周内完成；因忠县到彭水约 280 公里，建议把回门与彭水谢客合并一趟。", "checklist": [ "婚后第三天赴彭水回门，礼物全部双数（烟两条 / 酒两箱 / 糖两份 / 茶两盒 / 水果两箱）", "回门宴 3-5 桌，新郎逐一敬酒、认长辈", "回门当天尽量返程；路远可住一晚，次日一早返程，忌久住", "谢客名单请双方父母过目补充，按辈分从高到低、按住址规划路线", "谢客上门当面道谢，不只用微信；话术简短诚恳，半小时内完成", "忠县谢客婚礼后一周内完成，彭水谢客与回门合并一趟" ] }
+      { "id": "spring-festival",  "name": "春节",       "date": "农历正月初一", "plan": "按\"年三十—初一—初二\"节奏：年三十陪一方、初一拜年、初二回门。两边轮换，今年在这家明年去那家，公平透明。", "checklist": [ "提前 1 个月与两边确认轮值方案", "准备给两边父母的红包金额一致", "留出\"两人独处\"的半天" ] },
+      { "id": "parents-birthday", "name": "父母生日",   "date": "各自生日",     "plan": "提前 7 天提醒；礼物重\"用心\"不重贵；当天打电话，关键节日亲自到场。两边父母生日红包金额大致对称。", "checklist": [ "提前 7 天日历提醒", "礼物按个人喜好（非统一礼品）", "当天致电 / 到场" ] },
+      { "id": "huimen-xieke",     "name": "回门与谢客", "date": "婚后第三天（归宁礼）", "plan": "婚后第三天新郎陪新娘回彭水娘家，正式以\"女婿\"身份在女方家族认门认人。回门礼物双数是铁律（烟酒糖茶水果），彭水苗土家庭可在标准礼上加本民族特色物：苗族加苗绣小件或米酒两坛，土家族加苞谷酒或土家糕点两份。回门宴 3-5 桌由女方家摆，新郎逐一敬酒认长辈。谢客在婚礼后 1-2 周内完成；因忠县到彭水约 280 公里，建议把回门与彭水谢客合并一趟。", "checklist": [ "婚后第三天赴彭水回门，礼物全部双数（烟两条 / 酒两箱 / 糖两份 / 茶两盒 / 水果两箱）", "回门宴 3-5 桌，新郎逐一敬酒、认长辈", "回门当天尽量返程；路远可住一晚，次日一早返程，忌久住", "谢客名单请双方父母过目补充，按辈分从高到低、按住址规划路线", "谢客上门当面道谢，不只用微信；话术简短诚恳，半小时内完成", "忠县谢客婚礼后一周内完成，彭水谢客与回门合并一趟" ] }
     ],
     "actions": [
-      { "title": "父母接待 SOP（我主导）", "desc": "你家人来访时，由我提前安排住宿、餐饮、接送，让你有“被托底”的安心感。", "steps": [ "提前 3 天确认来访人数 / 饮食禁忌 / 到达时间", "预订安静整洁的住处（不强行挤家里）", "安排 2-3 家口味稳妥的餐厅备选（含一道彭水酸汤菜让她吃惯）", "全程负责接送，不让你操心协调" ] },
-      { "title": "主动沟通计划",             "desc": "主动汇报进度 > 被动等问。让两边父母感到“孩子们在好好往前走”。",         "steps": [ "每月一次主动致电两边父母报平安", "重大节点（订婚 / 领证 / 婚期）先与你同步口径再告知双方", "节日提前问候，不在节日当天才想起" ] },
-      { "title": "正面框架沟通",             "desc": "在任何家庭摩擦中，对外只讲“我们达成了什么”，不讲“我们吵了什么”。把缓冲留给小家庭内部。", "steps": [ "对双方父母多讲对方的优点与付出", "不在父母面前否定对方", "分歧留在夫妻间用《停战协议》处理" ] },
-      { "title": "婆媳关系·桥梁法则",        "desc": "忠县婆婆（汉族巴渝）+ 彭水媳妇（苗土家）跨文化组合，丈夫是唯一枢纽。做桥梁做翻译+担责，做传声筒只会放大冲突。", "steps": [ "定位：丈夫=桥梁≠传声筒。所有冲突经丈夫过滤一遍，永远不让两个女人直接对峙。", "翻译+担责话术：妈说菜咸了→“是我最近口重让她多放盐，下次让她少放”；媳妇抱怨妈翻抽屉→“我去说是我让她帮收东西的”。把责任揽到自己身上，妈妈就不好再追媳妇。", "经济边界：小家的钱小家定，婆婆可建议不可决策；给两边父母的钱金额透明、对称给两家，背着媳妇给妈大额钱一次就击穿信任。", "育儿边界：谁带谁说了算。婆婆帮带=妈妈定方向、婆婆做执行；分歧由丈夫出面跟自己妈沟通，不让媳妇当面顶撞。", "居住边界：能不同住就不同住；若同住，主卧/书房是夫妻私人领域，婆婆不进。", "文化翻译：把“她不懂礼”翻译成“她们那边不兴这个”，避免道德定性；饮食分轮班或婆婆主厨时多夸、媳妇主厨时加一道忠县菜+一道彭水菜让婆婆尝鲜。" ] },
-      { "title": "岳婿相处·贵客与自家人",    "desc": "忠县女婿面对彭水苗土家岳父母，定位“贵客+自家人”混合体：礼数要足、态度要亲、手脚要勤。核心是消除“嫁出去”的错觉。", "steps": [ "定位：贵客（每次上门带礼、不空手）+ 自家人（关心身体、记生日、帮重活）。进门先叫“爸”“妈”，放下东西先陪岳父坐十分钟。", "节庆参与：牛王节（农历四月初八）、踩花山、苗年等重要节庆，即使不会唱不会跳也要站旁边看完整场，不玩手机不回屋；拦门酒双手接、一饮而尽。", "饮食适应：彭水菜酸汤糟辣腊味重，“少食多赞”——每道尝两口夸一句“妈做的酸汤鱼比重庆馆子的香”，吃不完让妻子分担，绝不当面说“我不习惯”。", "探亲节奏：重大节庆必到 + 每季度回彭水一次住 1-2 晚（约 280 公里自驾 4 小时）+ 每周妻子主叫、女婿在旁边接两句。上门不空手，礼物“对路”比贵重重要。", "消除“嫁出去”错觉：重要决定（买房/换工作/生孩子）主动跟岳父母“汇报”一句；逢年过节由女婿主动提议“我们回彭水看爸妈吧”——这句话从女婿嘴里说，岳父母听到的是“他心里有我们”。" ] }
+      { "title": "父母接待 SOP（我主导）", "desc": "你家人来访时，由我提前安排住宿、餐饮、接送，让你有\"被托底\"的安心感。", "steps": [ "提前 3 天确认来访人数 / 饮食禁忌 / 到达时间", "预订安静整洁的住处（不强行挤家里）", "安排 2-3 家口味稳妥的餐厅备选（含一道彭水酸汤菜让她吃惯）", "全程负责接送，不让你操心协调" ] },
+      { "title": "主动沟通计划",             "desc": "主动汇报进度 > 被动等问。让两边父母感到\"孩子们在好好往前走\"。",         "steps": [ "每月一次主动致电两边父母报平安", "重大节点（订婚 / 领证 / 婚期）先与你同步口径再告知双方", "节日提前问候，不在节日当天才想起" ] },
+      { "title": "正面框架沟通",             "desc": "在任何家庭摩擦中，对外只讲\"我们达成了什么\"，不讲\"我们吵了什么\"。把缓冲留给小家庭内部。", "steps": [ "对双方父母多讲对方的优点与付出", "不在父母面前否定对方", "分歧留在夫妻间用《停战协议》处理" ] },
+      { "title": "婆媳关系·桥梁法则",        "desc": "忠县婆婆（汉族巴渝）+ 彭水媳妇（苗土家）跨文化组合，丈夫是唯一枢纽。做桥梁做翻译+担责，做传声筒只会放大冲突。", "steps": [ "定位：丈夫=桥梁≠传声筒。所有冲突经丈夫过滤一遍，永远不让两个女人直接对峙。", "翻译+担责话术：妈说菜咸了→\"是我最近口重让她多放盐，下次让她少放\"；媳妇抱怨妈翻抽屉→\"我去说是我让她帮收东西的\"。把责任揽到自己身上，妈妈就不好再追媳妇。", "经济边界：小家的钱小家定，婆婆可建议不可决策；给两边父母的钱金额透明、对称给两家，背着媳妇给妈大额钱一次就击穿信任。", "育儿边界：谁带谁说了算。婆婆帮带=妈妈定方向、婆婆做执行；分歧由丈夫出面跟自己妈沟通，不让媳妇当面顶撞。", "居住边界：能不同住就不同住；若同住，主卧/书房是夫妻私人领域，婆婆不进。", "文化翻译：把\"她不懂礼\"翻译成\"她们那边不兴这个\"，避免道德定性；饮食分轮班或婆婆主厨时多夸、媳妇主厨时加一道忠县菜+一道彭水菜让婆婆尝鲜。" ] },
+      { "title": "岳婿相处·贵客与自家人",    "desc": "忠县女婿面对彭水苗土家岳父母，定位\"贵客+自家人\"混合体：礼数要足、态度要亲、手脚要勤。核心是消除\"嫁出去\"的错觉。", "steps": [ "定位：贵客（每次上门带礼、不空手）+ 自家人（关心身体、记生日、帮重活）。进门先叫\"爸\"\"妈\"，放下东西先陪岳父坐十分钟。", "节庆参与：牛王节（农历四月初八）、踩花山、苗年等重要节庆，即使不会唱不会跳也要站旁边看完整场，不玩手机不回屋；拦门酒双手接、一饮而尽。", "饮食适应：彭水菜酸汤糟辣腊味重，\"少食多赞\"——每道尝两口夸一句\"妈做的酸汤鱼比重庆馆子的香\"，吃不完让妻子分担，绝不当面说\"我不习惯\"。", "探亲节奏：重大节庆必到 + 每季度回彭水一次住 1-2 晚（约 280 公里自驾 4 小时）+ 每周妻子主叫、女婿在旁边接两句。上门不空手，礼物\"对路\"比贵重重要。", "消除\"嫁出去\"错觉：重要决定（买房/换工作/生孩子）主动跟岳父母\"汇报\"一句；逢年过节由女婿主动提议\"我们回彭水看爸妈吧\"——这句话从女婿嘴里说，岳父母听到的是\"他心里有我们\"。" ] }
     ]
   };
 
   const CHECKLIST_KEY = "family-checklist";
+  const MEMBERS_KEY = "family-members-v2";
 
   /* ---------- utils ---------- */
   function escapeHtml(s) {
@@ -158,16 +280,262 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  function uid() { return "m_" + Math.random().toString(36).slice(2, 10); }
 
-  /* ---------- render: parents ---------- */
+  /* ============================================================
+     成员数据存取：localStorage 覆盖 + 文件导入导出
+     ============================================================ */
+  const MemberStore = {
+    _cache: null,
+    load(baseParents) {
+      if (this._cache) return this._cache;
+      try {
+        const saved = JSON.parse(localStorage.getItem("lovenest:" + MEMBERS_KEY) || "null");
+        if (saved && Array.isArray(saved) && saved.length) {
+          this._cache = saved;
+          return saved;
+        }
+      } catch (e) {}
+      this._cache = JSON.parse(JSON.stringify(baseParents || []));
+      return this._cache;
+    },
+    save(list) {
+      this._cache = list;
+      try { localStorage.setItem("lovenest:" + MEMBERS_KEY, JSON.stringify(list)); }
+      catch (e) {}
+    },
+    reset(baseParents) {
+      this._cache = JSON.parse(JSON.stringify(baseParents || []));
+      try { localStorage.removeItem("lovenest:" + MEMBERS_KEY); }
+      catch (e) {}
+      return this._cache;
+    },
+    export(fullData) {
+      const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "family.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 200);
+    },
+    import(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data && Array.isArray(data.parents)) {
+              this.save(data.parents);
+              resolve(data);
+            } else {
+              reject(new Error("文件格式不正确：缺少 parents 数组"));
+            }
+          } catch (err) {
+            reject(new Error("JSON 解析失败：" + err.message));
+          }
+        };
+        reader.onerror = () => reject(new Error("文件读取失败"));
+        reader.readAsText(file);
+      });
+    }
+  };
+
+  /* ============================================================
+     家族树渲染
+     ============================================================ */
+  function renderFamilyTree(members) {
+    const container = document.getElementById("tree-container");
+    if (!container) return;
+
+    // 按辈分 + 关系分组
+    const hisParents = members.filter(m => m.side === "him" && (m.relation === "father" || m.relation === "mother"));
+    const herParents = members.filter(m => m.side === "her" && (m.relation === "father" || m.relation === "mother"));
+    const hisSiblings = members.filter(m => m.side === "him" && m.relation && m.relation !== "father" && m.relation !== "mother");
+    const herSiblings = members.filter(m => m.side === "her" && m.relation && m.relation !== "father" && m.relation !== "mother");
+    const others = members.filter(m => !m.side || (!m.relation && m.relation !== "father" && m.relation !== "mother"));
+
+    function nodeHtml(m) {
+      const sideClass = m.side === "him" ? "tree-node--him" : (m.side === "her" ? "tree-node--her" : "");
+      const initial = (m.initial || (m.name || "?").slice(0, 1));
+      return `
+        <div class="tree-node ${sideClass}" data-member-id="${escapeHtml(m.id)}" tabindex="0" role="button" aria-label="查看${escapeHtml(m.role)}的档案">
+          <div class="tree-node__avatar">${escapeHtml(initial)}</div>
+          <div class="tree-node__name">${escapeHtml(m.name === "（待补充：需你填写）" ? m.role : m.name)}</div>
+          <div class="tree-node__role">${escapeHtml(m.role)}</div>
+        </div>`;
+    }
+
+    function rowHtml(list, label) {
+      if (!list.length) return "";
+      const nodes = list.map(nodeHtml).join("");
+      return `
+        ${label ? `<p class="kicker center" style="margin:8px 0 14px;color:var(--muted);letter-spacing:.1em">${label}</p>` : ""}
+        <div class="tree-level">${nodes}</div>`;
+    }
+
+    // 小夫妻节点（固定）
+    const coupleHtml = `
+      <div class="tree-level">
+        <div class="tree-node tree-node--couple" data-member-id="__couple__" style="min-width:200px">
+          <div style="display:flex;justify-content:center;gap:10px;margin-bottom:8px">
+            <div class="tree-node__avatar" style="background:linear-gradient(135deg,var(--terracotta),#a55d47);width:40px;height:40px;font-size:.95rem">豪</div>
+            <div class="tree-node__avatar" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));width:40px;height:40px;font-size:.95rem">力</div>
+          </div>
+          <div class="tree-node__name">师豪 ❤ 佳力</div>
+          <div class="tree-node__role">我们 · 小家庭</div>
+        </div>
+      </div>`;
+
+    container.innerHTML = `
+      <div class="family-tree">
+        <!-- 祖辈/父母辈 -->
+        ${rowHtml(hisParents.concat(herParents), "父辈 · Parents")}
+        <!-- 连接到我们 -->
+        <div class="tree-connector"></div>
+        ${coupleHtml}
+        <!-- 平辈（兄弟姐妹等） -->
+        ${(hisSiblings.length || herSiblings.length) ? `
+          <div class="tree-connector"></div>
+          ${rowHtml(hisSiblings.concat(herSiblings).concat(others), "平辈 · Siblings & Family")}
+        ` : (others.length ? `
+          <div class="tree-connector"></div>
+          ${rowHtml(others, "其他成员")}
+        ` : "")}
+      </div>
+    `;
+
+    // 绑定点击 → 打开详情
+    container.querySelectorAll(".tree-node[data-member-id]").forEach(el => {
+      const id = el.getAttribute("data-member-id");
+      if (id === "__couple__") {
+        el.addEventListener("click", () => openCoupleDetail());
+        el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCoupleDetail(); } });
+      } else {
+        const member = members.find(m => m.id === id);
+        if (member) {
+          el.addEventListener("click", () => openMemberDetail(member));
+          el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openMemberDetail(member); } });
+        }
+      }
+    });
+  }
+
+  function openMemberDetail(m) {
+    if (!window.LoveNest || !window.LoveNest.openModal) return;
+    const sideLabel = m.side === "him" ? "男方家" : (m.side === "her" ? "女方家" : "");
+    const avatarBg = m.side === "him"
+      ? "linear-gradient(135deg,var(--terracotta),#a55d47)"
+      : (m.side === "her" ? "linear-gradient(135deg,var(--rose),var(--rose-deep))" : "linear-gradient(135deg,var(--sage),var(--sage-deep))");
+    const initial = (m.initial || (m.name || "?").slice(0, 1));
+    const html = `
+      <div class="detail-header">
+        <div class="detail-avatar" style="background:${avatarBg}">${escapeHtml(initial)}</div>
+        <div class="detail-name">${escapeHtml(m.name)}</div>
+        <div class="detail-role">${escapeHtml(m.role)}${sideLabel ? " · " + sideLabel : ""}</div>
+      </div>
+      <div class="detail-section">
+        <h4>🎂 生日</h4>
+        <p>${escapeHtml(m.birthday || "—")}</p>
+      </div>
+      <div class="detail-section">
+        <h4>💝 喜好与偏好</h4>
+        <p>${escapeHtml(m.likes || "—")}</p>
+      </div>
+      <div class="detail-section">
+        <h4>🍽 饮食禁忌与偏好</h4>
+        <p>${escapeHtml(m.diet || "—")}</p>
+      </div>
+      ${m.size ? `
+      <div class="detail-section">
+        <h4>👕 衣服 / 鞋码</h4>
+        <p>${escapeHtml(m.size)}</p>
+      </div>` : ""}
+      ${m.notes ? `
+      <div class="detail-section">
+        <h4>📝 相处笔记</h4>
+        <p>${escapeHtml(m.notes)}</p>
+      </div>` : ""}
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft);display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn btn--ghost btn--small" type="button" onclick="document.getElementById('btnToggleEdit').click();window.LoveNest.closeModal();document.getElementById('parents').scrollIntoView({behavior:'smooth'})">✎ 编辑此档案</button>
+      </div>
+    `;
+    window.LoveNest.openModal(`档案 · ${m.name}`, html);
+  }
+
+  function openCoupleDetail() {
+    if (!window.LoveNest || !window.LoveNest.openModal) return;
+    const start = new Date("2025-05-10T00:00:00");
+    const now = new Date();
+    const ms = Math.max(0, now - start);
+    let years = now.getFullYear() - start.getFullYear();
+    let months = now.getMonth() - start.getMonth();
+    let days = now.getDate() - start.getDate();
+    if (days < 0) { months -= 1; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+    if (months < 0) { years -= 1; months += 12; }
+    const totalDays = Math.floor(ms / 86400000);
+    const hours = Math.floor((ms % 86400000) / 3600000);
+    const mins = Math.floor((ms % 3600000) / 60000);
+    const secs = Math.floor((ms % 60000) / 1000);
+    const pad = (n) => String(n).padStart(2, "0");
+
+    const html = `
+      <div class="detail-header">
+        <div style="display:flex;justify-content:center;gap:14px;margin-bottom:16px">
+          <div class="detail-avatar" style="background:linear-gradient(135deg,var(--terracotta),#a55d47);margin:0">豪</div>
+          <div style="display:flex;align-items:center;font-size:1.8rem;color:var(--rose)">❤</div>
+          <div class="detail-avatar" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));margin:0">力</div>
+        </div>
+        <div class="detail-name">师豪 ❤ 佳力</div>
+        <div class="detail-role">我们的小家庭 · 自 2025.05.10 相恋</div>
+      </div>
+      <div class="detail-section">
+        <h4>⏱ 已携手走过</h4>
+        <p style="font-family:var(--ff-display);font-size:1.1rem;color:var(--sage-deep)">
+          ${years} 年 ${months} 月 ${days} 天<br/>
+          <span style="font-size:.9rem;color:var(--muted);font-family:var(--ff-sans)">共 ${totalDays.toLocaleString()} 天 · ${pad(hours)}:${pad(mins)}:${pad(secs)}</span>
+        </p>
+      </div>
+      <div class="detail-section">
+        <h4>📍 重要里程碑</h4>
+        <p>
+          🎐 相识：2024-12-30<br/>
+          💗 相恋：2025-05-10<br/>
+          💍 订婚：2026-02-14<br/>
+          👰 婚礼计划：2027-07
+        </p>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft);text-align:center">
+        <a href="index.html" class="btn btn--small btn--primary" style="text-decoration:none">返回爱的仪表盘 →</a>
+      </div>
+    `;
+    window.LoveNest.openModal("我们 · 小家庭", html);
+  }
+
+  /* ============================================================
+     父母/成员档案渲染（支持编辑模式）
+     ============================================================ */
   function renderParents(parents) {
     const grid = document.getElementById("parents-grid");
     if (!grid) return;
+    if (!parents.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <p style="font-size:2.4rem">👨‍👩‍👧‍👦</p>
+        <h3 style="color:var(--ink);margin-bottom:4px">暂无家庭成员</h3>
+        <p>点击右上角「+ 新增成员」开始建立你们的家庭档案吧。</p>
+      </div>`;
+      return;
+    }
     grid.innerHTML = parents.map(function (p, i) {
-      return '' +
-        '<article class="profile profile--' + p.side + ' reveal" data-delay="' + ((i % 2) + 1) + '">' +
+      const sideClass = "profile profile--" + (p.side || "other");
+      const delay = ((i % 2) + 1);
+      // 查看模式
+      const viewHtml = '' +
+        '<div class="profile__view">' +
           '<div class="profile__head">' +
-            '<div class="profile__avatar">' + escapeHtml(p.initial) + '</div>' +
+            '<div class="profile__avatar">' + escapeHtml(p.initial || (p.name || "?").slice(0, 1)) + '</div>' +
             '<div>' +
               '<div class="profile__name">' + escapeHtml(p.name) + '</div>' +
               '<div class="profile__role">' + escapeHtml(p.role) + '</div>' +
@@ -180,11 +548,187 @@
             '<dt>衣服/鞋码</dt><dd>' + escapeHtml(p.size) + '</dd>' +
           '</dl>' +
           '<p class="faint" style="margin-top:14px;font-size:.84rem;line-height:1.6">' + escapeHtml(p.notes) + '</p>' +
+          '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);display:flex;gap:8px;justify-content:space-between;align-items:center">' +
+            '<button class="btn btn--ghost btn--small btn-detail" data-id="' + escapeHtml(p.id) + '" type="button" style="padding:6px 12px;font-size:.8rem">🔍 查看详情</button>' +
+            '<button class="btn btn--ghost btn--small btn-delete" data-id="' + escapeHtml(p.id) + '" type="button" style="padding:6px 12px;font-size:.8rem;color:var(--rose-deep)">🗑 删除</button>' +
+          '</div>' +
+        '</div>';
+      // 编辑模式
+      const editHtml = '' +
+        '<div class="profile__edit" data-id="' + escapeHtml(p.id) + '">' +
+          '<div class="profile__head" style="margin-bottom:14px">' +
+            '<div class="profile__avatar">' + escapeHtml(p.initial || "?") + '</div>' +
+            '<div>' +
+              '<div class="profile__name" style="margin-bottom:2px">编辑模式</div>' +
+              '<div class="profile__role">' + escapeHtml(p.role) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="edit-field"><label>称呼首字（头像显示）</label><input data-field="initial" type="text" maxlength="2" value="' + escapeHtml(p.initial || "") + '" /></div>' +
+          '<div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+            '<div class="edit-field"><label>姓名</label><input data-field="name" type="text" value="' + escapeHtml(p.name || "") + '" /></div>' +
+            '<div class="edit-field"><label>身份称谓</label><input data-field="role" type="text" value="' + escapeHtml(p.role || "") + '" /></div>' +
+          '</div>' +
+          '<div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+            '<div class="edit-field"><label>归属</label>' +
+              '<select data-field="side">' +
+                '<option value="him"' + (p.side === "him" ? " selected" : "") + '>男方家</option>' +
+                '<option value="her"' + (p.side === "her" ? " selected" : "") + '>女方家</option>' +
+                '<option value=""' + (!p.side ? " selected" : "") + '>共同/其他</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="edit-field"><label>关系分类</label>' +
+              '<select data-field="relation">' +
+                '<option value="father"' + (p.relation === "father" ? " selected" : "") + '>父亲</option>' +
+                '<option value="mother"' + (p.relation === "mother" ? " selected" : "") + '>母亲</option>' +
+                '<option value="brother"' + (p.relation === "brother" ? " selected" : "") + '>哥哥 / 弟弟</option>' +
+                '<option value="sister"' + (p.relation === "sister" ? " selected" : "") + '>姐姐 / 妹妹</option>' +
+                '<option value="uncle"' + (p.relation === "uncle" ? " selected" : "") + '>叔叔 / 伯伯 / 舅舅</option>' +
+                '<option value="aunt"' + (p.relation === "aunt" ? " selected" : "") + '>阿姨 / 姑姑 / 舅妈</option>' +
+                '<option value="grandpa"' + (p.relation === "grandpa" ? " selected" : "") + '>爷爷 / 外公</option>' +
+                '<option value="grandma"' + (p.relation === "grandma" ? " selected" : "") + '>奶奶 / 外婆</option>' +
+                '<option value="cousin"' + (p.relation === "cousin" ? " selected" : "") + '>堂表兄弟姐妹</option>' +
+                '<option value="other"' + (p.relation === "other" || !p.relation ? " selected" : "") + '>其他</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+          '<div class="edit-field"><label>生日</label><input data-field="birthday" type="text" value="' + escapeHtml(p.birthday || "") + '" /></div>' +
+          '<div class="edit-field"><label>喜好 / 偏好</label><textarea data-field="likes">' + escapeHtml(p.likes || "") + '</textarea></div>' +
+          '<div class="edit-field"><label>饮食禁忌</label><textarea data-field="diet">' + escapeHtml(p.diet || "") + '</textarea></div>' +
+          '<div class="edit-field"><label>衣服 / 鞋码</label><input data-field="size" type="text" value="' + escapeHtml(p.size || "") + '" /></div>' +
+          '<div class="edit-field"><label>相处笔记</label><textarea data-field="notes">' + escapeHtml(p.notes || "") + '</textarea></div>' +
+        '</div>';
+
+      return '' +
+        '<article class="' + sideClass + ' reveal" data-delay="' + delay + '">' +
+          viewHtml + editHtml +
         '</article>';
     }).join("");
+
+    // 绑定查看详情
+    grid.querySelectorAll(".btn-detail").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const m = parents.find(x => x.id === btn.getAttribute("data-id"));
+        if (m) openMemberDetail(m);
+      });
+    });
+    // 绑定删除
+    grid.querySelectorAll(".btn-delete").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        const m = parents.find(x => x.id === id);
+        if (!m) return;
+        if (confirm(`确定要删除「${m.name || m.role}」的档案吗？此操作可通过重新导入之前的 JSON 恢复。`)) {
+          const list = MemberStore.load(FALLBACK.parents).filter(x => x.id !== id);
+          MemberStore.save(list);
+          refreshAll(list);
+        }
+      });
+    });
   }
 
-  /* ---------- render: holiday accordions + checklists ---------- */
+  /* 从 DOM 编辑表单收集成员数据 */
+  function collectEdits(baseList) {
+    const edits = document.querySelectorAll(".profile__edit");
+    const map = {};
+    baseList.forEach(m => { map[m.id] = Object.assign({}, m); });
+    edits.forEach(form => {
+      const id = form.getAttribute("data-id");
+      if (!map[id]) return;
+      form.querySelectorAll("[data-field]").forEach(input => {
+        const f = input.getAttribute("data-field");
+        map[id][f] = input.value;
+      });
+    });
+    return Object.values(map);
+  }
+
+  /* ============================================================
+     新增成员弹窗
+     ============================================================ */
+  function openAddMemberModal() {
+    if (!window.LoveNest || !window.LoveNest.openModal) return;
+    const html = `
+      <div id="addForm">
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="edit-field"><label>姓名 *</label><input id="nf-name" type="text" placeholder="如：李XX" /></div>
+          <div class="edit-field"><label>身份称谓 *</label><input id="nf-role" type="text" placeholder="如：大姨、姐姐、表哥" /></div>
+        </div>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="edit-field"><label>称呼首字（头像）</label><input id="nf-initial" type="text" maxlength="2" placeholder="如：姨、姐" /></div>
+          <div class="edit-field"><label>归属</label>
+            <select id="nf-side">
+              <option value="him">男方家</option>
+              <option value="her">女方家</option>
+              <option value="">共同/其他</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-field" style="margin-bottom:12px"><label>关系分类</label>
+          <select id="nf-relation">
+            <option value="sister">姐姐 / 妹妹</option>
+            <option value="brother">哥哥 / 弟弟</option>
+            <option value="aunt">阿姨 / 姑姑 / 舅妈 / 大姨</option>
+            <option value="uncle">叔叔 / 伯伯 / 舅舅</option>
+            <option value="father">父亲</option>
+            <option value="mother">母亲</option>
+            <option value="grandpa">爷爷 / 外公</option>
+            <option value="grandma">奶奶 / 外婆</option>
+            <option value="cousin">堂表兄弟姐妹</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+        <div class="edit-field" style="margin-bottom:12px"><label>生日</label><input id="nf-birthday" type="text" placeholder="如：1975-08-15 或 农历X月X" /></div>
+        <div class="edit-field" style="margin-bottom:12px"><label>喜好 / 偏好</label><textarea id="nf-likes" placeholder="如：喜欢养花、爱听越剧、不甜不欢..."></textarea></div>
+        <div class="edit-field" style="margin-bottom:12px"><label>饮食禁忌</label><textarea id="nf-diet" placeholder="如：不吃辣、海鲜过敏、高血压低盐..."></textarea></div>
+        <div class="edit-field" style="margin-bottom:12px"><label>衣服 / 鞋码</label><input id="nf-size" type="text" placeholder="如：XL / 38码" /></div>
+        <div class="edit-field" style="margin-bottom:20px"><label>相处笔记</label><textarea id="nf-notes" placeholder="相处要点、送礼建议、雷区..."></textarea></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="btn btn--ghost btn--small" id="nf-cancel" type="button">取消</button>
+          <button class="btn btn--primary btn--small" id="nf-submit" type="button">＋ 添加成员</button>
+        </div>
+      </div>
+    `;
+    window.LoveNest.openModal("新增家庭成员", html);
+    setTimeout(() => {
+      const cancel = document.getElementById("nf-cancel");
+      const submit = document.getElementById("nf-submit");
+      if (cancel) cancel.addEventListener("click", () => window.LoveNest.closeModal());
+      if (submit) submit.addEventListener("click", () => {
+        const name = document.getElementById("nf-name").value.trim();
+        const role = document.getElementById("nf-role").value.trim();
+        if (!name || !role) {
+          alert("请至少填写「姓名」和「身份称谓」");
+          return;
+        }
+        const newMember = {
+          id: uid(),
+          side: document.getElementById("nf-side").value,
+          relation: document.getElementById("nf-relation").value,
+          initial: document.getElementById("nf-initial").value.trim() || name.slice(0, 1),
+          name: name,
+          role: role,
+          birthday: document.getElementById("nf-birthday").value.trim() || "（待补充）",
+          likes: document.getElementById("nf-likes").value.trim() || "（待补充）",
+          diet: document.getElementById("nf-diet").value.trim() || "（待补充）",
+          size: document.getElementById("nf-size").value.trim() || "（待补充）",
+          notes: document.getElementById("nf-notes").value.trim() || ""
+        };
+        const list = MemberStore.load(FALLBACK.parents).concat([newMember]);
+        MemberStore.save(list);
+        window.LoveNest.closeModal();
+        refreshAll(list);
+        // 滚动到新增的卡片
+        setTimeout(() => {
+          const el = document.querySelector(`.profile__edit[data-id="${newMember.id}"], .profile__view [data-member-id="${newMember.id}"]`);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
+      });
+    }, 30);
+  }
+
+  /* ============================================================
+     节日 & 行动（保持原样，略作加固）
+     ============================================================ */
   function renderHolidays(plans) {
     const region = document.getElementById("holidays-region");
     if (!region) return;
@@ -213,7 +757,6 @@
     }).join("");
   }
 
-  /* ---------- render: actions ---------- */
   function renderActions(actions) {
     const grid = document.getElementById("actions-grid");
     if (!grid) return;
@@ -230,7 +773,6 @@
     }).join("");
   }
 
-  /* ---------- restore checklist from store ---------- */
   function restoreChecklist() {
     const saved = window.LoveNest.store.get(CHECKLIST_KEY, {}) || {};
     document.querySelectorAll('.check-item input[type="checkbox"]').forEach(function (cb) {
@@ -239,7 +781,6 @@
     });
   }
 
-  /* ---------- wire accordion open/close ---------- */
   function wireAccordion() {
     document.querySelectorAll(".acc__head").forEach(function (head) {
       head.addEventListener("click", function () {
@@ -253,7 +794,6 @@
     });
   }
 
-  /* ---------- wire checkbox persistence ---------- */
   function wireChecks() {
     document.querySelectorAll('.check-item input[type="checkbox"]').forEach(function (cb) {
       cb.addEventListener("change", function () {
@@ -265,7 +805,44 @@
     });
   }
 
-  /* ---------- boot ---------- */
+  /* ============================================================
+     编辑模式主切换
+     ============================================================ */
+  let IS_EDITING = false;
+  function setEditing(on, members) {
+    IS_EDITING = !!on;
+    const body = document.body;
+    const btn = document.getElementById("btnToggleEdit");
+    const hint = document.getElementById("syncHint");
+    const toolbar = document.getElementById("profile-toolbar");
+    if (IS_EDITING) {
+      body.classList.add("editing");
+      if (btn) { btn.textContent = "💾 保存修改"; btn.classList.remove("btn--ghost"); btn.classList.add("btn--primary"); }
+      if (hint) hint.style.display = "block";
+    } else {
+      body.classList.remove("editing");
+      if (btn) { btn.textContent = "✎ 编辑模式"; btn.classList.add("btn--ghost"); btn.classList.remove("btn--primary"); }
+      if (hint) hint.style.display = "none";
+    }
+  }
+
+  function refreshAll(members, data) {
+    const list = members || MemberStore.load(FALLBACK.parents);
+    renderFamilyTree(list);
+    renderParents(list);
+    if (data) {
+      renderHolidays(data.holiday_plans || []);
+      renderActions(data.actions || []);
+      restoreChecklist();
+      wireAccordion();
+      wireChecks();
+    }
+    if (window.LoveNest && window.LoveNest.initReveal) window.LoveNest.initReveal();
+  }
+
+  /* ============================================================
+     Boot
+     ============================================================ */
   document.addEventListener("DOMContentLoaded", async function () {
     if (!window.LoveNest) return;
     const data = await window.LoveNest.getJSON("data/family.json", FALLBACK);
@@ -275,13 +852,65 @@
     const prEl = document.getElementById("principle-text");
     if (prEl && data.principle) prEl.textContent = data.principle;
 
-    renderParents(data.parents || []);
-    renderHolidays(data.holiday_plans || []);
-    renderActions(data.actions || []);
+    // 初始化成员（优先读 localStorage）
+    const members = MemberStore.load(data.parents || FALLBACK.parents);
 
-    restoreChecklist();
-    wireAccordion();
-    wireChecks();
+    refreshAll(members, data);
+
+    /* ---------- 工具栏按钮 ---------- */
+    const toggleBtn = document.getElementById("btnToggleEdit");
+    const addBtn = document.getElementById("btnAddMember");
+    const exportBtn = document.getElementById("btnExport");
+    const importBtn = document.getElementById("btnImport");
+    const fileInput = document.getElementById("fileImport");
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", () => {
+        if (!IS_EDITING) {
+          // 进入编辑
+          setEditing(true);
+        } else {
+          // 退出编辑 + 保存
+          const base = MemberStore.load(FALLBACK.parents);
+          const updated = collectEdits(base);
+          MemberStore.save(updated);
+          setEditing(false);
+          refreshAll(updated);
+          // 小提示
+          const hint = document.getElementById("syncHint");
+          if (hint) {
+            hint.style.display = "block";
+            const prev = hint.innerHTML;
+            hint.innerHTML = '<p style="color:var(--sage-deep)"><strong>✅ 已保存到本地浏览器！</strong></p>' + prev;
+            setTimeout(() => { hint.innerHTML = prev; if (!IS_EDITING) hint.style.display = "none"; }, 4000);
+          }
+        }
+      });
+    }
+    if (addBtn) addBtn.addEventListener("click", openAddMemberModal);
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => {
+        const members = MemberStore.load(FALLBACK.parents);
+        const exportData = Object.assign({}, data, { parents: members });
+        MemberStore.export(exportData);
+      });
+    }
+    if (importBtn && fileInput) {
+      importBtn.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+          const imported = await MemberStore.import(file);
+          alert("导入成功！已载入 " + (imported.parents ? imported.parents.length : 0) + " 位成员。");
+          const fresh = Object.assign({}, data, imported);
+          refreshAll(imported.parents, fresh);
+        } catch (err) {
+          alert("导入失败：" + err.message);
+        }
+        fileInput.value = "";
+      });
+    }
 
     /* re-run scroll reveal so dynamically rendered .reveal elements animate in */
     if (typeof window.LoveNest.initReveal === "function") {

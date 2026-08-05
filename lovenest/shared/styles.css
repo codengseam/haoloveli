@@ -254,11 +254,13 @@ section[id],.hero[id],.callout[id]{scroll-margin-top:76px}
   background:var(--bg-card);border:1px solid var(--line-soft);box-shadow:var(--shadow);
   margin:8px auto 10px;
 }
+.counter__nums{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
 .counter__num{
   font-family:var(--ff-display);font-weight:600;font-size:clamp(3rem,11vw,5.4rem);
   line-height:.95;color:var(--ink);letter-spacing:-.02em;
 }
 .counter__num small{font-size:.34em;color:var(--sage-deep);font-weight:500;margin-left:6px;letter-spacing:0}
+.counter__sep{font-family:var(--ff-display);font-size:clamp(2rem,8vw,3.6rem);color:var(--sage);font-weight:600;line-height:.95}
 .counter__label{margin-top:14px;color:var(--muted);font-size:.9rem;letter-spacing:.04em}
 .counter__sub{margin-top:6px;font-size:.8rem;color:var(--faint)}
 .counter__live{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--sage-deep)}

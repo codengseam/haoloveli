@@ -22,8 +22,14 @@
     <p class="hero__names reveal" data-delay="1">师豪 <span class="heart">❤</span> 佳力</p>
 
     <div class="counter reveal" data-delay="2">
-      <div class="counter__num"><span id="counterDays">0</span><small>天</small></div>
-      <div class="counter__label" id="counterLive">已携手走过 <span id="liveHMS">0 时 0 分 0 秒</span></div>
+      <div class="counter__nums" id="counterFull">
+        <div class="counter__num"><span id="counterYears">0</span><small>年</small></div>
+        <div class="counter__sep">·</div>
+        <div class="counter__num"><span id="counterMonths">0</span><small>月</small></div>
+        <div class="counter__sep">·</div>
+        <div class="counter__num"><span id="counterDays">0</span><small>天</small></div>
+      </div>
+      <div class="counter__label" id="counterLive">已携手走过 <span id="liveFull">0 年 0 月 0 天 0 时 0 分 0 秒</span></div>
       <div class="counter__live"><span class="dot"></span> 实时更新 · 自 2025.05.10 相恋</div>
     </div>
 
@@ -233,21 +239,50 @@
 
   function pad(n) { return String(n).padStart(2, "0"); }
 
+  /* ---------- 计算精确的年月日差 ---------- */
+  function diffYMD(start, end) {
+    let years = end.getFullYear() - start.getFullYear();
+    let months = end.getMonth() - start.getMonth();
+    let days = end.getDate() - start.getDate();
+    // 修正月份不够减
+    if (days < 0) {
+      months -= 1;
+      // 取上个月的天数
+      const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+      days += prevMonth.getDate();
+    }
+    // 修正年不够减
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+    return { years, months, days };
+  }
+
   /* ---------- 实时计数器 ---------- */
   function tickCounter(loveDateStr) {
     const start = new Date(loveDateStr + "T00:00:00");
     const now = new Date();
     const ms = Math.max(0, now - start);
-    const days = Math.floor(ms / 86400000);
+    const { years, months, days } = diffYMD(start, now);
+    const totalDays = Math.floor(ms / 86400000);
     const hours = Math.floor((ms % 86400000) / 3600000);
     const mins = Math.floor((ms % 3600000) / 60000);
     const secs = Math.floor((ms % 60000) / 1000);
+
+    const yEl = document.getElementById("counterYears");
+    const moEl = document.getElementById("counterMonths");
     const dEl = document.getElementById("counterDays");
     const lEl = document.getElementById("loveDays");
-    const hms = document.getElementById("liveHMS");
-    if (dEl) dEl.textContent = days.toLocaleString();
-    if (lEl) lEl.textContent = days.toLocaleString();
-    if (hms) hms.textContent = `${hours} 时 ${mins} 分 ${secs} 秒`;
+    const liveFull = document.getElementById("liveFull");
+
+    if (yEl) yEl.textContent = years;
+    if (moEl) moEl.textContent = months;
+    if (dEl) dEl.textContent = days;
+    if (lEl) lEl.textContent = totalDays.toLocaleString();
+    if (liveFull) {
+      liveFull.textContent = `${years} 年 ${months} 月 ${days} 天 ${pad(hours)} 时 ${pad(mins)} 分 ${pad(secs)} 秒`;
+    }
   }
 
   /* ---------- 今日金句（按日期稳定轮换） ---------- */
