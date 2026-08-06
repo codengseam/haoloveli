@@ -226,44 +226,42 @@ end $$;
 /* =========================================================================
    11. 初始化种子数据
    =========================================================================
-   插入 couples 一行 → 拿到其 uuid → 把它替换到所有业务表的默认 couple_id
-   （下面的 upsert 用真实的 id；这里用一个 CTE 保证幂等：重复执行不会出错）
+   couple_id 用固定值 aaaa1111-bbbb-cccc-dddd-eeeeffff0001（与 shared/config.js 一致）
+   注意：PostgreSQL 的 WITH ... UPDATE 语句里，CTE 的名字只对紧接其后的 1 条 UPDATE 有效，
+   所以这里不用 CTE，直接用字面量。后续如果想改成动态取 id，可把每条 UPDATE 写成独立的
+   `with c as (select id from public.couples limit 1) update ... from c;`。
    ========================================================================= */
 
-with c as (
-  insert into public.couples (id, partner_a_name, partner_b_name, anniversary_date)
-  values (
-    'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',  -- 固定 uuid，前端写死
-    '师豪','佳力','2025-05-10'
-  )
-  on conflict (id) do update set updated_at = now()
-  returning id
+-- 先确保 couples 里有这一行（固定种子，不随 id 变化，前端写死）
+insert into public.couples (id, partner_a_name, partner_b_name, anniversary_date)
+values (
+  'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',
+  '师豪','佳力','2025-05-10'
 )
--- 把默认值替换成真实的 couple_id
-update public.bank_records set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.family_members set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.holiday_checks set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.milestone_items set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.lovemap_answers set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.lovemap_cards set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.lovemap_magic5h set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.peace_signatures set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.conflict_reviews set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.bank_weekly_checks set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.monthly_goals set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.wedding_decisions set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
+on conflict (id) do update set
+  partner_a_name = excluded.partner_a_name,
+  partner_b_name = excluded.partner_b_name,
+  anniversary_date = excluded.anniversary_date,
+  updated_at = now();
+
+-- 把默认占位的 couple_id 替换成真实值（所有业务表）
+do $$
+declare
+  real_id uuid := 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001'::uuid;
+  zero_id uuid := '00000000-0000-0000-0000-000000000000'::uuid;
+  t text;
+begin
+  foreach t in array array[
+    'bank_records','family_members','holiday_checks','milestone_items',
+    'lovemap_answers','lovemap_cards','lovemap_magic5h','peace_signatures',
+    'conflict_reviews','bank_weekly_checks','monthly_goals','wedding_decisions'
+  ] loop
+    execute format(
+      'update public.%I set couple_id = %L where couple_id = %L;',
+      t, real_id, zero_id
+    );
+  end loop;
+end $$;
 
 -- ---------- 11-a. 情感账户 8 条种子记录 ----------
 insert into public.bank_records
