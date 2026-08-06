@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>☁️ 一键上云 · Supabase 部署向导 · 爱的小窝</title>
+  <link rel="stylesheet" href="shared/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="shared/config.js"></script>
+  <script src="shared/db.js"></script>
+  <style>
+    body{background:linear-gradient(180deg,#FBF5ED 0%,#FFF 260px,#F6F1EA 100%);}
+    .hero{padding:56px 0 16px;text-align:center}
+    .hero h1{margin:0 0 12px;font-size:clamp(28px,4.2vw,44px);letter-spacing:.02em;color:var(--ink-deep)}
+    .hero p{margin:0 auto;max-width:720px;color:var(--ink-mid);line-height:1.8}
+    .step-card{background:#fff;border:1px solid var(--line-soft);border-radius:18px;padding:24px;margin:22px 0;box-shadow:0 14px 40px rgba(46,30,16,.06)}
+    .step-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+    .step-no{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--terracotta),var(--terracotta-deep));color:#fff;font-weight:700;font-size:20px;display:grid;place-items:center;box-shadow:0 6px 14px rgba(138,78,41,.22)}
+    .step-head h2{margin:0;font-size:20px;color:var(--ink-deep)}
+    .step-head small{display:block;color:var(--ink-mid);font-weight:400;margin-top:2px;font-size:13px}
+    .field{display:grid;gap:6px;margin:12px 0}
+    .field label{font-size:13px;color:var(--ink-mid);font-weight:600}
+    .field input,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--line-soft);border-radius:12px;background:#FDFBF7;color:var(--ink-deep);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s ease, box-shadow .15s ease}
+    .field input:focus,.field textarea:focus{border-color:var(--terracotta);box-shadow:0 0 0 4px rgba(176,106,62,.12)}
+    .field textarea{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;resize:vertical;min-height:160px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid transparent}
+    .pill.ok{background:var(--sage-tint);color:var(--sage-deep);border-color:var(--sage-soft)}
+    .pill.bad{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft)}
+    .pill.warn{background:var(--amber-tint);color:#8A5A00;border-color:var(--amber-soft)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;padding:2px 8px;border-radius:6px;background:#F4ECE0;color:var(--terracotta-deep);border:1px solid var(--terracotta-tint)}
+    .tip{background:#FFF7EC;border-left:4px solid var(--amber);padding:12px 14px;border-radius:0 12px 12px 0;margin:14px 0;color:#6A4A0E;font-size:13.5px;line-height:1.7}
+    .tip.red{background:#FBECEE;border-left-color:var(--rose-deep);color:var(--rose-deep)}
+    .tip.green{background:#ECF4EE;border-left-color:var(--sage-deep);color:var(--sage-deep)}
+    .progress{height:10px;background:#F2E9DA;border-radius:999px;overflow:hidden;margin:10px 0}
+    .progress > div{height:100%;width:0%;background:linear-gradient(90deg,var(--sage),var(--sage-deep));transition:width .25s ease;border-radius:999px}
+    .log{margin-top:10px;background:#1A1410;color:#F3E3D3;border-radius:12px;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.7;max-height:260px;overflow:auto}
+    .log .t{color:#D6A5AE;margin-right:8px;opacity:.75}
+    .log .ok{color:var(--sage-soft)}
+    .log .er{color:#F4A3AC}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    @media (max-width:720px){.grid-2{grid-template-columns:1fr}}
+    .top-link{display:inline-flex;align-items:center;gap:6px;color:var(--ink-mid);font-size:13px;text-decoration:none;padding:4px 10px;border-radius:8px;background:#fff;border:1px solid var(--line-soft)}
+    .top-link:hover{color:var(--terracotta-deep);border-color:var(--terracotta-soft)}
+    .final-cta{background:linear-gradient(135deg,var(--sage-deep),var(--sage));color:#fff;padding:30px;border-radius:18px;text-align:center;box-shadow:0 18px 44px rgba(26,87,68,.22)}
+    .final-cta h3{margin:0 0 8px;font-size:22px}
+    .final-cta p{margin:0 0 18px;opacity:.9}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav__inner">
+      <a class="nav__brand" href="index.html">🕊️ <span>爱的小窝</span></a>
+      <div class="nav__links">
+        <a class="top-link" href="family.html">← 返回家族树</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <div id="heroBadge" class="pill bad" style="margin-bottom:14px">💻 当前：本机模式</div>
+      <h1>☁️ 一键上云 · Supabase 部署向导</h1>
+      <p>跟着 5 步走，不用改代码：<strong>新建成员 / 修改称呼，立刻在手机、另一台浏览器、任何设备同步</strong>。全程 3-5 分钟。</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="container" style="max-width:920px">
+
+      <!-- =============== STEP 1 =============== -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-no">1</div>
+          <div>
+            <h2>创建 Supabase 项目<small>（免费版就够用；已有项目可直接跳到 Step 2）</small></h2>
+          </div>
+        </div>
+        <div class="row" style="margin-bottom:10px">
+          <a class="btn btn--brand" href="https://supabase.com/dashboard" target="_blank" rel="noopener">打开 Supabase Dashboard →</a>
+          <span class="pill warn">🌏 Region 选新加坡 / 东京，国内访问延迟最低</span>
+        </div>
+        <div class="tip">
+          点击上方按钮登录（GitHub / 邮箱都行）→ <strong>New Project</strong> → 名字随意（比如 <code>love-nest</code>）→ 密码随便填一个记下来（不会再用到）→ <strong>Region 选 <code>ap-southeast-1 (Singapore)</code> 或 <code>ap-northeast-1 (Tokyo)</code></strong> → 点击 Create project，等待 1-2 分钟初始化完成。
+        </div>
+      </div>
+
+      <!-- =============== STEP 2 =============== -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-no">2</div>
+          <div>
+            <h2>初始化数据库（把家族、银行、里程碑等所有表一次性建好）<small>整个项目只需要跑 1 次</small></h2>
+          </div>
+        </div>
+        <div class="field">
+          <label>① 建表 SQL（下面已自动读入，若显示空白，请手工复制 <span class="mono">data/supabase_init.sql</span> 的全文粘到此处）：</label>
+          <textarea id="sql-text" placeholder="Loading supabase_init.sql ..." spellcheck="false"></textarea>
+        </div>
+        <div class="row" style="margin:10px 0 6px">
+          <button class="btn btn--brand btn--sm" id="btnCopySQL" type="button">📋 一键复制完整 SQL</button>
+          <button class="btn btn--ghost btn--sm" id="btnCopyPatch" type="button">📋 只复制「🔧 补丁段」（如果你之前跑过旧版建表脚本）</button>
+          <a class="btn btn--ghost btn--sm" href="https://supabase.com/dashboard/project/_/sql/new" target="_blank" rel="noopener">打开 Supabase SQL Editor →</a>
+        </div>
+        <div class="tip">
+          ② 点右边 <strong>「打开 Supabase SQL Editor」</strong> → 选你刚建的项目 → 点 <strong>New query</strong> → 粘贴刚才复制的 SQL → 点击左下角 <strong>▶ Run</strong>。<br/>
+          <strong>成功后会显示："Success. No rows returned"</strong>（底部有验证语句可以单独跑一遍，看计数是否匹配）。
+        </div>
+        <div class="tip red">
+          ⚠️ 如果 Step 2 执行时报「约束/字段类型错误」：说明你之前已经建过旧表，请 <strong>再点击一次「只复制补丁段」</strong>，在同一个 SQL Editor 新建一个 query，单独粘贴补丁段并 Run。
+        </div>
+      </div>
+
+      <!-- =============== STEP 3 =============== -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-no">3</div>
+          <div>
+            <h2>连接到你的项目（粘贴 2 个值，本向导立刻帮你验证）<small>无需改任何代码文件，配置会存在浏览器里</small></h2>
+          </div>
+        </div>
+        <div class="tip">
+          在 Supabase Dashboard 里：左侧菜单最底部 <strong>Project Settings ⚙️ → API</strong>，复制下面 2 项粘贴到表单：
+          <ul style="margin:6px 0 0;padding-left:20px;line-height:2">
+            <li><strong>Project URL</strong>（长得像 <code>https://xxxx.supabase.co</code>）</li>
+            <li><strong>anon public</strong>（长 JWT 字符串，开头是 <code>eyJhbGc...</code>）—— ⚠️ <strong>千万别选 service_role！</strong>那个权限太大只能服务器用。</li>
+          </ul>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="cfg-url">Project URL</label>
+            <input id="cfg-url" type="text" placeholder="https://xxxx.supabase.co" />
+          </div>
+          <div class="field">
+            <label for="cfg-key">anon public key</label>
+            <input id="cfg-key" type="text" placeholder="eyJhbGc..." autocomplete="off" />
+          </div>
+        </div>
+        <div class="field" style="max-width:420px">
+          <label for="cfg-couple">Couple ID（不用改，保持默认即可）</label>
+          <input id="cfg-couple" type="text" value="aaaa1111-bbbb-cccc-dddd-eeeeffff0001" />
+        </div>
+        <div class="row" style="margin-top:6px">
+          <button class="btn btn--brand" id="btnTest" type="button">🔌 连接并保存配置</button>
+          <button class="btn btn--ghost btn--sm" id="btnClearRuntime" type="button">🗑️ 清除本浏览器里保存的运行时配置</button>
+          <span id="connStatus" class="pill bad" style="margin-left:auto">未连接</span>
+        </div>
+        <div id="connTip" class="tip" style="display:none"></div>
+      </div>
+
+      <!-- =============== STEP 4 =============== -->
+      <div class="step-card" id="cardMigrate" style="display:none">
+        <div class="step-head">
+          <div class="step-no" style="background:linear-gradient(135deg,var(--sage),var(--sage-deep))">4</div>
+          <div>
+            <h2>把你本机浏览器里已经填好的数据同步到云端<small>（之前在本机加的成员、改的称呼、银行流水都会一次上传）</small></h2>
+          </div>
+        </div>
+        <div class="tip green" id="migReady">✅ 已连接到云端！现在点下面的按钮，把本机浏览器里的所有数据（家族成员 / 银行流水 / 里程碑 / 冲突复盘……）<strong>全部一次性 Upsert 到你的 Supabase 数据库</strong>。</div>
+        <div class="row" style="margin:10px 0">
+          <button class="btn btn--brand" id="btnMigrate" type="button">☁️ 开始把本机数据同步到云端</button>
+        </div>
+        <div class="progress"><div id="progBar"></div></div>
+        <div class="log" id="migLog" style="display:none"></div>
+      </div>
+
+      <!-- =============== STEP 5 =============== -->
+      <div class="step-card" id="cardFinish" style="display:none">
+        <div class="step-head">
+          <div class="step-no" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep))">5</div>
+          <div>
+            <h2>完成 ✅ · 立刻去家族树验证一下跨浏览器同步</h2>
+          </div>
+        </div>
+        <div class="final-cta">
+          <h3>🎉 恭喜，已经全部搞定！</h3>
+          <p>现在家族树的任何新增成员、修改称呼、勾选节日，<strong>都会实时同步到云端</strong>。换台电脑/换浏览器只要走一遍 Step 3 粘贴同一个 URL + anon key，立刻看到同一份数据。</p>
+          <a class="btn" style="background:#fff;color:var(--sage-deep);font-weight:700" href="family.html">打开家族树页面验证 →</a>
+        </div>
+        <div class="tip" style="margin-top:14px">
+          💡 建议顺手 <strong>下载 1 份 JSON 备份</strong>（家族树页面 → 工具栏 → ⬇ 导出 JSON），作为离线双保险。
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container footer__inner">© 爱的小窝 · 家族树 · 用 Supabase 做的云同步</div></footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    function log(msg, kind){
+      const box = $("migLog");
+      if (!box) return;
+      box.style.display = "block";
+      const cls = kind === "ok" ? "ok" : kind === "er" ? "er" : "";
+      const t = new Date().toLocaleTimeString();
+      const line = document.createElement("div");
+      line.innerHTML = '<span class="t">[' + t + ']</span><span class="' + cls + '"></span>';
+      line.lastChild.textContent = msg;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
+    function setProg(p){ const el = $("progBar"); if (el) el.style.width = Math.max(0, Math.min(100, p)) + "%"; }
+
+    function setConn(ok, title, tipHTML){
+      const b = $("connStatus");
+      if (b){ b.className = "pill " + (ok ? "ok" : title ? "warn" : "bad"); b.textContent = title || (ok ? "✅ 已连接" : "未连接"); }
+      const t = $("connTip");
+      if (t){ if (tipHTML){ t.style.display = "block"; t.innerHTML = tipHTML; } else { t.style.display = "none"; } }
+      const hero = $("heroBadge");
+      if (hero){ hero.className = "pill " + (ok ? "ok" : "bad"); hero.textContent = ok ? "☁️ 当前：云端同步已启用" : "💻 当前：本机模式"; }
+      $("cardMigrate").style.display = ok ? "" : "none";
+      if (ok) $("cardFinish").style.display = "";
+    }
+
+    // --------------------- STEP 2: load SQL ---------------------
+    (async function loadSQL(){
+      const ta = $("sql-text");
+      let src = "";
+      try {
+        const r = await fetch("data/supabase_init.sql", { cache: "no-store" });
+        if (r.ok) src = await r.text();
+      } catch (_) {}
+      if (!src){
+        ta.placeholder = "⚠️ 无法在 file:// 协议读取 data/supabase_init.sql。请打开项目文件夹，把 data/supabase_init.sql 全文复制粘贴到这里，然后点下方按钮复制。";
+      } else {
+        ta.value = src;
+      }
+    })();
+
+    function copyText(txt){
+      if (!txt) return Promise.reject("空内容");
+      if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(txt);
+      const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+      return Promise.resolve();
+    }
+    $("btnCopySQL").onclick = async () => {
+      const v = $("sql-text").value.trim();
+      try { await copyText(v); flashBtn("btnCopySQL", "✅ 已复制完整 SQL"); }
+      catch(e){ alert("复制失败，请手动框选文本 Ctrl/Cmd+C"); }
+    };
+    $("btnCopyPatch").onclick = async () => {
+      const v = $("sql-text").value || "";
+      const m = v.match(/\/\*\s*=+\s*\n\s*🔧\s*补丁[\s\S]*?end\s*\$\$;/i);
+      const patch = m ? m[0] : "";
+      if (!patch){ alert("补丁段没找到（可能 SQL 文件还没加载好）。请等待 SQL 全文加载后再试，或直接到文件最底部手动复制补丁段。"); return; }
+      try { await copyText(patch); flashBtn("btnCopyPatch", "✅ 已复制补丁段"); } catch(e){}
+    };
+    function flashBtn(id, txt){
+      const b = $(id); if (!b) return;
+      const old = b.innerHTML; b.innerHTML = txt; b.disabled = true;
+      setTimeout(() => { b.innerHTML = old; b.disabled = false; }, 1800);
+    }
+
+    // --------------------- STEP 3: Fill saved runtime ---------------------
+    (async function initCfg(){
+      await window.LoveNest.db.ready;
+      const c = window.LoveNest.db.config || {};
+      if (c.PROJECT_URL && !String(c.PROJECT_URL).includes("YOUR-PROJECT")) $("cfg-url").value = c.PROJECT_URL;
+      if (c.ANON_PUBLIC_KEY && !String(c.ANON_PUBLIC_KEY).includes("YOUR-ANON")) $("cfg-key").value = c.ANON_PUBLIC_KEY;
+      if (c.COUPLE_ID) $("cfg-couple").value = c.COUPLE_ID;
+      if (window.LoveNest.db.enabled){
+        // 轻量测试：读一下 family_members
+        try {
+          const rows = await window.LoveNest.db.list("family_members");
+          setConn(true, "✅ 已连接（" + rows.length + " 位成员）", '<div class="tip green" style="margin:0">已连接到 Project: <code class="mono">' + escapeHtml($("cfg-url").value || c.PROJECT_URL || "") + '</code>，直接进入 Step 4 把本机数据同步到云端。</div>');
+        } catch(e){ setConn(false, "⚠️ 配置有值但查询失败", '<div class="tip red" style="margin:0">失败原因：' + escapeHtml(String(e.message || e)) + "</div>"); }
+      }
+    })();
+
+    function escapeHtml(s){
+      return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    }
+
+    $("btnTest").onclick = async () => {
+      const url = $("cfg-url").value.trim();
+      const key = $("cfg-key").value.trim();
+      const couple = $("cfg-couple").value.trim() || "aaaa1111-bbbb-cccc-dddd-eeeeffff0001";
+      if (!/^https:\/\/[^\s]+\.supabase\.co$/i.test(url)){ setConn(false, "⚠️ URL 格式不对", '<div class="tip red" style="margin:0">Project URL 长得应该像 <code class="mono">https://xxxx.supabase.co</code>，不要加 /rest/v1 等路径尾巴。</div>'); return; }
+      if (!key || key.length < 60){ setConn(false, "⚠️ Key 太短", '<div class="tip red" style="margin:0">anon public key 是一段很长的 JWT（一般 200+ 字符，开头是 <code>eyJhbGc</code>）。确认复制的是 <strong>anon public</strong> 而不是 service_role。</div>'); return; }
+
+      $("btnTest").disabled = true; $("btnTest").textContent = "连接中…";
+      try {
+        // 写入 runtime 配置（立即生效，不用刷新）
+        window.LoveNest.db.applyRuntimeConfig({ PROJECT_URL: url, ANON_PUBLIC_KEY: key, COUPLE_ID: couple });
+        // 等一下让 client 重建，然后强制拉云端
+        await sleep(50);
+        await window.LoveNest.db.refreshTableFromRemote("family_members", "id");
+        const rows = await window.LoveNest.db.list("family_members");
+        setConn(true, "✅ 已连接（读到 " + rows.length + " 位家庭成员）",
+          '<div class="tip green" style="margin:0">配置已保存在本浏览器（写入 localStorage <code class="mono">lovenest:runtime:supabase-config</code>）。接下来 Step 4 把本机旧数据同步到云端即可。</div>');
+      } catch (e) {
+        console.error(e);
+        setConn(false, "❌ 连接失败", '<div class="tip red" style="margin:0">错误详情：<code class="mono">' + escapeHtml(String(e.message || e)) + '</code><br/>常见原因：① URL / Key 粘错；② 还没完成 Step 2 建表；③ 复制了 service_role 而不是 anon public。</div>');
+      } finally {
+        $("btnTest").disabled = false; $("btnTest").textContent = "🔌 连接并保存配置";
+      }
+    };
+
+    $("btnClearRuntime").onclick = () => {
+      if (!confirm("确定要清除本浏览器保存的运行时 Supabase 配置吗？（不会影响 Supabase 里的数据，只是本机会回到本地模式）")) return;
+      window.LoveNest.db.clearRuntimeConfig();
+      setConn(false, "", "");
+      $("cfg-url").value = ""; $("cfg-key").value = "";
+      $("cardFinish").style.display = "none";
+    };
+
+    // --------------------- STEP 4: Migrate local -> cloud ---------------------
+    $("btnMigrate").onclick = async () => {
+      if (!window.LoveNest.db.enabled){ alert("还没连接到云端！请先在 Step 3 粘贴配置并点击「连接并保存配置」。"); return; }
+      if (!confirm("接下来会把本机浏览器里的所有缓存数据（家族、银行、里程碑、冲突复盘、节日勾选、地图答案、和平签名、婚礼决策、周打卡、月度目标）逐条 upsert 到你刚刚连接的 Supabase。\n\n注意：这是「谁更新时间新就保留谁」的合并策略，不会删除云端已有的更新内容。确认继续？")) return;
+      $("btnMigrate").disabled = true; $("btnMigrate").textContent = "同步中…";
+      setProg(0);
+      $("migLog").innerHTML = "";
+
+      const TABLES = [
+        ["family_members", "id"], ["bank_records", "id"], ["milestone_items", "id"],
+        ["holiday_checks", "id"], ["peace_signatures", "side"], ["lovemap_cards", "id"],
+        ["lovemap_answers", "id"], ["lovemap_magic5h", "id"], ["conflict_reviews", "id"],
+        ["bank_weekly_checks", "id"], ["monthly_goals", "id"], ["wedding_decisions", "id"]
+      ];
+      let done = 0, total = TABLES.length, upserted = 0, failed = 0;
+      for (const [t, k] of TABLES){
+        try {
+          const cache = JSON.parse(localStorage.getItem("lovenest:db:cache:" + t) || "null");
+          const rows = Array.isArray(cache) ? cache : [];
+          log("📦 " + t + " → 本机有 " + rows.length + " 条");
+          if (!rows.length){ done++; setProg(100*done/total); continue; }
+          let tabUpserted = 0, tabFailed = 0;
+          for (const r of rows){
+            try { await window.LoveNest.db.upsert(t, r, [k]); tabUpserted++; upserted++; }
+            catch (e){ tabFailed++; failed++; log("    ❌ 失败 (" + (r[k]) + "): " + String(e.message || e), "er"); }
+          }
+          log("    → 成功 " + tabUpserted + " 条" + (tabFailed ? ("，失败 " + tabFailed + " 条") : ""), tabFailed ? "er" : "ok");
+          // 强制从云端再拉一次，下次进来就是云端最新
+          await window.LoveNest.db.refreshTableFromRemote(t, k);
+        } catch (e){
+          log("❌ 表 " + t + " 处理异常：" + String(e.message || e), "er");
+          failed++;
+        }
+        done++; setProg(100*done/total);
+        await sleep(100);
+      }
+      log("===== 完成：共 upsert " + upserted + " 条，失败 " + failed + " 条 =====", failed ? "er" : "ok");
+      $("btnMigrate").textContent = "✅ 同步完成（可再点一次做增量校验）";
+      $("btnMigrate").disabled = false;
+      setProg(100);
+      $("cardFinish").style.display = "";
+      // 更新 hero 徽标
+      const hero = $("heroBadge"); if (hero){ hero.className = "pill ok"; hero.textContent = "☁️ 当前：云端同步已启用 · 本机数据已上云"; }
+    };
+  </script>
+</body>
+</html>

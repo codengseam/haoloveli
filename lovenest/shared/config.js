@@ -1,16 +1,24 @@
 /* =========================================================================
    爱的小窝 · Supabase 配置入口
    =========================================================================
-   【 你需要在这里填 2 个值 】
-   步骤：
-   1. 登录 https://supabase.com 新建项目（Region 选新加坡 ap-southeast-1 或东京 ap-northeast-1，延迟最低）
-   2. 左侧菜单 → SQL Editor → New query，粘贴 data/supabase_init.sql 全量执行一次（只需一次）
-   3. 左侧菜单 → Project Settings → API，复制下面 2 项：
-        - Project URL（形如 https://xxxx.supabase.co） → 填到 LOVENEST_SUPABASE_URL
-        - Project API keys → anon public（长 JWT 字符串，开头一般是 eyJhbGc...） → 填到 LOVENEST_SUPABASE_ANON_KEY
-      ⚠️  千万不要用 service_role key！那个权限太大，只能在服务器端用，不能写进前端代码
-   4. 保存本文件，刷新任意页面 → F12 → Console 看到 "LoveNest DB: Supabase 已连接, 启用云端同步" 就 OK
-   5. 如果不填，保持下面的占位值，页面也会完全正常运行，只是数据只存在浏览器 localStorage，不会云端同步
+   【 两种方式配置，任选其一 】
+
+   方式 A · 浏览器内向导（最简单，不用改代码）★ 推荐
+     直接在浏览器里打开项目里的 👉 deployment.html 👈  跟着 5 步走：
+     ① 建 Supabase 项目 → ② 点一下复制 SQL 在 SQL Editor 里 Run → ③ 粘贴 URL+Key 点测试连接
+     → ④ 一键把本机已填好的数据同步到云端 → ⑤ 完成。
+     所有配置存放在本浏览器 localStorage 的 `lovenest:runtime:supabase-config`。
+
+   方式 B · 改代码文件（适合部署到 Vercel / Netlify / GitHub Pages 前一次性写死）
+     按下面注释手动填 PROJECT_URL / ANON_PUBLIC_KEY，保存后刷新任意页面：
+     1. 登录 https://supabase.com 新建项目（Region 选新加坡 ap-southeast-1 或东京 ap-northeast-1，延迟最低）
+     2. 左侧菜单 → SQL Editor → New query，粘贴 data/supabase_init.sql 全量执行一次（只需一次）
+     3. 左侧菜单 → Project Settings → API，复制下面 2 项：
+          - Project URL（形如 https://xxxx.supabase.co） → 填到 LOVENEST_SUPABASE_URL
+          - Project API keys → anon public（长 JWT 字符串，开头一般是 eyJhbGc...） → 填到 LOVENEST_SUPABASE_ANON_KEY
+        ⚠️  千万不要用 service_role key！那个权限太大，只能在服务器端用，不能写进前端代码
+     4. 保存本文件，刷新任意页面 → F12 → Console 看到 "LoveNest DB: Supabase 已连接, 启用云端同步" 就 OK
+     5. 如果不填，保持下面的占位值，页面也会完全正常运行，只是数据只存在浏览器 localStorage，不会云端同步
 
    【 注意事项 】
    - anon public key 写在前端是**安全的**：配合数据库里的 RLS（行级安全）策略，匿名用户只能读写

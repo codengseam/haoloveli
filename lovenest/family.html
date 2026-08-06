@@ -292,26 +292,23 @@
     const keyField = "id";
     const cache = JSON.parse(localStorage.getItem("lovenest:db:cache:family_members") || "null");
     const fromCache = Array.isArray(cache) ? cache.slice() : [];
+    // 优先读 LoveNest.db.config（包含 runtime 配置，即使用户没改源码也能生效）
+    const liveCfg = (window.LoveNest && window.LoveNest.db && window.LoveNest.db.config) || window.LOVENEST_SUPABASE_CONFIG || {};
 
     let merged = fromCache.slice();
     if (LoveNest.db.enabled) {
       try {
-        // 走 refreshTableFromRemote 等价的直接拉取（走 db.list 在有缓存时后台异步，这里启动时等一下更准）
-        const clientFN = (window.supabase && window.LOVENEST_SUPABASE_CONFIG) ? window.supabase.createClient : null;
-        if (window.LOVENEST_SUPABASE_CONFIG
-            && !window.LOVENEST_SUPABASE_CONFIG.PROJECT_URL.includes("YOUR-PROJECT")
-            && !window.LOVENEST_SUPABASE_CONFIG.ANON_PUBLIC_KEY.includes("YOUR-ANON")
+        if (liveCfg.PROJECT_URL && !String(liveCfg.PROJECT_URL).includes("YOUR-PROJECT")
+            && liveCfg.ANON_PUBLIC_KEY && !String(liveCfg.ANON_PUBLIC_KEY).includes("YOUR-ANON")
             && window.supabase) {
           try {
             const _client = window.supabase.createClient(
-              window.LOVENEST_SUPABASE_CONFIG.PROJECT_URL,
-              window.LOVENEST_SUPABASE_CONFIG.ANON_PUBLIC_KEY,
+              liveCfg.PROJECT_URL, liveCfg.ANON_PUBLIC_KEY,
               { auth: { persistSession: false, autoRefreshToken: false } }
             );
             const { data, error } = await _client.from("family_members").select("*")
-              .eq("couple_id", window.LOVENEST_SUPABASE_CONFIG.COUPLE_ID);
+              .eq("couple_id", liveCfg.COUPLE_ID);
             if (!error && Array.isArray(data)) {
-              // 合并：updated_at 新的赢（本地 updated_at 可能没值，视为更早）
               const map = new Map();
               fromCache.forEach(r => { if (r[keyField] != null) map.set(String(r[keyField]), { ...r }); });
               (data || []).forEach(r => {
@@ -360,9 +357,10 @@
      云同步状态小工具（在工具栏显示徽标 + 弹出简要提示）
      ============================================================ */
   function isCloudConfigured() {
-    const c = window.LOVENEST_SUPABASE_CONFIG || {};
-    return c.PROJECT_URL && !c.PROJECT_URL.includes("YOUR-PROJECT")
-        && c.ANON_PUBLIC_KEY && !c.ANON_PUBLIC_KEY.includes("YOUR-ANON");
+    // LoveNest.db.config 会 merge 运行时配置（localStorage 里的优先级 > 代码里写死的）
+    const c = (window.LoveNest && window.LoveNest.db && window.LoveNest.db.config) || {};
+    const u = c.PROJECT_URL || ""; const k = c.ANON_PUBLIC_KEY || "";
+    return u && !u.includes("YOUR-PROJECT") && k && !k.includes("YOUR-ANON") && !!u.length;
   }
   function renderStatusBadge() {
     const tb = document.getElementById("profile-toolbar");

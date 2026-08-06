@@ -20,7 +20,17 @@
 (function () {
   "use strict";
   if (!window.LoveNest) window.LoveNest = {};
-  const CFG = window.LOVENEST_SUPABASE_CONFIG || {};
+  // 运行时配置：localStorage 里的优先级 > 代码里写死的（无需改源码即可切换到云端）
+  //   LOVENEST_SUPABASE_RUNTIME_CFG = { PROJECT_URL, ANON_PUBLIC_KEY, COUPLE_ID }
+  const BASE_CFG = window.LOVENEST_SUPABASE_CONFIG || {};
+  const RUNTIME_CFG_KEY = "lovenest:runtime:supabase-config";
+  let _runtimeCfg = null;
+  try {
+    const raw = localStorage.getItem(RUNTIME_CFG_KEY);
+    if (raw) _runtimeCfg = JSON.parse(raw);
+  } catch (e) { _runtimeCfg = null; }
+  const CFG = Object.assign({}, BASE_CFG, _runtimeCfg || {});
+
   const CACHE_PREFIX = "lovenest:db:cache:";
   const QUEUE_KEY = "lovenest:db:queue";
   const LS_PREFIX = "lovenest:";
@@ -39,6 +49,21 @@
       const v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
+  }
+  /* 对外：允许页面（例如部署向导）在运行时写入新配置，并返回新的 merged 配置 */
+  function applyRuntimeConfig(patch) {
+    if (!patch || typeof patch !== "object") return Object.assign({}, CFG);
+    Object.assign(CFG, patch);
+    try { localStorage.setItem(RUNTIME_CFG_KEY, JSON.stringify(_runtimeCfg = Object.assign({}, _runtimeCfg || {}, patch))); } catch (e) {}
+    // 客户端缓存要重连（下次 ensureClient 会用新 URL/Key）
+    supabase = null;
+    return Object.assign({}, CFG);
+  }
+  function clearRuntimeConfig() {
+    try { localStorage.removeItem(RUNTIME_CFG_KEY); } catch (e) {}
+    _runtimeCfg = null;
+    Object.keys(BASE_CFG).forEach(k => { CFG[k] = BASE_CFG[k]; });
+    supabase = null;
   }
   function cacheRead(table) {
     try {
@@ -464,8 +489,13 @@
       get enabled() { return detectEnabled() && !!ensureClient(); },
       get ready() { return readyPromise; },
       get coupleId() { return CFG.COUPLE_ID; },
+      get config() { return Object.assign({}, CFG, { __runtime: !!_runtimeCfg }); },
       // 暴露给页面需要用 row id 时
       uuid, nowISO,
+      // 暴露给 deployment.html 部署向导用：运行时写配置 + 读 SQL Editor 初始化配置
+      applyRuntimeConfig, clearRuntimeConfig,
+      // 暴露内部 refreshTableFromRemote，给 migration 工具强制同步用
+      refreshTableFromRemote,
     }),
     configurable: false,
   });
