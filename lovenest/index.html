@@ -185,6 +185,10 @@
 
 </main>
 
+<!-- Supabase + 数据访问层（三层读写策略：localStorage 缓存 → 云端同步 → 离线队列重试） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
 <script src="shared/nav.js"></script>
 <script>
 (function () {
@@ -330,24 +334,86 @@
     row.innerHTML = cells.join("");
   }
 
-  /* ---------- 本月目标（localStorage 勾选） ---------- */
-  function renderGoals(monthly) {
+  /* ---------- 本月目标（Supabase love_notes 持久化：整月 goals JSON 存在 note_key=dash-goals-YYYY-MM） ---------- */
+  async function loadGoalsState(monthKey, fallbackGoalsArr) {
+    await LoveNest.db.ready;
+    const rows = await LoveNest.db.list('love_notes', { note_key: 'dash-goals-' + String(monthKey) });
+    const row = (rows || [])[0];
+    if (row && row.content) {
+      try {
+        const arr = JSON.parse(row.content);
+        if (Array.isArray(arr)) return arr;
+      } catch (_) {}
+    }
+    // fallback 到 localStorage 的旧数据
+    const legacy = LoveNest.store.get('dash-goals-' + String(monthKey), {});
+    const out = (fallbackGoalsArr || []).map((g, i) => ({ text: g.text, done: !!legacy[i] }));
+    // 如果旧的 legacy 有数据，顺手迁移一次到 DB（不阻塞）
+    if (legacy && Object.keys(legacy).length) {
+      LoveNest.db.upsert('love_notes', {
+        note_key: 'dash-goals-' + String(monthKey),
+        kind: 'app_state', side: 'both',
+        title: '仪表盘本月目标 · ' + String(monthKey),
+        content: JSON.stringify(out),
+      }, ['couple_id','note_key']).catch(()=>{});
+    }
+    return out;
+  }
+  async function saveGoalsState(monthKey, goalsArr) {
+    await LoveNest.db.upsert('love_notes', {
+      note_key: 'dash-goals-' + String(monthKey),
+      kind: 'app_state', side: 'both',
+      title: '仪表盘本月目标 · ' + String(monthKey),
+      content: JSON.stringify(goalsArr),
+    }, ['couple_id','note_key']);
+  }
+  function renderGoals(monthly, goalsStatesByMonth) {
     if (!monthly || !monthly.length) return;
+    goalsStatesByMonth = goalsStatesByMonth || {};
     const m = monthly[0];
     document.getElementById("goalMonth").textContent = m.month || "本月";
     document.getElementById("goalTitle").textContent = m.title || "本月共同目标";
     const list = document.getElementById("goalList");
-    const storeKey = "dash-goals-" + (m.month || "current");
-    const saved = LoveNest.store.get(storeKey, {});
-    list.innerHTML = (m.goals || []).map((g, i) => {
-      const checked = saved[i] ? "checked" : "";
-      return `<div class="check-item"><input type="checkbox" id="goal-${i}" ${checked}><label for="goal-${i}">${esc(g.text)}</label></div>`;
+    const monthKey = m.month || "current";
+    const goals = Array.isArray(goalsStatesByMonth[monthKey]) && goalsStatesByMonth[monthKey].length === (m.goals||[]).length
+      ? goalsStatesByMonth[monthKey]
+      : (m.goals || []).map(g => ({ text: g.text, done: false }));
+    list.innerHTML = goals.map((g, i) => {
+      const checked = g.done ? "checked" : "";
+      return `<div class="check-item"><input type="checkbox" id="goal-${i}" data-goal-index="${i}" ${checked}><label for="goal-${i}">${esc(g.text)}</label></div>`;
     }).join("");
-    list.querySelectorAll('input[type="checkbox"]').forEach((cb, i) => {
-      cb.addEventListener("change", () => {
-        const cur = LoveNest.store.get(storeKey, {});
+    // 进度
+    const done = goals.filter(g => g.done).length;
+    const total = goals.length;
+    const prog = document.getElementById("goalProgress");
+    if (!prog) {
+      // 动态插入进度条（只插一次）
+      const host = list.parentNode;
+      const div = document.createElement('div');
+      div.id = 'goalProgress';
+      div.style.cssText = 'margin-top:14px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--taupe)';
+      div.innerHTML = '<div style="flex:1;height:6px;background:var(--line-soft);border-radius:999px;overflow:hidden"><div id="goalProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg, var(--sage-light), var(--sage-deep));border-radius:999px;transition:width .4s"></div></div><span id="goalProgressText">0/0</span>';
+      host.appendChild(div);
+    }
+    const bar = document.getElementById("goalProgressBar");
+    const txt = document.getElementById("goalProgressText");
+    if (bar) bar.style.width = total ? (done/total*100) + '%' : '0%';
+    if (txt) txt.textContent = done + '/' + total;
+
+    list.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+      cb.addEventListener("change", async () => {
+        const i = Number(cb.getAttribute("data-goal-index"));
+        goals[i] = goals[i] || { text: '', done: false };
+        goals[i].done = cb.checked;
+        try { await saveGoalsState(monthKey, goals); } catch(_){}
+        // 本地 localStorage 也留一份（断网兜底）
+        const cur = LoveNest.store.get('dash-goals-' + String(monthKey), {});
         cur[i] = cb.checked;
-        LoveNest.store.set(storeKey, cur);
+        LoveNest.store.set('dash-goals-' + String(monthKey), cur);
+        // 刷新进度
+        const dn = goals.filter(g => g.done).length;
+        if (bar) bar.style.width = total ? (dn/total*100) + '%' : '0%';
+        if (txt) txt.textContent = dn + '/' + total;
       });
     });
   }
@@ -405,30 +471,139 @@
     renderQuote(quotes);
     renderPhase(dash.phase || FALLBACK_DASH.phase, dates);
 
-    // 加载 bank + milestones 用于统计行（并行，失败用 0）
+    // 先从 DB 并行加载本月目标 + bank + milestones
+    const firstMonth = ((dash.monthly_goals || FALLBACK_DASH.monthly_goals)[0] || {}).month || '2026-07';
+    const fallbackGoals = (((dash.monthly_goals || FALLBACK_DASH.monthly_goals)[0] || {}).goals) || [];
+    const [goalsState, bankDataRaw, milestoneRaw] = await Promise.all([
+      loadGoalsState(firstMonth, fallbackGoals),
+      (async () => {
+        try {
+          await LoveNest.db.ready;
+          return await LoveNest.db.list('bank_records');
+        } catch(_) { return []; }
+      })(),
+      (async () => {
+        try {
+          await LoveNest.db.ready;
+          return await LoveNest.db.list('milestone_items');
+        } catch(_) { return []; }
+      })(),
+    ]);
+
+    // bankBalance：seed_records（来自 data/bank.json） + user bank_records 合并（按 date/type/who/event/weight 去重，用户优先）
     let bankBalance = 0;
-    let milestoneCount = 0;
     try {
-      const bank = await LoveNest.getJSON("data/bank.json", null);
-      if (bank && bank.seed_records) {
-        const userRecords = LoveNest.store.get("bank-records", []);
-        const all = bank.seed_records.concat(userRecords);
-        bankBalance = all.reduce((sum, r) => sum + (r.type === "deposit" ? (r.weight || 1) : -(r.weight || 1)), 0);
+      const bankStatic = await LoveNest.getJSON("data/bank.json", null);
+      const seeds = Array.isArray(bankStatic && bankStatic.seed_records) ? bankStatic.seed_records : [];
+      const merged = new Map();
+      seeds.forEach(r => {
+        const k = [r.date, r.type, r.who, r.event, r.weight].join('||');
+        merged.set(k, r);
+      });
+      (bankDataRaw || []).forEach(r => {
+        const k = [r.date, r.type, r.who, r.event, r.weight].join('||');
+        merged.set(k, r);  // 用户记录优先级更高
+      });
+      merged.forEach(r => {
+        bankBalance += (r.type === "deposit" ? (r.weight || 1) : -(r.weight || 1));
+      });
+    } catch (e) {
+      // fallback 为 0
+    }
+
+    // milestone 统计：DB 中 milestone_items 总行数（若空则回落到静态 phases 数量）
+    let milestoneDone = 0;
+    let milestoneTotal = 0;
+    try {
+      if (milestoneRaw && milestoneRaw.length > 0) {
+        milestoneTotal = milestoneRaw.length;
+        milestoneDone = milestoneRaw.filter(r => !!r.done).length;
+      } else {
+        const ms = await LoveNest.getJSON("data/milestones.json", null);
+        if (ms && ms.phases) {
+          milestoneTotal = ms.phases.reduce((n, p) => n + ((p.items || []).length), 0);
+          milestoneDone = ms.phases.reduce((n, p) => n + ((p.items || []).filter(it=>it.done).length), 0);
+        }
       }
     } catch (e) {}
-    try {
-      const ms = await LoveNest.getJSON("data/milestones.json", null);
-      if (ms && ms.phases) milestoneCount = ms.phases.reduce((n, p) => n + (p.items ? p.items.length : 0), 0);
-    } catch (e) {}
 
-    renderStats(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneCount);
-    renderGoals(dash.monthly_goals || FALLBACK_DASH.monthly_goals);
+    // ✨ 改造 stats：第 4 项 milestone_count 显示 "已完成/总计"
+    renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneDone, milestoneTotal);
+
+    // 本月目标（带 DB 加载结果）
+    const goalsByMonth = {};
+    goalsByMonth[firstMonth] = goalsState;
+    renderGoals(dash.monthly_goals || FALLBACK_DASH.monthly_goals, goalsByMonth);
+
     renderHabits(dash.weekly_micro_habits || FALLBACK_DASH.weekly_micro_habits);
     renderTodayQuestion(dash.today_question || FALLBACK_DASH.today_question);
     renderModules();
 
     // 动态插入的 .reveal 重新触发动画
     if (LoveNest.initReveal) LoveNest.initReveal();
+
+    // ✨ watch：跨设备自动刷新
+    // 1) bank_records 变化 → 重算余额 & 重渲 stats
+    LoveNest.db.watch('bank_records', async () => {
+      let newBal = 0;
+      try {
+        const raw = await LoveNest.db.list('bank_records');
+        const bankStatic = await LoveNest.getJSON("data/bank.json", null);
+        const seeds = Array.isArray(bankStatic && bankStatic.seed_records) ? bankStatic.seed_records : [];
+        const merged = new Map();
+        seeds.forEach(r => { const k = [r.date,r.type,r.who,r.event,r.weight].join('||'); merged.set(k,r); });
+        (raw || []).forEach(r => { const k = [r.date,r.type,r.who,r.event,r.weight].join('||'); merged.set(k,r); });
+        merged.forEach(r => { newBal += (r.type === "deposit" ? (r.weight||1) : -(r.weight||1)); });
+      } catch (_) {}
+      renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, newBal, milestoneDone, milestoneTotal);
+    });
+    // 2) milestone_items 变化 → 重算完成数 & 重渲 stats
+    LoveNest.db.watch('milestone_items', async () => {
+      try {
+        const raw = await LoveNest.db.list('milestone_items');
+        milestoneTotal = raw.length;
+        milestoneDone = raw.filter(r => !!r.done).length;
+      } catch (_) {}
+      renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneDone, milestoneTotal);
+    });
+    // 3) love_notes 变化（本月目标）→ 重渲 goals
+    LoveNest.db.watch('love_notes', async () => {
+      try {
+        const fresh = await loadGoalsState(firstMonth, fallbackGoals);
+        goalsByMonth[firstMonth] = fresh;
+        renderGoals(dash.monthly_goals || FALLBACK_DASH.monthly_goals, goalsByMonth);
+      } catch (_) {}
+    });
+  }
+
+  /* ---------- 统计行（含里程碑完成数/总数显示） ---------- */
+  function renderStatsWithMilestones(statsDef, dates, bankBalance, milestoneDone, milestoneTotal) {
+    const row = document.getElementById("statsRow");
+    if (!row) return;
+    const loveDays = LoveNest.daysSince(dates.love);
+    const weddingDate = (dates.wedding_plan || "2027-07") + "-01";
+    const wStart = new Date(weddingDate + "T00:00:00");
+    const daysToWedding = Math.ceil((wStart - new Date()) / 86400000);
+    const span = dates.milestone_span_years || 80;
+    const loveStart = new Date(dates.love + "T00:00:00");
+    const totalMs = span * 365.25 * 86400000;
+    const lifePct = Math.max(0, Math.min(100, ((new Date() - loveStart) / totalMs) * 100));
+
+    const cells = (statsDef || []).map(s => {
+      let num = "—", label = s.label, sub = "";
+      if (s.type === "love_days") num = loveDays.toLocaleString();
+      else if (s.type === "wedding_countdown") num = (daysToWedding > 0 ? daysToWedding : 0).toLocaleString();
+      else if (s.type === "bank_balance") {
+        num = (bankBalance >= 0 ? "+" : "") + bankBalance;
+        sub = '<span class="faint" style="font-size:.72rem">（情感账户 · 信任余额）</span>';
+      }
+      else if (s.type === "milestone_count") {
+        num = milestoneDone + ' / ' + milestoneTotal;
+        sub = '<span class="faint" style="font-size:.72rem">已完成 / 里程碑总数</span>';
+      }
+      return `<div class="stat"><div class="stat__num">${esc(num)}</div><div class="stat__label">${esc(label)}${sub ? '<br/>'+sub : ''}</div></div>`;
+    });
+    row.innerHTML = cells.join("");
   }
 
   document.addEventListener("DOMContentLoaded", loadAll);

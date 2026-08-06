@@ -97,6 +97,10 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<!-- Supabase + 数据访问层（三层读写策略：localStorage 缓存 → 云端同步 → 离线队列重试） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
 <script src="shared/nav.js"></script>
 <script src="shared/data.js"></script>
 <script>
@@ -239,25 +243,83 @@ document.addEventListener("DOMContentLoaded", async function () {
     return item.highlight ? "tag tag--rose" : "tag tag--sage";
   }
 
+  /* ✨ 将 DB 的 milestone_items 合并到 phases（按 phase_year + item_title 匹配）*/
+  async function mergeMilestonesFromDB(phases) {
+    await LoveNest.db.ready;
+    const rows = await LoveNest.db.list('milestone_items');
+    // 首次空库：把 phases 里的所有 items 写入 DB 做种子
+    if (!rows || rows.length === 0) {
+      for (const phase of phases) {
+        for (const item of phase.items || []) {
+          try {
+            await LoveNest.db.upsert('milestone_items', {
+              phase_year: phase.year,
+              phase_label: phase.label,
+              item_date: item.date || '',
+              item_title: item.title,
+              item_desc: item.desc || '',
+              tag: item.tag || '',
+              highlight: !!item.highlight,
+              done: !!item.done,
+            }, ['couple_id','phase_year','item_title']);
+          } catch (e) {}
+        }
+      }
+      const re = await LoveNest.db.list('milestone_items');
+      return applyDBToPhases(phases, re || []);
+    }
+    return applyDBToPhases(phases, rows);
+  }
+  function applyDBToPhases(phases, rows) {
+    const map = new Map();  // key = phase_year|item_title
+    rows.forEach(r => {
+      const k = String(r.phase_year) + '|' + String(r.item_title);
+      map.set(k, r);
+    });
+    phases = JSON.parse(JSON.stringify(phases));
+    phases.forEach(phase => {
+      (phase.items || []).forEach(item => {
+        const k = String(phase.year) + '|' + String(item.title);
+        const row = map.get(k);
+        if (!row) return;
+        // DB 的 done / highlight 优先级更高
+        if (typeof row.done === 'boolean') item.done = row.done;
+        if (typeof row.highlight === 'boolean') item.highlight = row.highlight;
+        if (row.item_date) item.date = row.item_date;
+        if (row.item_desc) item.desc = row.item_desc;
+        if (row.tag) item.tag = row.tag;
+      });
+    });
+    return phases;
+  }
+
   /* ---------- Render phases + timeline ---------- */
   function renderPhases(phases) {
     const region = document.getElementById("phases-region");
     if (!region) return;
 
     const html = phases.map(function (phase) {
-      const itemsHtml = (phase.items || []).map(function (item) {
+      const itemsHtml = (phase.items || []).map(function (item, idx) {
         const linkBtn = item.link === "wedding"
           ? '<a class="btn btn--ghost btn--small" href="../wedding/index.html" target="_blank" rel="noopener">查看筹备 →</a>'
           : "";
+        const safePhase = String(phase.year).replace(/"/g, '&quot;');
+        const safeTitle = String(item.title).replace(/"/g, '&quot;');
         return '' +
           '<div class="' + tlItemClass(item) + '">' +
             '<div class="tl-item__date">' + esc(item.date) + '</div>' +
-            '<div class="tl-item__title">' + esc(item.title) + '</div>' +
-            '<div class="tl-item__desc">' + esc(item.desc) + '</div>' +
-            '<div class="tl-item__tag">' +
-              '<span class="' + tagClass(item) + '">' + esc(item.tag) + '</span>' +
-              linkBtn +
-            '</div>' +
+            '<label class="tl-item__done" title="完成/未完成" style="display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0">' +
+              '<input type="checkbox" class="tl-done" data-phase="' + safePhase + '" data-title="' + safeTitle + '" aria-label="完成 ' + esc(item.title) + '"' + (item.done ? ' checked' : '') +
+                ' style="margin-top:2px;flex-shrink:0;width:18px;height:18px;accent-color:var(--sage-deep);cursor:pointer" />' +
+              '<div style="flex:1;min-width:0">' +
+                '<div class="tl-item__title">' + esc(item.title) + '</div>' +
+                '<div class="tl-item__desc">' + esc(item.desc) + '</div>' +
+                '<div class="tl-item__tag">' +
+                  '<span class="' + tagClass(item) + '">' + esc(item.tag) + '</span>' +
+                  linkBtn +
+                '</div>' +
+              '</div>' +
+            '</label>' +
           '</div>';
       }).join("");
 
@@ -274,6 +336,44 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     region.innerHTML = html +
       '<div class="callout reveal">婚礼只是其中一个节点，权重与其他人生目标平等——别让它吞掉整个未来。</div>';
+
+    // 绑定 checkbox 点击 → upsert DB
+    region.querySelectorAll('.tl-done[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', async (e) => {
+        const phase_year = cb.getAttribute('data-phase');
+        const item_title = cb.getAttribute('data-title');
+        const done = cb.checked;
+        // 找对应 item 拿完整信息（避免缺字段）
+        let meta = { item_date: '', tag: '', highlight: false, item_desc: '' };
+        phases.forEach(ph => {
+          if (String(ph.year) !== String(phase_year)) return;
+          (ph.items || []).forEach(it => {
+            if (String(it.title) === String(item_title)) {
+              meta = { item_date: it.date || '', tag: it.tag || '', highlight: !!it.highlight, item_desc: it.desc || '' };
+            }
+          });
+        });
+        try {
+          await LoveNest.db.upsert('milestone_items', {
+            phase_year, phase_label: (phases.find(p => String(p.year) === String(phase_year)) || {}).label || '',
+            item_date: meta.item_date,
+            item_title,
+            item_desc: meta.item_desc,
+            tag: meta.tag,
+            highlight: meta.highlight,
+            done,
+          }, ['couple_id','phase_year','item_title']);
+        } catch (err) {
+          console.warn('[milestones] upsert 失败:', err);
+        }
+        // 切换 tl-item--done class
+        const tlItem = cb.closest('.tl-item');
+        if (tlItem) {
+          if (done) tlItem.classList.add('tl-item--done');
+          else tlItem.classList.remove('tl-item--done');
+        }
+      });
+    });
   }
 
   /* ---------- Render wedding prep sub-module ---------- */
@@ -321,13 +421,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     data = FALLBACK;
   }
   if (!data) data = FALLBACK;
+  let phases = data.phases || [];
+
+  // ✨ 合并 DB 中的里程碑完成状态（done/highlight）
+  phases = await mergeMilestonesFromDB(phases);
 
   // keep hero sub in sync with data (degrades to hardcoded default if absent)
   const heroSub = document.getElementById("hero-sub");
   if (heroSub && data.intro) heroSub.textContent = data.intro;
 
-  renderPhases(data.phases || []);
+  renderPhases(phases);
   renderWeddingPrep(data.wedding_prep);
+
+  // ✨ watch：其他设备改了这台自动刷新
+  LoveNest.db.watch('milestone_items', async () => {
+    phases = await mergeMilestonesFromDB(JSON.parse(JSON.stringify(FALLBACK.phases || [])));
+    renderPhases(phases);
+    if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+  });
 
   // wire scroll-reveal for newly injected elements
   if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();

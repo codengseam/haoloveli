@@ -241,6 +241,10 @@
 
 </main>
 
+<!-- Supabase + 数据访问层（三层读写策略：localStorage 缓存 → 云端同步 → 离线队列重试） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
 <script src="shared/nav.js"></script>
 <script>
 (function () {
@@ -274,6 +278,28 @@
   const CHECKLIST_KEY = "family-checklist";
   const MEMBERS_KEY = "family-members-v2";
 
+  // ✨ Supabase 初始化（在 Boot 阶段 await LoveNest.db.ready）
+  let __familyMembers = [];
+  let __holidayChecks = [];
+
+  async function refreshFromDB(baseParents) {
+    // 1. 家庭成员：family_members 表（id 为 text 主键：his-dad / her-mom ...）
+    const fromDB = await LoveNest.db.list('family_members', null, { order: [['side','asc'],['relation','asc']] });
+    if (fromDB && fromDB.length) {
+      __familyMembers = fromDB.slice();
+    } else {
+      // 空 → 用 baseParents 做种子写入 DB（一次性）
+      for (const p of (baseParents || [])) {
+        try { await LoveNest.db.upsert('family_members', p, ['id']); } catch (e) {}
+      }
+      const re = await LoveNest.db.list('family_members');
+      __familyMembers = (re || baseParents || []).slice();
+    }
+    // 2. 节日勾选：holiday_checks 表
+    const fromH = await LoveNest.db.list('holiday_checks');
+    __holidayChecks = fromH || [];
+  }
+
   /* ---------- utils ---------- */
   function escapeHtml(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -283,32 +309,35 @@
   function uid() { return "m_" + Math.random().toString(36).slice(2, 10); }
 
   /* ============================================================
-     成员数据存取：localStorage 覆盖 + 文件导入导出
+     成员数据存取：Supabase 持久化（未配置时 localStorage 缓存层兜底）
      ============================================================ */
   const MemberStore = {
-    _cache: null,
-    load(baseParents) {
-      if (this._cache) return this._cache;
-      try {
-        const saved = JSON.parse(localStorage.getItem("lovenest:" + MEMBERS_KEY) || "null");
-        if (saved && Array.isArray(saved) && saved.length) {
-          this._cache = saved;
-          return saved;
+    load() {
+      return __familyMembers.slice();
+    },
+    async save(list) {
+      __familyMembers = list;
+      // 逐条 upsert 到 Supabase（按 id 主键冲突）
+      for (const m of list) {
+        try { await LoveNest.db.upsert('family_members', m, ['id']); }
+        catch (e) { console.warn('[family] upsert 失败:', e); }
+      }
+    },
+    async reset(baseParents) {
+      // 先删 DB 里所有（除了 4 个默认父母种子，这些保留）；然后重新写回种子
+      const fromDB = await LoveNest.db.list('family_members');
+      const seedIds = new Set((baseParents || []).map(x => x.id));
+      for (const m of (fromDB || [])) {
+        if (seedIds.has(m.id)) {
+          // 重置 seed 为 base 值
+          const fresh = (baseParents || []).find(b => b.id === m.id);
+          if (fresh) await LoveNest.db.upsert('family_members', fresh, ['id']);
+        } else {
+          await LoveNest.db.remove('family_members', { id: m.id });
         }
-      } catch (e) {}
-      this._cache = JSON.parse(JSON.stringify(baseParents || []));
-      return this._cache;
-    },
-    save(list) {
-      this._cache = list;
-      try { localStorage.setItem("lovenest:" + MEMBERS_KEY, JSON.stringify(list)); }
-      catch (e) {}
-    },
-    reset(baseParents) {
-      this._cache = JSON.parse(JSON.stringify(baseParents || []));
-      try { localStorage.removeItem("lovenest:" + MEMBERS_KEY); }
-      catch (e) {}
-      return this._cache;
+      }
+      await refreshFromDB(baseParents);
+      return __familyMembers.slice();
     },
     export(fullData) {
       const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: "application/json" });
@@ -321,14 +350,14 @@
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 200);
     },
-    import(file) {
+    async import(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
           try {
             const data = JSON.parse(e.target.result);
             if (data && Array.isArray(data.parents)) {
-              this.save(data.parents);
+              await this.save(data.parents);
               resolve(data);
             } else {
               reject(new Error("文件格式不正确：缺少 parents 数组"));
@@ -613,13 +642,16 @@
     });
     // 绑定删除
     grid.querySelectorAll(".btn-delete").forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const id = btn.getAttribute("data-id");
         const m = parents.find(x => x.id === id);
         if (!m) return;
         if (confirm(`确定要删除「${m.name || m.role}」的档案吗？此操作可通过重新导入之前的 JSON 恢复。`)) {
-          const list = MemberStore.load(FALLBACK.parents).filter(x => x.id !== id);
-          MemberStore.save(list);
+          const list = MemberStore.load().filter(x => x.id !== id);
+          __familyMembers = list;  // 内存先更
+          // 先删 DB 再 save（保留除被删掉的以外的）
+          try { await LoveNest.db.remove('family_members', { id }); } catch (e) {}
+          await MemberStore.save(list);
           refreshAll(list);
         }
       });
@@ -693,7 +725,7 @@
       const cancel = document.getElementById("nf-cancel");
       const submit = document.getElementById("nf-submit");
       if (cancel) cancel.addEventListener("click", () => window.LoveNest.closeModal());
-      if (submit) submit.addEventListener("click", () => {
+      if (submit) submit.addEventListener("click", async () => {
         const name = document.getElementById("nf-name").value.trim();
         const role = document.getElementById("nf-role").value.trim();
         if (!name || !role) {
@@ -713,8 +745,9 @@
           size: document.getElementById("nf-size").value.trim() || "（待补充）",
           notes: document.getElementById("nf-notes").value.trim() || ""
         };
-        const list = MemberStore.load(FALLBACK.parents).concat([newMember]);
-        MemberStore.save(list);
+        const list = MemberStore.load().concat([newMember]);
+        __familyMembers = list;
+        await MemberStore.save(list);
         window.LoveNest.closeModal();
         refreshAll(list);
         // 滚动到新增的卡片
@@ -774,10 +807,62 @@
   }
 
   function restoreChecklist() {
-    const saved = window.LoveNest.store.get(CHECKLIST_KEY, {}) || {};
+    // 从 holiday_checks 表还原每个 checkbox 的状态
+    // checkbox id 形如 "hol-{holiday_id}-{item_index}"
     document.querySelectorAll('.check-item input[type="checkbox"]').forEach(function (cb) {
       const id = cb.getAttribute("data-check-id") || cb.id;
-      if (saved[id]) cb.checked = true;
+      const m = /^hol-([\w-]+)-(\d+)$/.exec(id || '');
+      if (!m) return;
+      const holiday_id = m[1];
+      const item_index = Number(m[2]);
+      const hit = __holidayChecks.find(x => String(x.holiday_id) === holiday_id && Number(x.item_index) === item_index);
+      if (hit && hit.checked) cb.checked = true;
+    });
+    // 也兼容老 localStorage（旧数据自动迁移一次进 DB）
+    try {
+      const saved = JSON.parse(localStorage.getItem("lovenest:" + CHECKLIST_KEY) || "null");
+      if (saved && typeof saved === "object") {
+        (async () => {
+          let migrated = 0;
+          for (const [id, checked] of Object.entries(saved)) {
+            const m = /^hol-([\w-]+)-(\d+)$/.exec(id || '');
+            if (!m) continue;
+            await LoveNest.db.upsert('holiday_checks', {
+              holiday_id: m[1],
+              item_index: Number(m[2]),
+              checked: !!checked,
+            }, ['couple_id','holiday_id','item_index']);
+            migrated++;
+          }
+          if (migrated > 0) {
+            localStorage.removeItem("lovenest:" + CHECKLIST_KEY);
+            const re = await LoveNest.db.list('holiday_checks');
+            __holidayChecks = re || [];
+          }
+        })();
+      }
+    } catch (e) {}
+  }
+
+  function wireChecks() {
+    document.querySelectorAll('.check-item input[type="checkbox"]').forEach(function (cb) {
+      cb.addEventListener("change", async function () {
+        const id = cb.getAttribute("data-check-id") || cb.id;
+        const m = /^hol-([\w-]+)-(\d+)$/.exec(id || '');
+        if (!m) return;
+        const holiday_id = m[1];
+        const item_index = Number(m[2]);
+        const checked = cb.checked;
+        // 内存先更一下
+        const hit = __holidayChecks.find(x => String(x.holiday_id) === holiday_id && Number(x.item_index) === item_index);
+        if (hit) hit.checked = checked;
+        // DB upsert（unique: couple_id+holiday_id+item_index）
+        try {
+          await LoveNest.db.upsert('holiday_checks', {
+            holiday_id, item_index, checked,
+          }, ['couple_id','holiday_id','item_index']);
+        } catch (e) { console.warn('[family] holiday_check upsert 失败:', e); }
+      });
     });
   }
 
@@ -790,17 +875,6 @@
         const isOpen = acc.classList.toggle("open");
         head.setAttribute("aria-expanded", isOpen ? "true" : "false");
         body.style.maxHeight = isOpen ? body.scrollHeight + "px" : "0px";
-      });
-    });
-  }
-
-  function wireChecks() {
-    document.querySelectorAll('.check-item input[type="checkbox"]').forEach(function (cb) {
-      cb.addEventListener("change", function () {
-        const id = cb.getAttribute("data-check-id") || cb.id;
-        const saved = window.LoveNest.store.get(CHECKLIST_KEY, {}) || {};
-        saved[id] = cb.checked;
-        window.LoveNest.store.set(CHECKLIST_KEY, saved);
       });
     });
   }
@@ -827,7 +901,7 @@
   }
 
   function refreshAll(members, data) {
-    const list = members || MemberStore.load(FALLBACK.parents);
+    const list = Array.isArray(members) ? members : MemberStore.load();
     renderFamilyTree(list);
     renderParents(list);
     if (data) {
@@ -852,9 +926,21 @@
     const prEl = document.getElementById("principle-text");
     if (prEl && data.principle) prEl.textContent = data.principle;
 
-    // 初始化成员（优先读 localStorage）
-    const members = MemberStore.load(data.parents || FALLBACK.parents);
+    // ✨ Supabase 初始化（首次空库会把种子父母写进去）
+    await LoveNest.db.ready;
+    await refreshFromDB(data.parents || FALLBACK.parents);
+    // 订阅：另一台设备修改成员 / 勾选节日，这台自动重绘
+    LoveNest.db.watch('family_members', async rows => {
+      if (!rows || !rows.length) return;
+      __familyMembers = rows.slice();
+      refreshAll(__familyMembers);
+    });
+    LoveNest.db.watch('holiday_checks', async rows => {
+      __holidayChecks = rows || [];
+      restoreChecklist();
+    });
 
+    const members = MemberStore.load();
     refreshAll(members, data);
 
     /* ---------- 工具栏按钮 ---------- */
@@ -865,24 +951,25 @@
     const fileInput = document.getElementById("fileImport");
 
     if (toggleBtn) {
-      toggleBtn.addEventListener("click", () => {
+      toggleBtn.addEventListener("click", async () => {
         if (!IS_EDITING) {
           // 进入编辑
           setEditing(true);
         } else {
           // 退出编辑 + 保存
-          const base = MemberStore.load(FALLBACK.parents);
+          const base = MemberStore.load();
           const updated = collectEdits(base);
-          MemberStore.save(updated);
+          __familyMembers = updated;
+          await MemberStore.save(updated);
           setEditing(false);
           refreshAll(updated);
           // 小提示
           const hint = document.getElementById("syncHint");
           if (hint) {
             hint.style.display = "block";
-            const prev = hint.innerHTML;
-            hint.innerHTML = '<p style="color:var(--sage-deep)"><strong>✅ 已保存到本地浏览器！</strong></p>' + prev;
-            setTimeout(() => { hint.innerHTML = prev; if (!IS_EDITING) hint.style.display = "none"; }, 4000);
+            const dbStatus = LoveNest.db.enabled ? "并同步到云端 ☁️" : "（未配置云端，仅保存到本机浏览器）";
+            hint.innerHTML = `<p style="color:var(--sage-deep)"><strong>✅ 已保存 ${dbStatus}</strong></p>`;
+            setTimeout(() => { hint.innerHTML = (hint.dataset.original || ''); if (!IS_EDITING) hint.style.display = "none"; }, 4000);
           }
         }
       });
@@ -890,7 +977,7 @@
     if (addBtn) addBtn.addEventListener("click", openAddMemberModal);
     if (exportBtn) {
       exportBtn.addEventListener("click", () => {
-        const members = MemberStore.load(FALLBACK.parents);
+        const members = MemberStore.load();
         const exportData = Object.assign({}, data, { parents: members });
         MemberStore.export(exportData);
       });
@@ -902,9 +989,10 @@
         if (!file) return;
         try {
           const imported = await MemberStore.import(file);
+          await refreshFromDB(data.parents || FALLBACK.parents);
           alert("导入成功！已载入 " + (imported.parents ? imported.parents.length : 0) + " 位成员。");
           const fresh = Object.assign({}, data, imported);
-          refreshAll(imported.parents, fresh);
+          refreshAll(MemberStore.load(), fresh);
         } catch (err) {
           alert("导入失败：" + err.message);
         }
