@@ -28,6 +28,10 @@ COPY --from=builder /out /usr/share/nginx/html
 # 自定义 nginx 配置（gzip + 中文文件名 + 静态回退）
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# 启动脚本：把魔搭注入的容器环境变量写入前端可读取的 env-config.js
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # 暴露 7860 端口（魔搭 Docker 创空间强制要求 7860，不支持自定义）
 EXPOSE 7860
 
@@ -35,4 +39,5 @@ EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget -q --spider http://localhost:7860/ || exit 1
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
