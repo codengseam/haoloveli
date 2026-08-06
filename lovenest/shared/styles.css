@@ -12,15 +12,20 @@
   --bg-deep:#E4DBCC;         /* deeper surface / section tint */
   --bg-soft:#F8F4EC;         /* palest inset */
 
-  --sage:#9DAE93;            /* 灰豆绿 primary accent */
-  --sage-deep:#7E9074;
-  --sage-soft:#C7D0BD;
+  --sage:#7E9074;            /* 灰豆绿 primary accent（加深，保证对比度）*/
+  --sage-deep:#5C6E53;
+  --sage-soft:#B8C4AD;
   --sage-tint:#E6ECE0;
 
-  --rose:#C6A39A;            /* 脏粉 secondary accent */
-  --rose-deep:#A9847B;
-  --rose-soft:#DCC4BC;
-  --rose-tint:#F1E3DD;
+  --terracotta:#B06A3E;      /* 赭石棕 · 师豪家（男方）主色（低饱和但与玫红明显区分）*/
+  --terracotta-deep:#8A4E29;
+  --terracotta-soft:#D4AE8B;
+  --terracotta-tint:#F3E3D3;
+
+  --rose:#B85C6B;            /* 深玫红 · 佳力家（女方）主色（由脏粉升级为深玫，强化对比度）*/
+  --rose-deep:#943F4F;
+  --rose-soft:#D6A5AE;
+  --rose-tint:#F2DDE1;
 
   --taupe:#B0A28F;           /* warm neutral */
   --taupe-soft:#CBBFAE;
@@ -160,7 +165,7 @@ section[id],.hero[id],.callout[id]{scroll-margin-top:76px}
 .tag--sage{background:var(--sage-tint);color:var(--sage-deep);border-color:var(--sage-soft)}
 .tag--rose{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft)}
 .tag--her{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft)}
-.tag--him{background:var(--sage-tint);color:var(--sage-deep);border-color:var(--sage-soft)}
+.tag--him{background:var(--terracotta-tint);color:var(--terracotta-deep);border-color:var(--terracotta-soft)}
 .tag--both{background:#EAE5DF;color:var(--taupe);border-color:#D5CFC2}
 
 /* ---------- Top navigation ---------- */
@@ -468,8 +473,8 @@ section[id],.hero[id],.callout[id]{scroll-margin-top:76px}
 .profile{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:24px;box-shadow:var(--shadow-sm)}
 .profile__head{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
 .profile__avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-family:var(--ff-display);font-size:1.2rem;color:var(--white);flex-shrink:0}
-.profile--him .profile__avatar{background:var(--sage)}
-.profile--her .profile__avatar{background:var(--rose)}
+.profile--him .profile__avatar{background:linear-gradient(135deg,var(--terracotta),var(--terracotta-deep));box-shadow:0 2px 8px rgba(138,78,41,.18)}
+.profile--her .profile__avatar{background:linear-gradient(135deg,var(--rose),var(--rose-deep));box-shadow:0 2px 8px rgba(148,63,79,.18)}
 .profile__name{font-family:var(--ff-display);font-weight:500;font-size:1.15rem;color:var(--ink)}
 .profile__role{font-size:.82rem;color:var(--muted)}
 .profile__dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.9rem}

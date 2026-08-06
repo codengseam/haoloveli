@@ -39,16 +39,16 @@ create table if not exists public.bank_records (
 );
 create index if not exists idx_bank_records_couple_date on public.bank_records(couple_id, date desc);
 
--- ---------- 3. 家庭成员档案（4 位父母）----------
+-- ---------- 3. 家庭成员档案（父母 + 兄弟姐妹 + 扩展家庭成员）----------
 create table if not exists public.family_members (
-  id text primary key,                                         -- 与 family.json 一致：his-dad / her-mom ...
+  id text primary key,                                         -- 与 family.json 一致：his-dad / her-mom / m_xxx
   couple_id uuid not null references public.couples(id) on delete cascade default '00000000-0000-0000-0000-000000000000',
-  side text check (side in ('him','her')),
-  relation text check (relation in ('father','mother')),
+  side text,                                                     -- him=师豪家, her=佳力家, NULL 空=共同/其他（放宽 check 放宽为只允许枚举值或空）
+  relation text,                                                 -- father/mother/brother/sister/uncle/aunt/grandpa/grandma/cousin/other（放宽 check）
   role text,
   initial text,
   name text,
-  birthday date,
+  birthday text,                                               -- 放宽为 text，支持"农历X月X日等非ISO日期
   likes text,
   diet text,
   size text,
@@ -226,44 +226,42 @@ end $$;
 /* =========================================================================
    11. 初始化种子数据
    =========================================================================
-   插入 couples 一行 → 拿到其 uuid → 把它替换到所有业务表的默认 couple_id
-   （下面的 upsert 用真实的 id；这里用一个 CTE 保证幂等：重复执行不会出错）
+   couple_id 用固定值 aaaa1111-bbbb-cccc-dddd-eeeeffff0001（与 shared/config.js 一致）
+   注意：PostgreSQL 的 WITH ... UPDATE 语句里，CTE 的名字只对紧接其后的 1 条 UPDATE 有效，
+   所以这里不用 CTE，直接用字面量。后续如果想改成动态取 id，可把每条 UPDATE 写成独立的
+   `with c as (select id from public.couples limit 1) update ... from c;`。
    ========================================================================= */
 
-with c as (
-  insert into public.couples (id, partner_a_name, partner_b_name, anniversary_date)
-  values (
-    'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',  -- 固定 uuid，前端写死
-    '师豪','佳力','2025-05-10'
-  )
-  on conflict (id) do update set updated_at = now()
-  returning id
+-- 先确保 couples 里有这一行（固定种子，不随 id 变化，前端写死）
+insert into public.couples (id, partner_a_name, partner_b_name, anniversary_date)
+values (
+  'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',
+  '师豪','佳力','2025-05-10'
 )
--- 把默认值替换成真实的 couple_id
-update public.bank_records set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.family_members set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.holiday_checks set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.milestone_items set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.lovemap_answers set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.lovemap_cards set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.lovemap_magic5h set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.peace_signatures set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.conflict_reviews set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.bank_weekly_checks set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.monthly_goals set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
-update public.wedding_decisions set couple_id = (select id from c)
-where couple_id = '00000000-0000-0000-0000-000000000000';
+on conflict (id) do update set
+  partner_a_name = excluded.partner_a_name,
+  partner_b_name = excluded.partner_b_name,
+  anniversary_date = excluded.anniversary_date,
+  updated_at = now();
+
+-- 把默认占位的 couple_id 替换成真实值（所有业务表）
+do $$
+declare
+  real_id uuid := 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001'::uuid;
+  zero_id uuid := '00000000-0000-0000-0000-000000000000'::uuid;
+  t text;
+begin
+  foreach t in array array[
+    'bank_records','family_members','holiday_checks','milestone_items',
+    'lovemap_answers','lovemap_cards','lovemap_magic5h','peace_signatures',
+    'conflict_reviews','bank_weekly_checks','monthly_goals','wedding_decisions'
+  ] loop
+    execute format(
+      'update public.%I set couple_id = %L where couple_id = %L;',
+      t, real_id, zero_id
+    );
+  end loop;
+end $$;
 
 -- ---------- 11-a. 情感账户 8 条种子记录 ----------
 insert into public.bank_records
@@ -283,23 +281,25 @@ on conflict do nothing;
 insert into public.family_members
   (id, couple_id, side, relation, role, initial, likes, diet, notes)
 values
-  ('his-dad','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','father','我的父亲','爸',
+  ('his-dad','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','father','师豪的爸爸','爸',
     '忠县汉族、巴渝老礼。偏好可循：本地白酒（认牌子）、茶叶、香烟（重庆社交硬通货，敬长辈用）；聘礼讲究肉酒糖烟四色礼齐整。',
     '川渝家常口味，偏重油重辣；中老年留意三高（血压/血糖/血脂），宴席敬酒宜控量，少油少盐为宜。',
     '忠县父系话事，大事由父亲拍板、母亲操持。相处要点：敬重他的"面子"与"礼数周全"（提亲/聘礼/接亲/回门四步礼不能塌）。'),
-  ('his-mom','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','mother','我的母亲','妈',
+  ('his-mom','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','mother','师豪的妈妈','妈',
     '忠县汉族家庭，礼数偏中原化、重"礼数周全"。可了解是否爱广场舞、邻里串门、腌菜晒酱、追剧；送实用兼体面的小物（丝巾、茶叶、保健品）更显用心。',
     '川渝家常口味，做菜偏回锅肉/烧白一类；关注体检（乳腺/妇科/骨密度）与情绪起伏。',
     '忠县母亲操持日常但大事听父亲的，冲突倾向内化（冷战不外放）。多夸她做的菜，健康体检主动安排。'),
-  ('her-dad','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','father','你的父亲','爸',
+  ('her-dad','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','father','佳力的爸爸','爸',
     '彭水苗族土家族自治县。先确认家族以苗族还是土家族为主：苗族家庭可留意芦笙/苗歌/银饰，土家族家庭可留意摆手舞/西兰卡普。偏好可循：苞谷酒/米酒、油茶；女婿上门带两瓶好酒最对路。',
     '彭水菜酸汤、糟辣、腊味重；饮酒习惯需了解（拦门酒/认亲酒要双手接、能饮则饮）。',
     '彭水母系遗存，岳母说话有分量、岳父可能寡言但态度关键。女婿定位"贵客+自家人"，进门先叫爸，放下东西先陪他坐十分钟聊身体/庄稼/生意。'),
-  ('her-mom','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','mother','你的母亲','妈',
+  ('her-mom','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','mother','佳力的妈妈','妈',
     '彭水苗族土家族自治县。先分清苗族 vs 土家族再选礼：苗族家庭可送苗绣小件/银饰小物，土家族家庭可送西兰卡普织锦小物。爱腌菜可带好酱/好醋；护手霜、丝巾温润。',
     '酸辣口味（酸汤鱼/腊肉/油茶/糯米粑）；留意高血压与肠胃，少食多餐为宜。',
     '彭水母系色彩重，岳母在家族事务里说话有分量、冲突外放当场好。她在厨房操持时主动问要不要帮忙切菜；菜少食多赞，绝不当面说不习惯。')
-on conflict (id) do update set updated_at = now();
+on conflict (id) do update set
+  role = excluded.role,
+  updated_at = now();
 
 -- ---------- 11-c. 里程碑阶段种子（30+ 条，与 milestones.json 一致）----------
 insert into public.milestone_items
@@ -354,6 +354,42 @@ on conflict (side) do nothing;
 insert into public.wedding_decisions (couple_id)
 values ('aaaa1111-bbbb-cccc-dddd-eeeeffff0001')
 on conflict do nothing;
+
+/* =========================================================================
+   🔧 补丁（PATCH）：如果之前已建过表，请单独执行下面这段
+   作用：放宽 family_members 表的 side/relation 枚举约束 + birthday 类型 + 种子称呼升级
+   ========================================================================= */
+do $$
+begin
+  -- 1. 删除旧 check 约束（如果存在，名字自动生成的，遍历所有以 family_members_side_check / relation_check 结尾的）
+  execute (
+    select coalesce(string_agg('alter table public.family_members drop constraint if exists ' || quote_ident(conname) || ';', E'\n'), '')
+    from pg_constraint
+    where conrelid = 'public.family_members'::regclass
+      and (conname like '%side%check%' or conname like '%relation%check%' or conname like '%birthday%')
+  );
+
+  -- 2. 更改 birthday 列类型为 text（date 列需要 using 转换）
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema='public' and table_name='family_members'
+      and column_name='birthday' and data_type='date'
+  ) then
+    alter table public.family_members alter column birthday type text using birthday::text;
+  end if;
+
+  -- 3. 把 4 条默认父母的旧"我的父亲/母亲、你的父亲/母亲"旧称呼升级为新
+  update public.family_members
+  set role = case id
+    when 'his-dad' then '师豪的爸爸'
+    when 'his-mom' then '师豪的妈妈'
+    when 'her-dad' then '佳力的爸爸'
+    when 'her-mom' then '佳力的妈妈'
+    else role
+  end
+  where id in ('his-dad','his-mom','her-dad','her-mom')
+    and role in ('我的父亲','我的母亲','你的父亲','你的母亲');
+end $$;
 
 /* =========================================================================
    完成 ✅
