@@ -29,23 +29,32 @@
    ========================================================================= */
 (function () {
   "use strict";
-  window.LOVENEST_SUPABASE_CONFIG = {
-    // 把右边的占位替换成你的真实 Project URL
+
+  // --- 代码里写死的默认值（优先级最低）---
+  var HARDCODED_CFG = {
     PROJECT_URL: "https://YOUR-PROJECT-REFERENCE-ID.supabase.co",
-
-    // 把右边的占位替换成你的 anon public key（JWT 长字符串）
     ANON_PUBLIC_KEY: "YOUR-ANON-PUBLIC-JWT-KEY-REPLACE-ME",
-
-    // 你们 couple 的固定 uuid，和 data/supabase_init.sql 里保持一致，不要改
     COUPLE_ID: "aaaa1111-bbbb-cccc-dddd-eeeeffff0001",
-
-    // 离线重试队列最大尝试次数（指数退避 10s → 20s → 40s）
     MAX_RETRY: 3,
-
-    // 后台每 N 毫秒尝试把离线队列冲上去
     QUEUE_FLUSH_INTERVAL_MS: 30 * 1000,
-
-    // 每 N 毫秒从云端拉一次最新数据做增量合并（防止两台手机同时写冲突）
     REFRESH_INTERVAL_MS: 2 * 60 * 1000,
   };
+
+  // --- 魔搭 ModelScope 注入：entrypoint.sh 生成的 env-config.js（优先级中等）---
+  // 只要你在魔搭部署设置里填了密文 Project_URL + anon_public_key，
+  // 容器启动时 entrypoint.sh 会把它们写到根目录的 env-config.js，
+  // HTML 页面在 config.js 之前加载 env-config.js，值会出现在 window.MS_ENV_CONFIG 里。
+  var MS_ENV = (typeof window !== "undefined" && window.MS_ENV_CONFIG) || {};
+
+  // 合并规则：MS_ENV > HARDCODED_CFG
+  // 注意：不要覆盖 COUPLE_ID / 时间间隔等非敏感字段，只允许 MS_ENV 覆盖 URL 和 key
+  var merged = Object.assign({}, HARDCODED_CFG);
+  if (MS_ENV.PROJECT_URL && !/YOUR-PROJECT/i.test(MS_ENV.PROJECT_URL)) {
+    merged.PROJECT_URL = MS_ENV.PROJECT_URL;
+  }
+  if (MS_ENV.ANON_PUBLIC_KEY && !/YOUR-ANON/i.test(MS_ENV.ANON_PUBLIC_KEY)) {
+    merged.ANON_PUBLIC_KEY = MS_ENV.ANON_PUBLIC_KEY;
+  }
+
+  window.LOVENEST_SUPABASE_CONFIG = merged;
 })();
