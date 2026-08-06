@@ -4,16 +4,65 @@
 (function(){
   "use strict";
   var STORE = "weddingplan:v1";
+  var __dbReady = false;
+  // 其他设备写回时，避免自己触发的 watch 再写一遍（ping-pong）
+  var __skipNextWatch = false;
 
-  /* ---------- 状态读写 ---------- */
-  function load(){
+  /* ---------- 状态读写（localStorage-first + 异步同步到 Supabase love_notes） ---------- */
+  async function loadFromDB() {
+    try {
+      if (window.LoveNest && window.LoveNest.db && typeof window.LoveNest.db.ready !== 'undefined') {
+        await window.LoveNest.db.ready;
+        __dbReady = true;
+        const rows = await window.LoveNest.db.list('love_notes', { note_key: STORE });
+        const row = (rows || [])[0];
+        if (row && row.content) {
+          try { return JSON.parse(row.content); } catch (_) {}
+        }
+      }
+    } catch (e) { console.warn('[wedding] DB load 失败，fallback 到 localStorage:', e.message || e); }
+    return null;
+  }
+  function loadFromLS(){
     try{ return JSON.parse(localStorage.getItem(STORE)) || {}; }
     catch(e){ return {}; }
   }
-  function save(state){
+  async function load(){
+    // 优先：DB（同步跨设备）；没 DB 用 localStorage；都没有就 {}
+    const fromDB = await loadFromDB();
+    if (fromDB && Object.keys(fromDB).length > 0) {
+      // 同时落 localStorage，下次断网也能用
+      try { localStorage.setItem(STORE, JSON.stringify(fromDB)); } catch(_){}
+      return fromDB;
+    }
+    return loadFromLS();
+  }
+  function saveToLS(state){
     try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){}
   }
-  var state = load();
+  function save(state){
+    saveToLS(state);
+    // 异步写云端（失败不阻塞 UI，统一 db.js 会加离线队列）
+    if (window.LoveNest && window.LoveNest.db && __dbReady) {
+      __skipNextWatch = true;
+      (async () => {
+        try {
+          await window.LoveNest.db.upsert('love_notes', {
+            note_key: STORE,
+            kind: 'app_state',
+            side: 'both',
+            title: '婚拍决策手记 · 全部状态快照',
+            content: JSON.stringify(state),
+          }, ['couple_id','note_key']);
+        } catch (e) {
+          console.warn('[wedding] DB save 失败，已加入离线队列:', e.message || e);
+        } finally {
+          // watch 回调比 finally 晚一点到才重置，保险：给 1.5s 宽限
+          setTimeout(() => { __skipNextWatch = false; }, 1500);
+        }
+      })();
+    }
+  }
 
   /* ---------- 避坑清单数据 ---------- */
   var PITFALLS = [
@@ -353,9 +402,12 @@
     var btn = document.getElementById("exportBtn");
     var clr = document.getElementById("clearBtn");
     if(btn) btn.addEventListener("click", exportPlan);
-    if(clr) clr.addEventListener("click", function(){
-      if(confirm("确定清空全部已保存内容？（避坑勾选、旋钮、规划笔记、待办都会被删除）")){
+    if(clr) clr.addEventListener("click", async function(){
+      if(confirm("确定清空全部已保存内容？（避坑勾选、旋钮、规划笔记、待办都会在本机和云端删除）")){
         localStorage.removeItem(STORE);
+        if(window.LoveNest && window.LoveNest.db && __dbReady){
+          try { await window.LoveNest.db.remove('love_notes', { note_key: STORE }); } catch(_){}
+        }
         state = {};
         renderPitfalls(); initKnobs(); initPlan(); renderTodos();
         location.reload();
@@ -465,7 +517,24 @@
   }
 
   /* ---------- 启动 ---------- */
-  document.addEventListener("DOMContentLoaded", function(){
+  var state = {};
+  async function refreshAll(){
+    renderPitfalls();
+    initKnobs();
+    initPlan();
+    renderTodos();
+  }
+  document.addEventListener("DOMContentLoaded", async function(){
+    state = await load();
+    // 如果是从 localStorage 迁移过来的，首次就同步一次到 DB（空库时需要）
+    if (window.LoveNest && window.LoveNest.db && Object.keys(state).length > 0) {
+      try {
+        await window.LoveNest.db.ready;
+        __dbReady = true;
+        const rows = await window.LoveNest.db.list('love_notes', { note_key: STORE });
+        if (!rows || rows.length === 0) save(state);  // 写一次
+      } catch(_) {}
+    }
     renderPitfalls();
     renderDocGrid();
     initKnobs();
@@ -475,5 +544,22 @@
     initReveal();
     initProgress();
     initNav();
+
+    // ✨ watch：其他设备改了这里自动刷新
+    if(window.LoveNest && window.LoveNest.db && typeof window.LoveNest.db.watch === 'function'){
+      window.LoveNest.db.watch('love_notes', async () => {
+        if (__skipNextWatch) return;
+        const fresh = await loadFromDB();
+        if (!fresh) return;
+        // 浅比较：只有不同才重渲（避免每次 setInterval flush 队列时都重渲）
+        const a = JSON.stringify(fresh);
+        const b = JSON.stringify(state);
+        if (a === b) return;
+        state = fresh;
+        saveToLS(state);  // 同步 localStorage
+        refreshAll();
+        flash('☁️ 已从云端同步最新版本');
+      });
+    }
   });
 })();

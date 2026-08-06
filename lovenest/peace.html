@@ -148,6 +148,19 @@
     </div>
   </section>
 
+  <!-- ===================== 04.5 · 冲突复盘本（新增 CRUD） ===================== -->
+  <section class="section section--tint" id="reviews">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">04.5</span>
+        <h2 class="section__title">冲突复盘本</h2>
+        <p class="section__desc">冲突结束 24 小时内写复盘——写事实、不写指责；写需要、不写对方。每吵一次就存一次档，将来回看会发现“当年为这点事…”。</p>
+      </div>
+      <div class="reveal" data-delay="1" id="reviews-head" style="max-width:900px;margin:0 auto 24px"></div>
+      <div class="reveal" data-delay="2" id="reviews-list" style="max-width:900px;margin:0 auto"></div>
+    </div>
+  </section>
+
   <!-- ===================== 05 · 戈特曼冲突法则 ===================== -->
   <section class="section section--tint" id="wisdom">
     <div class="container">
@@ -224,6 +237,10 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<!-- Supabase + 数据访问层（三层读写策略：localStorage 缓存 → 云端同步 → 离线队列重试） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
 <script src="shared/nav.js"></script>
 <script src="shared/data.js"></script>
 <script>
@@ -341,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ---------- render the contract block ---------- */
-  function renderContract(contract){
+  async function renderContract(contract){
     const root = document.getElementById('treaty-region');
     if(!root || !contract) return;
 
@@ -372,16 +389,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="signature" id="signature-region"></div>
       </div>`;
 
-    renderSignatures(contract.parties);
+    await renderSignatures(contract.parties);
   }
 
-  /* ---------- render signature area (per-party signed state from store) ---------- */
-  function renderSignatures(parties){
+  /* ---------- render signature area (per-party signed state from love_notes) ---------- */
+  async function loadSignatures(parties) {
+    await LoveNest.db.ready;
+    const out = {};
+    for (const p of parties || []) {
+      const rows = await LoveNest.db.list('love_notes', { note_key: 'peace|' + String(p.side) });
+      const row = (rows || [])[0];
+      if (row && row.content) out[p.side] = row.content;
+    }
+    return out;
+  }
+  async function renderSignatures(parties, signedMap) {
     const root = document.getElementById('signature-region');
     if(!root || !parties) return;
-
-    // peace-signed = { him: 'YYYY-MM-DD', her: 'YYYY-MM-DD' } (各自独立签署)
-    const signedMap = LoveNest.store.get('peace-signed', {});
+    signedMap = signedMap || (await loadSignatures(parties));
 
     root.innerHTML = parties.map(p => {
       const d = signedMap[p.side];
@@ -390,24 +415,49 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="signature__party">
             <div class="signature__name">${esc(p.name)}</div>
             <div class="signature__line"></div>
-            <div class="signature__signed">已签署 · ${esc(d)}</div>
+            <div class="signature__signed">已签署 · ${esc(d)} <button class="btn btn--ghost btn--small sign-unsign-btn" data-side="${esc(p.side)}" style="margin-left:8px;font-size:12px;padding:2px 8px">撤回</button></div>
           </div>`;
       }
       return `
         <div class="signature__party">
           <div class="signature__name">${esc(p.name)}</div>
           <div class="signature__line"></div>
-          <button class="btn btn--small" data-sign="${esc(p.side)}">签署</button>
+          <button class="btn btn--small sign-btn" data-side="${esc(p.side)}">签署</button>
         </div>`;
     }).join('');
 
-    root.querySelectorAll('[data-sign]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const side = btn.getAttribute('data-sign');
-        const cur = LoveNest.store.get('peace-signed', {});
-        cur[side] = LoveNest.todayISO();
-        LoveNest.store.set('peace-signed', cur);
-        renderSignatures(parties);
+    root.querySelectorAll('.sign-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const side = btn.getAttribute('data-side');
+        const today = LoveNest.todayISO();
+        btn.disabled = true; btn.textContent = '签署中...';
+        try {
+          await LoveNest.db.upsert('love_notes', {
+            note_key: 'peace|' + String(side),
+            kind: 'signature',
+            side: side,
+            title: '停战协议签署 - ' + String(side),
+            content: today,
+          }, ['couple_id','note_key']);
+          signedMap[side] = today;
+          await renderSignatures(parties, signedMap);
+        } catch (e) {
+          console.warn('[peace-signed] upsert 失败:', e);
+          btn.disabled = false; btn.textContent = '签署';
+        }
+      });
+    });
+    root.querySelectorAll('.sign-unsign-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const side = btn.getAttribute('data-side');
+        if (!confirm('确定要撤回' + side + '的签署吗？')) return;
+        try {
+          await LoveNest.db.remove('love_notes', { note_key: 'peace|' + String(side) });
+          delete signedMap[side];
+          await renderSignatures(parties, signedMap);
+        } catch (e) {
+          console.warn('[peace-signed] remove 失败:', e);
+        }
       });
     });
   }
@@ -485,6 +535,217 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  /* ---------- 冲突复盘本 CRUD ---------- */
+  const EMPTY_REVIEW = () => ({
+    date: LoveNest.todayISO(),
+    title: '',
+    fact: '',
+    my_need: '',
+    their_need: '',
+    trigger: '',
+    horseman: '',
+    repair: '',
+    takeaway: '',
+    resolved: false,
+    tag: '',
+  });
+
+  function reviewCard(r, i) {
+    const horsemen = ['批评','蔑视','防御','筑墙'];
+    const tag = r.tag ? `<span class="tag tag--rose" style="margin-right:6px">${esc(r.tag)}</span>` : '';
+    const done = r.resolved ? '<span class="tag tag--sage">已和解</span>' : '<span class="tag" style="background:#fff4e6;color:#a36b00">待跟进</span>';
+    const hm = r.horseman && horsemen.includes(String(r.horseman)) ? `<span class="tag" style="background:#ffe5e5;color:#a33;margin-right:6px">⚠️ 骑士：${esc(r.horseman)}</span>` : '';
+    return `<article class="card card--plain review-card reveal" data-id="${esc(r.id)}" style="margin-bottom:18px">
+      <div style="display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="kicker">#${i+1} · ${esc(r.date)}</span>${hm}${tag}${done}
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn--ghost btn--small review-edit" data-id="${esc(r.id)}">✏️ 编辑</button>
+          <button class="btn btn--ghost btn--small review-del" style="color:#a33" data-id="${esc(r.id)}">🗑️ 删除</button>
+        </div>
+      </div>
+      ${r.title ? `<h3 style="margin:6px 0 10px;font-size:18px">${esc(r.title)}</h3>` : ''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px">
+        ${r.fact ? `<div><span class="faint" style="font-size:12px">📷 事实（摄像头拍到的）</span><p style="margin:2px 0 0;line-height:1.75">${esc(r.fact)}</p></div>` : ''}
+        ${r.trigger ? `<div><span class="faint" style="font-size:12px">💥 我的触发点</span><p style="margin:2px 0 0;line-height:1.75">${esc(r.trigger)}</p></div>` : ''}
+        ${r.my_need ? `<div><span class="faint" style="font-size:12px">💛 我当时需要的</span><p style="margin:2px 0 0;line-height:1.75">${esc(r.my_need)}</p></div>` : ''}
+        ${r.their_need ? `<div><span class="faint" style="font-size:12px">💙 对方需要的（我的推测）</span><p style="margin:2px 0 0;line-height:1.75">${esc(r.their_need)}</p></div>` : ''}
+        ${r.repair ? `<div><span class="faint" style="font-size:12px">🤝 修复方式</span><p style="margin:2px 0 0;line-height:1.75">${esc(r.repair)}</p></div>` : ''}
+        ${r.takeaway ? `<div style="grid-column:1 / -1"><span class="faint" style="font-size:12px">🎯 下次这样做</span><p style="margin:2px 0 0;line-height:1.75;background:linear-gradient(transparent 92%, rgba(216,151,151,0.28) 8%);padding:2px 0">${esc(r.takeaway)}</p></div>` : ''}
+      </div>
+    </article>`;
+  }
+
+  function reviewForm(initial) {
+    initial = initial || EMPTY_REVIEW();
+    const horsemen = ['','批评','蔑视','防御','筑墙'];
+    return `<div id="review-form-wrap" class="card card--plain" style="border:1px dashed var(--sage-deep)">
+      <h3 style="margin:0 0 12px">${initial.id ? '✏️ 编辑复盘' : '➕ 新增一条复盘'}</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 14px">
+        <label><span class="faint" style="font-size:12px">日期</span>
+          <input type="date" id="rv-date" value="${esc(initial.date||LoveNest.todayISO())}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line-soft);margin-top:4px">
+        </label>
+        <label><span class="faint" style="font-size:12px">一句话标题（可选）</span>
+          <input type="text" id="rv-title" placeholder="例：因为洗碗又吵了" value="${esc(initial.title||'')}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line-soft);margin-top:4px">
+        </label>
+        <label><span class="faint" style="font-size:12px">标签（可选）</span>
+          <input type="text" id="rv-tag" placeholder="例：家务 / 沟通 / 原生家庭" value="${esc(initial.tag||'')}" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line-soft);margin-top:4px">
+        </label>
+        <label><span class="faint" style="font-size:12px">是否出现末日四骑士</span>
+          <select id="rv-horseman" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line-soft);margin-top:4px;background:#fff">
+            ${horsemen.map(h => `<option value="${esc(h)}"${h===String(initial.horseman||'')?' selected':''}>${h||'（无 / 不确定）'}</option>`).join('')}
+          </select>
+        </label>
+        <label style="grid-column:1 / -1"><span class="faint" style="font-size:12px">📷 事实（摄像头拍到的，不评价）</span>
+          <textarea id="rv-fact" rows="2" placeholder="例：8 点我到家，看到水槽堆着昨天的碗；我叹了口气" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);margin-top:4px;font-family:inherit;line-height:1.7;resize:vertical">${esc(initial.fact||'')}</textarea>
+        </label>
+        <label style="grid-column:1 / -1"><span class="faint" style="font-size:12px">💥 我的触发点（哪一下我被点着了）</span>
+          <textarea id="rv-trigger" rows="2" placeholder="例：我想到上周说了三次“用完马上洗”，觉得又被当耳旁风" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);margin-top:4px;font-family:inherit;line-height:1.7;resize:vertical">${esc(initial.trigger||'')}</textarea>
+        </label>
+        <label><span class="faint" style="font-size:12px">💛 我当时需要的</span>
+          <textarea id="rv-myneed" rows="3" placeholder="例：需要被分担、需要说过的话被当回事" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);margin-top:4px;font-family:inherit;line-height:1.7;resize:vertical">${esc(initial.my_need||'')}</textarea>
+        </label>
+        <label><span class="faint" style="font-size:12px">💙 对方需要的（我的推测）</span>
+          <textarea id="rv-need" rows="3" placeholder="例：也许累了一整天不想被催，需要一点喘息时间" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);margin-top:4px;font-family:inherit;line-height:1.7;resize:vertical">${esc(initial.their_need||'')}</textarea>
+        </label>
+        <label style="grid-column:1 / -1"><span class="faint" style="font-size:12px">🤝 最后怎么修复的（或准备怎么修复）</span>
+          <textarea id="rv-repair" rows="2" placeholder="例：我冷静 20 分钟后先道歉说刚才语气冲了；她给了我一个拥抱" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);margin-top:4px;font-family:inherit;line-height:1.7;resize:vertical">${esc(initial.repair||'')}</textarea>
+        </label>
+        <label style="grid-column:1 / -1"><span class="faint" style="font-size:12px">🎯 下次这样做（Action Item）</span>
+          <textarea id="rv-take" rows="2" placeholder="例：回到家先拥抱 5 分钟，再说事；碗没洗的话我直接说“帮我洗个碗”而不是叹气" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);margin-top:4px;font-family:inherit;line-height:1.7;resize:vertical">${esc(initial.takeaway||'')}</textarea>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;grid-column:1 / -1;margin:6px 0 0">
+          <input type="checkbox" id="rv-resolved"${initial.resolved?' checked':''} style="width:18px;height:18px;accent-color:var(--sage-deep)"> 本次冲突已经和解 ✅
+        </label>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button class="btn btn--primary" id="rv-save">💾 ${initial.id?'保存修改':'保存这条复盘'}</button>
+        <button class="btn btn--ghost" id="rv-cancel">取消</button>
+      </div>
+    </div>`;
+  }
+
+  let __currentReviews = [];  // 内存缓存
+  async function renderConflictReviews(firstLoad) {
+    await LoveNest.db.ready;
+    const head = document.getElementById('reviews-head');
+    const list = document.getElementById('reviews-list');
+    if (!head || !list) return;
+    const rows = await LoveNest.db.list('conflict_reviews', null, { order: [['date','desc'],['created_at','desc']] });
+    __currentReviews = rows || [];
+    // 头：统计 + 新增按钮
+    const total = __currentReviews.length;
+    const resolved = __currentReviews.filter(r => r.resolved).length;
+    const pending = total - resolved;
+    head.innerHTML = `<div class="card card--rose" style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:18px 22px">
+      <div>
+        <div style="font-size:13px;color:var(--taupe);letter-spacing:1px">复盘账本</div>
+        <div style="margin-top:6px"><strong style="font-size:20px;color:var(--ink)">共 ${total} 次</strong>
+          <span class="tag tag--sage" style="margin:0 6px 0 12px">已和解 ${resolved}</span>
+          <span class="tag" style="margin:0;background:#fff4e6;color:#a36b00">待跟进 ${pending}</span>
+        </div>
+      </div>
+      <button class="btn btn--primary" id="rv-add">➕ 写一条新复盘</button>
+    </div>`;
+    list.innerHTML = __currentReviews.length === 0
+      ? `<div class="card card--plain" style="text-align:center;padding:40px 20px"><span class="kicker">还没有任何记录</span><p class="lead" style="margin-top:10px;color:var(--taupe)">第一次吵架后，记得 24 小时内来写一条复盘。<br/>哪怕只写三行事实 / 需要 / 下次行动。</p></div>`
+      : __currentReviews.map((r, i) => reviewCard(r, i)).join('');
+
+    // 新增
+    document.getElementById('rv-add').addEventListener('click', () => {
+      const wrap = document.createElement('div');
+      wrap.id = 'rv-form-host';
+      wrap.style.marginBottom = '24px';
+      list.parentNode.insertBefore(wrap, list);
+      wrap.innerHTML = reviewForm(EMPTY_REVIEW());
+      wireReviewForm(null, wrap);
+      wrap.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+
+    // 编辑 / 删除
+    list.querySelectorAll('.review-edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const r = __currentReviews.find(x => String(x.id) === String(id));
+        if (!r) return;
+        let host = document.getElementById('rv-form-host');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'rv-form-host';
+          host.style.marginBottom = '24px';
+          list.parentNode.insertBefore(host, list);
+        }
+        host.innerHTML = reviewForm(r);
+        wireReviewForm(r, host);
+        host.scrollIntoView({ behavior:'smooth', block:'center' });
+      });
+    });
+    list.querySelectorAll('.review-del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const r = __currentReviews.find(x => String(x.id) === String(id));
+        if (!r) return;
+        if (!confirm('删除这条复盘？此操作在云端也会删除。')) return;
+        try {
+          await LoveNest.db.remove('conflict_reviews', { id });
+          await renderConflictReviews();
+          if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+        } catch (e) {
+          console.warn('[conflict_reviews] remove 失败:', e);
+        }
+      });
+    });
+
+    if (firstLoad && typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+  }
+
+  function wireReviewForm(existingRow, hostEl) {
+    const saveBtn = document.getElementById('rv-save');
+    const cancelBtn = document.getElementById('rv-cancel');
+    function closeForm() {
+      const host = document.getElementById('rv-form-host');
+      if (host) host.remove();
+    }
+    cancelBtn.addEventListener('click', closeForm);
+    saveBtn.addEventListener('click', async () => {
+      const date = document.getElementById('rv-date').value || LoveNest.todayISO();
+      const title = document.getElementById('rv-title').value.trim();
+      const fact = document.getElementById('rv-fact').value.trim();
+      const trigger = document.getElementById('rv-trigger').value.trim();
+      const my_need = document.getElementById('rv-myneed').value.trim();
+      const their_need = document.getElementById('rv-need').value.trim();
+      const horseman = document.getElementById('rv-horseman').value || '';
+      const repair = document.getElementById('rv-repair').value.trim();
+      const takeaway = document.getElementById('rv-take').value.trim();
+      const tag = document.getElementById('rv-tag').value.trim();
+      const resolved = document.getElementById('rv-resolved').checked;
+      if (!title && !fact && !takeaway) {
+        alert('至少填一下「事实」「一句话标题」或「下次这样做」里的一项，不然白存啦～');
+        return;
+      }
+      saveBtn.disabled = true; saveBtn.textContent = '保存中...';
+      try {
+        const payload = {
+          date, title, fact, trigger, my_need, their_need, horseman, repair, takeaway, tag, resolved,
+        };
+        if (existingRow && existingRow.id) {
+          payload.id = existingRow.id;
+          await LoveNest.db.upsert('conflict_reviews', payload, ['id']);
+        } else {
+          await LoveNest.db.insert('conflict_reviews', payload);
+        }
+        closeForm();
+        await renderConflictReviews();
+        if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+      } catch (e) {
+        console.warn('[conflict_reviews] save 失败:', e);
+        saveBtn.disabled = false; saveBtn.textContent = existingRow ? '保存修改' : '保存这条复盘';
+        alert('保存失败：' + (e.message || e));
+      }
+    });
+  }
+
   /* ---------- load data (with full inline fallback) ---------- */
   const data = await LoveNest.getJSON('data/peace.json', FALLBACK);
 
@@ -494,9 +755,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(hi) hi.textContent = data.intro;
   }
 
-  /* contract (+ signatures inside) */
+  /* contract (+ signatures inside — now async via love_notes) */
   if(data.contract){
-    renderContract(data.contract);
+    await renderContract(data.contract);
   }
 
   /* nvc one-line template card */
@@ -520,8 +781,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderNewlywed(data.newlywed_磨合);
   }
 
+  /* ✨ 冲突复盘本 */
+  await renderConflictReviews(true);
+
   /* knowledge cards (NVC note + four-horsemen note + Gottman book + Fromm book) */
   LoveNest.loadContentForPage();
+
+  /* ✨ watch：签字 / 复盘 / love_notes 变化自动刷新 */
+  LoveNest.db.watch('love_notes', async () => {
+    // 只重签签字区（不重建整个 contract，避免丢失用户 scroll / accordion 状态）
+    if (data.contract) await renderSignatures(data.contract.parties);
+  });
+  LoveNest.db.watch('conflict_reviews', async () => {
+    await renderConflictReviews();
+    if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+  });
 });
 </script>
 </body>

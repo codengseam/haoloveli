@@ -144,6 +144,10 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<!-- Supabase + 数据访问层（三层读写策略：localStorage 缓存 → 云端同步 → 离线队列重试） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
 <script src="shared/nav.js"></script>
 <script src="shared/data.js"></script>
 <script>
@@ -338,8 +342,49 @@
     }).join("");
   }
 
-  /* 02 翻转卡片 → 6 张 flip */
-  function renderCards(data) {
+  /* ✨ 把 DB love_notes 合并到 cards（按 card.id == note_key），同时空库时写种子 */
+  async function mergeCardsFromDB(cards) {
+    await LoveNest.db.ready;
+    const rows = await LoveNest.db.list('love_notes', { kind: 'card' });
+    const out = JSON.parse(JSON.stringify(cards));
+    if (!rows || rows.length === 0) {
+      // 空库：写种子
+      for (const c of out) {
+        try {
+          await LoveNest.db.upsert('love_notes', {
+            note_key: c.id,
+            kind: 'card',
+            side: c.side || 'both',
+            title: c.title,
+            items_json: JSON.stringify(c.items || []),
+            content: c.back_note || '',
+          }, ['couple_id','note_key']);
+        } catch (e) {}
+      }
+      return out;
+    }
+    // 合并：DB 优先级更高
+    const map = new Map();
+    rows.forEach(r => map.set(String(r.note_key), r));
+    out.forEach(c => {
+      const r = map.get(String(c.id));
+      if (!r) return;
+      if (r.title) c.title = r.title;
+      if (r.items_json) {
+        try {
+          const arr = JSON.parse(r.items_json);
+          if (Array.isArray(arr)) c.items = arr;
+        } catch (_) {}
+      }
+      if (typeof r.content === 'string') c.back_note = r.content;
+      if (r.side) c.side = r.side;
+    });
+    return out;
+  }
+
+  /* 02 翻转卡片 → 6 张 flip（支持编辑）*/
+  function renderCards(data, opts) {
+    opts = opts || {};
     var el = document.getElementById("cards-grid");
     if (!el) return;
     var cards = data.cards || [];
@@ -355,10 +400,12 @@
         tagCls = "tag tag--both"; tagLabel = "我们";
         backCls = "flip__face flip__back flip__back--neutral";
       }
+      var idAttr = String(c.id || ('card_' + i));
       var items = (c.items || []).map(function (it) {
         return "<li>" + esc(it) + "</li>";
       }).join("");
-      return '<div class="flip reveal" data-delay="' + ((i % 3) + 1) + '">'
+      var editBtn = '<button type="button" class="btn btn--ghost btn--small card-edit-btn" data-card-id="' + esc(idAttr) + '" style="margin-bottom:12px">✏️ 编辑</button>';
+      return '<div class="flip reveal" data-delay="' + ((i % 3) + 1) + '" data-card-id="' + esc(idAttr) + '">'
         + '<div class="flip__inner">'
         + '<div class="flip__face flip__front">'
         + '<span class="' + tagCls + '">' + tagLabel + '</span>'
@@ -366,15 +413,228 @@
         + '<span class="flip__hint">悬停或点击翻转 ↻</span>'
         + '</div>'
         + '<div class="' + backCls + '">'
-        + '<ul class="flip__list">' + items + '</ul>'
-        + '<span class="flip__hint">' + esc(c.back_note) + '</span>'
+        + editBtn
+        + '<ul class="flip__list" id="card-list-' + esc(idAttr) + '">' + items + '</ul>'
+        + '<div class="card-edit-area" id="card-edit-' + esc(idAttr) + '" style="display:none;margin-top:10px">'
+        +   '<label style="font-size:12px;color:var(--taupe)">每行一条；保存后同步到云端 ☁️</label>'
+        +   '<textarea rows="6" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line-soft);resize:vertical;font-family:inherit;font-size:14px;line-height:1.7;margin-top:6px;background:#fff" id="card-ta-' + esc(idAttr) + '"></textarea>'
+        +   '<label style="font-size:12px;color:var(--taupe);margin-top:10px;display:block">底部提示语（可选）</label>'
+        +   '<input type="text" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line-soft);margin-top:4px" id="card-note-' + esc(idAttr) + '" />'
+        +   '<div style="display:flex;gap:8px;margin-top:10px">'
+        +     '<button type="button" class="btn btn--primary btn--small card-save-btn" data-card-id="' + esc(idAttr) + '">💾 保存</button>'
+        +     '<button type="button" class="btn btn--ghost btn--small card-cancel-btn" data-card-id="' + esc(idAttr) + '">取消</button>'
+        +   '</div>'
+        + '</div>'
+        + '<span class="flip__hint" id="card-hint-' + esc(idAttr) + '">' + esc(c.back_note) + '</span>'
         + '</div>'
         + '</div></div>';
     }).join("");
+
+    // 每个卡预填 items 到 textarea（虽隐藏），方便用户点编辑后直接改
+    cards.forEach(function(c, i) {
+      var idAttr = String(c.id || ('card_' + i));
+      var ta = document.getElementById('card-ta-' + idAttr);
+      if (ta) ta.value = (c.items || []).join('\n');
+      var noteInput = document.getElementById('card-note-' + idAttr);
+      if (noteInput) noteInput.value = c.back_note || '';
+    });
+
+    // 事件委托：编辑 / 保存 / 取消
+    el.querySelectorAll('.card-edit-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        var id = btn.getAttribute('data-card-id');
+        var edit = document.getElementById('card-edit-' + id);
+        var list = document.getElementById('card-list-' + id);
+        var hint = document.getElementById('card-hint-' + id);
+        if (!edit) return;
+        if (edit.style.display === 'none') {
+          edit.style.display = 'block';
+          if (list) list.style.display = 'none';
+          if (hint) hint.style.display = 'none';
+          btn.textContent = '收起编辑';
+        } else {
+          edit.style.display = 'none';
+          if (list) list.style.display = '';
+          if (hint) hint.style.display = '';
+          btn.textContent = '✏️ 编辑';
+        }
+      });
+    });
+    el.querySelectorAll('.card-cancel-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(ev) {
+        ev.preventDefault();
+        var id = btn.getAttribute('data-card-id');
+        var editBtn = el.querySelector('.card-edit-btn[data-card-id="' + id + '"]');
+        if (editBtn) editBtn.click();
+      });
+    });
+    el.querySelectorAll('.card-save-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function(ev) {
+        ev.preventDefault();
+        var id = btn.getAttribute('data-card-id');
+        var ta = document.getElementById('card-ta-' + id);
+        var noteInput = document.getElementById('card-note-' + id);
+        var cardMeta = cards.find(function(c, i) {
+          return String(c.id || ('card_' + i)) === String(id);
+        }) || { side: 'both', title: '' };
+        if (!ta) return;
+        var itemsArr = ta.value.split('\n').map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+        var newNote = noteInput ? noteInput.value : '';
+        // 先更新 UI（乐观更新）
+        var listEl = document.getElementById('card-list-' + id);
+        if (listEl) listEl.innerHTML = itemsArr.map(function(it) { return '<li>' + esc(it) + '</li>'; }).join('');
+        var hintEl = document.getElementById('card-hint-' + id);
+        if (hintEl) hintEl.textContent = newNote;
+        // 更新 data.cards 内存，避免 watch 回调后覆盖
+        var card = cards.find(function(c, i) { return String(c.id || ('card_' + i)) === String(id); });
+        if (card) {
+          card.items = itemsArr;
+          card.back_note = newNote;
+        }
+        btn.disabled = true;
+        var prev = btn.textContent;
+        btn.textContent = '保存中...';
+        try {
+          await LoveNest.db.upsert('love_notes', {
+            note_key: id,
+            kind: 'card',
+            side: cardMeta.side || 'both',
+            title: cardMeta.title || '',
+            items_json: JSON.stringify(itemsArr),
+            content: newNote,
+          }, ['couple_id','note_key']);
+          btn.textContent = '✅ 已同步';
+          setTimeout(function() { btn.disabled = false; btn.textContent = prev; }, 2000);
+        } catch (e) {
+          console.warn('[love-map cards] upsert 失败:', e);
+          btn.disabled = false;
+          btn.textContent = '❌ 保存失败（已加入离线队列）';
+          setTimeout(function() { btn.textContent = prev; }, 2500);
+        }
+      });
+    });
   }
 
-  /* 03 本周深度问题 → quote + 接下来 3 题预览 */
-  function renderWeekly(data) {
+  /* ✨ 将 DB 的 relationship_answers 合并到内存 Map<qid, answerRow> */
+  async function loadAnswersMap() {
+    await LoveNest.db.ready;
+    const rows = await LoveNest.db.list('relationship_answers');
+    const map = new Map();
+    (rows || []).forEach(r => map.set(String(r.question_number), r));
+    return map;
+  }
+
+  /* ✨ 渲染单道题的作答区（him/her answer + star + shared_done） */
+  function answerEditor(qid, row, qText) {
+    row = row || {};
+    return '<div class="answer-editor" data-question="' + esc(qid) + '" style="margin-top:16px;padding:16px 18px;border:1px solid var(--line-soft);border-radius:16px;background:rgba(255,255,255,.6)">'
+      + '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:10px">'
+      +   '<span class="tag tag--both" style="margin:0">题 ' + esc(qid) + '</span>'
+      +   '<label style="display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--taupe);cursor:pointer">'
+      +     '<input type="checkbox" class="qa-shared" ' + (row.shared_done ? 'checked' : '') + ' style="width:16px;height:16px;accent-color:var(--sage-deep)"> 双方都确认聊过了 ✅'
+      +   '</label>'
+      +   '<button type="button" class="btn btn--primary btn--small qa-save" style="margin-left:auto">💾 保存答案</button>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">'
+      +   '<div>'
+      +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +       '<span class="tag tag--him" style="margin:0">他 · 师豪</span>'
+      +       '<div style="display:flex;gap:2px">'
+      +         [1,2,3,4,5].map(function(n) {
+      +           return '<button type="button" class="qa-star qa-him-star" data-n="' + n + '" style="border:0;background:transparent;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;color:' + ((row.him_star || 0) >= n ? '#d89797' : '#ccc') + '" title="' + n + '分">★</button>';
+      +         }).join('')
+      +       '</div>'
+      +     '</div>'
+      +     '<textarea rows="4" class="qa-him" placeholder="他的回答、感受、心路历程……" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);background:#fff;font-family:inherit;line-height:1.7;resize:vertical">' + esc(row.him_answer || '') + '</textarea>'
+      +   '</div>'
+      +   '<div>'
+      +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +       '<span class="tag tag--her" style="margin:0">她 · 佳力</span>'
+      +       '<div style="display:flex;gap:2px">'
+      +         [1,2,3,4,5].map(function(n) {
+      +           return '<button type="button" class="qa-star qa-her-star" data-n="' + n + '" style="border:0;background:transparent;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;color:' + ((row.her_star || 0) >= n ? '#d89797' : '#ccc') + '" title="' + n + '分">★</button>';
+      +         }).join('')
+      +       '</div>'
+      +     '</div>'
+      +     '<textarea rows="4" class="qa-her" placeholder="她的回答、感受、心路历程……" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);background:#fff;font-family:inherit;line-height:1.7;resize:vertical">' + esc(row.her_answer || '') + '</textarea>'
+      +   '</div>'
+      + '</div>'
+      + '</div>';
+  }
+
+  /* 给某答案区绑定：星星打分 + 保存按钮 */
+  function wireAnswerEditor(container, qMap, qText) {
+    const editors = container.querySelectorAll('.answer-editor');
+    editors.forEach(function(ed) {
+      const qid = ed.getAttribute('data-question');
+      let him = ed.querySelector('.qa-him');
+      let her = ed.querySelector('.qa-her');
+      let shared = ed.querySelector('.qa-shared');
+      let saveBtn = ed.querySelector('.qa-save');
+      // 星星打分
+      let himStars = ed.querySelectorAll('.qa-him-star');
+      let herStars = ed.querySelectorAll('.qa-her-star');
+      let himStarVal = Number(qMap.get(qid)?.him_star || 0);
+      let herStarVal = Number(qMap.get(qid)?.her_star || 0);
+      function paint(btns, n) {
+        btns.forEach(function(b) {
+          b.style.color = Number(b.getAttribute('data-n')) <= n ? '#d89797' : '#ccc';
+        });
+      }
+      himStars.forEach(function(b) {
+        b.addEventListener('click', function() {
+          himStarVal = Number(b.getAttribute('data-n'));
+          paint(himStars, himStarVal);
+        });
+      });
+      herStars.forEach(function(b) {
+        b.addEventListener('click', function() {
+          herStarVal = Number(b.getAttribute('data-n'));
+          paint(herStars, herStarVal);
+        });
+      });
+      // 保存
+      if (saveBtn) saveBtn.addEventListener('click', async function() {
+        const himText = him ? him.value : '';
+        const herText = her ? her.value : '';
+        const shared_done = shared ? shared.checked : false;
+        const prev = saveBtn.textContent;
+        saveBtn.disabled = true; saveBtn.textContent = '保存中...';
+        try {
+          await LoveNest.db.upsert('relationship_answers', {
+            question_number: qid,
+            question_text: qText || '',
+            him_answer: himText,
+            her_answer: herText,
+            him_star: Number(himStarVal) || 0,
+            her_star: Number(herStarVal) || 0,
+            shared_done: !!shared_done,
+          }, ['couple_id','question_number']);
+          // 更新内存 map
+          const now = (qMap.get(qid) && qMap.get(qid).updated_at) || null;
+          qMap.set(qid, {
+            question_number: qid, question_text: qText || '',
+            him_answer: himText, her_answer: herText,
+            him_star: Number(himStarVal) || 0, her_star: Number(herStarVal) || 0,
+            shared_done: !!shared_done,
+          });
+          saveBtn.textContent = '✅ 已同步';
+          setTimeout(function() { saveBtn.disabled = false; saveBtn.textContent = prev; }, 2000);
+        } catch (e) {
+          console.warn('[answers] upsert 失败:', e);
+          saveBtn.disabled = false;
+          saveBtn.textContent = '❌ 失败（已入离线队列）';
+          setTimeout(function() { saveBtn.textContent = prev; }, 2500);
+        }
+      });
+    });
+  }
+
+  /* 03 本周深度问题 → quote + 接下来 3 题预览（每道题可展开作答） */
+  function renderWeekly(data, qMap) {
+    qMap = qMap || new Map();
     var qEl = document.getElementById("weekly-quote");
     var tEl = document.getElementById("weekly-teasers");
     var qs = data.weekly_questions || [];
@@ -384,34 +644,204 @@
     }
     var idx = Math.floor(LoveNest.dayIndex() / 7) % qs.length;
     var cur = qs[idx];
+    var curQid = cur.id;
+    var curNum = /q(\d+)/.exec(String(curQid)) ? /q(\d+)/.exec(String(curQid))[1] : String(idx + 1);
     if (qEl) {
-      qEl.innerHTML = '<blockquote class="quote">' + esc(cur.text)
-        + '<cite>Gottman · Love Map</cite></blockquote>';
+      qEl.innerHTML =
+        '<blockquote class="quote">' + esc(cur.text) + '<cite>Gottman · Love Map · 第 ' + esc(curNum) + ' 题</cite></blockquote>'
+        + answerEditor(curNum, qMap.get(curNum), cur.text);
+      wireAnswerEditor(qEl, qMap, cur.text);
     }
     if (tEl) {
       var html = "";
       for (var k = 1; k <= 3; k++) {
         var j = (idx + k) % qs.length;
+        var it = qs[j];
+        var itNum = /q(\d+)/.exec(String(it.id)) ? /q(\d+)/.exec(String(it.id))[1] : String(j + 1);
         html += '<article class="card reveal" data-delay="' + k + '">'
-          + '<span class="kicker">第 ' + (j + 1) + ' 题 · 下周</span>'
-          + '<p class="mt-1">' + esc(qs[j].text) + '</p>'
+          + '<span class="kicker">第 ' + itNum + ' 题 · 下周</span>'
+          + '<p class="mt-1" style="margin-bottom:12px">' + esc(it.text) + '</p>'
+          + '<button type="button" class="btn btn--ghost btn--small qa-teaser-toggle" data-num="' + esc(itNum) + '" data-text="' + esc(it.text).replace(/"/g, '&quot;') + '">展开作答 ↓</button>'
+          + '<div class="qa-teaser-body" id="teaser-' + esc(itNum) + '" style="display:none"></div>'
           + '</article>';
       }
       tEl.innerHTML = html;
+      // 展开/收起
+      tEl.querySelectorAll('.qa-teaser-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var num = btn.getAttribute('data-num');
+          var text = btn.getAttribute('data-text');
+          var body = document.getElementById('teaser-' + num);
+          if (!body) return;
+          if (body.style.display === 'none') {
+            body.innerHTML = answerEditor(num, qMap.get(num), text);
+            wireAnswerEditor(body, qMap, text);
+            body.style.display = 'block';
+            btn.textContent = '收起 ↑';
+          } else {
+            body.style.display = 'none';
+            body.innerHTML = '';
+            btn.textContent = '展开作答 ↓';
+          }
+        });
+      });
     }
   }
 
-  /* 04 每周 5 小时 → 5 张 plain 卡 */
-  function renderFiveHours(data) {
+  /* ✨ 工具：获取/加减 ISO 周号（如 2026-W06）*/
+  function currentWeekISO(d) {
+    d = d || new Date();
+    var target = new Date(d.valueOf());
+    var dayNr = (d.getDay() + 6) % 7;  // 周一 = 0
+    target.setDate(target.getDate() - dayNr + 3);
+    var firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() !== 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    var week = 1 + Math.ceil((firstThursday - target) / 604800000);
+    var year = target.getFullYear();
+    return year + '-W' + (week < 10 ? '0' + week : '' + week);
+  }
+  function addWeekISO(iso, delta) {
+    var m = /^(\d{4})-W(\d{2})$/.exec(iso);
+    if (!m) return currentWeekISO();
+    var year = Number(m[1]);
+    var week = Number(m[2]) + Number(delta || 0);
+    // 简单的上下界：week 1~53
+    if (week < 1) { year -= 1; week = 52; }
+    if (week > 53) { year += 1; week = 1; }
+    return year + '-W' + (week < 10 ? '0' + week : '' + week);
+  }
+
+  /* 04 每周 5 小时 → 5 张 plain 卡（含周切换 + 打卡 checkbox + 备注）*/
+  function renderFiveHours(data, weekMap) {
+    weekMap = weekMap || new Map();  // key = activity_index, value = row
     var el = document.getElementById("fivehours-grid");
     if (!el) return;
     var parts = data.magic_five_hours || [];
+    // 顶栏：上一周 / 当前周 / 下一周
+    var head = document.getElementById("fivehours-head") || (function(){
+      var wrap = document.createElement('div');
+      wrap.id = 'fivehours-head';
+      wrap.className = 'reveal';
+      wrap.style.cssText = 'max-width:720px;margin:0 auto 20px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap';
+      el.parentNode.insertBefore(wrap, el);
+      return wrap;
+    })();
+    head.innerHTML = ''
+      + '<button type="button" class="btn btn--ghost btn--small" id="fh-prev">← 上一周</button>'
+      + '<div style="font-size:15px;font-weight:500;color:var(--taupe)">周：<span id="fh-week" style="color:var(--text);font-weight:700"></span> '
+      +   '<span class="tag tag--both" style="margin-left:6px">已完成 <span id="fh-count">0</span>/5</span></div>'
+      + '<button type="button" class="btn btn--ghost btn--small" id="fh-next">下一周 →</button>'
+      + '<button type="button" class="btn btn--primary btn--small" id="fh-today" style="margin-left:8px">回到本周</button>';
+
+    var currentWeek = currentWeekISO();
+    var viewWeek = renderFiveHours._viewWeek || currentWeekISO();
+    document.getElementById('fh-week').textContent = viewWeek + (viewWeek === currentWeek ? '  · 本周' : '');
+
+    // 拿 DB 里这个 viewWeek 的 5 条
+    var rows = (renderFiveHours._thisWeekRows || []).filter(function(r) { return r.week_iso === viewWeek; });
+    var rowMap = new Map();
+    rows.forEach(function(r) { rowMap.set(Number(r.activity_index), r); });
+
+    function countDone() {
+      var c = 0;
+      for (var i = 0; i < parts.length; i++) if ((rowMap.get(i) || {}).checked) c++;
+      return c;
+    }
+
     el.innerHTML = parts.map(function (p, i) {
+      var row = rowMap.get(i) || {};
       return '<article class="card card--plain reveal" data-delay="' + ((i % 3) + 1) + '">'
-        + '<h3>' + esc(p.part) + '</h3>'
-        + '<p>' + esc(p.desc) + '</p>'
+        + '<div style="display:flex;gap:12px;align-items:flex-start">'
+        +   '<label style="display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;flex-shrink:0" title="标记本周完成">'
+        +     '<input type="checkbox" class="fh-check" data-i="' + i + '"' + (row.checked ? ' checked' : '') + ' style="width:20px;height:20px;accent-color:var(--sage-deep);margin-top:2px">'
+        +     '<span class="tag tag--sage" style="margin:0">#' + (i+1) + '</span>'
+        +   '</label>'
+        +   '<div style="flex:1;min-width:0">'
+        +     '<h3 style="margin:0 0 4px">' + esc(p.part) + '</h3>'
+        +     '<p style="margin:0">' + esc(p.desc) + '</p>'
+        +     '<textarea rows="3" class="fh-note" data-i="' + i + '" placeholder="本周备注：实际发生了什么、亮点、下次改进……" '
+        +       'style="width:100%;margin-top:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);background:rgba(255,255,255,.8);font-family:inherit;line-height:1.7;resize:vertical;font-size:13px">' + esc(row.note || '') + '</textarea>'
+        +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">'
+        +       '<span class="faint" style="font-size:12px" id="fh-msg-' + i + '">' + (row.updated_at ? ('上次保存：' + String(row.updated_at).slice(0, 16).replace('T',' ')) : '尚未记录') + '</span>'
+        +       '<button type="button" class="btn btn--ghost btn--small fh-save" data-i="' + i + '">💾 保存</button>'
+        +     '</div>'
+        +   '</div>'
+        + '</div>'
         + '</article>';
     }).join("");
+
+    var cntEl = document.getElementById('fh-count');
+    if (cntEl) cntEl.textContent = countDone();
+
+    // 按钮：上/下周/回到本周
+    document.getElementById('fh-prev').addEventListener('click', function() {
+      renderFiveHours._viewWeek = addWeekISO(viewWeek, -1);
+      var dataMem = renderFiveHours._dataMem || data;
+      var wkMem = renderFiveHours._weekMem || weekMap;
+      renderFiveHours(dataMem, wkMem);
+    });
+    document.getElementById('fh-next').addEventListener('click', function() {
+      renderFiveHours._viewWeek = addWeekISO(viewWeek, 1);
+      var dataMem = renderFiveHours._dataMem || data;
+      var wkMem = renderFiveHours._weekMem || weekMap;
+      renderFiveHours(dataMem, wkMem);
+    });
+    document.getElementById('fh-today').addEventListener('click', function() {
+      renderFiveHours._viewWeek = currentWeekISO();
+      var dataMem = renderFiveHours._dataMem || data;
+      var wkMem = renderFiveHours._weekMem || weekMap;
+      renderFiveHours(dataMem, wkMem);
+    });
+
+    // 保持引用以便后续周切换 / watch 回调重渲
+    renderFiveHours._dataMem = data;
+    renderFiveHours._weekMem = weekMap;
+
+    // 存单个 activity 的函数
+    async function saveActivity(i) {
+      var cb = el.querySelector('.fh-check[data-i="' + i + '"]');
+      var ta = el.querySelector('.fh-note[data-i="' + i + '"]');
+      var msg = document.getElementById('fh-msg-' + i);
+      if (!cb || !ta) return;
+      var part = parts[i] || {};
+      try {
+        await LoveNest.db.upsert('magic_hours', {
+          week_iso: viewWeek,
+          activity_index: Number(i),
+          activity_name: part.part || ('#' + (i+1)),
+          checked: !!cb.checked,
+          note: ta.value,
+        }, ['couple_id','week_iso','activity_index']);
+        // 重取当前周数据
+        renderFiveHours._thisWeekRows = await LoveNest.db.list('magic_hours', { week_iso: viewWeek });
+        rows = (renderFiveHours._thisWeekRows || []).filter(function(r) { return r.week_iso === viewWeek; });
+        rowMap = new Map();
+        rows.forEach(function(r) { rowMap.set(Number(r.activity_index), r); });
+        if (cntEl) cntEl.textContent = countDone();
+        if (msg) msg.textContent = '✅ 已保存 ' + new Date().toTimeString().slice(0, 5);
+      } catch (e) {
+        console.warn('[magic_hours] upsert 失败:', e);
+        if (msg) msg.textContent = '❌ 保存失败（已入离线队列）';
+      }
+    }
+
+    // 绑定 checkbox 变化 + 备注 blur + 手动保存
+    el.querySelectorAll('.fh-check').forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        var i = Number(cb.getAttribute('data-i'));
+        if (cntEl) cntEl.textContent = countDone();
+        saveActivity(i);
+      });
+    });
+    el.querySelectorAll('.fh-save').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var i = Number(btn.getAttribute('data-i'));
+        saveActivity(i);
+      });
+    });
   }
 
   /* 触摸翻转：桌面 hover 由 CSS 处理，此处补点击切换 */
@@ -425,14 +855,47 @@
 
   document.addEventListener("DOMContentLoaded", async function () {
     var data = await LoveNest.getJSON("data/love-map.json", FALLBACK);
+
+    // ✨ 合并 DB：cards / answers / magic 5 hours
+    data.cards = await mergeCardsFromDB(data.cards || []);
+    var qMap = await loadAnswersMap();
+    var weekIso = currentWeekISO();
+    var weekRows = await LoveNest.db.list('magic_hours', { week_iso: weekIso });
+    var weekMap = new Map();
+    (weekRows || []).forEach(r => weekMap.set(String(r.week_iso) + '|' + String(r.activity_index), r));
+    renderFiveHours._thisWeekRows = weekRows || [];
+    renderFiveHours._viewWeek = weekIso;
+
     renderHouse(data);
     renderCards(data);
-    renderWeekly(data);
-    renderFiveHours(data);
+    renderWeekly(data, qMap);
+    renderFiveHours(data, weekMap);
     LoveNest.loadContentForPage();
     wireFlip();
     /* 动态注入的 .reveal 需要重新挂观察者，才会按滚动淡入 */
     if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+
+    // ✨ watch 三张表，其他设备改了这台自动刷新
+    LoveNest.db.watch('love_notes', async () => {
+      var fresh = await LoveNest.getJSON("data/love-map.json", FALLBACK);
+      data.cards = await mergeCardsFromDB(fresh.cards || []);
+      renderCards(data);
+      wireFlip();
+      if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+    });
+    LoveNest.db.watch('relationship_answers', async () => {
+      var newMap = await loadAnswersMap();
+      // 只重渲染题区，其他不动
+      renderWeekly(data, newMap);
+      if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+    });
+    LoveNest.db.watch('magic_hours', async () => {
+      var vw = renderFiveHours._viewWeek || currentWeekISO();
+      var thisWeek = await LoveNest.db.list('magic_hours', { week_iso: vw });
+      renderFiveHours._thisWeekRows = thisWeek || [];
+      renderFiveHours(data, weekMap);
+      if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+    });
   });
 })();
 </script>

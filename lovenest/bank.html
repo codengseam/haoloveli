@@ -155,6 +155,10 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<!-- Supabase + 数据访问层（三层读写策略：localStorage 缓存 → 云端同步 → 离线队列重试） -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
 <script src="shared/nav.js"></script>
 <script src="shared/data.js"></script>
 <script>
@@ -194,7 +198,28 @@
     };
 
     const data = await LoveNest.getJSON('data/bank.json', FALLBACK);
-    let userRecords = LoveNest.store.get('bank-records', []);
+
+    // ✨ Supabase 持久化：bank_records 表（内含种子数据 + 用户新增数据）
+    //   未配置 Supabase 时走 localStorage 缓存层，100% 可用
+    await LoveNest.db.ready;
+    let records = [];
+    async function reloadRecords() {
+      const fromDB = await LoveNest.db.list('bank_records', null, { order: [['date','desc'],['created_at','desc']] });
+      const seeds = Array.isArray(data.seed_records) ? data.seed_records.map(r => ({ ...r, source: 'seed' })) : [];
+      // 种子去重（按 date+type+who+event 四字段复合键；db 里若已初始化种子就不会重复）
+      const seen = new Set();
+      const merged = [];
+      [...fromDB, ...seeds].forEach(r => {
+        const k = [r.date, r.type, r.who, r.event, r.weight].join('||');
+        if (seen.has(k)) return;
+        seen.add(k);
+        merged.push(r);
+      });
+      records = merged.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    }
+    await reloadRecords();
+    // 后台刷新 / 其他设备写入 → UI 自动重绘
+    LoveNest.db.watch('bank_records', async () => { await reloadRecords(); renderBalance(); renderLog(); });
 
     /* ---------- 工具 ---------- */
     function escapeHtml(s) {
@@ -206,12 +231,7 @@
       const o = (data.who_options || []).find(o => o.value === who);
       return o ? o.label : (who || '');
     }
-    function mergeRecords() {
-      const seeds = Array.isArray(data.seed_records) ? data.seed_records : [];
-      return seeds.concat(userRecords).sort((a, b) =>
-        (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)
-      );
-    }
+    function mergeRecords() { return records; }  // 已经在 reloadRecords 里排序合并了
     function revealIn(scope) {
       scope.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
     }
@@ -316,7 +336,7 @@
       ).join('');
       dateInput.value = LoveNest.todayISO();
 
-      saveBtn.addEventListener('click', () => {
+      saveBtn.addEventListener('click', async () => {
         const event = eventInput.value.trim();
         const date = dateInput.value;
         if (!event) {
@@ -334,24 +354,30 @@
           type: typeSel.value,
           who: whoSel.value,
           event: event,
-          weight: parseInt(weightSel.value, 10) || 1
+          weight: parseInt(weightSel.value, 10) || 1,
+          source: 'user'
         };
-        userRecords.push(rec);
-        LoveNest.store.set('bank-records', userRecords);
+        await LoveNest.db.insert('bank_records', rec);
+        await reloadRecords();
         eventInput.value = '';
         eventInput.focus();
         renderBalance();
         renderLog();
       });
 
-      clearBtn.addEventListener('click', () => {
+      clearBtn.addEventListener('click', async () => {
+        const userRecords = records.filter(r => r.source === 'user' || !r.source);
         if (!userRecords.length) {
           LoveNest.openModal('暂无我的记录', '<p>你还没有添加任何个人记录——种子记录不受影响。</p>');
           return;
         }
         if (confirm('确定清空你添加的所有记录吗？种子记录不受影响。')) {
-          userRecords = [];
-          LoveNest.store.set('bank-records', []);
+          // 逐条删用户自己加的（source!=seed），保留种子
+          for (const r of records) {
+            if (r.source === 'seed') continue;
+            await LoveNest.db.remove('bank_records', { id: r.id });
+          }
+          await reloadRecords();
           renderBalance();
           renderLog();
         }
