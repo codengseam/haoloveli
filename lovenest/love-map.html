@@ -544,8 +544,8 @@
       +       '<span class="tag tag--him" style="margin:0">他 · 师豪</span>'
       +       '<div style="display:flex;gap:2px">'
       +         [1,2,3,4,5].map(function(n) {
-      +           return '<button type="button" class="qa-star qa-him-star" data-n="' + n + '" style="border:0;background:transparent;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;color:' + ((row.him_star || 0) >= n ? '#d89797' : '#ccc') + '" title="' + n + '分">★</button>';
-      +         }).join('')
+            return '<button type="button" class="qa-star qa-him-star" data-n="' + n + '" style="border:0;background:transparent;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;color:' + ((row.him_star || 0) >= n ? '#d89797' : '#ccc') + '" title="' + n + '分">★</button>';
+          }).join('')
       +       '</div>'
       +     '</div>'
       +     '<textarea rows="4" class="qa-him" placeholder="他的回答、感受、心路历程……" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);background:#fff;font-family:inherit;line-height:1.7;resize:vertical">' + esc(row.him_answer || '') + '</textarea>'
@@ -555,8 +555,8 @@
       +       '<span class="tag tag--her" style="margin:0">她 · 佳力</span>'
       +       '<div style="display:flex;gap:2px">'
       +         [1,2,3,4,5].map(function(n) {
-      +           return '<button type="button" class="qa-star qa-her-star" data-n="' + n + '" style="border:0;background:transparent;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;color:' + ((row.her_star || 0) >= n ? '#d89797' : '#ccc') + '" title="' + n + '分">★</button>';
-      +         }).join('')
+            return '<button type="button" class="qa-star qa-her-star" data-n="' + n + '" style="border:0;background:transparent;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;color:' + ((row.her_star || 0) >= n ? '#d89797' : '#ccc') + '" title="' + n + '分">★</button>';
+          }).join('')
       +       '</div>'
       +     '</div>'
       +     '<textarea rows="4" class="qa-her" placeholder="她的回答、感受、心路历程……" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);background:#fff;font-family:inherit;line-height:1.7;resize:vertical">' + esc(row.her_answer || '') + '</textarea>'
