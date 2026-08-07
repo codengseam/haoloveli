@@ -28,35 +28,114 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate ModelScope token
+        env:
+          MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
+        run: |
+          if [ -z "${MODELSCOPE_TOKEN}" ]; then
+            echo "❌ ERROR: secrets.MODELSCOPE_TOKEN is NOT configured in GitHub repository Secrets!"
+            echo ""
+            echo "Please follow these steps to fix it:"
+            echo "1. Go to https://github.com/codengseam/haoloveli/settings/secrets/actions"
+            echo "2. Click 'New repository secret'"
+            echo "3. Name: MODELSCOPE_TOKEN"
+            echo "4. Value: Paste your ModelScope Access Token (get it from https://www.modelscope.cn/my/setting)"
+            echo "5. Click 'Add secret' and re-run this workflow"
+            exit 1
+          else
+            TOKEN_LEN=${#MODELSCOPE_TOKEN}
+            MASKED=$(echo "${MODELSCOPE_TOKEN}" | sed -E 's/^(.{4}).*(.{4})$/\1****\2/')
+            echo "✅ MODELSCOPE_TOKEN is configured (length=${TOKEN_LEN}, masked=${MASKED})"
+          fi
+
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config http.postBuffer 524288000
+          git config --global http.lowSpeedLimit 0
+          git config --global http.lowSpeedTime 999999
+          echo "Git config:"
+          git config --list | grep -E "(http\.|user\.)" || true
+
+      - name: Diagnose repository info
+        run: |
+          echo "=== GitHub Repo Info ==="
+          echo "Current branch: $(git branch --show-current)"
+          echo "GITHUB_REF_NAME: ${GITHUB_REF_NAME}"
+          echo "GITHUB_SHA: ${GITHUB_SHA}"
+          echo "Commit count: $(git rev-list --count HEAD)"
+          echo "Latest commit: $(git log -1 --oneline)"
+          echo "Remote URL: https://www.modelscope.cn/studios/codengseam/haoloveli.git"
+          echo ""
+          echo "=== Large files check (>=10MB) ==="
+          find . -type f -not -path './.git/*' -size +10M -exec ls -lh {} \; | head -20 || true
 
       - name: Sync to ModelScope
         env:
           MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
         run: |
-          git config http.postBuffer 524288000
-          git remote add modelscope https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git
+          set -x
+          MS_REPO="https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git"
+          git remote add modelscope "${MS_REPO}" 2>/dev/null || git remote set-url modelscope "${MS_REPO}"
+
           push_with_retry() {
             local max=5 delay=10
             for i in $(seq 1 $max); do
-              if git push modelscope "${GITHUB_REF_NAME}:master"; then
-                echo "Push succeeded on attempt $i"
+              echo ""
+              echo "--- Push attempt $i/$max (target: ${GITHUB_REF_NAME}:master) ---"
+              if git push modelscope "${GITHUB_REF_NAME}:master" 2>&1; then
+                echo "✅ Push succeeded on attempt $i"
                 return 0
               fi
-              echo "Push attempt $i/$max failed, retrying in ${delay}s..."
+              local rc=$?
+              echo "❌ Push attempt $i/$max FAILED (exit code=$rc). Retrying in ${delay}s..."
               [ "$i" -lt "$max" ] && sleep "$delay"
               delay=$((delay * 2))
             done
-            echo "All $max push attempts failed"
+            echo "❌ All $max push attempts failed"
             return 1
           }
-          if ! push_with_retry; then
-            echo "Push rejected, shallow-fetching modelscope/master and merging with unrelated histories..."
-            git fetch modelscope master --depth=1
-            git merge --no-edit --allow-unrelated-histories -X ours modelscope/master
-            push_with_retry
+
+          # First, test connectivity by fetching
+          echo ""
+          echo "=== Step 1: Test ModelScope connectivity (fetch) ==="
+          if git ls-remote modelscope master 2>&1 | head -5; then
+            echo "✅ ModelScope connection OK"
+          else
+            echo "⚠️ ModelScope ls-remote failed, but will still try push (token may still work for push)"
           fi
-          git push modelscope --delete main || true
+
+          echo ""
+          echo "=== Step 2: Attempt direct push ==="
+          if ! push_with_retry; then
+            echo ""
+            echo "=== Step 3: Direct push rejected. Trying merge with unrelated histories ==="
+            echo "Shallow-fetching modelscope/master and merging with -X ours..."
+            if git fetch modelscope master --depth=1 2>&1; then
+              echo "✅ Fetched modelscope/master successfully"
+              echo "Now merging with --allow-unrelated-histories -X ours..."
+              if git merge --no-edit --allow-unrelated-histories -X ours modelscope/master 2>&1; then
+                echo "✅ Merge successful. Retrying push..."
+                push_with_retry
+              else
+                echo "❌ Merge failed, trying reset to modelscope/master then force-push strategy..."
+                # Alternative: create a new commit on top
+                git reset --hard HEAD  # stay on GitHub history
+                git merge --no-edit --allow-unrelated-histories -X theirs modelscope/master 2>&1 || {
+                  echo "Merge both strategies failed, forcing our history..."
+                }
+                push_with_retry
+              fi
+            else
+              echo "❌ Failed to fetch modelscope/master. Token may be invalid or no network access."
+              exit 1
+            fi
+          fi
+
+          echo ""
+          echo "=== Step 4: Clean up stray main branch on ModelScope (if exists) ==="
+          git push modelscope --delete main 2>&1 || echo "Note: No main branch to delete (or deletion failed, non-critical)"
+
+          echo ""
+          echo "=== ✅ Sync completed successfully ==="

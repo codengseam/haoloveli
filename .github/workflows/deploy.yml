@@ -1,9 +1,9 @@
 name: Deploy Love Nest to GitHub Pages
 
-# push 到 main 分支自动构建并部署到 GitHub Pages
+# push 到 master 分支自动构建并部署到 GitHub Pages
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 permissions:
