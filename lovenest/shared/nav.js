@@ -245,15 +245,21 @@
   }
 
   /* ---------- Public APP namespace ---------- */
-  window.LoveNest = {
-    NAV,
-    inject,
-    initReveal,
-    openModal,
-    closeModal,
-    auth: AUTH,
-    /* localStorage helpers */
-    store: {
+  // ⚠️ 重要：不要直接覆盖 window.LoveNest，否则会丢失 db.js 等前置脚本挂载的属性（如 .db）
+  window.LoveNest = window.LoveNest || {};
+  const LN = window.LoveNest;
+
+  // 逐个属性挂载，已存在的不强行覆盖（避免破坏前置脚本挂载的内容）
+  if (LN.NAV === undefined) LN.NAV = NAV;
+  if (LN.inject === undefined) LN.inject = inject;
+  if (LN.initReveal === undefined) LN.initReveal = initReveal;
+  if (LN.openModal === undefined) LN.openModal = openModal;
+  if (LN.closeModal === undefined) LN.closeModal = closeModal;
+  if (LN.auth === undefined) LN.auth = AUTH;
+
+  // localStorage helpers
+  if (LN.store === undefined) {
+    LN.store = {
       get(key, fallback) {
         try {
           const v = localStorage.getItem("lovenest:" + key);
@@ -267,9 +273,12 @@
       remove(key) {
         try { localStorage.removeItem("lovenest:" + key); } catch (e) {}
       }
-    },
-    /* fetch JSON helper with graceful fallback */
-    async getJSON(path, fallback) {
+    };
+  }
+
+  // fetch JSON helper with graceful fallback
+  if (LN.getJSON === undefined) {
+    LN.getJSON = async function getJSON(path, fallback) {
       try {
         const res = await fetch(path, { cache: "no-cache" });
         if (!res.ok) return fallback;
@@ -277,27 +286,33 @@
       } catch (e) {
         return fallback;
       }
-    },
-    /* date helpers */
-    daysSince(dateStr) {
+    };
+  }
+
+  // date helpers
+  if (LN.daysSince === undefined) {
+    LN.daysSince = function daysSince(dateStr) {
       const start = new Date(dateStr + "T00:00:00");
       const now = new Date();
       const ms = now - start;
       return Math.max(0, Math.floor(ms / 86400000));
-    },
-    /* day-of-year index for stable daily rotation */
-    dayIndex() {
+    };
+  }
+  if (LN.dayIndex === undefined) {
+    LN.dayIndex = function dayIndex() {
       const now = new Date();
       const start = new Date(now.getFullYear(), 0, 0);
       return Math.floor((now - start) / 86400000);
-    },
-    todayISO() {
+    };
+  }
+  if (LN.todayISO === undefined) {
+    LN.todayISO = function todayISO() {
       const d = new Date();
       const m = String(d.getMonth() + 1).padStart(2, "0");
       const day = String(d.getDate()).padStart(2, "0");
       return `${d.getFullYear()}-${m}-${day}`;
-    }
-  };
+    };
+  }
 
   /* ---------- Auto-init on DOMContentLoaded ---------- */
   document.addEventListener("DOMContentLoaded", () => {
