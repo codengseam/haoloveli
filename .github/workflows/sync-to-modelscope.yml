@@ -2,15 +2,6 @@ name: Sync to ModelScope
 
 # 每次 push 到 master 分支，自动把代码镜像同步到魔搭创空间 haoloveli
 # 魔搭创空间会在收到 push 后自动重新部署静态站点（由 README 顶部 front matter 中的 deployspec 驱动）
-#
-# 与 ReUp 项目采用同一套稳健推送方案：
-# - 直接把 GitHub 仓库推送到魔搭 remote（不再用 rsync+clone+commit 的旧方式）
-# - fetch-depth: 0 取完整历史，避免浅克隆导致 push 被拒
-# - http.postBuffer 调大到 500MB，缓解 40 张大图（约 116MB，未走 LFS）造成的大包 RPC "curl 18" 中断
-# - push_with_retry：5 次指数退避重试（10s -> 20s -> 40s -> 80s -> 160s）
-# - 仍被拒时，浅拉 modelscope/master 并以 --allow-unrelated-histories -X ours 合并后重试
-#   （GitHub 与魔搭两侧历史相互独立，必须允许无关历史合并）
-# - haoloveli 的默认分支是 master（不是 main），所以推送目标是 master
 on:
   push:
     branches: [master]
@@ -27,26 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Validate ModelScope token
-        env:
-          MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
-        run: |
-          if [ -z "${MODELSCOPE_TOKEN}" ]; then
-            echo "❌ ERROR: secrets.MODELSCOPE_TOKEN is NOT configured in GitHub repository Secrets!"
-            echo ""
-            echo "Please follow these steps to fix it:"
-            echo "1. Go to https://github.com/codengseam/haoloveli/settings/secrets/actions"
-            echo "2. Click 'New repository secret'"
-            echo "3. Name: MODELSCOPE_TOKEN"
-            echo "4. Value: Paste your ModelScope Access Token (get it from https://www.modelscope.cn/my/setting)"
-            echo "5. Click 'Add secret' and re-run this workflow"
-            exit 1
-          else
-            TOKEN_LEN=${#MODELSCOPE_TOKEN}
-            MASKED=$(echo "${MODELSCOPE_TOKEN}" | sed -E 's/^(.{4}).*(.{4})$/\1****\2/')
-            echo "✅ MODELSCOPE_TOKEN is configured (length=${TOKEN_LEN}, masked=${MASKED})"
-          fi
+          lfs: false
 
       - name: Configure Git
         run: |
@@ -55,87 +27,93 @@ jobs:
           git config http.postBuffer 524288000
           git config --global http.lowSpeedLimit 0
           git config --global http.lowSpeedTime 999999
-          echo "Git config:"
-          git config --list | grep -E "(http\.|user\.)" || true
+          echo "Git config set"
 
-      - name: Diagnose repository info
+      - name: Validate ModelScope token
+        env:
+          MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
         run: |
-          echo "=== GitHub Repo Info ==="
-          echo "Current branch: $(git branch --show-current)"
-          echo "GITHUB_REF_NAME: ${GITHUB_REF_NAME}"
-          echo "GITHUB_SHA: ${GITHUB_SHA}"
-          echo "Commit count: $(git rev-list --count HEAD)"
-          echo "Latest commit: $(git log -1 --oneline)"
-          echo "Remote URL: https://www.modelscope.cn/studios/codengseam/haoloveli.git"
-          echo ""
-          echo "=== Large files check (>=10MB) ==="
-          find . -type f -not -path './.git/*' -size +10M -exec ls -lh {} \; | head -20 || true
+          if [ -z "${MODELSCOPE_TOKEN}" ]; then
+            echo "ERROR: secrets.MODELSCOPE_TOKEN is NOT configured!"
+            echo "Fix: https://github.com/codengseam/haoloveli/settings/secrets/actions"
+            exit 1
+          else
+            TOKEN_LEN=${#MODELSCOPE_TOKEN}
+            echo "MODELSCOPE_TOKEN is configured (length=${TOKEN_LEN})"
+          fi
 
       - name: Sync to ModelScope
         env:
           MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
         run: |
           set -x
+
           MS_REPO="https://oauth2:${MODELSCOPE_TOKEN}@www.modelscope.cn/studios/codengseam/haoloveli.git"
+
+          # 禁用 LFS 验证：魔搭 GitLab 的 pre-receive hook 会因 LFS 对象缺失拒绝推送
+          # 本项目是纯静态站点，无需 LFS；.gitattributes 已移除 ML LFS 规则
+          git config lfs.${MS_REPO#https://}.locksverify false
+          git config lfs.www.modelscope.cn.locksverify false
+
+          # 添加 modelscope remote
           git remote add modelscope "${MS_REPO}" 2>/dev/null || git remote set-url modelscope "${MS_REPO}"
 
           push_with_retry() {
             local max=5 delay=10
+            local rc
             for i in $(seq 1 $max); do
               echo ""
               echo "--- Push attempt $i/$max (target: ${GITHUB_REF_NAME}:master) ---"
-              if git push modelscope "${GITHUB_REF_NAME}:master" 2>&1; then
-                echo "✅ Push succeeded on attempt $i"
+              # FIX: capture $? BEFORE any other command (local declaration resets $?)
+              git push modelscope "${GITHUB_REF_NAME}:master" 2>&1
+              rc=$?
+              if [ $rc -eq 0 ]; then
+                echo "SUCCESS: Push succeeded on attempt $i"
                 return 0
               fi
-              local rc=$?
-              echo "❌ Push attempt $i/$max FAILED (exit code=$rc). Retrying in ${delay}s..."
+              echo "FAILED: Push attempt $i/$max failed (exit code=$rc). Retrying in ${delay}s..."
               [ "$i" -lt "$max" ] && sleep "$delay"
               delay=$((delay * 2))
             done
-            echo "❌ All $max push attempts failed"
+            echo "FAILED: All $max push attempts failed"
             return 1
           }
 
-          # First, test connectivity by fetching
           echo ""
-          echo "=== Step 1: Test ModelScope connectivity (fetch) ==="
+          echo "=== Step 1: Testing ModelScope connectivity ==="
           if git ls-remote modelscope master 2>&1 | head -5; then
-            echo "✅ ModelScope connection OK"
+            echo "OK: ModelScope connection reachable"
           else
-            echo "⚠️ ModelScope ls-remote failed, but will still try push (token may still work for push)"
+            echo "WARN: ls-remote test failed (may still be pushable)"
           fi
 
           echo ""
-          echo "=== Step 2: Attempt direct push ==="
+          echo "=== Step 2: Attempting direct push ==="
           if ! push_with_retry; then
             echo ""
-            echo "=== Step 3: Direct push rejected. Trying merge with unrelated histories ==="
-            echo "Shallow-fetching modelscope/master and merging with -X ours..."
+            echo "=== Step 3: Direct push rejected. Trying merge + retry ==="
+            echo "Fetching modelscope/master for unrelated-history merge..."
             if git fetch modelscope master --depth=1 2>&1; then
-              echo "✅ Fetched modelscope/master successfully"
-              echo "Now merging with --allow-unrelated-histories -X ours..."
+              echo "OK: Fetched modelscope/master"
+              echo "Merging modelscope/master with -X ours..."
               if git merge --no-edit --allow-unrelated-histories -X ours modelscope/master 2>&1; then
-                echo "✅ Merge successful. Retrying push..."
+                echo "OK: Merge succeeded. Retrying push..."
                 push_with_retry
               else
-                echo "❌ Merge failed, trying reset to modelscope/master then force-push strategy..."
-                # Alternative: create a new commit on top
-                git reset --hard HEAD  # stay on GitHub history
-                git merge --no-edit --allow-unrelated-histories -X theirs modelscope/master 2>&1 || {
-                  echo "Merge both strategies failed, forcing our history..."
-                }
-                push_with_retry
+                echo "ERROR: Merge failed"
+                git merge --abort 2>/dev/null || true
+                echo "Aborted merge attempt"
+                return 1
               fi
             else
-              echo "❌ Failed to fetch modelscope/master. Token may be invalid or no network access."
-              exit 1
+              echo "ERROR: Cannot fetch modelscope/master. Token may be invalid or network blocked."
+              return 1
             fi
           fi
 
           echo ""
-          echo "=== Step 4: Clean up stray main branch on ModelScope (if exists) ==="
-          git push modelscope --delete main 2>&1 || echo "Note: No main branch to delete (or deletion failed, non-critical)"
+          echo "=== Step 4: Cleaning up stray main branch ==="
+          git push modelscope --delete main 2>&1 || echo "No main branch to delete (non-critical)"
 
           echo ""
-          echo "=== ✅ Sync completed successfully ==="
+          echo "=== DONE: Sync completed successfully ==="
