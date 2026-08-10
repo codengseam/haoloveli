@@ -231,6 +231,31 @@ section[id],.hero[id],.callout[id]{scroll-margin-top:76px}
   transition:color .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease);
 }
 .auth-logout:hover{color:var(--rose-deep);border-color:var(--rose-soft);background:var(--rose-tint)}
+/* 管理员徽章：taupe 渐变背景 + 暖色阴影区分普通用户 */
+.auth-chip--admin{
+  background:linear-gradient(135deg,var(--taupe),#9A8A74);
+  color:var(--white);
+  border:1px solid var(--taupe-soft);
+  box-shadow:0 2px 8px rgba(176,162,143,.28);
+}
+/* 导航栏管理员入口样式 */
+.topnav a.is-admin-entry{
+  background:linear-gradient(135deg,var(--taupe-soft),var(--taupe));
+  color:var(--white);
+  border-radius:var(--r-pill);
+  padding:8px 14px;
+}
+.topnav a.is-admin-entry.is-active{
+  background:linear-gradient(135deg,var(--taupe),#8A7A64);
+  color:var(--white);
+  box-shadow:0 4px 12px rgba(138,122,100,.32);
+  font-weight:500;
+}
+.topnav a.is-admin-entry:hover{
+  background:linear-gradient(135deg,#9A8A74,#7A6A54);
+  color:var(--white);
+  box-shadow:0 4px 14px rgba(138,122,100,.38);
+}
 /* 移动抽屉里的退出项 */
 .nav-logout{color:var(--rose-deep)!important;border-top:1px dashed var(--line-soft);margin-top:10px;padding-top:14px!important}
 .nav-logout span{display:block}

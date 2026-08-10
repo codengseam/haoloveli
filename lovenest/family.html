@@ -358,10 +358,10 @@
      云同步状态小工具（在工具栏显示徽标 + 弹出简要提示）
      ============================================================ */
   function isCloudConfigured() {
-    // LoveNest.db.config 会 merge 运行时配置（localStorage 里的优先级 > 代码里写死的）
-    const c = (window.LoveNest && window.LoveNest.db && window.LoveNest.db.config) || {};
-    const u = c.PROJECT_URL || ""; const k = c.ANON_PUBLIC_KEY || "";
-    return u && !u.includes("YOUR-PROJECT") && k && !k.includes("YOUR-ANON") && !!u.length;
+    // 用 LoveNest.db.enabled 作为统一的单一真源判断
+    // 该属性内部会同时校验配置有效性 + Supabase 客户端初始化成功
+    // 避免显示"云端已连接"但实际写不上去的假象
+    return !!(window.LoveNest && window.LoveNest.db && window.LoveNest.db.enabled);
   }
   function renderStatusBadge() {
     const tb = document.getElementById("profile-toolbar");
