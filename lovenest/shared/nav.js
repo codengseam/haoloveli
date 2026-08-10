@@ -12,6 +12,7 @@
     { id: "love-map",   href: "love-map.html",     label: "爱情地图",     desc: "深度了解彼此的内心世界" },
     { id: "bank",       href: "bank.html",         label: "情感账户",     desc: "日常的存款与取款记录" },
     { id: "milestones", href: "milestones.html",   label: "人生里程碑",   desc: "阶段规划与婚礼筹备" },
+    { id: "travel",     href: "travel.html",       label: "旅行相册",     desc: "已走过的风景 · 想去的远方" },
     { id: "family",     href: "family.html",       label: "家庭关系网",   desc: "父母档案与节日走动" },
     { id: "peace",      href: "peace.html",         label: "停战协议",     desc: "冲突解决机制与安全词" }
   ];

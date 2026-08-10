@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>旅行相册 · 师豪 ❤ 佳力</title>
+<meta name="description" content="旅行相册与规划：已走过的风景、想去的远方、三种展示方式、从重庆大竹林出发的攻略。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* =========================================================================
+     Travel Module · 旅行相册与规划 — 三种展示 + 规划板
+     与全局 Morandi 色系保持一致，仅追加组件样式
+     ========================================================================= */
+
+  /* ---------- Tab 切换（模块级） ---------- */
+  .modtabs{
+    display:flex;gap:6px;justify-content:center;margin:0 auto 36px;flex-wrap:wrap;
+    padding:6px;background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-pill);
+    max-width:fit-content;
+  }
+  .modtabs button{
+    padding:10px 20px;border-radius:var(--r-pill);border:none;background:transparent;
+    font-size:.95rem;color:var(--muted);font-family:inherit;transition:all .3s var(--ease);
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .modtabs button:hover{color:var(--ink);background:var(--bg-deep)}
+  .modtabs button.is-active{background:var(--sage);color:var(--white);font-weight:500;box-shadow:var(--shadow-sm)}
+  .modtabs button .badge{
+    font-size:.72rem;padding:1px 8px;border-radius:var(--r-pill);
+    background:rgba(255,255,255,.18);color:inherit;
+  }
+  .modtabs button:not(.is-active) .badge{background:var(--bg-deep);color:var(--faint)}
+
+  /* ---------- 子 Tab：三种展示风格切换 ---------- */
+  .viewtabs{
+    display:flex;gap:4px;justify-content:center;margin:0 auto 40px;flex-wrap:wrap;
+  }
+  .viewtabs button{
+    padding:8px 16px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--bg-card);
+    font-size:.88rem;color:var(--muted);font-family:inherit;transition:all .3s var(--ease);
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .viewtabs button:hover{border-color:var(--sage-soft);color:var(--sage-deep)}
+  .viewtabs button.is-active{
+    background:var(--sage-tint);border-color:var(--sage-soft);color:var(--sage-deep);font-weight:500
+  }
+
+  /* ---------- 视图容器：只显示激活的 ---------- */
+  .view{display:none}
+  .view.is-active{display:block;animation:fadeUp .5s var(--ease)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ================================================================
+     View 1 · 相册视图 (Gallery View) — 按 地方 + 时间 分组
+     参照 iPad 相册：大组标题 + 瀑布/网格 + 悬停缩放
+     ================================================================ */
+  .gallery-group{margin-bottom:52px}
+  .gallery-group__head{
+    display:flex;align-items:baseline;gap:16px;margin-bottom:20px;
+    padding-bottom:12px;border-bottom:1px solid var(--line-soft);
+  }
+  .gallery-group__title{font-family:var(--ff-display);font-size:1.4rem;color:var(--ink);font-weight:500}
+  .gallery-group__meta{font-family:var(--ff-accent);font-style:italic;color:var(--sage-deep);font-size:.88rem}
+  .gallery-group__sub{color:var(--muted);font-size:.86rem;margin-left:auto}
+  .gallery-grid{
+    display:grid;gap:10px;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  }
+  .gallery-item{
+    position:relative;aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;
+    box-shadow:var(--shadow-sm);transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+    background:var(--bg-deep);
+  }
+  .gallery-item:hover{transform:scale(1.02);box-shadow:var(--shadow)}
+  .gallery-item img{
+    width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease);
+  }
+  .gallery-item:hover img{transform:scale(1.06)}
+  .gallery-item__meta{
+    position:absolute;left:0;right:0;bottom:0;padding:10px 12px;
+    background:linear-gradient(180deg,transparent,rgba(58,54,49,.72));
+    color:var(--white);font-size:.78rem;line-height:1.4;
+    opacity:0;transform:translateY(6px);transition:all .3s var(--ease);
+  }
+  .gallery-item:hover .gallery-item__meta{opacity:1;transform:none}
+  .gallery-item__meta .time{font-family:var(--ff-accent);font-style:italic;font-size:.7rem;color:rgba(255,255,255,.8)}
+  /* 精选大图：每 5 张出一张 2x2 大卡，产生节奏感 */
+  .gallery-item--featured{grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
+  @media(max-width:768px){
+    .gallery-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+    .gallery-item--featured{grid-column:span 2;grid-row:span 2}
+  }
+  @media(max-width:420px){
+    .gallery-grid{grid-template-columns:repeat(3,1fr);gap:4px}
+    .gallery-item{border-radius:6px}
+  }
+
+  /* ================================================================
+     View 2 · 地图视图 (Map View) — 以重庆为中心的景点地图
+     核心难点：标记不遮挡 + 缩放合理 + 点击跳转详情
+     ================================================================ */
+  .map-wrap{
+    position:relative;width:100%;aspect-ratio:16/10;
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-lg);
+    overflow:hidden;box-shadow:var(--shadow);
+  }
+  @media(max-width:768px){.map-wrap{aspect-ratio:4/5}}
+  /* 地图底图区域（用 SVG 绘制简化版中国地图 + 重庆高亮 + 连线）*/
+  .map-canvas{position:absolute;inset:0;width:100%;height:100%}
+  /* 景点标记 pin */
+  .pin{
+    position:absolute;transform:translate(-50%,-100%);cursor:pointer;
+    transition:transform .3s var(--ease),z-index .1s;z-index:2;
+  }
+  .pin:hover{transform:translate(-50%,-100%) scale(1.08);z-index:10}
+  .pin__marker{
+    width:42px;height:42px;border-radius:50% 50% 50% 0;
+    background:linear-gradient(135deg,var(--rose),var(--rose-deep));
+    transform:rotate(-45deg);box-shadow:0 4px 14px rgba(148,63,79,.38);
+    display:grid;place-items:center;position:relative;overflow:hidden;
+    border:2px solid var(--white);
+  }
+  .pin__marker img{
+    width:100%;height:100%;object-fit:cover;transform:rotate(45deg) scale(1.15);
+    border-radius:50%;
+  }
+  .pin__marker::after{
+    content:"";position:absolute;inset:0;border-radius:50% 50% 50% 0;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);
+  }
+  .pin__label{
+    position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
+    white-space:nowrap;background:var(--bg-card);border:1px solid var(--line-soft);
+    padding:4px 10px;border-radius:var(--r-pill);font-size:.78rem;color:var(--ink);
+    box-shadow:var(--shadow-sm);font-family:var(--ff-display);font-weight:500;
+    opacity:0;transition:opacity .25s var(--ease);
+  }
+  .pin:hover .pin__label,.pin.is-visited .pin__label{opacity:1}
+  .pin--origin .pin__marker{
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));
+    width:50px;height:50px;
+  }
+  .pin--wish .pin__marker{
+    background:linear-gradient(135deg,var(--taupe),var(--taupe-soft));opacity:.8
+  }
+  /* 地图缩放控件 */
+  .map-ctrl{
+    position:absolute;top:14px;right:14px;display:flex;flex-direction:column;gap:6px;z-index:20;
+  }
+  .map-ctrl button{
+    width:40px;height:40px;border-radius:var(--r-sm);border:1px solid var(--line);
+    background:var(--bg-card);color:var(--ink);font-size:1.1rem;display:grid;place-items:center;
+    transition:all .25s var(--ease);box-shadow:var(--shadow-sm);
+  }
+  .map-ctrl button:hover{background:var(--sage-tint);border-color:var(--sage-soft);color:var(--sage-deep)}
+  .map-legend{
+    position:absolute;bottom:14px;left:14px;background:rgba(244,238,227,.94);
+    backdrop-filter:blur(8px);border:1px solid var(--line-soft);border-radius:var(--r-sm);
+    padding:10px 14px;font-size:.78rem;color:var(--muted);z-index:20;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .map-legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend-dot{width:12px;height:12px;border-radius:50%}
+
+  /* ================================================================
+     View 3 · 时间轴视图 (Timeline View) — 年-月 + 照片 + 一句话
+     ================================================================ */
+  .tl-year{margin-bottom:52px}
+  .tl-year__head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
+    padding:14px 0;border-top:2px solid var(--line);border-bottom:1px dashed var(--line-soft);
+    position:sticky;top:62px;background:rgba(237,230,218,.94);backdrop-filter:blur(10px);z-index:5;
+  }
+  .tl-year__num{font-family:var(--ff-display);font-weight:600;font-size:2.4rem;color:var(--sage-deep);line-height:1;letter-spacing:-.02em}
+  .tl-year__label{font-family:var(--ff-accent);font-style:italic;color:var(--muted)}
+  .tl-month{
+    display:grid;grid-template-columns:90px 1fr;gap:18px;margin-bottom:32px;
+    position:relative;
+  }
+  .tl-month::before{
+    content:"";position:absolute;left:44px;top:30px;bottom:-8px;width:2px;
+    background:linear-gradient(180deg,var(--sage-soft),transparent);
+  }
+  .tl-month:last-child::before{display:none}
+  .tl-month__date{
+    text-align:center;padding-top:6px;position:relative;
+  }
+  .tl-month__dot{
+    width:14px;height:14px;border-radius:50%;background:var(--sage);
+    margin:6px auto 0;border:3px solid var(--bg-cream);position:relative;z-index:1;
+    box-shadow:0 0 0 2px var(--sage-soft);
+  }
+  .tl-month__month{font-family:var(--ff-display);font-weight:600;font-size:1.5rem;color:var(--ink)}
+  .tl-month__count{font-size:.74rem;color:var(--faint);font-family:var(--ff-accent);font-style:italic}
+  .tl-place{
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    padding:18px;margin-bottom:14px;display:grid;grid-template-columns:180px 1fr;gap:18px;
+    transition:all .3s var(--ease);
+  }
+  .tl-place:hover{border-color:var(--sage-soft);transform:translateX(4px)}
+  .tl-place__cover{
+    aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow-sm);
+    background:var(--bg-deep);cursor:pointer;
+  }
+  .tl-place__cover img{width:100%;height:100%;object-fit:cover}
+  .tl-place__head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .tl-place__name{font-family:var(--ff-display);font-size:1.2rem;color:var(--ink);font-weight:500}
+  .tl-place__when{font-family:var(--ff-accent);font-style:italic;font-size:.8rem;color:var(--sage-deep)}
+  .tl-place__sentence{color:var(--text);font-size:.96rem;line-height:1.75;margin-bottom:12px}
+  .tl-place__thumbs{display:flex;gap:6px;flex-wrap:wrap}
+  .tl-place__thumb{
+    width:44px;height:44px;border-radius:var(--r-xs);overflow:hidden;
+    border:1px solid var(--line-soft);cursor:pointer;transition:transform .25s var(--ease);
+  }
+  .tl-place__thumb:hover{transform:scale(1.1)}
+  .tl-place__thumb img{width:100%;height:100%;object-fit:cover}
+  .tl-place__meta{
+    display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;
+  }
+  @media(max-width:768px){
+    .tl-month{grid-template-columns:64px 1fr;gap:12px}
+    .tl-month::before{left:30px}
+    .tl-place{grid-template-columns:1fr}
+    .tl-place__cover{aspect-ratio:16/9}
+    .tl-year__head{top:56px}
+  }
+
+  /* ================================================================
+     Wishlist · 想去的远方 — 景点 Tab + 攻略 + 交通方式对比
+     ================================================================ */
+  .wish-tabs{
+    display:flex;gap:8px;margin-bottom:32px;overflow-x:auto;padding-bottom:6px;
+    scrollbar-width:thin;
+  }
+  .wish-tabs::-webkit-scrollbar{height:4px}
+  .wish-tabs::-webkit-scrollbar-thumb{background:var(--sage-soft);border-radius:4px}
+  .wish-tab{
+    flex-shrink:0;padding:12px 18px;border-radius:var(--r-md);
+    border:1px solid var(--line-soft);background:var(--bg-card);
+    display:flex;align-items:center;gap:10px;transition:all .3s var(--ease);cursor:pointer;
+    min-width:200px;
+  }
+  .wish-tab:hover{border-color:var(--sage-soft);transform:translateY(-2px)}
+  .wish-tab.is-active{
+    background:var(--sage-tint);border-color:var(--sage-soft);
+    box-shadow:0 4px 14px rgba(126,144,116,.18);
+  }
+  .wish-tab__rank{
+    width:28px;height:28px;border-radius:50%;background:var(--bg-deep);color:var(--muted);
+    display:grid;place-items:center;font-family:var(--ff-display);font-weight:600;font-size:.92rem;flex-shrink:0;
+  }
+  .wish-tab.is-active .wish-tab__rank{background:var(--sage);color:var(--white)}
+  .wish-tab__name{font-family:var(--ff-display);font-weight:500;color:var(--ink);font-size:.98rem}
+  .wish-tab__sub{font-size:.74rem;color:var(--faint);font-family:var(--ff-accent);font-style:italic;margin-top:2px}
+
+  .wish-panel{display:none}
+  .wish-panel.is-active{display:block;animation:fadeUp .5s var(--ease)}
+  .wish-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:22px}
+  @media(max-width:900px){.wish-grid{grid-template-columns:1fr}}
+
+  .wish-card{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:24px}
+  .wish-card h4{font-family:var(--ff-display);font-size:1.05rem;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .wish-card h4::before{content:"";width:4px;height:18px;background:var(--sage);border-radius:4px}
+  .wish-card--rose h4::before{background:var(--rose)}
+  .wish-card--terracotta h4::before{background:var(--terracotta)}
+
+  /* 交通方式对比卡 */
+  .trans-row{
+    display:grid;grid-template-columns:86px 1fr auto;gap:14px;padding:14px 0;
+    border-bottom:1px dashed var(--line-soft);align-items:center;
+  }
+  .trans-row:last-child{border-bottom:none}
+  .trans-row__mode{
+    text-align:center;
+  }
+  .trans-row__mode .ico{
+    width:42px;height:42px;border-radius:50%;display:grid;place-items:center;margin:0 auto 4px;
+    font-size:1.1rem;background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft);
+  }
+  .trans-row--flight .ico{background:var(--terracotta-tint);color:var(--terracotta-deep);border-color:var(--terracotta-soft)}
+  .trans-row--train .ico{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft)}
+  .trans-row__mode .label{font-size:.72rem;color:var(--muted);font-weight:500}
+  .trans-row__detail{font-size:.9rem;color:var(--text);line-height:1.65}
+  .trans-row__detail b{color:var(--ink)}
+  .trans-row__detail .note{font-size:.78rem;color:var(--faint);margin-top:4px}
+  .trans-row__pri{
+    font-family:var(--ff-accent);font-style:italic;font-size:.74rem;padding:3px 10px;
+    border-radius:var(--r-pill);background:var(--sage-tint);color:var(--sage-deep);
+    border:1px solid var(--sage-soft);
+  }
+  .trans-row__pri.p2{background:var(--terracotta-tint);color:var(--terracotta-deep);border-color:var(--terracotta-soft)}
+  .trans-row__pri.p3{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft)}
+
+  /* 评分条 */
+  .rating-row{display:flex;align-items:center;gap:14px;padding:10px 0}
+  .rating-row label{font-size:.88rem;color:var(--muted);min-width:70px}
+  .rating-row .stars{font-size:1.1rem;letter-spacing:2px;color:var(--taupe)}
+  .rating-row .stars::before{content:"★★★★★";color:var(--line)}
+  .rating-row input[type=range]{flex:1;accent-color:var(--sage)}
+  .rating-row .val{font-family:var(--ff-display);font-weight:600;color:var(--ink);min-width:42px;text-align:right}
+
+  /* 美食 chip 列表 */
+  .food-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .food-chip{
+    padding:6px 14px;border-radius:var(--r-pill);background:var(--bg-deep);color:var(--muted);
+    font-size:.84rem;border:1px dashed var(--line-soft);cursor:pointer;transition:all .25s var(--ease);
+  }
+  .food-chip:hover{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft);border-style:solid}
+
+  /* Guide 来源 chip */
+  .guide-row{
+    display:flex;gap:8px;flex-wrap:wrap;padding:12px 0;border-bottom:1px dashed var(--line-soft);
+  }
+  .guide-row:last-child{border-bottom:none}
+  .source-chip{
+    padding:3px 10px;border-radius:var(--r-pill);font-size:.72rem;font-weight:500;
+    background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft);
+  }
+  .source-chip.xhs{background:#FFF0F0;color:#FE2C55;border-color:#FFB4B4}
+  .source-chip.dy{background:#000;color:#FFF;border-color:#333}
+  .source-chip.mt{background:#FFEFD6;color:#FF6600;border-color:#FFC88C}
+  .source-chip.gd{background:#E8F3FF;color:#1296DB;border-color:#9ECBFA}
+  .source-chip.qnr{background:#F0EBFF;color:#4C6FFF;border-color:#B3B8FA}
+  .source-chip.ctrip{background:#0066CC;color:#FFF;border-color:#66A3FF}
+
+  /* 按钮组 */
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .wish-stat{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r-pill);
+    font-size:.8rem;background:var(--bg-deep);color:var(--muted);
+  }
+  .wish-stat--done{background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft)}
+
+  /* ================================================================
+     通用 · 图片查看 Modal 增强
+     ================================================================ */
+  .lightbox-img{
+    max-height:70vh;max-width:100%;object-fit:contain;margin:0 auto;
+    border-radius:var(--r-sm);box-shadow:var(--shadow-lg);
+  }
+  .lightbox-meta{
+    margin-top:16px;padding:14px 18px;background:var(--bg-deep);border-radius:var(--r-sm);
+    display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.9rem;
+  }
+  .lightbox-meta dt{color:var(--faint);font-family:var(--ff-accent);font-style:italic;font-size:.8rem}
+  .lightbox-meta dd{color:var(--text);margin:0}
+
+  /* 上传区域 */
+  .upload-zone{
+    border:2px dashed var(--sage-soft);border-radius:var(--r-md);
+    padding:32px 20px;text-align:center;background:var(--bg-soft);
+    transition:all .3s var(--ease);cursor:pointer;
+  }
+  .upload-zone:hover{border-color:var(--sage);background:var(--sage-tint)}
+  .upload-zone .ico{font-size:2rem;margin-bottom:10px;color:var(--sage)}
+  .upload-zone p{color:var(--muted);font-size:.9rem}
+
+  /* ===== Responsive ===== */
+  @media(max-width:768px){
+    .modtabs button{padding:8px 14px;font-size:.88rem}
+    .viewtabs button{padding:6px 12px;font-size:.82rem}
+    .map-wrap{aspect-ratio:4/5}
+    .pin__marker{width:36px;height:36px}
+    .pin--origin .pin__marker{width:44px;height:44px}
+    .wish-card{padding:18px}
+  }
+</style>
+</head>
+<body data-page="travel">
+<main>
+
+  <!-- ============== Hero ============== -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__inner">
+      <p class="kicker hero__kicker">Travel Album · Our Footprints</p>
+      <h1 class="hero__title">旅行相册</h1>
+      <div class="hero__names">师豪 <span class="heart">❤</span> 佳力</div>
+      <p class="hero__sub" id="hero-sub">
+        已走过的风景，用三种方式回忆；想去的远方，从重庆大竹林出发——
+        电车自驾优先，其次飞机，再是高铁。把每一次出行都规划成值得的旅程。
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#visited">看过的风景</a>
+        <a class="btn btn--ghost" href="#wishlist">想去的远方</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 顶层大模块切换：已旅游 / 想去 ============== -->
+  <section class="section" id="visited">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">01</span>
+        <h2 class="section__title">已旅游模块</h2>
+        <p class="section__desc">三种方式，重走我们走过的路——按相册翻、按地图看、按时间轴读。</p>
+      </div>
+
+      <!-- 三种展示风格切换 Tab -->
+      <div class="viewtabs reveal" id="viewTabs" role="tablist">
+        <button class="is-active" data-view="gallery" role="tab" aria-selected="true">
+          📷 相册视图
+        </button>
+        <button data-view="map" role="tab" aria-selected="false">
+          🗺 地图视图
+        </button>
+        <button data-view="timeline" role="tab" aria-selected="false">
+          📅 时间轴
+        </button>
+      </div>
+
+      <!-- View 1 · 相册视图 -->
+      <div class="view is-active" id="view-gallery">
+        <div id="galleryRoot"></div>
+      </div>
+
+      <!-- View 2 · 地图视图 -->
+      <div class="view" id="view-map">
+        <div class="map-wrap reveal" id="mapRoot">
+          <!-- 地图 SVG 由 JS 渲染 -->
+          <svg class="map-canvas" id="mapCanvas" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet"></svg>
+          <!-- 景点 Pin 由 JS 渲染为绝对定位 div（便于放图片和交互） -->
+          <div id="mapPins"></div>
+          <!-- 缩放控件 -->
+          <div class="map-ctrl">
+            <button id="mapZoomIn" aria-label="放大">+</button>
+            <button id="mapZoomOut" aria-label="缩小">−</button>
+            <button id="mapZoomReset" aria-label="重置" style="font-size:.9rem">⟳</button>
+          </div>
+          <!-- 图例 -->
+          <div class="map-legend">
+            <span><i class="legend-dot" style="background:var(--sage)"></i> 出发地 · 重庆大竹林</span>
+            <span><i class="legend-dot" style="background:var(--rose)"></i> 已去过的景点</span>
+            <span><i class="legend-dot" style="background:var(--taupe);opacity:.7"></i> 计划中的远方</span>
+          </div>
+        </div>
+        <p class="faint center reveal" style="margin-top:18px;font-size:.82rem">
+          点击任意景点 Pin，跳转到相册视图查看全部照片。缩放可查看更密集区域的标记。
+        </p>
+      </div>
+
+      <!-- View 3 · 时间轴视图 -->
+      <div class="view" id="view-timeline">
+        <div id="timelineRoot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== 模块二：想去旅游 ============== -->
+  <section class="section section--tint" id="wishlist">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">02</span>
+        <h2 class="section__title">想去的远方</h2>
+        <p class="section__desc">
+          从重庆大竹林出发：电车自驾优先 · 其次飞机 · 最后高铁。
+          一个景点一张卡，玩过了点「已游玩」，就能上传照片和写感受。
+        </p>
+      </div>
+
+      <!-- 景点 Tab 条 -->
+      <div class="wish-tabs reveal" id="wishTabs" role="tablist"></div>
+
+      <!-- 景点详情面板容器 -->
+      <div id="wishPanels"></div>
+    </div>
+  </section>
+
+  <!-- ============== Crosslinks ============== -->
+  <section class="section" id="next">
+    <div class="container">
+      <div class="section__head reveal">
+        <h2 class="section__title">继续，我们的故事</h2>
+        <p class="section__desc">旅行是两个人看世界的方式——它连着家庭、里程碑与存款。</p>
+      </div>
+      <div class="crosslinks reveal">
+        <a class="crosslink" href="milestones.html">
+          <span class="crosslink__icon">🪴</span>
+          <span class="crosslink__title">把旅行写进里程碑</span>
+          <span class="crosslink__desc">稻城亚丁的雪山日出，是我们确认彼此的一站。</span>
+          <span class="crosslink__arrow">人生里程碑 →</span>
+        </a>
+        <a class="crosslink" href="bank.html">
+          <span class="crosslink__icon">💰</span>
+          <span class="crosslink__title">为下一次旅行存钱</span>
+          <span class="crosslink__desc">九寨沟彩林季的门票，先从每天一句感谢攒起。</span>
+          <span class="crosslink__arrow">情感账户 →</span>
+        </a>
+        <a class="crosslink" href="family.html">
+          <span class="crosslink__icon">🏠</span>
+          <span class="crosslink__title">带上两家人出发</span>
+          <span class="crosslink__desc">一次集体出行，胜过十次节日问候。</span>
+          <span class="crosslink__arrow">家庭关系网 →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Supabase + 数据访问层 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="../env-config.js"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
+<script src="shared/nav.js"></script>
+<script src="shared/data.js"></script>
+<script>
+/* =========================================================================
+   Travel Page · 入口脚本
+   本文件提供：
+   1) View 切换（相册 / 地图 / 时间轴）框架 + 示例数据渲染骨架
+   2) Wishlist Tab 切换 + 景点面板渲染骨架
+   3) 图片点击查看 / 上传入口
+   详细功能请参见配套的 AI 开发任务提示词并行开发
+   ========================================================================= */
+document.addEventListener("DOMContentLoaded", async function () {
+  "use strict";
+
+  /* ---------- Fallback 数据（当 data/travel.json 拉取失败时使用） ---------- */
+  const FALLBACK = {
+    _meta:{ title:"旅行相册", origin:"重庆大竹林", origin_coords:[29.6145,106.4799] },
+    visited: { _stats:{total_places:7,total_photos:22,total_days:19}, places:[] },
+    wishlist: { places:[] }
+  };
+
+  const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+  /* ---------- 加载数据 ---------- */
+  const DATA = await LoveNest.getJSON("data/travel.json", FALLBACK);
+  const VISITED = (DATA.visited && DATA.visited.places) || [];
+  const WISHLIST = (DATA.wishlist && DATA.wishlist.places) || [];
+
+  /* ==============================================================
+     一、已旅游模块 · 三种展示视图切换
+     ============================================================== */
+  const viewTabs = document.getElementById("viewTabs");
+  const views = {
+    gallery: document.getElementById("view-gallery"),
+    map: document.getElementById("view-map"),
+    timeline: document.getElementById("view-timeline"),
+  };
+  let currentView = "gallery";
+
+  viewTabs && viewTabs.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const v = btn.getAttribute("data-view");
+      if (!v || !views[v] || v === currentView) return;
+      // 更新 Tab
+      viewTabs.querySelectorAll("button").forEach(b => {
+        b.classList.toggle("is-active", b === btn);
+        b.setAttribute("aria-selected", b === btn ? "true" : "false");
+      });
+      // 更新 View
+      Object.keys(views).forEach(k => views[k].classList.toggle("is-active", k === v));
+      currentView = v;
+      // 如果切到地图，触发一次重绘（保证布局正确）
+      if (v === "map" && typeof renderMap === "function") {
+        // placeholder for map resize hook
+      }
+    });
+  });
+
+  /* ---------- View 1 · 相册视图：按 [省份+景区] × [时间] 分组 ----------
+     结构：
+     <分组头：景区名 + 时间 + 照片数>
+       <九宫格：第1张占大格（featured），其余小格>
+     ---------------------------------------------------------------- */
+  function renderGallery(places) {
+    const root = document.getElementById("galleryRoot");
+    if (!root) return;
+    if (!places || !places.length) {
+      root.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没有照片——从第一次出行开始记起吧 ✈️</p></div>`;
+      return;
+    }
+    // 按开始时间倒序（最近的在前）
+    const sorted = [...places].sort((a,b) => new Date(b.start_date) - new Date(a.start_date));
+    const html = sorted.map((p, pIdx) => {
+      const photos = p.photos || [];
+      if (!photos.length) return "";
+      // 生成九宫格
+      const gridHtml = photos.map((ph, i) => {
+        const isFeat = i === 0;
+        return `<figure class="gallery-item ${isFeat ? 'gallery-item--featured' : ''}" data-place="${esc(p.id)}" data-photo="${esc(ph.id)}" title="点击查看大图">
+          <img src="${esc(ph.url)}" alt="${esc(ph.caption || p.name)}" loading="lazy"/>
+          <figcaption class="gallery-item__meta">
+            ${esc(ph.place_within || p.location)}<br/>
+            <span class="time">${esc((ph.taken_at || p.start_date || "").slice(0,10))}</span>
+          </figcaption>
+        </figure>`;
+      }).join("");
+
+      return `<section class="gallery-group reveal">
+        <header class="gallery-group__head">
+          <h3 class="gallery-group__title">${esc(p.name)}</h3>
+          <span class="gallery-group__meta">${esc(p.province || "")}</span>
+          <span class="gallery-group__sub">
+            ${esc(p.start_date || "")}${p.end_date && p.end_date !== p.start_date ? " ~ " + esc(p.end_date) : ""}
+            · ${photos.length} 张 · ${p.days || 1} 天
+          </span>
+        </header>
+        <div class="gallery-grid">${gridHtml}</div>
+      </section>`;
+    }).join("");
+    root.innerHTML = html;
+    // 绑定图片点击
+    root.querySelectorAll(".gallery-item").forEach(el => {
+      el.addEventListener("click", () => {
+        const pid = el.getAttribute("data-place");
+        const phid = el.getAttribute("data-photo");
+        openPhotoLightbox(pid, phid);
+      });
+    });
+    // 重新触发 reveal
+    if (LoveNest.initReveal) LoveNest.initReveal();
+  }
+  renderGallery(VISITED);
+
+  /* ---------- View 2 · 地图视图 ----------
+     技术选型建议（留给 AI 并行开发）：
+     A) 轻量方案：SVG 绘制中国简化版轮廓 + 经纬度投影换算 + 绝对定位 Pin（当前框架预留此方案）
+        - 中国范围经纬度约：lon 73~135, lat 18~54
+        - viewBox: 0 0 1000 620；X=(lon-73)/(135-73)*1000，Y=(54-lat)/(54-18)*620
+        - Pin 不遮挡算法：检测重叠后按"就近偏移 + 引线"方式散开（或按 zoom 等级显示）
+     B) 专业方案：引入 Leaflet.js + OSM 或高德底图，MarkerCluster 处理重叠
+        - 优点：真实地图、缩放平移流畅
+        - 缺点：依赖外部 CDN、网络要求高
+     ---------------------------------------------------------------- */
+  function renderMap(visited, wishlist, origin) {
+    const svg = document.getElementById("mapCanvas");
+    const pinsLayer = document.getElementById("mapPins");
+    if (!svg || !pinsLayer) return;
+
+    // 投影函数：经纬度 → SVG viewBox 坐标
+    const LON_MIN = 73, LON_MAX = 135, LAT_MIN = 18, LAT_MAX = 54;
+    const W = 1000, H = 620;
+    const proj = (lon, lat) => [
+      ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * W,
+      ((LAT_MAX - lat) / (LAT_MAX - LAT_MIN)) * H
+    ];
+
+    // --- 第 1 步：绘制一个简化中国地图底图（SVG path，占位用）---
+    // 真实数据由 AI 开发填充。这里画一个示意的温柔色块 + 网格
+    const bg = `
+      <defs>
+        <linearGradient id="cnFill" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#F4EEE3"/>
+          <stop offset="100%" stop-color="#E4DBCC"/>
+        </linearGradient>
+        <linearGradient id="cnStroke" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#B8C4AD" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#D6A5AE" stop-opacity="0.6"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="${W}" height="${H}" fill="#F8F4EC" rx="14"/>
+      <!-- 重庆/四川地区高亮柔光 -->
+      <circle cx="${proj(106.5, 29.6)[0]}" cy="${proj(106.5, 29.6)[1]}" r="160" fill="#E6ECE0" opacity="0.7"/>
+      <!-- 占位示意：简化中国地图轮廓（由 AI 替换为真实 geojson path） -->
+      <path d="M200,180 C300,120 420,100 520,110 C620,120 720,90 800,140 C880,190 900,280 880,360 C860,440 780,500 680,510 C580,520 480,560 380,530 C280,500 180,460 140,380 C100,300 100,240 200,180 Z"
+            fill="url(#cnFill)" stroke="url(#cnStroke)" stroke-width="2"/>
+      <!-- 长江示意线 -->
+      <path d="M250,380 C340,360 420,350 500,330 C580,310 660,290 760,300" fill="none" stroke="#9ECBFA" stroke-width="2.5" stroke-opacity="0.55" stroke-linecap="round"/>
+    `;
+    svg.innerHTML = bg;
+
+    // --- 第 2 步：从原点到每个 visited 画柔和连线（动画）---
+    const [ox, oy] = proj(origin[0], origin[1]);
+    const linesSvg = VISITED.map(p => {
+      if (!p.coords) return "";
+      const [x, y] = proj(p.coords[1], p.coords[0]);
+      return `<path d="M${ox},${oy} C${(ox+x)/2},${Math.min(oy,y)-60} ${(ox+x)/2+40},${Math.min(oy,y)-80} ${x},${y}"
+                    fill="none" stroke="#B85C6B" stroke-width="1.4" stroke-opacity="0.45"
+                    stroke-dasharray="4 6" stroke-linecap="round"/>`;
+    }).join("");
+    svg.insertAdjacentHTML("beforeend", linesSvg);
+
+    // --- 第 3 步：用绝对定位 div 放 Pin（便于悬停交互和小图预览）---
+    // 先把所有点计算出屏幕百分比坐标（因为外层是 aspect-ratio 容器）
+    const mkPin = (cls, lon, lat, imgUrl, title, onclick) => {
+      const [px, py] = proj(lon, lat);
+      const leftPct = (px / W) * 100;
+      const topPct = (py / H) * 100;
+      const d = document.createElement("div");
+      d.className = "pin " + cls;
+      d.style.left = leftPct + "%";
+      d.style.top = topPct + "%";
+      d.innerHTML = `
+        <div class="pin__marker">${imgUrl ? `<img src="${esc(imgUrl)}" alt="" loading="lazy"/>` : ""}</div>
+        <div class="pin__label">${esc(title)}</div>
+      `;
+      if (onclick) d.addEventListener("click", onclick);
+      return d;
+    };
+
+    pinsLayer.innerHTML = "";
+    // 原点：重庆大竹林
+    pinsLayer.appendChild(mkPin("pin--origin", origin[0], origin[1], null, "重庆大竹林 · 我们的家"));
+    // Visited 景点
+    VISITED.forEach(p => {
+      if (!p.coords) return;
+      const pin = mkPin("pin pin--visited", p.coords[1], p.coords[0], p.cover_image,
+        `${p.name} · ${p.start_date ? p.start_date.slice(0,7) : ""}`,
+        () => {
+          // 点击跳转相册视图 + 滚到对应分组
+          const tabBtn = viewTabs.querySelector('button[data-view="gallery"]');
+          if (tabBtn) tabBtn.click();
+          setTimeout(() => {
+            const target = document.querySelector(`.gallery-group [data-place="${p.id}"]`);
+            if (target) target.closest(".gallery-group").scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 300);
+        }
+      );
+      pinsLayer.appendChild(pin);
+    });
+    // Wishlist 景点（灰色半透明，点击跳转到 wishlist section）
+    WISHLIST.forEach(p => {
+      if (!p.coords) return;
+      const pin = mkPin("pin pin--wish", p.coords[1], p.coords[0], null, p.name,
+        () => { document.getElementById("wishlist").scrollIntoView({behavior:"smooth"}); }
+      );
+      pinsLayer.appendChild(pin);
+    });
+
+    // --- 第 4 步：简单缩放（留给 AI 开发完善：pin 位置随缩放 + 防遮挡）---
+    let scale = 1;
+    const applyScale = () => {
+      svg.style.transform = `scale(${scale})`;
+      svg.style.transformOrigin = "center center";
+      pinsLayer.style.transform = `scale(${scale})`;
+      pinsLayer.style.transformOrigin = "center center";
+    };
+    document.getElementById("mapZoomIn").onclick  = () => { scale = Math.min(2.4, scale + 0.2); applyScale(); };
+    document.getElementById("mapZoomOut").onclick = () => { scale = Math.max(0.6, scale - 0.2); applyScale(); };
+    document.getElementById("mapZoomReset").onclick = () => { scale = 1; applyScale(); };
+  }
+  // 第一次只在切到地图时渲染（避免性能），也可以直接预渲染
+  renderMap(VISITED, WISHLIST, DATA._meta.origin_coords);
+
+  /* ---------- View 3 · 时间轴视图：年-月 × 一张封面 + 一句话 ---------- */
+  function renderTimeline(places) {
+    const root = document.getElementById("timelineRoot");
+    if (!root) return;
+    if (!places || !places.length) {
+      root.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没有故事——先去第一个远方吧 🌄</p></div>`;
+      return;
+    }
+    // 按年-月分组（取 start_date 的年和月）
+    const byYear = new Map();
+    const sorted = [...places].sort((a,b) => new Date(a.start_date) - new Date(b.start_date));
+    sorted.forEach(p => {
+      const d = new Date(p.start_date || 0);
+      const y = d.getFullYear() || "未知";
+      const m = d.getMonth() + 1;
+      if (!byYear.has(y)) byYear.set(y, new Map());
+      const monthMap = byYear.get(y);
+      if (!monthMap.has(m)) monthMap.set(m, []);
+      monthMap.get(m).push(p);
+    });
+
+    const MONTH_NAMES = ["","1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+    const html = [...byYear.keys()].sort((a,b) => b - a).map(year => {
+      const monthMap = byYear.get(year);
+      const monthsHtml = [...monthMap.keys()].sort((a,b) => b - a).map(m => {
+        const list = monthMap.get(m);
+        const placesHtml = list.map(p => {
+          const thumbs = (p.photos || []).slice(1, 7).map(ph =>
+            `<div class="tl-place__thumb" data-place="${esc(p.id)}" data-photo="${esc(ph.id)}">
+               <img src="${esc(ph.url)}" alt="" loading="lazy"/>
+             </div>`).join("");
+          const tags = [];
+          if (p.days) tags.push(`<span class="tag tag--sage">${p.days} 天</span>`);
+          if (p.season) tags.push(`<span class="tag tag--her">${p.season} 季</span>`);
+          if (p.rating_him != null || p.rating_her != null) {
+            const r = (p.rating_him + p.rating_her) / 2;
+            tags.push(`<span class="tag tag--him">❤ ${(r||0).toFixed(1)} 分</span>`);
+          }
+          return `<article class="tl-place">
+            <div class="tl-place__cover" data-place="${esc(p.id)}" data-photo="${(p.photos && p.photos[0] && p.photos[0].id) || ''}">
+              <img src="${esc(p.cover_image || (p.photos && p.photos[0] && p.photos[0].url) || '')}" alt="" loading="lazy"/>
+            </div>
+            <div class="tl-place__body">
+              <div class="tl-place__head">
+                <h4 class="tl-place__name">${esc(p.name)}</h4>
+                <span class="tl-place__when">${esc(p.start_date || "")}</span>
+              </div>
+              <p class="tl-place__sentence">${esc(p.review || "💭 还没写一句话感受——下次回来补上。")}</p>
+              ${thumbs ? `<div class="tl-place__thumbs">${thumbs}</div>` : ""}
+              ${tags.length ? `<div class="tl-place__meta">${tags.join("")}</div>` : ""}
+            </div>
+          </article>`;
+        }).join("");
+        const totalPhotos = list.reduce((n,p) => n + ((p.photos||[]).length),0);
+        return `<div class="tl-month">
+          <div class="tl-month__date">
+            <div class="tl-month__month">${MONTH_NAMES[m]}</div>
+            <div class="tl-month__count">${list.length} 处 · ${totalPhotos} 张</div>
+            <div class="tl-month__dot"></div>
+          </div>
+          <div>${placesHtml}</div>
+        </div>`;
+      }).join("");
+      const totalDays = [...monthMap.values()].flat().reduce((n,p)=> n + (p.days||0),0);
+      return `<section class="tl-year">
+        <header class="tl-year__head">
+          <div class="tl-year__num">${year}</div>
+          <div class="tl-year__label">${[...monthMap.values()].flat().length} 段旅程 · ${totalDays} 个在路上的日子</div>
+        </header>
+        ${monthsHtml}
+      </section>`;
+    }).join("");
+    root.innerHTML = html;
+    // 绑定点击
+    root.querySelectorAll(".tl-place__cover, .tl-place__thumb").forEach(el => {
+      el.addEventListener("click", () => {
+        const pid = el.getAttribute("data-place");
+        const phid = el.getAttribute("data-photo");
+        openPhotoLightbox(pid, phid);
+      });
+    });
+  }
+  renderTimeline(VISITED);
+
+  /* ---------- 图片查看 Lightbox（复用 nav.js 的共享 modal） ---------- */
+  function openPhotoLightbox(placeId, photoId) {
+    const place = VISITED.find(p => p.id === placeId);
+    const photo = place && (place.photos || []).find(ph => ph.id === photoId);
+    if (!place) return;
+    const ph = photo || (place.photos && place.photos[0]);
+    if (!ph) return;
+    const html = `
+      <img class="lightbox-img" src="${esc(ph.url)}" alt="${esc(ph.caption || place.name)}"/>
+      <dl class="lightbox-meta">
+        <dt>景区</dt><dd>${esc(place.name)}<span class="faint"> · ${esc(place.location || "")}</span></dd>
+        <dt>拍摄地</dt><dd>${esc(ph.place_within || "—")}</dd>
+        <dt>时间</dt><dd>${esc(ph.taken_at || place.start_date || "")}</dd>
+        <dt>一句话</dt><dd>${esc(place.review || "—")}</dd>
+      </dl>
+      ${place.photos && place.photos.length > 1 ? `
+        <div style="margin-top:16px">
+          <p class="kicker" style="margin-bottom:10px">本景区更多照片（${place.photos.length} 张）</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            ${place.photos.map(x => `
+              <img src="${esc(x.url)}" alt="" loading="lazy"
+                   style="width:60px;height:60px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid ${x.id===ph.id?'var(--sage)':'transparent'}"
+                   onclick="LoveNest._openPhotoDirect('${esc(place.id)}','${esc(x.id)}')"/>
+            `).join("")}
+          </div>
+        </div>` : ""}
+      <div class="btn-row">
+        <button class="btn btn--small btn--primary" id="addReviewBtn" type="button">✎ 补充玩后感受</button>
+        <button class="btn btn--small btn--ghost" id="uploadPhotoBtn" type="button">📷 上传更多照片</button>
+      </div>
+    `;
+    LoveNest.openModal(place.name + " · " + (ph.caption || "照片"), html);
+    // 绑定上传 / 编辑入口（留给 AI 开发）
+    const up = document.getElementById("uploadPhotoBtn");
+    if (up) up.onclick = () => alert("[框架占位] 上传照片 UI 入口，由 AI 并行开发对接：点击后弹出上传区 → 压缩预览 → 写入 Supabase storage + travel_photos 表");
+    const ar = document.getElementById("addReviewBtn");
+    if (ar) ar.onclick = () => alert("[框架占位] 玩后感受编辑入口，由 AI 并行开发：弹出双评分(师豪/佳力) + 文字 + 美食标签表单，写入 visited 记录");
+  }
+  // 暴露给 modal 内的 onclick
+  LoveNest._openPhotoDirect = (pid, phid) => { LoveNest.closeModal(); setTimeout(()=>openPhotoLightbox(pid, phid), 150); };
+
+  /* ==============================================================
+     二、想去旅游模块 · 一个景点一个 Tab + 攻略面板
+     ============================================================== */
+  function renderWishlist(places) {
+    const tabsRoot = document.getElementById("wishTabs");
+    const panelsRoot = document.getElementById("wishPanels");
+    if (!tabsRoot || !panelsRoot) return;
+    if (!places || !places.length) {
+      panelsRoot.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没列愿望清单——从小红书、抖音先搜一个种草的地方吧 🌿</p></div>`;
+      return;
+    }
+    // 按 priority 升序（1 最想去）
+    const sorted = [...places].sort((a,b) => (a.priority||99) - (b.priority||99));
+
+    // Tabs
+    tabsRoot.innerHTML = sorted.map((p,i) => `
+      <button class="wish-tab ${i===0?'is-active':''}" data-wish="${esc(p.id)}" role="tab">
+        <span class="wish-tab__rank">${i+1}</span>
+        <div>
+          <div class="wish-tab__name">${esc(p.name)}</div>
+          <div class="wish-tab__sub">${esc(p.best_season || p.province || "")} · ${p.suggested_days||'?'} 天</div>
+        </div>
+      </button>
+    `).join("");
+
+    // Panels
+    panelsRoot.innerHTML = sorted.map((p, i) => `
+      <article class="wish-panel ${i===0?'is-active':''}" data-panel="${esc(p.id)}">
+        <div class="wish-grid">
+          <!-- 左栏：基本信息 + 交通方式对比 -->
+          <div>
+            <div class="wish-card reveal" style="margin-bottom:20px">
+              <h4>📍 基本信息</h4>
+              <dl style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.92rem">
+                <dt class="faint">位置</dt><dd>${esc(p.location || "")}</dd>
+                <dt class="faint">最佳季节</dt><dd><b>${esc(p.best_season || "—")}</b></dd>
+                <dt class="faint">建议天数</dt><dd>${p.suggested_days || "—"} 天（含往返）</dd>
+                <dt class="faint">标签</dt><dd style="display:flex;gap:6px;flex-wrap:wrap">
+                  ${(p.tags||[]).map(t => `<span class="tag tag--sage">${esc(t)}</span>`).join("")}
+                </dd>
+                <dt class="faint">备注</dt><dd class="muted">${esc(p.notes || "—")}</dd>
+              </dl>
+              <div class="btn-row">
+                <button class="btn btn--small btn--rose mark-visited-btn" data-id="${esc(p.id)}" type="button">
+                  ✓ 标记为已游玩
+                </button>
+                <span class="wish-stat">${(p.sources||[]).length} 份攻略</span>
+                ${p.converted_to_visited ? `<span class="wish-stat wish-stat--done">✅ 已转化为相册</span>` : ""}
+              </div>
+            </div>
+
+            <div class="wish-card wish-card--terracotta">
+              <h4>🚗 从重庆大竹林出发 · 交通方式</h4>
+              <div class="trans-row">
+                <div class="trans-row__mode">
+                  <div class="ico">🔋</div>
+                  <div class="label">电车自驾</div>
+                </div>
+                <div class="trans-row__detail">
+                  ${p.transport && p.transport.ev_drive ? `
+                    <b>${p.transport.ev_drive.distance_km || "?"} km · 约 ${p.transport.ev_drive.drive_hours || "?"} 小时</b>
+                    <div class="note">🔌 ${esc(p.transport.ev_drive.charging_notes || "充电信息待补充")}</div>
+                    <div class="note">路线：${esc(p.transport.ev_drive.route || "")}</div>
+                  ` : `<span class="faint">距离过远或信息待整理，不推荐自驾</span>`}
+                </div>
+                <span class="trans-row__pri">优先 1</span>
+              </div>
+              <div class="trans-row trans-row--flight">
+                <div class="trans-row__mode">
+                  <div class="ico">✈️</div>
+                  <div class="label">飞机</div>
+                </div>
+                <div class="trans-row__detail">
+                  ${p.transport && p.transport.flight ? `
+                    <b>${esc(p.transport.flight.nearest_airport || "")}</b> · 直飞 ${esc(p.transport.flight.flight_duration || "")}
+                    <div class="note">机场到景区：${esc(p.transport.flight.airport_to_destination || "")}</div>
+                  ` : `<span class="faint">暂无推荐航班</span>`}
+                </div>
+                <span class="trans-row__pri p2">优先 2</span>
+              </div>
+              <div class="trans-row trans-row--train">
+                <div class="trans-row__mode">
+                  <div class="ico">🚄</div>
+                  <div class="label">高铁/火车</div>
+                </div>
+                <div class="trans-row__detail">
+                  ${p.transport && p.transport.train ? `
+                    <b>${esc(p.transport.train.nearest_station || "")}</b> · 约 ${esc(p.transport.train.duration || "")}
+                    <div class="note">${esc(p.transport.train.notes || "")}</div>
+                  ` : `<span class="faint">暂无推荐车次</span>`}
+                </div>
+                <span class="trans-row__pri p3">优先 3</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右栏：攻略来源 + 玩后反馈（点击已游玩后展开） -->
+          <div>
+            <div class="wish-card reveal" style="margin-bottom:20px">
+              <h4>🔍 攻略来源（需 AI 搜索填充内容）</h4>
+              <p class="faint" style="font-size:.82rem;margin-bottom:12px">
+                以下标签对应搜索平台：小红书 · 抖音 · 美团 · 高德 · 去哪儿 · 携程。
+                框架已预留 <code>guides[]</code> 数据位，留给 AI 并行开发：从各平台抓取热门攻略摘要。
+              </p>
+              <div class="guide-row">
+                ${(p.sources||[]).map(s => {
+                  const cls = ({小红书:"xhs",抖音:"dy",美团:"mt",高德:"gd",去哪儿:"qnr",携程:"ctrip"})[s] || "";
+                  return `<span class="source-chip ${cls}">${esc(s)}</span>`;
+                }).join("") || `<span class="faint italic">暂无来源标签</span>`}
+              </div>
+              <div class="guide-row" style="border:none;margin-top:10px;padding-top:4px">
+                <button class="btn btn--small btn--ghost" type="button" onclick="alert('[框架占位] AI 一键攻略：从上面平台搜索「${esc(p.name)} 旅游攻略」，汇总最佳路线、避坑、必吃。')">
+                  🤖 AI 一键生成攻略
+                </button>
+              </div>
+              <!-- 攻略内容占位 -->
+              <div class="card card--inset" style="margin-top:14px;padding:16px 18px">
+                <p class="faint" style="font-size:.88rem;line-height:1.75;font-style:italic">
+                  攻略详情加载中……<br/>
+                  这里将展示：必玩景点排序、避坑提醒、预算拆解、每日行程建议、
+                  以及各攻略的共识项和争议项（用颜色区分）。
+                </p>
+              </div>
+            </div>
+
+            <div class="wish-card wish-card--rose" id="review-card-${esc(p.id)}">
+              <h4>💞 玩后感受 & 评分</h4>
+              ${p.converted_to_visited ? `
+                <div class="rating-row">
+                  <label>师豪评分</label>
+                  <input type="range" min="0" max="10" step="0.1" value="0"/>
+                  <span class="val">0.0</span>
+                </div>
+                <div class="rating-row">
+                  <label>佳力评分</label>
+                  <input type="range" min="0" max="10" step="0.1" value="0"/>
+                  <span class="val">0.0</span>
+                </div>
+                <div class="quick-add" style="margin-top:12px">
+                  <div class="quick-add__field quick-add__field--event">
+                    <label class="quick-add__label">一句话感受</label>
+                    <input type="text" placeholder="这次旅行最打动我们的是……"/>
+                  </div>
+                </div>
+                <p class="kicker" style="margin:18px 0 10px">🍜 美食打卡（可点击标签追加）</p>
+                <div class="food-chips">
+                  <span class="food-chip">+ 添加</span>
+                </div>
+                <div class="btn-row">
+                  <button class="btn btn--small btn--primary" type="button">💾 保存感受</button>
+                  <button class="btn btn--small btn--ghost" type="button">📷 上传照片</button>
+                </div>
+              ` : `
+                <p class="muted" style="font-size:.9rem;line-height:1.75">
+                  还没去玩哦——先标记为「已游玩」，就能在这里写双评分、一句话感受、
+                  追加美食标签和上传所有照片啦。
+                </p>
+                <p class="faint" style="font-size:.8rem;margin-top:10px;font-style:italic">
+                  标记后，该景点会同步迁移到「已旅游」三种视图里。
+                </p>
+              `}
+            </div>
+          </div>
+        </div>
+      </article>
+    `).join("");
+
+    // 绑定 wish-tab 切换
+    tabsRoot.querySelectorAll(".wish-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        const id = tab.getAttribute("data-wish");
+        tabsRoot.querySelectorAll(".wish-tab").forEach(t => t.classList.toggle("is-active", t === tab));
+        panelsRoot.querySelectorAll(".wish-panel").forEach(pan => {
+          pan.classList.toggle("is-active", pan.getAttribute("data-panel") === id);
+        });
+        // 滚到面板顶部，方便查看
+        panelsRoot.scrollIntoView({behavior:"smooth",block:"start"});
+      });
+    });
+
+    // 绑定「标记为已游玩」按钮
+    panelsRoot.querySelectorAll(".mark-visited-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        alert(`[框架占位] 景点「${id}」标记为已游玩的交互流程：\n\n` +
+              `1) 弹出向导：选择游玩日期区间 + 上传第一张封面\n` +
+              `2) 自动：在 visited 新建条目，wishlist 记录标记 converted=true\n` +
+              `3) 自动滚到「已旅游-相册视图」对应新分组，引导写一句话感受\n` +
+              `4) 右侧卡片自动展开为可编辑的双评分+美食表单`);
+      });
+    });
+
+    // 绑定评分条的实时数字
+    panelsRoot.querySelectorAll('input[type="range"]').forEach(rng => {
+      const valEl = rng.parentElement.querySelector(".val");
+      if (valEl) {
+        valEl.textContent = parseFloat(rng.value).toFixed(1);
+        rng.addEventListener("input", () => { valEl.textContent = parseFloat(rng.value).toFixed(1); });
+      }
+    });
+
+    if (LoveNest.initReveal) LoveNest.initReveal();
+  }
+  renderWishlist(WISHLIST);
+
+  /* ---------- 导航栏注入：把「旅游相册」加入 topnav ----------
+     （实际上 nav.js 的 NAV 数组是源，这里仅在页面渲染后把 active 高亮做对。
+      正式入口需要在 nav.js 的 NAV 数组加一条。
+      这里我们用 MutationObserver + 手动替换方式，临时补入口。） */
+  (function patchNav() {
+    const addNavItem = (navEl, mobile=false) => {
+      if (!navEl) return;
+      if (navEl.querySelector('a[href="travel.html"]')) return; // 防止重复
+      const linkHtml = mobile
+        ? `<a href="travel.html" class="is-active">旅行相册<small>三种回忆方式 + 想去的远方</small></a>`
+        : `<a href="travel.html" class="is-active">旅行相册</a>`;
+      // 在 peace 之后插入
+      const peace = navEl.querySelector('a[href="peace.html"]');
+      if (peace) peace.insertAdjacentHTML("afterend", linkHtml);
+      else navEl.insertAdjacentHTML("beforeend", linkHtml);
+      // 取消其他 active
+      navEl.querySelectorAll("a").forEach(a => {
+        if (a.getAttribute("href") !== "travel.html") a.classList.remove("is-active");
+      });
+    };
+    // 等待 nav.js 注入完
+    const tryTimes = 0;
+    const tryPatch = () => {
+      const topnav = document.querySelector(".topnav");
+      const mobnav = document.querySelector(".mobile-nav");
+      if (topnav || mobnav) {
+        addNavItem(topnav, false);
+        addNavItem(mobnav, true);
+      } else if (tryTimes < 20) {
+        setTimeout(tryPatch, 80);
+      }
+    };
+    setTimeout(tryPatch, 120);
+  })();
+
+});
+</script>
+</body>
+</html>

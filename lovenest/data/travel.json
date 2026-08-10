@@ -1,0 +1,455 @@
+{
+  "_meta": {
+    "title": "旅游相册与规划",
+    "origin": "重庆大竹林",
+    "origin_coords": [29.6145, 106.4799],
+    "last_updated": "2026-08-10"
+  },
+  "visited": {
+    "_stats": {
+      "total_places": 0,
+      "total_photos": 0,
+      "total_days": 0
+    },
+    "places": [
+      {
+        "id": "jinyunshan-202502",
+        "name": "缙云山",
+        "location": "重庆市北碚区",
+        "coords": [29.8411, 106.3866],
+        "province": "重庆",
+        "start_date": "2025-02-01",
+        "end_date": "2025-02-01",
+        "days": 1,
+        "season": "冬",
+        "cover_image": "../lihao.img/2025 年 2 月第一次见面缙云山.jpg",
+        "rating_him": null,
+        "rating_her": null,
+        "review": "",
+        "foods": [],
+        "photos": [
+          {
+            "id": "p1",
+            "url": "../lihao.img/2025 年 2 月第一次见面缙云山.jpg",
+            "caption": "第一次见面",
+            "taken_at": "2025-02-01T14:30:00",
+            "place_within": "缙云山观景台"
+          }
+        ]
+      },
+      {
+        "id": "aba-202505",
+        "name": "阿坝州 · 爱心石雪山",
+        "location": "四川省阿坝藏族羌族自治州",
+        "coords": [31.8994, 102.2216],
+        "province": "四川",
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-03",
+        "days": 3,
+        "season": "春",
+        "cover_image": "../lihao.img/2025 年 5 月_爱心石雪山_8.10分.jpg",
+        "rating_him": 8.1,
+        "rating_her": 8.1,
+        "review": "雪山日出前的爱心石，成为我们相恋的见证。",
+        "foods": ["藏式火锅", "牦牛肉包子"],
+        "photos": [
+          {
+            "id": "p1",
+            "url": "../lihao.img/2025 年 5 月_爱心石雪山_8.10分.jpg",
+            "caption": "爱心石雪山 · 表白地",
+            "taken_at": "2025-05-10T08:10:00",
+            "place_within": "巴郎山垭口"
+          },
+          {
+            "id": "p2",
+            "url": "../lihao.img/2025 年 5 月阿坝州.jpeg",
+            "caption": "阿坝草原",
+            "taken_at": "2025-05-02T11:20:00",
+            "place_within": "若尔盖草原"
+          },
+          {
+            "id": "p3",
+            "url": "../lihao.img/2025 年 5 月 10 号表白成为恋人.jpg",
+            "caption": "表白成功 · 正式相恋",
+            "taken_at": "2025-05-10T09:00:00",
+            "place_within": "雪山观景台"
+          }
+        ]
+      },
+      {
+        "id": "leshan-202507",
+        "name": "乐山大佛",
+        "location": "四川省乐山市",
+        "coords": [29.5447, 103.7703],
+        "province": "四川",
+        "start_date": "2025-07-05",
+        "end_date": "2025-07-06",
+        "days": 2,
+        "season": "夏",
+        "cover_image": "../lihao.img/2025 年 7 月_乐山大佛前_7.60分.jpg",
+        "rating_him": 7.6,
+        "rating_her": 7.6,
+        "review": "大佛脚下的夏日，人很多但心很静。",
+        "foods": ["跷脚牛肉", "甜皮鸭"],
+        "photos": [
+          {
+            "id": "p1",
+            "url": "../lihao.img/2025 年 7 月_乐山大佛前_7.60分.jpg",
+            "caption": "乐山大佛前合影",
+            "taken_at": "2025-07-05T15:30:00",
+            "place_within": "乐山大佛景区"
+          },
+          {
+            "id": "p2",
+            "url": "../lihao.img/2025 年 7 月.jpg",
+            "caption": "乐山街头",
+            "taken_at": "2025-07-05T19:10:00",
+            "place_within": "张公桥美食街"
+          }
+        ]
+      },
+      {
+        "id": "simianshan-202507",
+        "name": "四面山",
+        "location": "重庆市江津区",
+        "coords": [28.6689, 106.3956],
+        "province": "重庆",
+        "start_date": "2025-07-12",
+        "end_date": "2025-07-13",
+        "days": 2,
+        "season": "夏",
+        "cover_image": "../lihao.img/四面山瀑布-女.jpeg",
+        "rating_him": null,
+        "rating_her": null,
+        "review": "",
+        "foods": [],
+        "photos": [
+          {
+            "id": "p1",
+            "url": "../lihao.img/四面山瀑布-女.jpeg",
+            "caption": "望乡台瀑布",
+            "taken_at": "2025-07-12T14:00:00",
+            "place_within": "望乡台景区"
+          },
+          {
+            "id": "p2",
+            "url": "../lihao.img/四面山瀑布-男.jpeg",
+            "caption": "瀑布前",
+            "taken_at": "2025-07-12T14:05:00",
+            "place_within": "望乡台景区"
+          }
+        ]
+      },
+      {
+        "id": "jinfo-202508",
+        "name": "金佛山",
+        "location": "重庆市南川区",
+        "coords": [28.9981, 107.1578],
+        "province": "重庆",
+        "start_date": "2025-08-09",
+        "end_date": "2025-08-10",
+        "days": 2,
+        "season": "夏",
+        "cover_image": "../lihao.img/金佛山-金龟朝阳-女左.jpeg",
+        "rating_him": null,
+        "rating_her": null,
+        "review": "",
+        "foods": ["方竹笋炖鸡"],
+        "photos": [
+          {
+            "id": "p1",
+            "url": "../lihao.img/金佛山-金龟朝阳-女左.jpeg",
+            "caption": "金龟朝阳",
+            "taken_at": "2025-08-09T17:59:00",
+            "place_within": "金龟朝阳景点"
+          },
+          {
+            "id": "p2",
+            "url": "../lihao.img/金佛山-金龟朝阳-男右.jpeg",
+            "caption": "金龟朝阳合照",
+            "taken_at": "2025-08-09T18:00:00",
+            "place_within": "金龟朝阳景点"
+          },
+          {
+            "id": "p3",
+            "url": "../lihao.img/马尿水瀑布-男左.jpeg",
+            "caption": "马尿水瀑布",
+            "taken_at": "2025-08-10T10:44:00",
+            "place_within": "马尿水瀑布"
+          },
+          {
+            "id": "p4",
+            "url": "../lihao.img/马尿水瀑布—女右.jpeg",
+            "caption": "瀑布旁的小路",
+            "taken_at": "2025-08-10T11:00:00",
+            "place_within": "马尿水瀑布"
+          }
+        ]
+      },
+      {
+        "id": "sanxia-202508",
+        "name": "三峡之巅",
+        "location": "重庆市奉节县",
+        "coords": [31.0414, 109.4686],
+        "province": "重庆",
+        "start_date": "2025-08-17",
+        "end_date": "2025-08-18",
+        "days": 2,
+        "season": "夏",
+        "cover_image": "../lihao.img/情侣欢乐_三峡之巅大笑_7.65分.jpg",
+        "rating_him": 7.65,
+        "rating_her": 7.65,
+        "review": "在夔门之上大笑，长江在脚下奔流。",
+        "foods": ["奉节脐橙", "盬子鸡"],
+        "photos": [
+          {
+            "id": "p1",
+            "url": "../lihao.img/情侣欢乐_三峡之巅大笑_7.65分.jpg",
+            "caption": "三峡之巅大笑",
+            "taken_at": "2025-08-17T14:30:00",
+            "place_within": "三峡之巅观景台"
+          },
+          {
+            "id": "p2",
+            "url": "../lihao.img/IMG_20250817_104404.jpg",
+            "caption": "清晨出发",
+            "taken_at": "2025-08-17T10:44:00",
+            "place_within": "白帝城景区"
+          }
+        ]
+      },
+      {
+        "id": "daocheng-202510",
+        "name": "稻城亚丁",
+        "location": "四川省甘孜藏族自治州稻城县",
+        "coords": [28.4246, 100.3181],
+        "province": "四川",
+        "start_date": "2025-10-01",
+        "end_date": "2025-10-05",
+        "days": 5,
+        "season": "秋",
+        "cover_image": "../lihao.img/2025 年 10 月稻城亚丁.jpg",
+        "rating_him": 8.55,
+        "rating_her": 8.55,
+        "review": "雪山日出确认了——这样的风景，就是我们想要的。",
+        "foods": ["青稞饼", "酥油茶", "牦牛肉汤锅"],
+        "photos": [
+          {
+            "id": "p1",
+            "url": "../lihao.img/2025 年 10 月稻城亚丁.jpg",
+            "caption": "稻城亚丁 · 三神山",
+            "taken_at": "2025-10-04T07:00:00",
+            "place_within": "洛绒牛场"
+          },
+          {
+            "id": "p2",
+            "url": "../lihao.img/2025 年 10 月泸沽湖日出.jpg",
+            "caption": "返程路上 · 泸沽湖日出",
+            "taken_at": "2025-10-06T06:30:00",
+            "place_within": "泸沽湖里格半岛"
+          },
+          {
+            "id": "p3",
+            "url": "../lihao.img/情侣浪漫_红叶林依偾自拍_8.55分.jpg",
+            "caption": "沿途红叶林",
+            "taken_at": "2025-10-03T16:00:00",
+            "place_within": "318国道沿途"
+          },
+          {
+            "id": "p4",
+            "url": "../lihao.img/情侣欢乐_红叶林大笑比耶_8.55分.jpg",
+            "caption": "红叶林里的快乐",
+            "taken_at": "2025-10-03T16:20:00",
+            "place_within": "318国道沿途"
+          },
+          {
+            "id": "p5",
+            "url": "../lihao.img/泸沽湖-走婚桥.jpg",
+            "caption": "泸沽湖 · 走婚桥",
+            "taken_at": "2025-10-05T15:00:00",
+            "place_within": "泸沽湖草海走婚桥"
+          }
+        ]
+      }
+    ]
+  },
+  "wishlist": {
+    "_strategy": {
+      "transport_priority": ["EV自驾（高速）", "飞机", "高铁/火车"],
+      "origin": "重庆大竹林",
+      "origin_coords": [29.6145, 106.4799]
+    },
+    "places": [
+      {
+        "id": "wish-liboshi",
+        "name": "荔波小七孔",
+        "location": "贵州省黔南布依族苗族自治州荔波县",
+        "coords": [25.4292, 107.8890],
+        "province": "贵州",
+        "priority": 1,
+        "best_season": "夏末秋初（7-9月）",
+        "suggested_days": 3,
+        "tags": ["山水", "避暑", "自驾友好"],
+        "sources": ["小红书", "携程"],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 480,
+            "drive_hours": 6.5,
+            "charging_notes": "G75兰海高速沿途服务区充电桩充足，建议遵义/都匀各补能一次",
+            "route": "重庆大竹林 → G75兰海高速 → 遵义 → 都匀 → 荔波"
+          },
+          "flight": {
+            "nearest_airport": "贵阳龙洞堡机场",
+            "flight_duration": "1h 10m",
+            "airport_to_destination": "贵阳机场 → 荔波：高铁约1.5h + 大巴约1h"
+          },
+          "train": {
+            "nearest_station": "都匀东站 / 荔波站",
+            "duration": "重庆西 → 都匀东：约3.5h，再转大巴约1.5h",
+            "notes": "贵南高铁通了之后可直达荔波站"
+          }
+        },
+        "guides": [],
+        "notes": "",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
+        "id": "wish-jiuzhaigou",
+        "name": "九寨沟",
+        "location": "四川省阿坝藏族羌族自治州九寨沟县",
+        "coords": [33.0612, 103.9192],
+        "province": "四川",
+        "priority": 1,
+        "best_season": "秋季（10月中-11月初，彩林）/ 冬季（12-2月，蓝冰）",
+        "suggested_days": 4,
+        "tags": ["世界遗产", "水景极致", "季节性强"],
+        "sources": ["小红书", "去哪儿"],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 620,
+            "drive_hours": 9,
+            "charging_notes": "G5京昆高速 + G85银昆高速，成都/绵阳充电方便，进入阿坝前在文县充满",
+            "route": "重庆大竹林 → G93成渝环线 → 成都 → G5 → 绵阳 → 江油 → 平武 → 九寨沟"
+          },
+          "flight": {
+            "nearest_airport": "九寨黄龙机场（JZH）",
+            "flight_duration": "1h 20m",
+            "airport_to_destination": "机场 → 九寨沟景区：约1.5h车程，可提前预约包车"
+          },
+          "train": {
+            "nearest_station": "广元站",
+            "duration": "重庆西 → 广元：约3h，再转大巴约5h",
+            "notes": "成兰铁路在建中，通了后可直达川主寺站"
+          }
+        },
+        "guides": [],
+        "notes": "彩林季住宿紧张，需提前1-2个月预定",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
+        "id": "wish-zhangjiajie",
+        "name": "张家界",
+        "location": "湖南省张家界市",
+        "coords": [29.1172, 110.4793],
+        "province": "湖南",
+        "priority": 2,
+        "best_season": "春（4-5月，杜鹃花开）/ 秋（9-11月，天高云淡）",
+        "suggested_days": 4,
+        "tags": ["山岳奇观", "阿凡达取景", "玻璃栈道"],
+        "sources": ["抖音", "美团", "携程"],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 580,
+            "drive_hours": 7.5,
+            "charging_notes": "G65包茂高速 → G5513长张高速，服务区间隔合理，建议花垣/常德补能",
+            "route": "重庆大竹林 → G65 → 黔江 → 花垣 → G5513 → 张家界"
+          },
+          "flight": {
+            "nearest_airport": "张家界荷花机场（DYG）",
+            "flight_duration": "1h 15m",
+            "airport_to_destination": "机场 → 武陵源景区：约40min车程"
+          },
+          "train": {
+            "nearest_station": "张家界西站",
+            "duration": "重庆西 → 张家界西：约4.5h（渝怀高铁）",
+            "notes": "出站后可坐景区直通车或打车约1h到武陵源"
+          }
+        },
+        "guides": [],
+        "notes": "天门山玻璃栈道建议单独留一天，武陵源景区建议2-3天",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
+        "id": "wish-xishuangbanna",
+        "name": "西双版纳",
+        "location": "云南省西双版纳傣族自治州",
+        "coords": [22.0028, 100.7974],
+        "province": "云南",
+        "priority": 2,
+        "best_season": "冬春（11-次年4月，旱季，避寒），4月中旬泼水节",
+        "suggested_days": 5,
+        "tags": ["热带风情", "避寒", "异域美食"],
+        "sources": ["小红书", "高德", "去哪儿"],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 1320,
+            "drive_hours": 18,
+            "charging_notes": "距离太远，电车自驾不推荐，需分段2天以上，昆明到西双版纳高速充电桩正在完善中",
+            "route": "重庆 → 贵阳 → 昆明 → 玉溪 → 普洱 → 西双版纳"
+          },
+          "flight": {
+            "nearest_airport": "西双版纳嘎洒机场（JHG）",
+            "flight_duration": "2h 20m",
+            "airport_to_destination": "机场 → 告庄西双景：约20min车程"
+          },
+          "train": {
+            "nearest_station": "西双版纳站",
+            "duration": "重庆西 → 昆明南：约4.5h，中转 → 西双版纳：约3h，总计约8.5h",
+            "notes": "中老铁路已通，可一路坐到万象，时间充裕可选"
+          }
+        },
+        "guides": [],
+        "notes": "首选飞机，自驾太远太累；泼水节住宿需提前3个月订",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
+        "id": "wish-huangshan",
+        "name": "黄山 · 宏村",
+        "location": "安徽省黄山市",
+        "coords": [30.1344, 118.1688],
+        "province": "安徽",
+        "priority": 3,
+        "best_season": "春（4-5月，杜鹃+云海）/ 秋（10-11月，彩叶）/ 冬（12-2月，雾凇雪景）",
+        "suggested_days": 4,
+        "tags": ["五岳归来不看山", "徽州古村落", "云海日出"],
+        "sources": ["小红书", "携程"],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 1180,
+            "drive_hours": 15,
+            "charging_notes": "距离较远，建议分两天，武汉/南昌补能，黄山脚下汤口镇有快充",
+            "route": "重庆 → 利川 → 武汉 → 安庆 → 黄山"
+          },
+          "flight": {
+            "nearest_airport": "黄山屯溪国际机场（TXN）",
+            "flight_duration": "2h",
+            "airport_to_destination": "机场 → 汤口镇（黄山南入口）：约1h车程"
+          },
+          "train": {
+            "nearest_station": "黄山北站",
+            "duration": "重庆西 → 黄山北：约7h（需在合肥或上饶中转）",
+            "notes": "黄山北 → 汤口镇：大巴约50min"
+          }
+        },
+        "guides": [],
+        "notes": "黄山建议住山顶一晚看日出日落，宏村西递各半天足够",
+        "converted_to_visited": false,
+        "visited_ref": null
+      }
+    ]
+  }
+}
