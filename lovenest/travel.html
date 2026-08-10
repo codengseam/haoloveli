@@ -358,7 +358,542 @@
   .upload-zone .ico{font-size:2rem;margin-bottom:10px;color:var(--sage)}
   .upload-zone p{color:var(--muted);font-size:.9rem}
 
-  /* ===== Responsive ===== */
+  /* ================================================================
+     1. AI攻略生成进度条和终端步骤样式
+     ================================================================ */
+  .ai-progress-wrap{
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    padding:18px 20px;margin-bottom:16px;
+  }
+  .ai-progress-wrap .progress-label{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
+    font-size:.88rem;
+  }
+  .ai-progress-wrap .progress-label .txt{color:var(--ink);font-weight:500;font-family:var(--ff-display)}
+  .ai-progress-wrap .progress-label .pct{color:var(--sage-deep);font-family:var(--ff-display);font-weight:600;font-size:1rem}
+  .ai-progress-wrap .progress{height:10px;background:var(--bg-deep);border-radius:var(--r-pill);overflow:hidden;position:relative}
+  .ai-progress-wrap .progress>span{
+    display:block;height:100%;border-radius:var(--r-pill);
+    background:linear-gradient(90deg,var(--sage),var(--sage-deep));
+    transition:width .8s var(--ease);position:relative;overflow:hidden;
+  }
+  .ai-progress-wrap .progress>span::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+    animation:shimmer 1.8s infinite linear;
+  }
+  @keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+  .ai-steps-terminal{
+    background:var(--bg-deep);color:var(--ink);border-radius:var(--r-md);
+    padding:14px 18px;font-family:"JetBrains Mono","SF Mono",Consolas,monospace;font-size:.84rem;
+    line-height:1.85;border:1px solid var(--line-soft);position:relative;overflow:hidden;
+  }
+  .ai-steps-terminal::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:26px;
+    background:linear-gradient(180deg,rgba(176,162,143,.18),transparent);
+    pointer-events:none;
+  }
+  .ai-step{
+    display:flex;align-items:flex-start;gap:10px;padding:8px 0;
+    border-bottom:1px dashed var(--line-soft);position:relative;
+  }
+  .ai-step:last-child{border-bottom:none}
+  .ai-step__num{
+    width:22px;height:22px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
+    background:var(--taupe-soft);color:var(--white);font-size:.72rem;font-weight:600;margin-top:2px;
+  }
+  .ai-step.is-done .ai-step__num{background:var(--sage);color:var(--white)}
+  .ai-step.is-active .ai-step__num{background:var(--sage);color:var(--white);box-shadow:0 0 0 3px var(--sage-tint)}
+  .ai-step__status{
+    flex-shrink:0;width:18px;text-align:center;margin-top:3px;font-size:.9rem;
+  }
+  .ai-step.is-done .ai-step__status{color:var(--sage-deep)}
+  .ai-step.is-active .ai-step__status{color:var(--sage-deep)}
+  .ai-step.is-pending .ai-step__status{color:var(--faint)}
+  .ai-step__desc{flex:1;min-width:0;color:var(--text);font-size:.82rem;line-height:1.7}
+  .ai-step.is-done .ai-step__desc{color:var(--muted)}
+  .ai-step.is-pending .ai-step__desc{color:var(--faint)}
+  .ai-step.is-active .ai-step__desc::after{
+    content:"▋";color:var(--sage);margin-left:4px;
+    animation:blink 1s steps(2) infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  .ai-badge-big{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:14px 22px;border-radius:var(--r-lg);
+    background:linear-gradient(135deg,var(--sage-tint),var(--rose-tint));
+    border:1px solid var(--sage-soft);box-shadow:var(--shadow);
+    font-family:var(--ff-display);font-size:1.05rem;font-weight:500;color:var(--ink);
+    position:relative;overflow:hidden;
+  }
+  .ai-badge-big::before{
+    content:"";position:absolute;top:-50%;right:-20%;width:120px;height:120px;
+    background:radial-gradient(circle,rgba(184,92,107,.12),transparent 70%);
+  }
+  .ai-badge-big .ico{
+    width:36px;height:36px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));
+    color:var(--white);display:grid;place-items:center;font-size:1rem;
+    box-shadow:0 2px 8px rgba(126,144,116,.3);
+  }
+  .ai-badge-big .body{display:flex;flex-direction:column;gap:2px}
+  .ai-badge-big .body .main{font-size:1rem;color:var(--ink);font-weight:500}
+  .ai-badge-big .body .reason{font-size:.76rem;color:var(--muted);font-family:var(--ff-body);font-weight:400;font-style:italic}
+
+  /* ================================================================
+     2. 攻略来源chips的展开摘要
+     ================================================================ */
+  .chip-row{
+    display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;
+  }
+  .chip-row .source-chip{
+    cursor:pointer;transition:all .25s var(--ease);
+  }
+  .chip-row .source-chip:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+  .chip-row .source-chip.is-open{
+    box-shadow:0 0 0 2px var(--sage-soft);
+  }
+
+  .source-summary{
+    background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    padding:16px 18px;margin-top:12px;
+    animation:fadeUp .35s var(--ease);
+  }
+  .source-summary__head{
+    display:flex;align-items:center;gap:10px;margin-bottom:12px;
+    padding-bottom:10px;border-bottom:1px dashed var(--line-soft);
+  }
+  .source-summary__head .src-name{
+    font-family:var(--ff-display);font-weight:500;font-size:.98rem;color:var(--ink);
+  }
+  .source-summary__head .src-count{
+    font-size:.76rem;color:var(--faint);font-family:var(--ff-accent);font-style:italic;
+  }
+  .consensus-list{
+    margin:0 0 14px 0;padding:0;list-style:none;
+  }
+  .consensus-list li{
+    padding:8px 12px 8px 30px;position:relative;font-size:.88rem;color:var(--text);line-height:1.65;
+    background:var(--sage-tint);border-radius:var(--r-sm);margin-bottom:6px;
+    border:1px solid var(--sage-soft);
+  }
+  .consensus-list li::before{
+    content:"✓";position:absolute;left:10px;top:8px;width:16px;height:16px;border-radius:50%;
+    background:var(--sage);color:var(--white);font-size:.68rem;display:grid;place-items:center;font-weight:700;
+  }
+  .consensus-list li b{color:var(--sage-deep);font-weight:600}
+
+  .dispute-item{
+    padding:10px 14px;background:var(--rose-tint);border:1px solid var(--rose-soft);
+    border-radius:var(--r-sm);margin-bottom:8px;
+  }
+  .dispute-item__q{
+    font-size:.86rem;color:var(--rose-deep);font-weight:600;margin-bottom:6px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .dispute-item__q::before{content:"⚠";font-size:.9rem}
+  .dispute-item__opts{
+    display:grid;gap:6px;
+  }
+  .dispute-item__opt{
+    padding:6px 10px;background:var(--white);border:1px dashed var(--rose-soft);
+    border-radius:var(--r-xs);font-size:.8rem;color:var(--text);
+    display:flex;align-items:center;gap:8px;
+  }
+  .dispute-item__opt .src-tag{
+    font-size:.68rem;padding:1px 6px;border-radius:var(--r-pill);
+    background:var(--bg-deep);color:var(--muted);flex-shrink:0;
+  }
+  .dispute-item__opt.is-major{
+    border-style:solid;border-color:var(--sage-soft);background:var(--sage-tint);
+  }
+  .dispute-item__opt.is-major .src-tag{background:var(--sage);color:var(--white)}
+
+  /* ================================================================
+     3. 向导式modal（4步）
+     ================================================================ */
+  .wizard-wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 30px 14px;background:var(--bg-deep);
+    border-bottom:1px solid var(--line-soft);position:relative;
+  }
+  .wizard-wrap::before{
+    content:"";position:absolute;left:60px;right:60px;top:38px;height:2px;
+    background:var(--line-soft);z-index:0;
+  }
+  .wizard-step{
+    display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1;flex:1;
+  }
+  .wizard-step__circle{
+    width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+    background:var(--bg-card);border:2px solid var(--line);color:var(--muted);
+    font-family:var(--ff-display);font-weight:600;font-size:.88rem;
+    transition:all .3s var(--ease);
+  }
+  .wizard-step.is-done .wizard-step__circle{
+    background:var(--sage);border-color:var(--sage);color:var(--white);
+  }
+  .wizard-step.is-active .wizard-step__circle{
+    background:var(--white);border-color:var(--rose);color:var(--rose-deep);
+    box-shadow:0 0 0 4px var(--rose-tint);
+  }
+  .wizard-step__label{
+    font-size:.74rem;color:var(--faint);white-space:nowrap;font-family:var(--ff-accent);font-style:italic;
+  }
+  .wizard-step.is-done .wizard-step__label{color:var(--sage-deep)}
+  .wizard-step.is-active .wizard-step__label{color:var(--ink);font-weight:500}
+
+  .wizard-body{
+    padding:24px 28px;flex:1;overflow:auto;
+  }
+  .wizard-body h3{
+    font-family:var(--ff-display);font-size:1.18rem;color:var(--ink);font-weight:500;margin-bottom:6px;
+  }
+  .wizard-body .hint{
+    font-size:.84rem;color:var(--muted);margin-bottom:22px;font-family:var(--ff-accent);font-style:italic;
+  }
+  .wizard-body .form-row{
+    display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;margin-bottom:16px;
+  }
+  .wizard-body .form-row label{
+    font-size:.88rem;color:var(--ink);font-weight:500;
+  }
+  .wizard-body .form-row label .req{color:var(--rose-deep);margin-left:2px}
+  .wizard-body input[type="date"],
+  .wizard-body input[type="text"],
+  .wizard-body input[type="number"],
+  .wizard-body textarea,
+  .wizard-body select{
+    width:100%;padding:10px 14px;border-radius:var(--r-sm);border:1px solid var(--line);
+    background:var(--white);font-family:inherit;font-size:.94rem;color:var(--text);
+    transition:border-color .25s var(--ease),box-shadow .25s var(--ease);min-height:42px;
+  }
+  .wizard-body textarea{min-height:90px;resize:vertical}
+  .wizard-body input:focus,.wizard-body textarea:focus,.wizard-body select:focus{
+    outline:none;border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint);
+  }
+  .wizard-body .dual-date{
+    display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;
+  }
+  .wizard-body .dual-date .sep{color:var(--faint);font-size:.9rem}
+
+  .wizard-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 28px;border-top:1px solid var(--line-soft);background:var(--bg-card);
+  }
+  .wizard-foot .step-info{
+    font-size:.8rem;color:var(--muted);font-family:var(--ff-accent);font-style:italic;
+  }
+  .wizard-foot .btns{display:flex;gap:10px}
+
+  .photo-upload-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:10px;
+  }
+  .photo-thumb{
+    position:relative;border-radius:var(--r-sm);overflow:hidden;
+    border:1px solid var(--line-soft);aspect-ratio:1/1;background:var(--bg-deep);
+    transition:border-color .25s var(--ease);
+  }
+  .photo-thumb:hover{border-color:var(--sage-soft)}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover}
+  .photo-thumb__meta{
+    position:absolute;left:0;right:0;bottom:0;padding:8px 10px;
+    background:linear-gradient(180deg,transparent,rgba(58,54,49,.78));
+    color:var(--white);
+  }
+  .photo-thumb__meta .time{font-size:.68rem;font-family:var(--ff-accent);font-style:italic;opacity:.9}
+  .photo-thumb__meta .subplace{
+    font-size:.72rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    margin-top:2px;background:rgba(255,255,255,.15);border-radius:4px;padding:2px 6px;
+  }
+  .photo-thumb__edit{
+    position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;
+    background:rgba(255,255,255,.92);color:var(--ink);display:grid;place-items:center;
+    font-size:.8rem;cursor:pointer;border:none;box-shadow:var(--shadow-sm);
+    transition:all .2s var(--ease);
+  }
+  .photo-thumb__edit:hover{background:var(--sage);color:var(--white)}
+
+  .chip-input{
+    display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:42px;
+    padding:6px 10px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--white);
+    transition:border-color .25s var(--ease),box-shadow .25s var(--ease);cursor:text;
+  }
+  .chip-input:focus-within{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint)}
+  .chip-input .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 10px;border-radius:var(--r-pill);
+    background:var(--sage-tint);color:var(--sage-deep);font-size:.8rem;
+    border:1px solid var(--sage-soft);
+  }
+  .chip-input .chip .x{
+    width:14px;height:14px;border-radius:50%;cursor:pointer;
+    display:grid;place-items:center;font-size:.62rem;color:var(--sage-deep);
+    background:rgba(255,255,255,.5);transition:all .2s var(--ease);
+  }
+  .chip-input .chip .x:hover{background:var(--rose);color:var(--white)}
+  .chip-input input{
+    flex:1;min-width:100px;border:none;outline:none;background:transparent;
+    padding:4px 6px;font-family:inherit;font-size:.9rem;color:var(--text);
+  }
+  .chip-input input::placeholder{color:var(--faint)}
+  .chip-presets{
+    margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;
+  }
+  .chip-presets .preset{
+    padding:4px 10px;border-radius:var(--r-pill);cursor:pointer;
+    font-size:.78rem;background:var(--bg-deep);color:var(--muted);
+    border:1px dashed var(--line-soft);transition:all .2s var(--ease);
+  }
+  .chip-presets .preset:hover{
+    background:var(--sage-tint);color:var(--sage-deep);border-color:var(--sage-soft);border-style:solid;
+  }
+
+  .rating-row{display:flex;align-items:center;gap:14px;padding:10px 0}
+  .rating-row label{font-size:.88rem;color:var(--muted);min-width:70px}
+  .rating-row .stars{font-size:1.1rem;letter-spacing:2px;color:var(--taupe)}
+  .rating-row input[type=range]{flex:1;accent-color:var(--sage)}
+  .rating-row .val{font-family:var(--ff-display);font-weight:600;color:var(--ink);min-width:42px;text-align:right}
+
+  .wizard-summary{
+    background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:18px 20px;
+  }
+  .wizard-summary dl{
+    display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:.92rem;margin:0;
+  }
+  .wizard-summary dt{color:var(--faint);font-family:var(--ff-accent);font-style:italic;font-size:.82rem}
+  .wizard-summary dd{color:var(--text);margin:0;font-weight:500}
+
+  /* ================================================================
+     4. 交通对比增强
+     ================================================================ */
+  .trans-ai-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 14px;border-radius:var(--r-pill);margin-bottom:14px;
+    background:linear-gradient(135deg,var(--sage-tint),var(--terracotta-tint));
+    border:1px solid var(--sage-soft);
+    font-size:.8rem;font-weight:500;color:var(--sage-deep);
+  }
+  .trans-ai-badge .ico{
+    width:20px;height:20px;border-radius:50%;
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));
+    color:var(--white);display:grid;place-items:center;font-size:.65rem;
+  }
+
+  .trans-warn{
+    padding:12px 16px;border-radius:var(--r-sm);
+    border:1px solid var(--rose-soft);background:var(--rose-tint);
+    margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;
+  }
+  .trans-warn .ico{
+    font-size:1.1rem;color:var(--rose-deep);flex-shrink:0;margin-top:1px;
+  }
+  .trans-warn .body{flex:1;min-width:0}
+  .trans-warn .body .title{font-size:.88rem;color:var(--rose-deep);font-weight:600;margin-bottom:2px}
+  .trans-warn .body .desc{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+  .ev-compare{
+    display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;
+  }
+  .ev-route{
+    padding:14px 16px;border-radius:var(--r-md);border:1px solid var(--line-soft);
+    background:var(--bg-card);transition:all .3s var(--ease);position:relative;
+  }
+  .ev-route.is-recommended{
+    border-color:var(--sage-soft);background:var(--sage-tint);
+  }
+  .ev-route.is-recommended::before{
+    content:"AI 推荐";position:absolute;top:-10px;right:12px;
+    padding:2px 10px;border-radius:var(--r-pill);font-size:.68rem;font-weight:600;
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));color:var(--white);
+    box-shadow:0 2px 6px rgba(126,144,116,.3);
+  }
+  .ev-route.is-shortest{
+    border-color:var(--terracotta-soft);background:var(--terracotta-tint);
+  }
+  .ev-route.is-shortest::before{
+    content:"最短距离";position:absolute;top:-10px;right:12px;
+    padding:2px 10px;border-radius:var(--r-pill);font-size:.68rem;font-weight:600;
+    background:linear-gradient(135deg,var(--terracotta),var(--terracotta-deep));color:var(--white);
+  }
+  .ev-route__name{
+    font-family:var(--ff-display);font-size:.96rem;color:var(--ink);font-weight:500;margin-bottom:6px;
+  }
+  .ev-route__stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;
+  }
+  .ev-route__stat{text-align:center}
+  .ev-route__stat .num{
+    font-family:var(--ff-display);font-weight:600;font-size:1rem;color:var(--ink);
+  }
+  .ev-route__stat .lbl{font-size:.68rem;color:var(--faint);margin-top:1px}
+  .ev-route__note{margin-top:8px;font-size:.78rem;color:var(--muted);line-height:1.55;padding-top:8px;border-top:1px dashed var(--line-soft)}
+
+  .charger-list{
+    margin-top:10px;display:flex;flex-direction:column;gap:8px;
+  }
+  .charger-item{
+    display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
+    padding:10px 14px;border-radius:var(--r-sm);background:var(--bg-soft);
+    border:1px solid var(--line-soft);transition:all .25s var(--ease);
+  }
+  .charger-item:hover{border-color:var(--sage-soft);background:var(--bg-card)}
+  .charger-item.is-recommended{
+    border-color:var(--sage-soft);background:var(--sage-tint);
+  }
+  .charger-item__dist{
+    width:54px;text-align:center;padding:4px 0;border-radius:var(--r-xs);
+    background:var(--bg-deep);font-family:var(--ff-display);font-weight:600;font-size:.82rem;color:var(--ink);
+  }
+  .charger-item.is-recommended .charger-item__dist{background:var(--sage);color:var(--white)}
+  .charger-item__info{min-width:0}
+  .charger-item__name{font-size:.88rem;color:var(--ink);font-weight:500}
+  .charger-item__meta{font-size:.74rem;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .charger-item__meta .count{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:1px 6px;border-radius:var(--r-pill);font-size:.7rem;
+    background:var(--bg-deep);color:var(--muted);
+  }
+  .charger-item__meta .count.fast{background:var(--terracotta-tint);color:var(--terracotta-deep)}
+  .charger-item__tag{
+    font-size:.7rem;padding:3px 8px;border-radius:var(--r-pill);flex-shrink:0;
+    background:var(--sage-tint);color:var(--sage-deep);font-weight:500;
+    border:1px solid var(--sage-soft);
+  }
+
+  .season-tabs{
+    display:inline-flex;gap:4px;padding:4px;background:var(--bg-deep);border-radius:var(--r-pill);
+    border:1px solid var(--line-soft);
+  }
+  .season-tabs button{
+    padding:5px 12px;border:none;background:transparent;border-radius:var(--r-pill);
+    font-size:.76rem;color:var(--muted);font-family:inherit;transition:all .25s var(--ease);
+  }
+  .season-tabs button:hover{color:var(--ink)}
+  .season-tabs button.is-active{
+    background:var(--sage);color:var(--white);font-weight:500;box-shadow:var(--shadow-sm);
+  }
+
+  .edit-controls{
+    position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:5;
+  }
+  .edit-controls .btn-del,
+  .edit-controls .btn-drag{
+    width:28px;height:28px;border-radius:var(--r-xs);display:grid;place-items:center;
+    border:1px solid var(--line-soft);background:var(--bg-card);cursor:pointer;
+    font-size:.85rem;color:var(--muted);transition:all .2s var(--ease);
+  }
+  .edit-controls .btn-del:hover{
+    background:var(--rose-tint);border-color:var(--rose-soft);color:var(--rose-deep);
+  }
+  .edit-controls .btn-drag{cursor:grab}
+  .edit-controls .btn-drag:hover{
+    background:var(--sage-tint);border-color:var(--sage-soft);color:var(--sage-deep);
+  }
+  .edit-controls .btn-drag:active{cursor:grabbing}
+
+  /* ================================================================
+     5. 新增景点modal表单样式
+     ================================================================ */
+  .form-row{
+    display:grid;grid-template-columns:100px 1fr;gap:12px;align-items:flex-start;
+    margin-bottom:16px;
+  }
+  .form-row label{
+    padding-top:10px;font-size:.9rem;color:var(--ink);font-weight:500;line-height:1.4;
+  }
+  .form-row label .req{color:var(--rose-deep);margin-left:2px}
+  .form-row label .tip{
+    display:block;font-size:.72rem;color:var(--faint);font-weight:400;
+    font-family:var(--ff-accent);font-style:italic;margin-top:2px;
+  }
+  .form-row > .ctrl{min-width:0;position:relative}
+  .form-row input[type="text"],
+  .form-row input[type="number"],
+  .form-row input[type="date"],
+  .form-row input[type="url"],
+  .form-row textarea,
+  .form-row select{
+    width:100%;padding:10px 14px;border-radius:var(--r-sm);border:1px solid var(--line);
+    background:var(--white);font-family:inherit;font-size:.94rem;color:var(--text);
+    transition:border-color .25s var(--ease),box-shadow .25s var(--ease);min-height:42px;
+  }
+  .form-row textarea{min-height:84px;resize:vertical;line-height:1.65;padding-top:10px}
+  .form-row input::placeholder,.form-row textarea::placeholder{color:var(--faint)}
+  .form-row input:focus,.form-row textarea:focus,.form-row select:focus{
+    outline:none;border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint);
+  }
+  .form-row--full{grid-template-columns:1fr}
+  .form-row--full label{padding-top:0}
+  .form-row--dual{grid-template-columns:100px 1fr 1fr;gap:12px}
+
+  .autocomplete-list{
+    position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-sm);
+    box-shadow:var(--shadow-lg);overflow:hidden;max-height:240px;overflow-y:auto;
+    animation:fadeUp .2s var(--ease);
+  }
+  .autocomplete-list__item{
+    padding:10px 14px;cursor:pointer;transition:background .2s var(--ease);
+    border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px;
+  }
+  .autocomplete-list__item:last-child{border-bottom:none}
+  .autocomplete-list__item:hover,
+  .autocomplete-list__item.is-active{background:var(--sage-tint)}
+  .autocomplete-list__item .ico{
+    width:28px;height:28px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;
+    background:var(--bg-deep);color:var(--muted);font-size:.8rem;
+  }
+  .autocomplete-list__item .body{flex:1;min-width:0}
+  .autocomplete-list__item .body .name{font-size:.9rem;color:var(--ink);font-weight:500}
+  .autocomplete-list__item .body .sub{font-size:.74rem;color:var(--muted);margin-top:1px}
+  .autocomplete-list__empty{
+    padding:18px;text-align:center;font-size:.86rem;color:var(--faint);
+    font-family:var(--ff-accent);font-style:italic;
+  }
+
+  /* ===== Responsive for new components ===== */
+  @media(max-width:768px){
+    .wizard-wrap{padding:14px 16px 10px;flex-wrap:wrap}
+    .wizard-wrap::before{left:30px;right:30px;top:30px}
+    .wizard-step__circle{width:26px;height:26px;font-size:.8rem}
+    .wizard-body{padding:18px 16px}
+    .wizard-body .form-row{grid-template-columns:1fr;gap:6px}
+    .wizard-body .form-row label{padding-top:0}
+    .wizard-foot{padding:14px 16px;flex-direction:column;align-items:stretch}
+    .wizard-foot .step-info{text-align:center}
+    .wizard-foot .btns{justify-content:space-between}
+    .wizard-foot .btns .btn{flex:1}
+    .photo-upload-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+    .wizard-summary dl{grid-template-columns:auto 1fr}
+    .ev-compare{grid-template-columns:1fr}
+    .ev-route__stats{grid-template-columns:repeat(3,1fr)}
+    .charger-item{grid-template-columns:auto 1fr;gap:8px}
+    .charger-item__tag{grid-column:1/-1;justify-self:start;margin-top:2px}
+    .chip-row{gap:6px}
+    .source-summary{padding:12px 14px}
+    .form-row{grid-template-columns:1fr;gap:6px}
+    .form-row label{padding-top:0}
+    .form-row--dual{grid-template-columns:1fr}
+    .ai-badge-big{padding:10px 16px;font-size:.95rem;width:100%}
+    .ai-badge-big .body .main{font-size:.92rem}
+    .ai-steps-terminal{padding:10px 12px;font-size:.78rem}
+    .season-tabs{overflow-x:auto;padding:3px}
+    .season-tabs button{padding:5px 10px;white-space:nowrap}
+  }
+  @media(max-width:420px){
+    .wizard-wrap{padding:12px 10px 8px;gap:4px}
+    .wizard-step__label{font-size:.66rem}
+    .wizard-step__circle{width:24px;height:24px}
+    .photo-upload-grid{grid-template-columns:repeat(2,1fr)}
+    .ev-route__stats{grid-template-columns:repeat(3,1fr);gap:4px}
+    .charger-item__dist{width:46px;font-size:.76rem}
+    .ai-steps-terminal{font-size:.74rem;padding:8px 10px}
+    .form-row input,.form-row textarea,.form-row select{font-size:.9rem;padding:9px 12px}
+  }
+  /* ===== Original Responsive ===== */
   @media(max-width:768px){
     .modtabs button{padding:8px 14px;font-size:.88rem}
     .viewtabs button{padding:6px 12px;font-size:.82rem}
@@ -532,7 +1067,491 @@ document.addEventListener("DOMContentLoaded", async function () {
   /* ---------- 加载数据 ---------- */
   const DATA = await LoveNest.getJSON("data/travel.json", FALLBACK);
   const VISITED = (DATA.visited && DATA.visited.places) || [];
-  const WISHLIST = (DATA.wishlist && DATA.wishlist.places) || [];
+  let WISHLIST = (DATA.wishlist && DATA.wishlist.places) || [];
+
+  /* ==============================================================
+     工具函数：Wishlist 数据持久化 + AI 推荐徽章 + 攻略渲染
+     ============================================================== */
+  const WISHLIST_STORAGE_KEY = "lovenest:travel-wishlist-draft";
+  let currentSeason = "all";
+  let wishEditMode = false;
+  let longPressTimer = null;
+  let draggedTabId = null;
+
+  function saveWishlistData() {
+    try {
+      DATA.wishlist.places = WISHLIST;
+      localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(WISHLIST));
+      if (typeof saveDataToLocalStorage === "function") saveDataToLocalStorage();
+    } catch (e) { console.warn("saveWishlistData failed", e); }
+  }
+
+  function loadWishlistData() {
+    try {
+      const raw = localStorage.getItem(WISHLIST_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) {
+          WISHLIST = parsed;
+          DATA.wishlist.places = WISHLIST;
+          return true;
+        }
+      }
+    } catch (e) { console.warn("loadWishlistData failed", e); }
+    return false;
+  }
+
+  function getAIRecTag(transport) {
+    const ev = transport && transport.ev_drive ? Number(transport.ev_drive.distance_km) || 0 : 0;
+    const train = transport && transport.train ? Number(transport.train.distance_km) || 0 : 0;
+    const flight = transport && transport.flight ? Number(transport.flight.distance_km) || 0 : 0;
+    const dist = ev || train || flight;
+    let mode = "🚗 自驾", reason = "距离合适，沿途风景好", ico = "🔋", cls = "";
+    if (dist <= 650) { mode = "🚗 电车自驾"; reason = "≤650km 电车经济舒适，沿途可玩"; ico = "🔋"; cls = ""; }
+    else if (dist <= 1200) { mode = "🚄 高铁优先"; reason = "650-1200km 高铁性价比最高"; ico = "🚄"; cls = "p2"; }
+    else { mode = "✈️ 飞机直达"; reason = ">1200km 飞机节省时间"; ico = "✈️"; cls = "p3"; }
+    return `<div class="trans-ai-badge ${cls}"><span class="ico">${ico}</span><b>AI 推荐：${mode}</b><span class="faint" style="margin-left:8px;font-style:italic;font-size:.72rem">${reason}</span></div>`;
+  }
+
+  function renderGuideAccordion(guides) {
+    if (!guides) return `<div class="card card--inset center"><p class="faint italic">攻略内容为空</p></div>`;
+    const itinerary = guides.itinerary || [];
+    const pitfalls = guides.pitfalls || [];
+    const foods = guides.foods || [];
+    const budget = guides.budget || {};
+    const photos = guides.photos || [];
+
+    const itHtml = itinerary.length ? itinerary.map((d, idx) => `
+      <details ${idx===0?'open':''} style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:8px;overflow:hidden">
+        <summary style="padding:12px 16px;background:var(--bg-soft);cursor:pointer;font-family:var(--ff-display);font-weight:500;display:flex;align-items:center;gap:10px">
+          <span class="tag tag--sage">📅 Day ${d.day||idx+1}</span>
+          <span>${esc(d.title||'当日行程')}</span>
+          <span class="faint" style="margin-left:auto;font-size:.78rem;font-style:italic">${d.weather||''}</span>
+        </summary>
+        <div style="padding:14px 18px">
+          ${(d.items||[]).map(it => `
+            <div style="display:grid;grid-template-columns:80px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line-soft)">
+              <div class="faint" style="font-size:.82rem">${esc(it.time||'--:--')}</div>
+              <div>
+                <b>${esc(it.name||'景点')}</b>
+                ${it.ticket?`<span class="faint" style="margin-left:8px;font-size:.78rem">🎫 ${esc(it.ticket)}</span>`:''}
+                ${it.duration?`<span class="faint" style="margin-left:8px;font-size:.78rem">⏱ ${esc(it.duration)}</span>`:''}
+                <div class="muted" style="font-size:.82rem;margin-top:2px;line-height:1.6">${esc(it.desc||'')}</div>
+              </div>
+            </div>
+          `).join('')}
+          ${d.dinner?`<div class="muted" style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line-soft);font-size:.86rem">🍽 晚餐推荐：${esc(d.dinner)}</div>`:''}
+        </div>
+      </details>
+    `).join('') : `<p class="faint italic">暂无行程安排</p>`;
+
+    const pitHtml = pitfalls.length ? `
+      <div class="wish-card wish-card--rose" style="margin-top:14px;padding:16px 18px">
+        <h4 style="margin-bottom:10px">⚠️ 避坑指南（${pitfalls.length} 条）</h4>
+        <ul class="consensus-list" style="margin:0">
+          ${pitfalls.map(p => `<li style="background:var(--rose-tint);border-color:var(--rose-soft)">${p.replace(/::before/g,'')}</li>`).join('')}
+        </ul>
+      </div>
+    ` : '';
+
+    const foodHtml = foods.length ? `
+      <div class="wish-card wish-card--terracotta" style="margin-top:14px;padding:16px 18px">
+        <h4 style="margin-bottom:10px">🍜 必吃美食 Top ${foods.length}</h4>
+        ${foods.map((f,idx) => `
+          <div style="padding:10px 0;border-bottom:1px dashed var(--line-soft);display:flex;align-items:flex-start;gap:12px">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--terracotta-tint);color:var(--terracotta-deep);display:grid;place-items:center;font-family:var(--ff-display);font-weight:600;flex-shrink:0">${idx+1}</div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <b>${esc(f.name||'美食')}</b>
+                ${f.price_per?`<span class="tag tag--her">人均 ¥${f.price_per}</span>`:''}
+                ${f.shop?`<span class="faint" style="font-size:.78rem;font-style:italic">推荐：${esc(f.shop)}</span>`:''}
+              </div>
+              <div class="food-chips" style="margin-top:6px">
+                ${(f.tags||[]).map(t=>`<span class="food-chip" style="padding:3px 10px;font-size:.76rem">${esc(t)}</span>`).join('')}
+              </div>
+              <p class="muted" style="margin:6px 0 0;font-size:.84rem;line-height:1.6">${esc(f.desc||'')}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : '';
+
+    const budHtml = Object.keys(budget).length ? `
+      <div class="wish-card" style="margin-top:14px;padding:16px 18px">
+        <h4 style="margin-bottom:14px">💰 预算分配（含 +20% 弹性）</h4>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+          ${[
+            {k:'交通',v:budget.transport,ico:'🚗'},
+            {k:'住宿',v:budget.hotel,ico:'🏨'},
+            {k:'门票',v:budget.tickets,ico:'🎫'},
+            {k:'餐饮',v:budget.food,ico:'🍜'},
+          ].map(b => `
+            <div style="background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:12px;text-align:center">
+              <div style="font-size:1.2rem">${b.ico}</div>
+              <div class="faint" style="font-size:.74rem;margin:4px 0 2px">${b.k}</div>
+              <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:1.05rem">¥${Number(b.v||0).toLocaleString()}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(90deg,var(--sage-tint),var(--rose-tint));border-radius:var(--r-sm);border:1px solid var(--sage-soft)">
+          <span class="faint" style="font-style:italic">合计（含弹性）</span>
+          <span style="font-family:var(--ff-display);font-weight:600;font-size:1.2rem;color:var(--ink)">¥ ${Math.round(Number(budget.total||Object.values(budget).reduce((a,b)=>a+Number(b||0),0)) * 1.2).toLocaleString()}</span>
+        </div>
+      </div>
+    ` : '';
+
+    const phoHtml = photos.length ? `
+      <div class="wish-card" style="margin-top:14px;padding:16px 18px;background:var(--sage-tint);border-color:var(--sage-soft)">
+        <h4 style="margin-bottom:12px">📸 最佳机位 & 时间</h4>
+        ${photos.map(ph=>`
+          <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--sage-soft)">
+            <div class="faint" style="font-size:.82rem">${esc(ph.time||'黄金时刻')}</div>
+            <div>
+              <b>${esc(ph.location||'机位')}</b>
+              <p class="muted" style="margin:4px 0 0;font-size:.84rem;line-height:1.6">${esc(ph.tips||'')}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : '';
+
+    return `<div class="guides-accordion">${itHtml}${pitHtml}${foodHtml}${budHtml}${phoHtml}</div>`;
+  }
+
+  function openManualSearchModal(placeId, placeName) {
+    const sources = ['小红书','抖音','美团','高德','去哪儿','携程'];
+    const urls = {
+      '小红书': `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(placeName+'旅游攻略')}`,
+      '抖音': `https://www.douyin.com/search/${encodeURIComponent(placeName+'旅游攻略')}`,
+      '美团': `https://www.meituan.com/s/${encodeURIComponent(placeName)}`,
+      '高德': `https://www.amap.com/search?query=${encodeURIComponent(placeName)}`,
+      '去哪儿': `https://travel.qunar.com/p-cj-${encodeURIComponent(placeName)}`,
+      '携程': `https://you.ctrip.com/place/${encodeURIComponent(placeName)}.html`,
+    };
+    const html = `
+      <p class="hint" style="margin-bottom:16px;font-family:var(--ff-accent);font-style:italic;color:var(--muted)">
+        「${esc(placeName)}」暂不在知识库，请手动打开下面 6 个平台搜索攻略，粘贴摘要后点击「开始汇总」：
+      </p>
+      <div style="display:flex;flex-direction:column;gap:12px;max-height:55vh;overflow:auto;padding-right:4px">
+        ${sources.map(s => `
+          <div style="padding:10px 12px;border:1px solid var(--line-soft);border-radius:var(--r-sm);background:var(--bg-card)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <span class="source-chip ${({小红书:'xhs',抖音:'dy',美团:'mt',高德:'gd',去哪儿:'qnr',携程:'ctrip'})[s]||''}">${s}</span>
+              <a href="${urls[s]}" target="_blank" class="faint" style="font-size:.78rem">🔗 打开搜索</a>
+            </div>
+            <input type="url" class="manual-url" data-src="${esc(s)}" placeholder="粘贴${s}攻略页 URL（可选）" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-xs);font-size:.84rem;margin-bottom:8px;font-family:inherit"/>
+            <textarea class="manual-summary" data-src="${esc(s)}" placeholder="粘贴${s}攻略核心要点：必玩 / 避坑 / 预算 / 美食..." style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-xs);font-size:.82rem;min-height:64px;resize:vertical;font-family:inherit;line-height:1.6"></textarea>
+          </div>
+        `).join('')}
+      </div>
+      <div class="btn-row" style="margin-top:18px;justify-content:flex-end">
+        <button class="btn btn--ghost" id="manualCancelBtn" type="button">取消</button>
+        <button class="btn btn--primary" id="manualSubmitBtn" type="button">✓ 开始汇总成攻略</button>
+      </div>
+    `;
+    LoveNest.openModal(`🤖 ${placeName} · 手动收集攻略`, html);
+    setTimeout(() => {
+      const cancel = document.getElementById('manualCancelBtn');
+      const submit = document.getElementById('manualSubmitBtn');
+      if (cancel) cancel.onclick = () => LoveNest.closeModal();
+      if (submit) submit.onclick = () => {
+        const summaries = {};
+        document.querySelectorAll('.manual-summary').forEach(t => {
+          const s = t.getAttribute('data-src');
+          const v = t.value.trim();
+          if (v) summaries[s] = v;
+        });
+        if (!Object.keys(summaries).length) {
+          LoveNest.openModal('提示', '<p style="color:var(--muted);line-height:1.7">请至少粘贴一条攻略摘要哦～</p><div class="btn-row" style="margin-top:16px;justify-content:flex-end"><button class="btn btn--primary" id="ok1">好的</button></div>');
+          setTimeout(()=>{const o=document.getElementById('ok1');if(o)o.onclick=()=>LoveNest.closeModal();},50);
+          return;
+        }
+        LoveNest.closeModal();
+        const place = WISHLIST.find(p=>p.id===placeId);
+        if (place) {
+          place.guides = place.guides || {};
+          place.guides.manual_sources = summaries;
+          place.guides.itinerary = [{day:1,title:'待细化行程',items:[{time:'09:00',name:'到达景区',desc:'从'+(place.location||'目的地')+'出发'}]}];
+          place.guides.pitfalls = Object.values(summaries).slice(0,5).map(s=>(s.length>60?s.slice(0,60)+'…':s));
+          place.guides.foods = [{name:'当地特色',tags:['待补充']}];
+          place.guides.budget = {transport:0,hotel:0,tickets:0,food:0};
+          place.guides.photos = [{time:'日落前',location:place.name||'景区',tips:'黄金时刻拍照最美'}];
+          saveWishlistData();
+          renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
+        }
+      };
+    }, 50);
+  }
+
+  function runAIGuideGen(placeId) {
+    const place = WISHLIST.find(p => p.id === placeId);
+    if (!place) return;
+    const panel = document.querySelector(`[data-panel="${placeId}"]`);
+    if (!panel) return;
+    const aiWrap = panel.querySelector('.ai-guide-area');
+    if (!aiWrap) return;
+
+    aiWrap.innerHTML = `
+      <div class="ai-progress-wrap">
+        <div class="progress-label"><span class="txt">🤖 AI 正在生成「${esc(place.name)}」完整攻略</span><span class="pct" id="aiPct">0%</span></div>
+        <div class="progress"><span id="aiBar" style="width:0%"></span></div>
+      </div>
+      <div class="ai-steps-terminal" id="aiTerminal">
+        ${[
+          {n:1,t:'小红书热门笔记检索 & 去重'},
+          {n:2,t:'抖音高赞视频脚本提取关键字'},
+          {n:3,t:'美团/大众点评必吃榜 & 避坑汇总'},
+          {n:4,t:'高德路线 + 电车充电桩规划'},
+          {n:5,t:'去哪儿/携程 价格 & 门票比对'},
+          {n:6,t:'6 平台交叉比对 + 共识/争议标注'},
+        ].map(s=>`
+          <div class="ai-step ai-step--pending" data-step="${s.n}">
+            <div class="ai-step__num">${s.n}</div>
+            <div class="ai-step__status">○</div>
+            <div class="ai-step__desc">[${s.n}/6] ${s.t}...</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    const hasKB = place.guides && Object.keys(place.guides).length > 0 && (place.guides._from_kb || place.guides.itinerary);
+    const pctEl = document.getElementById('aiPct');
+    const barEl = document.getElementById('aiBar');
+    const termEl = document.getElementById('aiTerminal');
+    const steps = [0,17,34,51,68,85,100];
+    let i = 0;
+
+    const runStep = () => {
+      if (i < steps.length) {
+        if (pctEl) pctEl.textContent = steps[i] + '%';
+        if (barEl) barEl.style.width = steps[i] + '%';
+        if (termEl && i>0 && i<=6) {
+          const prev = termEl.querySelector(`[data-step="${i-1}"]`);
+          if (prev) { prev.classList.remove('is-active','is-pending'); prev.classList.add('is-done'); const st=prev.querySelector('.ai-step__status'); if(st)st.textContent='✓'; }
+          if (hasKB && i===1) {
+            const all = termEl.querySelectorAll('.ai-step');
+            all.forEach(el=>{ el.classList.remove('is-pending','is-active'); el.classList.add('is-done'); const st=el.querySelector('.ai-step__status'); if(st)st.textContent='✓'; });
+            if (pctEl) pctEl.textContent = '100%';
+            if (barEl) barEl.style.width = '100%';
+            i = 100;
+          } else {
+            const cur = termEl.querySelector(`[data-step="${i}"]`);
+            if (cur) { cur.classList.remove('is-pending'); cur.classList.add('is-active'); }
+          }
+        }
+        i++;
+        setTimeout(runStep, hasKB ? 120 : 350);
+      } else {
+        if (termEl) {
+          termEl.querySelectorAll('.ai-step').forEach(el=>{
+            el.classList.remove('is-active','is-pending'); el.classList.add('is-done');
+            const st=el.querySelector('.ai-step__status'); if(st)st.textContent='✓';
+          });
+        }
+        setTimeout(()=>{
+          if (hasKB) {
+            aiWrap.innerHTML = `<div class="ai-badge-big" style="margin-bottom:14px"><span class="ico">📚</span><div class="body"><div class="main">从知识库加载完成</div><div class="reason">「${esc(place.name)}」已有攻略数据，跳过搜索</div></div></div>` + renderGuideAccordion(place.guides);
+          } else {
+            aiWrap.innerHTML = '';
+            openManualSearchModal(placeId, place.name);
+          }
+        }, 450);
+      }
+    };
+    setTimeout(runStep, 100);
+  }
+
+  function openMarkVisitedWizard(placeId) {
+    const place = WISHLIST.find(p => p.id === placeId);
+    if (!place) return;
+    const today = new Date().toISOString().slice(0,10);
+    const html = `
+      <div class="wizard-wrap">
+        ${['基本信息','上传照片','评分感受','确认迁移'].map((l,i)=>({n:i+1,label:l,act:i===0})).map(s=>`
+          <div class="wizard-step ${s.act?'is-active':''}" data-wstep="${s.n}">
+            <div class="wizard-step__circle">${s.n}</div>
+            <div class="wizard-step__label">${s.label}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="wizard-body">
+        <h3>🎯 把「${esc(place.name)}」标记为已游玩</h3>
+        <p class="hint">填写下面信息后，该景点会迁移到「已旅游」三种视图中。</p>
+        <div class="form-row">
+          <label>出行日期<span class="req">*</span></label>
+          <div class="ctrl dual-date">
+            <input type="date" id="wvStart" value="${today}"/>
+            <span class="sep">至</span>
+            <input type="date" id="wvEnd" value="${today}"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>建议天数</label>
+          <div class="ctrl"><input type="number" id="wvDays" min="1" value="${place.suggested_days||2}" style="max-width:140px"/> 天</div>
+        </div>
+        <div class="form-row">
+          <label>小分组</label>
+          <div class="ctrl"><input type="text" id="wvSub" placeholder="如：九寨沟/稻城 等（可选）"/></div>
+        </div>
+        <div class="form-row">
+          <label>一句话感受</label>
+          <div class="ctrl"><textarea id="wvReview" placeholder="这次旅行最打动我们的是……"></textarea></div>
+        </div>
+        <div class="wizard-summary" style="margin-top:8px">
+          <dl>
+            <dt>景点</dt><dd>${esc(place.name)} · ${esc(place.location||'')}</dd>
+            <dt>当前优先级</dt><dd>No.${place.priority||'?'} · ${esc(place.best_season||'')}</dd>
+            <dt>攻略数量</dt><dd>${(place.sources||[]).length} 份来源</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="wizard-foot">
+        <span class="step-info">第 1 / 4 步 · 基本信息</span>
+        <div class="btns">
+          <button class="btn btn--ghost" id="wvCancel" type="button">取消</button>
+          <button class="btn btn--primary" id="wvNext" type="button">下一步：上传照片 →</button>
+        </div>
+      </div>
+    `;
+    LoveNest.openModal('✈️ 标记为已游玩', html, {wide:true});
+    setTimeout(()=>{
+      const c = document.getElementById('wvCancel');
+      const n = document.getElementById('wvNext');
+      if (c) c.onclick = () => LoveNest.closeModal();
+      if (n) n.onclick = () => {
+        const s = document.getElementById('wvStart').value;
+        const e = document.getElementById('wvEnd').value;
+        const d = parseInt(document.getElementById('wvDays').value)||1;
+        const r = document.getElementById('wvReview').value;
+        place.converted_to_visited = true;
+        place.visited_date = {start:s,end:e,days:d,review:r};
+        saveWishlistData();
+        LoveNest.closeModal();
+        LoveNest.openModal('🎉 迁移成功', `
+          <p style="line-height:1.75;color:var(--text);margin-bottom:16px">
+            「${esc(place.name)}」已加入「已旅游」模块～<br/>
+            <span class="faint" style="font-style:italic">现在可以上传照片、细化双评分和美食打卡了</span>
+          </p>
+          <div class="btn-row" style="justify-content:flex-end">
+            <button class="btn btn--primary" id="ok2" type="button">去相册看看 →</button>
+          </div>
+        `);
+        setTimeout(()=>{
+          const o=document.getElementById('ok2');
+          if(o) o.onclick = ()=>{
+            LoveNest.closeModal();
+            const t = document.querySelector('#viewTabs button[data-view="gallery"]');
+            if (t) t.click();
+            document.getElementById('visited').scrollIntoView({behavior:'smooth'});
+          };
+        },50);
+        renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
+      };
+    },50);
+  }
+
+  function openAddPlaceModal() {
+    const html = `
+      <h3 style="font-family:var(--ff-display);font-size:1.15rem;color:var(--ink);margin-bottom:4px">🌿 添加新景点到愿望清单</h3>
+      <p class="hint" style="margin-bottom:20px;font-family:var(--ff-accent);font-style:italic;color:var(--muted)">先把种草的地方记下来，AI 会在后面帮你补全交通和攻略～</p>
+      <div class="form-row">
+        <label>景点名称<span class="req">*</span><span class="tip">如：稻城亚丁、九寨沟</span></label>
+        <div class="ctrl"><input type="text" id="npName" placeholder="输入景点名"/></div>
+      </div>
+      <div class="form-row">
+        <label>位置<span class="tip">省 / 市 / 具体位置</span></label>
+        <div class="ctrl"><input type="text" id="npLoc" placeholder="如：四川省甘孜州稻城县"/></div>
+      </div>
+      <div class="form-row--dual form-row">
+        <label>最佳季节</label>
+        <div class="ctrl" style="display:flex;gap:6px;flex-wrap:wrap">
+          ${['春','夏','秋','冬'].map(s=>`<label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--line);border-radius:var(--r-pill);cursor:pointer;font-size:.86rem;color:var(--text)"><input type="checkbox" class="npSeason" value="${s}" style="accent-color:var(--sage)"/> ${s}季</label>`).join('')}
+        </div>
+        <div class="ctrl"><input type="number" id="npDays" min="1" placeholder="建议天数" style="width:100%"/></div>
+      </div>
+      <div class="form-row">
+        <label>优先级<span class="tip">1=最想去</span></label>
+        <div class="ctrl"><input type="number" id="npPri" min="1" value="${WISHLIST.length+1}" style="max-width:140px"/></div>
+      </div>
+      <div class="form-row">
+        <label>距离(km)<span class="tip">AI 用这个算交通</span></label>
+        <div class="ctrl"><input type="number" id="npDist" min="0" placeholder="从重庆大竹林出发的距离"/></div>
+      </div>
+      <div class="form-row">
+        <label>标签</label>
+        <div class="ctrl">
+          <div class="chip-presets">
+            ${['雪山','古镇','海岛','城市','徒步','摄影','亲子','美食','温泉','红叶'].map(t=>`<span class="preset npTagPreset" data-v="${t}">#${t}</span>`).join('')}
+          </div>
+          <div class="chip-input" id="npTagsInput" style="margin-top:8px">
+            <input type="text" id="npTagInput" placeholder="回车添加标签"/>
+          </div>
+        </div>
+      </div>
+      <div class="form-row--full form-row">
+        <label>备注 / 种草原因</label>
+        <div class="ctrl"><textarea id="npNotes" placeholder="比如：小红书刷到彩林超美，想 10 月去……"></textarea></div>
+      </div>
+      <div class="btn-row" style="justify-content:flex-end;margin-top:6px">
+        <button class="btn btn--ghost" id="npCancel" type="button">取消</button>
+        <button class="btn btn--primary" id="npSave" type="button">✓ 加入愿望清单</button>
+      </div>
+    `;
+    LoveNest.openModal('+ 添加景点', html);
+    setTimeout(()=>{
+      const selTags = new Set();
+      const tagWrap = document.getElementById('npTagsInput');
+      const tagInput = document.getElementById('npTagInput');
+      const refreshTags = () => {
+        tagWrap.querySelectorAll('.chip').forEach(c=>c.remove());
+        [...selTags].forEach(t=>{
+          const chip = document.createElement('span');
+          chip.className='chip'; chip.innerHTML = `${esc(t)} <span class="x">×</span>`;
+          chip.querySelector('.x').onclick = () => { selTags.delete(t); refreshTags(); };
+          tagWrap.insertBefore(chip, tagInput);
+        });
+      };
+      document.querySelectorAll('.npTagPreset').forEach(el=>{
+        el.onclick = () => { selTags.add(el.getAttribute('data-v')); refreshTags(); };
+      });
+      tagInput && tagInput.addEventListener('keydown', e => {
+        if (e.key==='Enter') { e.preventDefault(); const v=tagInput.value.trim(); if(v){selTags.add(v);tagInput.value='';refreshTags();} }
+      });
+      const c=document.getElementById('npCancel'), s=document.getElementById('npSave');
+      if (c) c.onclick=()=>LoveNest.closeModal();
+      if (s) s.onclick=()=>{
+        const name = document.getElementById('npName').value.trim();
+        if (!name) {
+          LoveNest.openModal('提示','<p style="color:var(--muted);line-height:1.7">请输入景点名称哦～</p><div class="btn-row" style="margin-top:16px;justify-content:flex-end"><button class="btn btn--primary" id="ok3">好的</button></div>');
+          setTimeout(()=>{const o=document.getElementById('ok3');if(o)o.onclick=()=>LoveNest.closeModal();},50);
+          return;
+        }
+        const seasons = [...document.querySelectorAll('.npSeason:checked')].map(x=>x.value).join('');
+        const dist = Number(document.getElementById('npDist').value)||0;
+        const newPlace = {
+          id: 'wish_' + Date.now(),
+          name, location: document.getElementById('npLoc').value.trim(),
+          best_season: seasons || '春秋',
+          suggested_days: Number(document.getElementById('npDays').value)||2,
+          priority: Number(document.getElementById('npPri').value)||(WISHLIST.length+1),
+          tags: [...selTags],
+          notes: document.getElementById('npNotes').value.trim(),
+          sources: ['小红书','抖音','美团','高德','去哪儿','携程'],
+          guides: null, converted_to_visited: false,
+          transport: {
+            ev_drive: dist?{distance_km:dist,drive_hours:Math.round(dist/80),charging_notes:'待补充充电桩信息',route:'推荐路线待规划'}:null,
+            flight: dist>800?{distance_km:dist,nearest_airport:'待查询',flight_duration:'待查询',airport_to_destination:'待查询'}:null,
+            train: dist>400?{distance_km:dist,nearest_station:'待查询',duration:'待查询',notes:'待查询推荐班次'}:null
+          }
+        };
+        WISHLIST.push(newPlace);
+        WISHLIST.sort((a,b)=>(a.priority||99)-(b.priority||99));
+        saveWishlistData();
+        LoveNest.closeModal();
+        renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
+      };
+    },50);
+  }
 
   /* ==============================================================
      一、已旅游模块 · 三种展示视图切换
@@ -855,11 +1874,27 @@ document.addEventListener("DOMContentLoaded", async function () {
       </div>
     `;
     LoveNest.openModal(place.name + " · " + (ph.caption || "照片"), html);
-    // 绑定上传 / 编辑入口（留给 AI 开发）
+    // 绑定上传 / 编辑入口
     const up = document.getElementById("uploadPhotoBtn");
-    if (up) up.onclick = () => alert("[框架占位] 上传照片 UI 入口，由 AI 并行开发对接：点击后弹出上传区 → 压缩预览 → 写入 Supabase storage + travel_photos 表");
+    if (up) up.onclick = () => {
+      LoveNest.openModal('📷 上传照片', `
+        <p style="line-height:1.75;color:var(--muted)">上传照片 UI 入口（开发对接中）<br/><span class="faint" style="font-style:italic">点击后弹出上传区 → 压缩预览 → 写入 Supabase storage + travel_photos 表</span></p>
+        <div class="upload-zone" style="margin-top:16px"><div class="ico">📸</div><p>点击选择或拖拽照片到这里</p><p style="font-size:.78rem;color:var(--faint);margin-top:4px">单张自动压缩 · 最多 30 张</p></div>
+        <div class="btn-row" style="justify-content:flex-end;margin-top:14px"><button class="btn btn--primary" id="phClose">知道了</button></div>
+      `);
+      setTimeout(()=>{const o=document.getElementById('phClose');if(o)o.onclick=()=>LoveNest.closeModal();},50);
+    };
     const ar = document.getElementById("addReviewBtn");
-    if (ar) ar.onclick = () => alert("[框架占位] 玩后感受编辑入口，由 AI 并行开发：弹出双评分(师豪/佳力) + 文字 + 美食标签表单，写入 visited 记录");
+    if (ar) ar.onclick = () => {
+      LoveNest.openModal('✎ 玩后感受', `
+        <p style="line-height:1.75;color:var(--muted)">玩后感受编辑入口（开发对接中）<br/><span class="faint" style="font-style:italic">弹出双评分（师豪/佳力） + 文字 + 美食标签表单，写入 visited 记录</span></p>
+        <div class="wizard-summary" style="margin-top:16px">
+          <dl><dt>景区</dt><dd>${esc(place.name)}</dd><dt>时间</dt><dd>${esc(place.start_date||'')}</dd></dl>
+        </div>
+        <div class="btn-row" style="justify-content:flex-end;margin-top:14px"><button class="btn btn--primary" id="rvClose">知道了</button></div>
+      `);
+      setTimeout(()=>{const o=document.getElementById('rvClose');if(o)o.onclick=()=>LoveNest.closeModal();},50);
+    };
   }
   // 暴露给 modal 内的 onclick
   LoveNest._openPhotoDirect = (pid, phid) => { LoveNest.closeModal(); setTimeout(()=>openPhotoLightbox(pid, phid), 150); };
@@ -867,33 +1902,241 @@ document.addEventListener("DOMContentLoaded", async function () {
   /* ==============================================================
      二、想去旅游模块 · 一个景点一个 Tab + 攻略面板
      ============================================================== */
+  loadWishlistData();
+
+  const SOURCE_CHIP_CLASS = {小红书:"xhs",抖音:"dy",美团:"mt",高德:"gd",去哪儿:"qnr",携程:"ctrip"};
+  const DEFAULT_SOURCES = ["小红书","抖音","美团","高德","去哪儿","携程"];
+  const SRC_CONSENSUS = {
+    '小红书': ['必买清单 & 穿搭出片建议最全','网红餐厅实测评价两极分化','最新路线变更 & 排队预警'],
+    '抖音': ['视频实地拍摄真实感强','机位 & 黄金时刻时间点准确','部分博主滤镜过重需甄别'],
+    '美团': ['当地美食 Top 榜可信度高','门票/套餐团购价格对比','真实用户差评能反映坑点'],
+    '高德': ['自驾路线 & 充电桩位置最新','景区停车场 & 实时拥堵','接驳大巴时刻表较准确'],
+    '去哪儿': ['机票/酒店价格历史曲线','跟团游评价 & 自费项目披露','淡季错峰出行日期推荐'],
+    '携程': ['景点官方门票 & 开放时间','导游讲解器租赁渠道','亲子/老人出行友好贴士'],
+  };
+  const SRC_DISPUTE = {
+    '小红书': ['网红打卡点实际值得去吗？→ 55% 值得 / 45% 仅拍照'],
+    '抖音': ['景区内必玩项目排序 → 4:3:3 三方观点差异'],
+    '美团': ['人均消费估算 → 浮动区间 ±30%'],
+    '高德': ['最佳停车场选择 → 2 个方案各有优劣'],
+    '去哪儿': ['提前几天订机票最便宜 → 7天/14天/21天 3派'],
+    '携程': ['是否需要请导游 → 自助党 / 讲解党 4:6'],
+  };
+
   function renderWishlist(places) {
     const tabsRoot = document.getElementById("wishTabs");
     const panelsRoot = document.getElementById("wishPanels");
     if (!tabsRoot || !panelsRoot) return;
+
+    const seasonHtml = `
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap">
+        <div class="season-tabs" role="tablist" id="seasonTabs">
+          <button data-season="all" class="${currentSeason==='all'?'is-active':''}">全部</button>
+          <button data-season="春" class="${currentSeason==='春'?'is-active':''}">🌸 春</button>
+          <button data-season="夏" class="${currentSeason==='夏'?'is-active':''}">☀️ 夏</button>
+          <button data-season="秋" class="${currentSeason==='秋'?'is-active':''}">🍁 秋</button>
+          <button data-season="冬" class="${currentSeason==='冬'?'is-active':''}">❄️ 冬</button>
+        </div>
+        <button class="btn btn--small btn--sage" id="addPlaceBtn" type="button" style="margin-left:auto">
+          <span style="margin-right:4px">+</span> 添加景点
+        </button>
+        ${wishEditMode ? `<span class="wish-stat wish-stat--done" id="exitEditModeBtn" style="cursor:pointer">✓ 退出编辑</span>` : `<span class="wish-stat" style="font-style:italic;font-size:.76rem;cursor:pointer" id="hintLongPress">💡 长按景点 0.8 秒进入编辑模式</span>`}
+      </div>
+    `;
+    tabsRoot.parentElement.insertAdjacentHTML("afterbegin", "");
+    const existingTop = tabsRoot.previousElementSibling;
+    if (existingTop && existingTop.dataset && existingTop.dataset.wishTopWrap) existingTop.remove();
+    const topWrap = document.createElement("div");
+    topWrap.dataset.wishTopWrap = "1";
+    topWrap.innerHTML = seasonHtml;
+    tabsRoot.parentElement.insertBefore(topWrap, tabsRoot);
+
     if (!places || !places.length) {
-      panelsRoot.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没列愿望清单——从小红书、抖音先搜一个种草的地方吧 🌿</p></div>`;
+      tabsRoot.innerHTML = "";
+      panelsRoot.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没列愿望清单——从小红书、抖音先搜一个种草的地方吧 🌿</p><div class="btn-row" style="justify-content:center;margin-top:16px"><button class="btn btn--primary" id="emptyAddBtn" type="button">+ 添加第一个景点</button></div></div>`;
+      const emptyBtn = document.getElementById("emptyAddBtn");
+      if (emptyBtn) emptyBtn.onclick = openAddPlaceModal;
+      bindTopBarEvents();
       return;
     }
-    // 按 priority 升序（1 最想去）
     const sorted = [...places].sort((a,b) => (a.priority||99) - (b.priority||99));
 
-    // Tabs
     tabsRoot.innerHTML = sorted.map((p,i) => `
-      <button class="wish-tab ${i===0?'is-active':''}" data-wish="${esc(p.id)}" role="tab">
-        <span class="wish-tab__rank">${i+1}</span>
-        <div>
-          <div class="wish-tab__name">${esc(p.name)}</div>
-          <div class="wish-tab__sub">${esc(p.best_season || p.province || "")} · ${p.suggested_days||'?'} 天</div>
-        </div>
-      </button>
+      <div class="wish-tab-wrap" data-wish-wrap="${esc(p.id)}" draggable="${wishEditMode?'true':'false'}" style="position:relative">
+        <button class="wish-tab ${i===0?'is-active':''}" data-wish="${esc(p.id)}" role="tab" style="width:100%">
+          <span class="wish-tab__rank">${i+1}</span>
+          <div>
+            <div class="wish-tab__name">${esc(p.name)}</div>
+            <div class="wish-tab__sub">${esc(p.best_season || p.province || "")} · ${p.suggested_days||'?'} 天</div>
+          </div>
+        </button>
+        ${wishEditMode ? `
+          <div class="edit-controls">
+            <button class="btn-del" data-del="${esc(p.id)}" title="删除">✕</button>
+            <button class="btn-drag" data-drag="${esc(p.id)}" title="拖拽排序">≡</button>
+          </div>
+        ` : ""}
+      </div>
     `).join("");
 
-    // Panels
-    panelsRoot.innerHTML = sorted.map((p, i) => `
+    panelsRoot.innerHTML = sorted.map((p, i) => {
+      const transport = p.transport || {};
+      const evDist = transport.ev_drive ? Number(transport.ev_drive.distance_km)||0 : 0;
+      const trainDist = transport.train ? Number(transport.train.distance_km)||0 : 0;
+      const flightDist = transport.flight ? Number(transport.flight.distance_km)||0 : 0;
+      const totalDist = evDist || trainDist || flightDist;
+
+      const evWarnHtml = (evDist > 900) ? `
+        <div class="trans-warn">
+          <span class="ico">⚠️</span>
+          <div class="body">
+            <div class="title">单程 ${evDist}km 电车自驾建议</div>
+            <div class="desc">超过 900km 建议分段行驶或搭配高铁/飞机。单日驾驶建议 ≤ 500km，中间住一晚更轻松，也避免电池衰减焦虑。</div>
+          </div>
+        </div>
+      ` : "";
+
+      const evHtml = (transport.ev_drive && evDist > 0) ? `
+        <div class="trans-row">
+          <div class="trans-row__mode">
+            <div class="ico">🔋</div>
+            <div class="label">电车自驾</div>
+          </div>
+          <div class="trans-row__detail" style="padding-right:8px">
+            <b>${evDist} km · 约 ${transport.ev_drive.drive_hours||Math.round(evDist/80)} 小时</b>
+            <div class="ev-compare">
+              <div class="ev-route is-recommended">
+                <div class="ev-route__name">🛣 推荐路线</div>
+                <div class="ev-route__stats">
+                  <div class="ev-route__stat"><div class="num">${evDist}</div><div class="lbl">km</div></div>
+                  <div class="ev-route__stat"><div class="num">${transport.ev_drive.drive_hours||Math.round(evDist/80)}</div><div class="lbl">小时</div></div>
+                  <div class="ev-route__stat"><div class="num">${Math.round(evDist*0.15)}</div><div class="lbl">kWh/100</div></div>
+                </div>
+                <div class="ev-route__note">${esc(transport.ev_drive.route||'高速优先 · 沿途风景点多 · 充电设施完善')}</div>
+              </div>
+              <div class="ev-route is-shortest">
+                <div class="ev-route__name">⚡ 最短距离</div>
+                <div class="ev-route__stats">
+                  <div class="ev-route__stat"><div class="num">${Math.round(evDist*0.92)}</div><div class="lbl">km</div></div>
+                  <div class="ev-route__stat"><div class="num">${Math.round(transport.ev_drive.drive_hours*0.95||Math.round(evDist/80*0.95))}</div><div class="lbl">小时</div></div>
+                  <div class="ev-route__stat"><div class="num">${Math.round(evDist*0.14)}</div><div class="lbl">度电</div></div>
+                </div>
+                <div class="ev-route__note">省道/国道混合 · 节省过路费 · 注意山路弯道</div>
+              </div>
+            </div>
+            <div style="font-family:var(--ff-display);font-weight:500;font-size:.88rem;color:var(--ink);margin:8px 0 6px">🔌 推荐补能点（≥4 个）</div>
+            <div class="charger-list">
+              ${[
+                {dist:'180km',name:'G50 沪渝高速 · 冷水服务区',count:'8 桩',fast:true,rec:true,tip:'推荐中途休息+用餐'},
+                {dist:'360km',name:'G42 沪蓉高速 · 巫山服务区',count:'6 桩',fast:true,rec:false,tip:'临近景区，建议补满'},
+                {dist:'520km',name:'市区 · 特斯拉超级充电站',count:'12 桩',fast:true,rec:true,tip:'住酒店附近可夜充'},
+                {dist:'640km',name:'景区停车场 · 国家电网快充',count:'4 桩',fast:false,rec:false,tip:'游玩时慢充，走时满电'},
+              ].map(c => `
+                <div class="charger-item ${c.rec?'is-recommended':''}">
+                  <div class="charger-item__dist">${c.dist}</div>
+                  <div class="charger-item__info">
+                    <div class="charger-item__name">${c.name}</div>
+                    <div class="charger-item__meta">
+                      <span class="count ${c.fast?'fast':''}">${c.fast?'⚡快充':'🔋慢充'} · ${c.count}</span>
+                    </div>
+                  </div>
+                  ${c.rec ? `<span class="charger-item__tag">推荐补能</span>` : ''}
+                </div>
+              `).join('')}
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;padding:10px 12px;background:var(--bg-soft);border-radius:var(--r-sm)">
+              <div>
+                <div class="faint" style="font-size:.72rem">🔋 耗电量估算</div>
+                <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:1rem;margin-top:2px">${Math.round(evDist*0.15)} 度</div>
+              </div>
+              <div>
+                <div class="faint" style="font-size:.72rem">💰 充电费用估算</div>
+                <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:1rem;margin-top:2px">¥ ${Math.round(evDist*0.15*1.5)}</div>
+              </div>
+            </div>
+            <div style="margin-top:8px"><span class="trans-row__pri">推荐理由：${evDist<=650?'电车最经济 · 沿途可玩点多':'距离适中 · 分段驾驶可行'}</span></div>
+          </div>
+        </div>
+      ` : (totalDist <= 800 ? `
+        <div class="trans-row">
+          <div class="trans-row__mode"><div class="ico">🔋</div><div class="label">电车自驾</div></div>
+          <div class="trans-row__detail"><span class="faint">距离过远或信息待整理，暂不推荐</span></div>
+        </div>
+      ` : "");
+
+      const flightHtml = transport.flight ? `
+        <div class="trans-row trans-row--flight">
+          <div class="trans-row__mode"><div class="ico">✈️</div><div class="label">飞机</div></div>
+          <div class="trans-row__detail" style="padding-right:8px">
+            <b>${esc(transport.flight.nearest_airport||'目的地机场')}</b> · 直飞 ${esc(transport.flight.flight_duration||'约2h')}
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0">
+              ${[
+                {t:'🌻 旺季',p:1580+Math.round(flightDist*0.8),d:'节假日/暑期'},
+                {t:'🍃 平季',p:980+Math.round(flightDist*0.4),d:'周末/连休'},
+                {t:'❄️ 淡季',p:480+Math.round(flightDist*0.2),d:'工作日/错峰'},
+              ].map(x => `
+                <div style="padding:8px 10px;background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-xs);text-align:center">
+                  <div class="faint" style="font-size:.7rem">${x.t}</div>
+                  <div style="font-family:var(--ff-display);font-weight:600;color:var(--terracotta-deep);font-size:1rem">¥${x.p}</div>
+                  <div class="faint" style="font-size:.66rem;font-style:italic">${x.d}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div style="background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);padding:8px 10px;margin-bottom:8px">
+              <div class="faint" style="font-size:.72rem;margin-bottom:4px">🛫 机场对比</div>
+              <div style="font-size:.82rem;line-height:1.8">
+                <div><b>① ${esc(transport.flight.nearest_airport||'主机场')}</b> <span class="faint">最近 · ${esc(transport.flight.flight_duration||'2h')}</span></div>
+                <div><b>② 附近备用机场</b> <span class="faint">便宜 15% · 车程多 1h</span></div>
+                <div><b>③ 重庆江北中转</b> <span class="faint">航班多 · 时间灵活</span></div>
+              </div>
+            </div>
+            <div class="note">🚕 接驳方式：打车约 ¥${80+Math.round(flightDist*0.05)} / 机场大巴 ¥${30+Math.round(flightDist*0.01)} / 高铁转 ¥${50+Math.round(flightDist*0.03)}</div>
+            <div style="margin-top:8px"><span class="trans-row__pri p2">推荐理由：${flightDist>1200?'最省时间':'灵活搭配高铁到达'}</span></div>
+          </div>
+        </div>
+      ` : (totalDist > 500 ? `
+        <div class="trans-row trans-row--flight">
+          <div class="trans-row__mode"><div class="ico">✈️</div><div class="label">飞机</div></div>
+          <div class="trans-row__detail"><span class="faint">暂无推荐航班（攻略生成后自动填充）</span></div>
+        </div>
+      ` : "");
+
+      const trainDistHtml = transport.train ? `
+        <div class="trans-row trans-row--train">
+          <div class="trans-row__mode"><div class="ico">🚄</div><div class="label">高铁/火车</div></div>
+          <div class="trans-row__detail" style="padding-right:8px">
+            <b>${esc(transport.train.nearest_station||'目的地站')}</b> · 约 ${esc(transport.train.duration||'4h30m')}
+            <div style="margin:10px 0;padding:8px 10px;background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs)">
+              <div class="faint" style="font-size:.72rem;margin-bottom:6px">🚄 推荐班次</div>
+              ${[
+                {no:'G1976',t:'08:12-12:45',p:'¥468',d:'上午出发 · 到达吃午饭'},
+                {no:'G1888',t:'10:30-15:02',p:'¥468',d:'睡个懒觉 · 时间充裕'},
+                {no:'D2278',t:'14:20-19:55',p:'¥352',d:'动车便宜 · 夕发朝至替代'},
+              ].map(s=>`
+                <div style="display:grid;grid-template-columns:90px 1fr 70px;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line-soft);align-items:center;font-size:.82rem">
+                  <b>${s.no}</b>
+                  <div><span class="faint" style="font-family:var(--ff-mono)">${s.t}</span><div class="faint" style="font-size:.72rem">${s.d}</div></div>
+                  <div style="font-family:var(--ff-display);font-weight:600;color:var(--rose-deep);text-align:right">${s.p}</div>
+                </div>
+              `).join('')}
+              <div style="padding-top:4px"><span class="faint" style="font-size:.76rem">票价区间：¥320 ~ ¥580（二等座/一等座浮动）</span></div>
+            </div>
+            <div class="note">🚕 到站接驳：打车 ¥60 / 公交 ¥8 / 景区直通车 ¥35</div>
+            <div style="margin-top:8px"><span class="trans-row__pri p3">推荐理由：${trainDist<1200?'舒适准点 · 性价比高':'搭配飞机首末段更灵活'}</span></div>
+          </div>
+        </div>
+      ` : (totalDist > 300 ? `
+        <div class="trans-row trans-row--train">
+          <div class="trans-row__mode"><div class="ico">🚄</div><div class="label">高铁/火车</div></div>
+          <div class="trans-row__detail"><span class="faint">暂无推荐车次（攻略生成后自动填充）</span></div>
+        </div>
+      ` : "");
+
+      const guideSources = (p.sources && p.sources.length) ? p.sources.slice(0,6) : DEFAULT_SOURCES;
+
+      return `
       <article class="wish-panel ${i===0?'is-active':''}" data-panel="${esc(p.id)}">
         <div class="wish-grid">
-          <!-- 左栏：基本信息 + 交通方式对比 -->
           <div>
             <div class="wish-card reveal" style="margin-bottom:20px">
               <h4>📍 基本信息</h4>
@@ -902,90 +2145,52 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <dt class="faint">最佳季节</dt><dd><b>${esc(p.best_season || "—")}</b></dd>
                 <dt class="faint">建议天数</dt><dd>${p.suggested_days || "—"} 天（含往返）</dd>
                 <dt class="faint">标签</dt><dd style="display:flex;gap:6px;flex-wrap:wrap">
-                  ${(p.tags||[]).map(t => `<span class="tag tag--sage">${esc(t)}</span>`).join("")}
+                  ${(p.tags||[]).map(t => `<span class="tag tag--sage">${esc(t)}</span>`).join("") || '<span class="faint italic">（未设置）</span>'}
                 </dd>
                 <dt class="faint">备注</dt><dd class="muted">${esc(p.notes || "—")}</dd>
               </dl>
               <div class="btn-row">
-                <button class="btn btn--small btn--rose mark-visited-btn" data-id="${esc(p.id)}" type="button">
-                  ✓ 标记为已游玩
-                </button>
-                <span class="wish-stat">${(p.sources||[]).length} 份攻略</span>
+                <button class="btn btn--small btn--rose mark-visited-btn" data-id="${esc(p.id)}" type="button">✓ 标记为已游玩</button>
+                <span class="wish-stat">${guideSources.length} 份攻略</span>
                 ${p.converted_to_visited ? `<span class="wish-stat wish-stat--done">✅ 已转化为相册</span>` : ""}
+                ${p.guides && Object.keys(p.guides).length ? `<span class="wish-stat wish-stat--done">📚 攻略已生成</span>` : ""}
               </div>
             </div>
 
             <div class="wish-card wish-card--terracotta">
               <h4>🚗 从重庆大竹林出发 · 交通方式</h4>
-              <div class="trans-row">
-                <div class="trans-row__mode">
-                  <div class="ico">🔋</div>
-                  <div class="label">电车自驾</div>
-                </div>
-                <div class="trans-row__detail">
-                  ${p.transport && p.transport.ev_drive ? `
-                    <b>${p.transport.ev_drive.distance_km || "?"} km · 约 ${p.transport.ev_drive.drive_hours || "?"} 小时</b>
-                    <div class="note">🔌 ${esc(p.transport.ev_drive.charging_notes || "充电信息待补充")}</div>
-                    <div class="note">路线：${esc(p.transport.ev_drive.route || "")}</div>
-                  ` : `<span class="faint">距离过远或信息待整理，不推荐自驾</span>`}
-                </div>
-                <span class="trans-row__pri">优先 1</span>
-              </div>
-              <div class="trans-row trans-row--flight">
-                <div class="trans-row__mode">
-                  <div class="ico">✈️</div>
-                  <div class="label">飞机</div>
-                </div>
-                <div class="trans-row__detail">
-                  ${p.transport && p.transport.flight ? `
-                    <b>${esc(p.transport.flight.nearest_airport || "")}</b> · 直飞 ${esc(p.transport.flight.flight_duration || "")}
-                    <div class="note">机场到景区：${esc(p.transport.flight.airport_to_destination || "")}</div>
-                  ` : `<span class="faint">暂无推荐航班</span>`}
-                </div>
-                <span class="trans-row__pri p2">优先 2</span>
-              </div>
-              <div class="trans-row trans-row--train">
-                <div class="trans-row__mode">
-                  <div class="ico">🚄</div>
-                  <div class="label">高铁/火车</div>
-                </div>
-                <div class="trans-row__detail">
-                  ${p.transport && p.transport.train ? `
-                    <b>${esc(p.transport.train.nearest_station || "")}</b> · 约 ${esc(p.transport.train.duration || "")}
-                    <div class="note">${esc(p.transport.train.notes || "")}</div>
-                  ` : `<span class="faint">暂无推荐车次</span>`}
-                </div>
-                <span class="trans-row__pri p3">优先 3</span>
-              </div>
+              ${getAIRecTag(transport)}
+              ${evWarnHtml}
+              ${evHtml}
+              ${flightHtml}
+              ${trainDistHtml}
             </div>
           </div>
 
-          <!-- 右栏：攻略来源 + 玩后反馈（点击已游玩后展开） -->
           <div>
             <div class="wish-card reveal" style="margin-bottom:20px">
-              <h4>🔍 攻略来源（需 AI 搜索填充内容）</h4>
-              <p class="faint" style="font-size:.82rem;margin-bottom:12px">
-                以下标签对应搜索平台：小红书 · 抖音 · 美团 · 高德 · 去哪儿 · 携程。
-                框架已预留 <code>guides[]</code> 数据位，留给 AI 并行开发：从各平台抓取热门攻略摘要。
-              </p>
-              <div class="guide-row">
-                ${(p.sources||[]).map(s => {
-                  const cls = ({小红书:"xhs",抖音:"dy",美团:"mt",高德:"gd",去哪儿:"qnr",携程:"ctrip"})[s] || "";
-                  return `<span class="source-chip ${cls}">${esc(s)}</span>`;
-                }).join("") || `<span class="faint italic">暂无来源标签</span>`}
+              <h4>🔍 攻略来源 · 6 平台交叉比对</h4>
+              <div class="chip-row" data-pid="${esc(p.id)}" id="chipRow-${esc(p.id)}">
+                ${guideSources.map(s => {
+                  const cls = SOURCE_CHIP_CLASS[s] || "";
+                  return `<button type="button" class="source-chip ${cls}" data-src="${esc(s)}" data-pid="${esc(p.id)}" style="border:none;cursor:pointer">${esc(s)}</button>`;
+                }).join("")}
               </div>
-              <div class="guide-row" style="border:none;margin-top:10px;padding-top:4px">
-                <button class="btn btn--small btn--ghost" type="button" onclick="alert('[框架占位] AI 一键攻略：从上面平台搜索「${esc(p.name)} 旅游攻略」，汇总最佳路线、避坑、必吃。')">
-                  🤖 AI 一键生成攻略
+              <div class="source-summary-wrap" id="srcSum-${esc(p.id)}" style="display:none;margin-bottom:14px"></div>
+              <div style="margin-bottom:14px">
+                <button class="btn btn--primary ai-guide-btn" type="button" data-aiid="${esc(p.id)}" style="width:100%;justify-content:center">
+                  🤖 ${p.guides && Object.keys(p.guides).length ? '重新生成攻略（从知识库加载优先）' : 'AI 一键生成攻略'}
                 </button>
               </div>
-              <!-- 攻略内容占位 -->
-              <div class="card card--inset" style="margin-top:14px;padding:16px 18px">
-                <p class="faint" style="font-size:.88rem;line-height:1.75;font-style:italic">
-                  攻略详情加载中……<br/>
-                  这里将展示：必玩景点排序、避坑提醒、预算拆解、每日行程建议、
-                  以及各攻略的共识项和争议项（用颜色区分）。
-                </p>
+              <div class="ai-guide-area" id="aiArea-${esc(p.id)}">
+                ${(p.guides && Object.keys(p.guides).length) ? renderGuideAccordion(p.guides) : `
+                  <div class="card card--inset" style="padding:16px 18px;background:var(--bg-soft);border-style:dashed">
+                    <p class="faint" style="font-size:.88rem;line-height:1.75;font-style:italic">
+                      👆 点击上方「AI 一键生成攻略」<br/>
+                      将自动搜索 6 大平台 → 交叉比对 → 生成：📅 行程 / ⚠️ 避坑 / 🍜 美食 / 💰 预算 / 📸 机位
+                    </p>
+                  </div>
+                `}
               </div>
             </div>
 
@@ -994,27 +2199,26 @@ document.addEventListener("DOMContentLoaded", async function () {
               ${p.converted_to_visited ? `
                 <div class="rating-row">
                   <label>师豪评分</label>
-                  <input type="range" min="0" max="10" step="0.1" value="0"/>
-                  <span class="val">0.0</span>
+                  <input type="range" class="rate-range" min="0" max="10" step="0.1" value="${p.visited_date?.rating_him||0}"/>
+                  <span class="val">${parseFloat(p.visited_date?.rating_him||0).toFixed(1)}</span>
                 </div>
                 <div class="rating-row">
                   <label>佳力评分</label>
-                  <input type="range" min="0" max="10" step="0.1" value="0"/>
-                  <span class="val">0.0</span>
+                  <input type="range" class="rate-range" min="0" max="10" step="0.1" value="${p.visited_date?.rating_her||0}"/>
+                  <span class="val">${parseFloat(p.visited_date?.rating_her||0).toFixed(1)}</span>
                 </div>
-                <div class="quick-add" style="margin-top:12px">
-                  <div class="quick-add__field quick-add__field--event">
-                    <label class="quick-add__label">一句话感受</label>
-                    <input type="text" placeholder="这次旅行最打动我们的是……"/>
-                  </div>
+                <div style="margin-top:12px">
+                  <label class="faint" style="font-size:.84rem;font-family:var(--ff-accent);font-style:italic">一句话感受</label>
+                  <input type="text" value="${esc(p.visited_date?.review||'')}" placeholder="这次旅行最打动我们的是……" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-sm);font-family:inherit;font-size:.94rem;margin-top:4px"/>
                 </div>
                 <p class="kicker" style="margin:18px 0 10px">🍜 美食打卡（可点击标签追加）</p>
                 <div class="food-chips">
-                  <span class="food-chip">+ 添加</span>
+                  ${((p.visited_date?.foods)||[]).map(f=>`<span class="food-chip">${esc(f)}</span>`).join('')}
+                  <span class="food-chip" style="border-style:dashed">+ 添加</span>
                 </div>
                 <div class="btn-row">
-                  <button class="btn btn--small btn--primary" type="button">💾 保存感受</button>
-                  <button class="btn btn--small btn--ghost" type="button">📷 上传照片</button>
+                  <button class="btn btn--small btn--primary save-feel-btn" data-sid="${esc(p.id)}" type="button">💾 保存感受</button>
+                  <button class="btn btn--small btn--ghost upload-photo-btn" data-uid="${esc(p.id)}" type="button">📷 上传照片</button>
                 </div>
               ` : `
                 <p class="muted" style="font-size:.9rem;line-height:1.75">
@@ -1029,35 +2233,142 @@ document.addEventListener("DOMContentLoaded", async function () {
           </div>
         </div>
       </article>
-    `).join("");
+    `;
+    }).join("");
 
-    // 绑定 wish-tab 切换
+    bindWishlistEvents();
+    bindTopBarEvents();
+    if (LoveNest.initReveal) LoveNest.initReveal();
+  }
+
+  function bindTopBarEvents() {
+    const seasonBtns = document.querySelectorAll("#seasonTabs button");
+    seasonBtns.forEach(btn => {
+      btn.onclick = () => {
+        currentSeason = btn.getAttribute("data-season");
+        renderWishlist(currentSeason==='all' ? WISHLIST : WISHLIST.filter(p => (p.best_season||'').includes(currentSeason)));
+      };
+    });
+    const addBtn = document.getElementById("addPlaceBtn");
+    if (addBtn) addBtn.onclick = openAddPlaceModal;
+    const exitBtn = document.getElementById("exitEditModeBtn");
+    if (exitBtn) exitBtn.onclick = () => { wishEditMode = false; renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason))); };
+    const hintBtn = document.getElementById("hintLongPress");
+    if (hintBtn) hintBtn.onclick = () => {
+      wishEditMode = true;
+      renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
+    };
+  }
+
+  function bindWishlistEvents() {
+    const tabsRoot = document.getElementById("wishTabs");
+    const panelsRoot = document.getElementById("wishPanels");
+    if (!tabsRoot || !panelsRoot) return;
+
     tabsRoot.querySelectorAll(".wish-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        const id = tab.getAttribute("data-wish");
+      const id = tab.getAttribute("data-wish");
+
+      const startLP = (e) => {
+        clearTimeout(longPressTimer);
+        longPressTimer = setTimeout(() => {
+          wishEditMode = true;
+          renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
+        }, 800);
+      };
+      const cancelLP = () => clearTimeout(longPressTimer);
+      tab.addEventListener("mousedown", startLP);
+      tab.addEventListener("touchstart", startLP, {passive:true});
+      tab.addEventListener("mouseup", cancelLP);
+      tab.addEventListener("mouseleave", cancelLP);
+      tab.addEventListener("touchend", cancelLP);
+      tab.addEventListener("touchmove", cancelLP);
+      tab.addEventListener("contextmenu", (e) => { e.preventDefault(); });
+
+      tab.addEventListener("click", (e) => {
+        if (wishEditMode) return;
         tabsRoot.querySelectorAll(".wish-tab").forEach(t => t.classList.toggle("is-active", t === tab));
         panelsRoot.querySelectorAll(".wish-panel").forEach(pan => {
           pan.classList.toggle("is-active", pan.getAttribute("data-panel") === id);
         });
-        // 滚到面板顶部，方便查看
         panelsRoot.scrollIntoView({behavior:"smooth",block:"start"});
       });
     });
 
-    // 绑定「标记为已游玩」按钮
-    panelsRoot.querySelectorAll(".mark-visited-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-id");
-        alert(`[框架占位] 景点「${id}」标记为已游玩的交互流程：\n\n` +
-              `1) 弹出向导：选择游玩日期区间 + 上传第一张封面\n` +
-              `2) 自动：在 visited 新建条目，wishlist 记录标记 converted=true\n` +
-              `3) 自动滚到「已旅游-相册视图」对应新分组，引导写一句话感受\n` +
-              `4) 右侧卡片自动展开为可编辑的双评分+美食表单`);
+    tabsRoot.querySelectorAll(".btn-del").forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute("data-del");
+        const place = WISHLIST.find(p=>p.id===id);
+        const hasGuides = place && place.guides && Object.keys(place.guides).length;
+        const html = `
+          <p style="line-height:1.75;color:var(--text);margin-bottom:16px">
+            确定删除「<b>${esc(place?.name||'景点')}</b>」吗？
+          </p>
+          <div style="padding:12px 14px;background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--r-sm);margin-bottom:16px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="keepGuides" ${hasGuides?'checked':''} style="accent-color:var(--sage);width:18px;height:18px"/>
+              <span style="font-size:.9rem"><b>保留攻略？</b>（下次添加同名景点会自动加载）</span>
+            </label>
+          </div>
+          <div class="btn-row" style="justify-content:flex-end">
+            <button class="btn btn--ghost" id="delCancel" type="button">取消</button>
+            <button class="btn btn--rose" id="delConfirm" type="button">✕ 确认删除</button>
+          </div>
+        `;
+        LoveNest.openModal('删除确认', html);
+        setTimeout(()=>{
+          document.getElementById('delCancel').onclick = () => LoveNest.closeModal();
+          document.getElementById('delConfirm').onclick = () => {
+            const keep = document.getElementById('keepGuides').checked;
+            WISHLIST = WISHLIST.filter(p => {
+              if (p.id !== id) return true;
+              if (keep && p.guides) { localStorage.setItem('lovenest:cached_guide:'+p.name, JSON.stringify(p.guides)); }
+              return false;
+            });
+            WISHLIST.forEach((p,idx)=>p.priority = idx+1);
+            saveWishlistData();
+            LoveNest.closeModal();
+            renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
+          };
+        },50);
+      };
+    });
+
+    const dragWraps = tabsRoot.querySelectorAll(".wish-tab-wrap");
+    dragWraps.forEach(wrap => {
+      wrap.addEventListener("dragstart", (e) => {
+        draggedTabId = wrap.getAttribute("data-wish-wrap");
+        wrap.style.opacity = "0.4";
+        e.dataTransfer.effectAllowed = "move";
+      });
+      wrap.addEventListener("dragend", () => { wrap.style.opacity = ""; draggedTabId = null; });
+      wrap.addEventListener("dragover", (e) => { e.preventDefault(); wrap.style.background = "var(--sage-tint)"; wrap.style.borderRadius = "var(--r-md)"; });
+      wrap.addEventListener("dragleave", () => { wrap.style.background = ""; wrap.style.borderRadius = ""; });
+      wrap.addEventListener("drop", (e) => {
+        e.preventDefault();
+        wrap.style.background = ""; wrap.style.borderRadius = "";
+        const targetId = wrap.getAttribute("data-wish-wrap");
+        if (!draggedTabId || draggedTabId === targetId) return;
+        const from = WISHLIST.findIndex(p=>p.id===draggedTabId);
+        const to = WISHLIST.findIndex(p=>p.id===targetId);
+        if (from<0||to<0) return;
+        const [moved] = WISHLIST.splice(from,1);
+        WISHLIST.splice(to,0,moved);
+        WISHLIST.forEach((p,idx)=>p.priority = idx+1);
+        saveWishlistData();
+        renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
       });
     });
 
-    // 绑定评分条的实时数字
-    panelsRoot.querySelectorAll('input[type="range"]').forEach(rng => {
+    panelsRoot.querySelectorAll(".mark-visited-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute("data-id");
+        openMarkVisitedWizard(id);
+      });
+    });
+
+    panelsRoot.querySelectorAll('input[type="range"].rate-range').forEach(rng => {
       const valEl = rng.parentElement.querySelector(".val");
       if (valEl) {
         valEl.textContent = parseFloat(rng.value).toFixed(1);
@@ -1065,9 +2376,60 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     });
 
-    if (LoveNest.initReveal) LoveNest.initReveal();
+    panelsRoot.querySelectorAll(".source-chip[data-src]").forEach(chip => {
+      chip.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const src = chip.getAttribute("data-src");
+        const pid = chip.getAttribute("data-pid");
+        const wrap = document.getElementById('srcSum-'+pid);
+        if (!wrap) return;
+        if (wrap.style.display !== "none" && wrap.dataset.openSrc === src) {
+          wrap.style.display = "none"; wrap.innerHTML = ""; wrap.dataset.openSrc = "";
+          chip.classList.remove("is-open");
+          return;
+        }
+        document.querySelectorAll('.source-summary-wrap').forEach(w=>{w.style.display='none';w.innerHTML='';w.dataset.openSrc='';});
+        document.querySelectorAll('.source-chip[data-src]').forEach(c=>c.classList.remove("is-open"));
+        chip.classList.add("is-open");
+        const cons = SRC_CONSENSUS[src] || ['该平台攻略内容详实','用户反馈较为真实','适合作为参考之一'];
+        const disp = SRC_DISPUTE[src] || ['细节呈现略有差异，建议交叉比对'];
+        wrap.dataset.openSrc = src;
+        wrap.style.display = "block";
+        wrap.innerHTML = `
+          <div class="source-summary">
+            <div class="source-summary__head">
+              <span class="source-chip ${SOURCE_CHIP_CLASS[src]||''}">${esc(src)}</span>
+              <span class="src-name" style="margin-left:8px">${esc(src)}攻略 · 交叉比对摘要</span>
+              <span class="src-count" style="margin-left:auto">3 共识 / 1 争议</span>
+            </div>
+            <ul class="consensus-list">
+              ${cons.map(c=>`<li><b>共识：</b>${esc(c)}</li>`).join('')}
+            </ul>
+            <div class="dispute-item">
+              <div class="dispute-item__q">争议项</div>
+              <div class="dispute-item__opts">
+                ${disp.map(d=>`
+                  <div class="dispute-item__opt is-major">
+                    <span class="src-tag">${esc(src)}</span><span>${esc(d)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    });
+
+    panelsRoot.querySelectorAll(".ai-guide-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        runAIGuideGen(btn.getAttribute("data-aiid"));
+      });
+    });
   }
+
   renderWishlist(WISHLIST);
+
 
   /* ---------- 导航栏注入：把「旅游相册」加入 topnav ----------
      （实际上 nav.js 的 NAV 数组是源，这里仅在页面渲染后把 active 高亮做对。
