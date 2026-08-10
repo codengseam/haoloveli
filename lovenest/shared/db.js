@@ -22,6 +22,7 @@
   if (!window.LoveNest) window.LoveNest = {};
   // 运行时配置：localStorage 里的优先级 > 代码里写死的（无需改源码即可切换到云端）
   //   LOVENEST_SUPABASE_RUNTIME_CFG = { PROJECT_URL, ANON_PUBLIC_KEY, COUPLE_ID }
+  // 安全合并策略：逐项校验后才覆盖，防止 localStorage 脏数据污染源码配置
   const BASE_CFG = window.LOVENEST_SUPABASE_CONFIG || {};
   const RUNTIME_CFG_KEY = "lovenest:runtime:supabase-config";
   let _runtimeCfg = null;
@@ -29,7 +30,38 @@
     const raw = localStorage.getItem(RUNTIME_CFG_KEY);
     if (raw) _runtimeCfg = JSON.parse(raw);
   } catch (e) { _runtimeCfg = null; }
-  const CFG = Object.assign({}, BASE_CFG, _runtimeCfg || {});
+
+  // 逐项安全合并：只有合法值才覆盖 BASE_CFG
+  function safeMergeCfg(base, runtime) {
+    const merged = Object.assign({}, base);
+    const rt = runtime || {};
+    // PROJECT_URL：非空 + 不含占位符才覆盖
+    if (typeof rt.PROJECT_URL === "string" && rt.PROJECT_URL.length > 0 && !rt.PROJECT_URL.includes("YOUR-PROJECT")) {
+      merged.PROJECT_URL = rt.PROJECT_URL;
+    }
+    // ANON_PUBLIC_KEY：非空 + 不含占位符才覆盖
+    if (typeof rt.ANON_PUBLIC_KEY === "string" && rt.ANON_PUBLIC_KEY.length > 0 && !rt.ANON_PUBLIC_KEY.includes("YOUR-ANON")) {
+      merged.ANON_PUBLIC_KEY = rt.ANON_PUBLIC_KEY;
+    }
+    // COUPLE_ID：非空即覆盖
+    if (typeof rt.COUPLE_ID === "string" && rt.COUPLE_ID.length > 0) {
+      merged.COUPLE_ID = rt.COUPLE_ID;
+    }
+    // MAX_RETRY：>= 0 才覆盖
+    if (typeof rt.MAX_RETRY === "number" && rt.MAX_RETRY >= 0 && Number.isFinite(rt.MAX_RETRY)) {
+      merged.MAX_RETRY = rt.MAX_RETRY;
+    }
+    // QUEUE_FLUSH_INTERVAL_MS：>= 1000 才覆盖
+    if (typeof rt.QUEUE_FLUSH_INTERVAL_MS === "number" && rt.QUEUE_FLUSH_INTERVAL_MS >= 1000 && Number.isFinite(rt.QUEUE_FLUSH_INTERVAL_MS)) {
+      merged.QUEUE_FLUSH_INTERVAL_MS = rt.QUEUE_FLUSH_INTERVAL_MS;
+    }
+    // REFRESH_INTERVAL_MS：>= 10000 才覆盖
+    if (typeof rt.REFRESH_INTERVAL_MS === "number" && rt.REFRESH_INTERVAL_MS >= 10000 && Number.isFinite(rt.REFRESH_INTERVAL_MS)) {
+      merged.REFRESH_INTERVAL_MS = rt.REFRESH_INTERVAL_MS;
+    }
+    return merged;
+  }
+  let CFG = safeMergeCfg(BASE_CFG, _runtimeCfg);
 
   const CACHE_PREFIX = "lovenest:db:cache:";
   const QUEUE_KEY = "lovenest:db:queue";
@@ -53,8 +85,11 @@
   /* 对外：允许页面（例如部署向导）在运行时写入新配置，并返回新的 merged 配置 */
   function applyRuntimeConfig(patch) {
     if (!patch || typeof patch !== "object") return Object.assign({}, CFG);
-    Object.assign(CFG, patch);
-    try { localStorage.setItem(RUNTIME_CFG_KEY, JSON.stringify(_runtimeCfg = Object.assign({}, _runtimeCfg || {}, patch))); } catch (e) {}
+    // 先更新 _runtimeCfg（持久化时保留 patch 原样，下次 safeMerge 会过滤）
+    _runtimeCfg = Object.assign({}, _runtimeCfg || {}, patch);
+    try { localStorage.setItem(RUNTIME_CFG_KEY, JSON.stringify(_runtimeCfg)); } catch (e) {}
+    // 使用安全合并重建 CFG
+    CFG = safeMergeCfg(BASE_CFG, _runtimeCfg);
     // 客户端缓存要重连（下次 ensureClient 会用新 URL/Key）
     supabase = null;
     return Object.assign({}, CFG);
@@ -62,7 +97,8 @@
   function clearRuntimeConfig() {
     try { localStorage.removeItem(RUNTIME_CFG_KEY); } catch (e) {}
     _runtimeCfg = null;
-    Object.keys(BASE_CFG).forEach(k => { CFG[k] = BASE_CFG[k]; });
+    // 重新从 BASE_CFG 安全合并（此时 runtime 为 null，直接用纯 BASE_CFG）
+    CFG = safeMergeCfg(BASE_CFG, null);
     supabase = null;
   }
   function cacheRead(table) {

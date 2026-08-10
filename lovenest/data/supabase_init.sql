@@ -392,6 +392,101 @@ begin
 end $$;
 
 /* =========================================================================
+   🔧 补丁 2（PATCH 2）：账号系统 + 站点配置表
+   如果之前已执行过初版 SQL，请单独执行下面这段；
+   若首次全量初始化，直接跟着前面的代码一起执行也不会有冲突。
+   新增：
+     - site_accounts 表（多用户/角色账号管理）
+     - site_config   表（系统级 key-value 配置）
+     - 对应的 updated_at 触发器 + RLS 匿名全权限策略
+     - 3 条种子账号 + 从 couples 表同步已有字段到 site_config
+   ========================================================================= */
+
+-- ---------- P2-1. site_accounts 表：站点账号 ----------
+create table if not exists public.site_accounts (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples(id) on delete cascade default 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',
+  username text not null,
+  password text not null,
+  display_name text,
+  role text not null default 'user' check (role in ('admin','user')),
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists idx_site_accounts_username on public.site_accounts(username);
+create index if not exists idx_site_accounts_couple on public.site_accounts(couple_id);
+
+-- ---------- P2-2. site_config 表：系统级 key-value 配置 ----------
+create table if not exists public.site_config (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples(id) on delete cascade default 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',
+  cfg_key text not null,
+  cfg_value text,
+  updated_by text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists idx_site_config_couple_key on public.site_config(couple_id, cfg_key);
+
+-- ---------- P2-3. updated_at 触发器 ----------
+do $$
+declare t text;
+begin
+  foreach t in array array['site_accounts','site_config'] loop
+    execute format('drop trigger if exists handle_updated_at on public.%I;
+                    create trigger handle_updated_at before update on public.%I
+                    for each row execute function moddatetime(''updated_at'');', t, t);
+  end loop;
+end $$;
+
+-- ---------- P2-4. RLS（行级安全）----------
+do $$
+declare t text;
+begin
+  foreach t in array array['site_accounts','site_config'] loop
+    execute format('alter table public.%I enable row level security;', t);
+    execute format('drop policy if exists "anon allow all for couple" on public.%I;
+                    create policy "anon allow all for couple" on public.%I
+                    for all to anon using (true) with check (true);', t, t);
+  end loop;
+end $$;
+
+-- ---------- P2-5. 种子账号数据 ----------
+-- admin/admin（后台管理员）、djl/19990108（佳力）、dxsh/19980720（师豪）
+insert into public.site_accounts (couple_id, username, password, display_name, role, is_active) values
+  ('aaaa1111-bbbb-cccc-dddd-eeeeffff0001','admin','admin','后台管理员','admin',true),
+  ('aaaa1111-bbbb-cccc-dddd-eeeeffff0001','djl','19990108','佳力','user',true),
+  ('aaaa1111-bbbb-cccc-dddd-eeeeffff0001','dxsh','19980720','师豪','user',true)
+on conflict (username) do update set
+  password    = excluded.password,
+  display_name= excluded.display_name,
+  role        = excluded.role,
+  is_active   = excluded.is_active,
+  updated_at  = now();
+
+-- ---------- P2-6. 从 couples 表同步已有字段到 site_config ----------
+-- 伴侣姓名 A / 伴侣姓名 B / 纪念日日期 / 站点标题 四个字段同步为 key-value
+insert into public.site_config (couple_id, cfg_key, cfg_value, updated_by)
+select c.id, 'partner_a_name', c.partner_a_name, 'system-migrate'
+from public.couples c where c.id = 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001'
+on conflict (couple_id, cfg_key) do nothing;
+
+insert into public.site_config (couple_id, cfg_key, cfg_value, updated_by)
+select c.id, 'partner_b_name', c.partner_b_name, 'system-migrate'
+from public.couples c where c.id = 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001'
+on conflict (couple_id, cfg_key) do nothing;
+
+insert into public.site_config (couple_id, cfg_key, cfg_value, updated_by)
+select c.id, 'anniversary_date', c.anniversary_date::text, 'system-migrate'
+from public.couples c where c.id = 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001' and c.anniversary_date is not null
+on conflict (couple_id, cfg_key) do nothing;
+
+insert into public.site_config (couple_id, cfg_key, cfg_value, updated_by)
+values ('aaaa1111-bbbb-cccc-dddd-eeeeffff0001','site_title','豪❤力 · 爱的小窝','system-seed')
+on conflict (couple_id, cfg_key) do nothing;
+
+/* =========================================================================
    完成 ✅
    验证：
    select count(*) from public.bank_records;     → 应该是 8
@@ -399,4 +494,6 @@ end $$;
    select count(*) from public.milestone_items;   → 应该是 14
    select count(*) from public.lovemap_cards;     → 应该是 6
    select count(*) from public.peace_signatures;  → 应该是 2
+   select count(*) from public.site_accounts;     → 应该是 3（补丁2新增）
+   select count(*) from public.site_config;       → 应该是 4（补丁2新增）
    ========================================================================= */

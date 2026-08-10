@@ -19,8 +19,8 @@
 
   // ====== ✏️  请在这里填写你的 Supabase 配置  ======
   window.MS_ENV_CONFIG = {
-    PROJECT_URL: "https://YOUR-PROJECT-REFERENCE-ID.supabase.co",
-    ANON_PUBLIC_KEY: "YOUR-ANON-PUBLIC-JWT-KEY-REPLACE-ME"
+    PROJECT_URL: "https://dfycvmzzbmuuyhsamsxp.supabase.co",
+    ANON_PUBLIC_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmeWN2bXp6Ym11dXloc2Ftc3hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwMzA0MTUsImV4cCI6MjEwMTYwNjQxNX0.Mlye9gUGefBgvvHBc2TOCLaKDcxJCcSM3qHVTY2CZd8"
   };
   // ====================================================
 

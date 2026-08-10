@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>后台管理 · 豪❤力 · 爱的小窝</title>
+<meta name="description" content="爱的小窝后台管理面板：站点配置、账号管理、云端同步状态一览。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* ====== 登录区 ====== */
+  .admin-login-wrap{
+    min-height:100vh;display:grid;place-items:center;padding:40px 22px;
+    background:
+      radial-gradient(900px 500px at 12% 0%,rgba(157,174,147,.22),transparent 60%),
+      radial-gradient(700px 460px at 88% 30%,rgba(198,163,154,.20),transparent 55%),
+      linear-gradient(180deg,var(--bg-cream),var(--bg-deep));
+  }
+  .admin-login{
+    width:100%;max-width:420px;background:var(--bg-card);
+    border:1px solid var(--line-soft);border-radius:var(--r-lg);
+    padding:38px 32px;box-shadow:var(--shadow-lg);
+  }
+  .admin-login__head{text-align:center;margin-bottom:28px}
+  .admin-login__head .brand__mark{
+    width:48px;height:48px;border-radius:50%;margin:0 auto 14px;
+    background:linear-gradient(135deg,var(--taupe),#8A7A64);
+    display:grid;place-items:center;color:var(--white);font-size:1.1rem;
+    box-shadow:0 4px 14px rgba(138,122,100,.3);
+  }
+  .admin-login__title{font-family:var(--ff-display);font-size:1.5rem;color:var(--ink);margin-bottom:6px}
+  .admin-login__sub{font-family:var(--ff-accent);font-style:italic;font-size:.88rem;color:var(--muted)}
+  .login-field{margin-bottom:16px}
+  .login-field label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:500;letter-spacing:.02em}
+  .login-field .pwd-wrap{position:relative}
+  .login-field input{
+    width:100%;padding:13px 14px;border-radius:var(--r-sm);border:1px solid var(--line);
+    background:var(--white);font-family:inherit;font-size:.98rem;color:var(--ink);
+    transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+    min-height:46px;
+  }
+  .login-field input:focus{outline:none;border-color:var(--taupe);box-shadow:0 0 0 3px rgba(176,162,143,.18)}
+  .pwd-toggle{
+    position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    width:36px;height:36px;border-radius:50%;border:none;background:transparent;
+    color:var(--muted);font-size:1rem;cursor:pointer;transition:color .2s;
+  }
+  .pwd-toggle:hover{color:var(--taupe)}
+  .login-error{
+    padding:10px 14px;border-radius:var(--r-sm);margin-bottom:16px;
+    background:var(--rose-tint);color:var(--rose-deep);border:1px solid var(--rose-soft);
+    font-size:.88rem;display:none;
+  }
+  .login-error.is-visible{display:block}
+
+  /* ====== 后台主界面 ====== */
+  .admin-shell{display:none}
+  .admin-shell.is-visible{display:block}
+
+  .admin-topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(237,230,218,.92);
+    backdrop-filter:saturate(160%) blur(14px);
+    -webkit-backdrop-filter:saturate(160%) blur(14px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .admin-topbar__inner{
+    max-width:var(--container);margin:0 auto;padding:0 22px;
+    display:flex;align-items:center;gap:16px;height:64px;flex-wrap:wrap;
+  }
+  .admin-topbar__brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .admin-topbar__mark{
+    width:32px;height:32px;border-radius:50%;
+    background:linear-gradient(135deg,var(--taupe),#8A7A64);
+    display:grid;place-items:center;color:var(--white);font-size:.85rem;
+    box-shadow:0 2px 8px rgba(138,122,100,.28);
+  }
+  .admin-topbar__title{font-family:var(--ff-display);font-weight:600;font-size:1.02rem;color:var(--ink)}
+  .admin-topbar__title small{font-family:var(--ff-accent);font-style:italic;font-weight:400;font-size:.72rem;color:var(--muted);display:block;letter-spacing:.08em}
+  .admin-topbar__spacer{flex:1}
+  .admin-topbar__right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .admin-welcome{font-size:.9rem;color:var(--muted)}
+  .admin-welcome b{color:var(--ink);font-weight:500}
+  .status-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 12px;border-radius:var(--r-pill);font-size:.78rem;
+    font-weight:500;letter-spacing:.02em;white-space:nowrap;
+  }
+  .status-badge--cloud{background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft)}
+  .status-badge--local{background:var(--taupe-soft);color:#6A5F4E;border:1px solid #C5B9A6}
+  .status-badge--cloud .dot,.status-badge--local .dot{
+    width:7px;height:7px;border-radius:50%;background:currentColor;
+  }
+  .btn-admin-logout{
+    border:1px solid var(--line);background:var(--bg-card);color:var(--muted);
+    font-size:.82rem;padding:7px 15px;border-radius:var(--r-pill);
+    transition:all .25s var(--ease);
+  }
+  .btn-admin-logout:hover{color:var(--rose-deep);border-color:var(--rose-soft);background:var(--rose-tint)}
+
+  /* ====== Tab 系统 ====== */
+  .admin-main{max-width:var(--container);margin:0 auto;padding:36px 22px 80px}
+  .tab-bar{
+    display:flex;gap:6px;margin-bottom:28px;padding:6px;
+    background:var(--bg-deep);border-radius:var(--r-pill);
+    border:1px solid var(--line-soft);overflow-x:auto;
+  }
+  .tab-btn{
+    flex:0 0 auto;padding:10px 20px;border-radius:var(--r-pill);border:none;
+    background:transparent;font-family:inherit;font-size:.92rem;color:var(--muted);
+    cursor:pointer;transition:all .25s var(--ease);white-space:nowrap;
+  }
+  .tab-btn:hover{color:var(--ink);background:var(--bg-card)}
+  .tab-btn.is-active{
+    background:linear-gradient(135deg,var(--taupe),#8A7A64);color:var(--white);
+    box-shadow:0 2px 10px rgba(138,122,100,.28);font-weight:500;
+  }
+  .tab-panel{display:none}
+  .tab-panel.is-active{display:block;animation:tabFadeIn .35s var(--ease)}
+  @keyframes tabFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .panel-head{margin-bottom:22px}
+  .panel-head h2{font-family:var(--ff-display);font-size:1.5rem;color:var(--ink);margin-bottom:6px}
+  .panel-head p{color:var(--muted);font-size:.95rem}
+
+  /* ====== 表单卡片 ====== */
+  .form-card{
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    padding:28px;box-shadow:var(--shadow-sm);margin-bottom:20px;
+  }
+  .form-card__title{
+    font-family:var(--ff-display);font-size:1.1rem;color:var(--ink);margin-bottom:4px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .form-card__title::before{
+    content:"";width:4px;height:18px;border-radius:2px;
+    background:linear-gradient(180deg,var(--taupe),#8A7A64);
+  }
+  .form-card__sub{font-size:.86rem;color:var(--muted);margin-bottom:22px;padding-left:12px}
+  .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 18px}
+  .form-grid--full{grid-template-columns:1fr}
+  @media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+  .fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .fld label{font-size:.82rem;color:var(--muted);font-weight:500;letter-spacing:.02em}
+  .fld label .req{color:var(--rose-deep);margin-left:2px}
+  .fld input,.fld select,.fld textarea{
+    width:100%;padding:11px 13px;border-radius:var(--r-sm);border:1px solid var(--line);
+    background:var(--white);font-family:inherit;font-size:.94rem;color:var(--ink);
+    transition:border-color .25s var(--ease),box-shadow .25s var(--ease);
+    min-height:42px;
+  }
+  .fld input:focus,.fld select:focus,.fld textarea:focus{
+    outline:none;border-color:var(--taupe);box-shadow:0 0 0 3px rgba(176,162,143,.18)
+  }
+  .fld input:disabled,.fld select:disabled{
+    background:var(--bg-deep);color:var(--faint);cursor:not-allowed;
+  }
+  .fld textarea{min-height:86px;resize:vertical;line-height:1.65}
+  .fld__hint{font-size:.76rem;color:var(--faint);line-height:1.5}
+
+  .form-actions{
+    display:flex;gap:10px;justify-content:flex-end;margin-top:24px;
+    padding-top:18px;border-top:1px dashed var(--line-soft);flex-wrap:wrap;
+  }
+  .form-actions .spacer{flex:1}
+  .msg-toast{
+    position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
+    padding:12px 22px;border-radius:var(--r-pill);font-size:.9rem;font-weight:500;
+    box-shadow:var(--shadow-lg);z-index:200;opacity:0;pointer-events:none;
+    transition:all .35s var(--ease);
+  }
+  .msg-toast.is-visible{opacity:1;transform:translateX(-50%) translateY(0)}
+  .msg-toast--ok{background:var(--sage);color:var(--white)}
+  .msg-toast--warn{background:var(--terracotta);color:var(--white)}
+  .msg-toast--err{background:var(--rose);color:var(--white)}
+
+  /* ====== 只读配置展示 ====== */
+  .kv-list{
+    display:grid;grid-template-columns:auto 1fr;gap:0;
+    background:var(--bg-soft);border-radius:var(--r-md);
+    border:1px solid var(--line-soft);overflow:hidden;
+  }
+  .kv-list div{padding:12px 16px;border-bottom:1px solid var(--line-soft)}
+  .kv-list div:last-child,.kv-list div:nth-last-child(2){border-bottom:none}
+  .kv-list .k{color:var(--muted);font-size:.84rem;font-family:var(--ff-accent);font-style:italic;background:var(--bg-deep)}
+  .kv-list .v{color:var(--ink);font-family:ui-monospace,Consolas,monospace;font-size:.86rem;word-break:break-all}
+  .kv-list .v.mono{font-family:ui-monospace,Consolas,monospace}
+
+  /* ====== 账号表格 ====== */
+  .tbl-wrap{
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    overflow:hidden;box-shadow:var(--shadow-sm);
+  }
+  .tbl-toolbar{
+    display:flex;align-items:center;gap:10px;padding:16px 20px;
+    border-bottom:1px solid var(--line-soft);flex-wrap:wrap;
+  }
+  .tbl-toolbar .spacer{flex:1}
+  .tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+  .tbl thead{background:var(--bg-deep)}
+  .tbl th{
+    text-align:left;padding:12px 16px;font-weight:500;color:var(--muted);
+    font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;
+    border-bottom:1px solid var(--line);
+  }
+  .tbl td{
+    padding:14px 16px;border-bottom:1px solid var(--line-soft);color:var(--text);
+    vertical-align:middle;
+  }
+  .tbl tbody tr:last-child td{border-bottom:none}
+  .tbl tbody tr:hover{background:var(--bg-soft)}
+  .tbl__name{font-weight:500;color:var(--ink)}
+  .tbl__uname{font-family:ui-monospace,Consolas,monospace;font-size:.84rem;color:var(--muted)}
+  .role-chip{
+    display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:var(--r-pill);
+    font-size:.74rem;font-weight:500;letter-spacing:.02em;
+  }
+  .role-chip--admin{background:linear-gradient(135deg,var(--taupe),#8A7A64);color:var(--white)}
+  .role-chip--user{background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft)}
+  .active-chip{
+    display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:var(--r-pill);
+    font-size:.74rem;font-weight:500;
+  }
+  .active-chip--ok{background:#E6ECE0;color:#5C6E53}
+  .active-chip--no{background:var(--rose-tint);color:var(--rose-deep)}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .row-btn{
+    padding:5px 11px;border-radius:var(--r-sm);border:1px solid var(--line);
+    background:var(--bg-soft);font-size:.8rem;color:var(--muted);cursor:pointer;
+    transition:all .2s var(--ease);font-family:inherit;
+  }
+  .row-btn:hover{border-color:var(--sage);color:var(--sage-deep);background:var(--sage-tint)}
+  .row-btn--danger:hover{border-color:var(--rose);color:var(--rose-deep);background:var(--rose-tint)}
+  .row-btn:disabled{opacity:.45;cursor:not-allowed}
+  .row-btn:disabled:hover{border-color:var(--line);color:var(--muted);background:var(--bg-soft)}
+  .tbl-empty{padding:48px 20px;text-align:center;color:var(--muted)}
+  .tbl-empty .ico{font-size:2.2rem;margin-bottom:10px;opacity:.5}
+
+  /* ====== 账号编辑弹窗 ====== */
+  .acc-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 16px}
+  .acc-form--full{grid-template-columns:1fr}
+  @media(max-width:640px){.acc-form{grid-template-columns:1fr}}
+  .acc-form .fld--pwd{grid-column:1/-1;position:relative}
+  .acc-form .fld--pwd .pwd-toggle{right:10px;top:calc(50% + 10px)}
+
+  @media(max-width:768px){
+    .admin-topbar__inner{height:auto;padding:12px 16px;gap:10px}
+    .admin-login{padding:28px 22px}
+    .form-card{padding:20px}
+    .tbl{font-size:.86rem}
+    .tbl th,.tbl td{padding:10px 12px}
+    .tbl th:nth-child(5),.tbl td:nth-child(5),
+    .tbl th:nth-child(6),.tbl td:nth-child(6){display:none}
+  }
+</style>
+</head>
+<body data-page="admin">
+<main>
+
+<!-- ==============================================
+     登录区：data-page="admin" 由 nav.js 做了尽早跳转到 login.html?needAdmin=1
+     这里保留一个额外的前台登录框（可选：从 login.html 跳过来时直接显示）
+     ============================================== -->
+<section class="admin-login-wrap" id="loginSection" style="display:none">
+  <div class="admin-login">
+    <div class="admin-login__head">
+      <div class="brand__mark">🛡</div>
+      <h1 class="admin-login__title">后台管理登录</h1>
+      <p class="admin-login__sub">仅管理员角色可访问</p>
+    </div>
+    <div class="login-error" id="loginErr">账号或密码错误，或该账号无管理员权限。</div>
+    <form id="loginForm" onsubmit="return false" autocomplete="off">
+      <div class="login-field">
+        <label for="lf-username">用户名</label>
+        <input id="lf-username" type="text" placeholder="请输入用户名" autocomplete="username" />
+      </div>
+      <div class="login-field">
+        <label for="lf-password">密码</label>
+        <div class="pwd-wrap">
+          <input id="lf-password" type="password" placeholder="请输入密码" autocomplete="current-password" />
+          <button type="button" class="pwd-toggle" id="lfTogglePwd" aria-label="显示/隐藏密码">👁</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn--primary btn--block" id="lfSubmitBtn" style="min-height:46px;margin-top:6px">
+        进入后台
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:.8rem;color:var(--faint);font-family:var(--ff-accent);font-style:italic">
+        登录后即跳转至 <a href="login.html" style="color:var(--taupe);text-decoration:underline">登录页</a> 走统一鉴权流程
+      </p>
+    </form>
+  </div>
+</section>
+
+<!-- ==============================================
+     后台主界面（需管理员权限才渲染）
+     ============================================== -->
+<div class="admin-shell" id="adminShell">
+
+  <!-- ====== 顶部栏 ====== -->
+  <header class="admin-topbar">
+    <div class="admin-topbar__inner">
+      <div class="admin-topbar__brand">
+        <div class="admin-topbar__mark">🛡</div>
+        <div class="admin-topbar__title">
+          后台管理
+          <small>LoveNest · Admin Panel</small>
+        </div>
+      </div>
+      <div class="admin-topbar__spacer"></div>
+      <div class="admin-topbar__right">
+        <span class="admin-welcome">欢迎，<b id="adminWho">—</b></span>
+        <span class="status-badge" id="cloudStatus">
+          <span class="dot"></span>
+          <span id="cloudStatusText">检测中…</span>
+        </span>
+        <button type="button" class="btn-admin-logout" id="adminLogoutBtn">退出</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== 主体 ====== -->
+  <div class="admin-main">
+
+    <!-- Tab 切换 -->
+    <nav class="tab-bar" role="tablist">
+      <button type="button" class="tab-btn is-active" data-tab="cfg" role="tab" aria-selected="true">
+        ⚙️ 站点配置
+      </button>
+      <button type="button" class="tab-btn" data-tab="acc" role="tab" aria-selected="false">
+        👥 账号管理
+      </button>
+    </nav>
+
+    <!-- ===== Tab 1：站点配置 ===== -->
+    <section class="tab-panel is-active" id="tab-cfg" role="tabpanel">
+      <div class="panel-head">
+        <h2>站点配置</h2>
+        <p>管理伴侣姓名、纪念日、站点标题，以及查看 Supabase 运行时参数（只读）。</p>
+      </div>
+
+      <!-- 基础信息 -->
+      <div class="form-card">
+        <h3 class="form-card__title">基础信息</h3>
+        <p class="form-card__sub">修改后会同时写入云端 site_config 表和本机缓存；刷新页面后所有页面生效。</p>
+        <div class="form-grid">
+          <div class="fld">
+            <label for="cfg-partner-a">伴侣姓名（男方 · 师豪）<span class="req">*</span></label>
+            <input id="cfg-partner-a" type="text" placeholder="如：师豪" />
+          </div>
+          <div class="fld">
+            <label for="cfg-partner-b">伴侣姓名（女方 · 佳力）<span class="req">*</span></label>
+            <input id="cfg-partner-b" type="text" placeholder="如：佳力" />
+          </div>
+          <div class="fld">
+            <label for="cfg-anniv">相恋纪念日</label>
+            <input id="cfg-anniv" type="date" />
+          </div>
+          <div class="fld">
+            <label for="cfg-title">站点标题</label>
+            <input id="cfg-title" type="text" placeholder="如：豪❤力 · 爱的小窝" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost btn--small" id="cfgResetBtn">↺ 重置为当前值</button>
+          <div class="spacer"></div>
+          <button type="button" class="btn btn--primary" id="cfgSaveBtn">💾 保存配置</button>
+        </div>
+      </div>
+
+      <!-- Supabase 运行时参数（只读） -->
+      <div class="form-card">
+        <h3 class="form-card__title">Supabase 运行时参数</h3>
+        <p class="form-card__sub">展示当前生效的运行时配置（源码 + localStorage 运行时合并结果）。仅查看，不可直接编辑。</p>
+        <div class="kv-list" id="cfgRuntimeKv">
+          <!-- JS 渲染 -->
+        </div>
+        <div class="form-actions">
+          <span class="fld__hint" style="margin-right:auto">
+            💡 如需临时切换 Supabase 项目，可在下方写入 Couple ID（运行时持久化到 localStorage，无需改源码）。
+          </span>
+          <button type="button" class="btn btn--ghost btn--small" id="cfgRefreshBtn">🔄 刷新</button>
+        </div>
+      </div>
+
+      <!-- Couple ID 运行时写入 -->
+      <div class="form-card">
+        <h3 class="form-card__title">Couple ID · 运行时写入</h3>
+        <p class="form-card__sub">
+          此操作会把 Couple ID 写入浏览器 localStorage（<code>lovenest:runtime:supabase-config</code>），
+          仅对当前浏览器生效；如需全局改动请改 <code>shared/config.js</code>。
+        </p>
+        <div class="form-grid form-grid--full">
+          <div class="fld">
+            <label for="cfg-couple-id">Couple ID（UUID）</label>
+            <input id="cfg-couple-id" type="text" placeholder="如：aaaa1111-bbbb-cccc-dddd-eeeeffff0001" />
+            <p class="fld__hint">
+              当前生效值：<code id="cfg-current-cid" style="background:rgba(0,0,0,.05);padding:1px 6px;border-radius:3px;font-size:.8em">—</code>
+            </p>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost btn--small" id="cfgClearRuntimeBtn">🗑 清空所有运行时覆盖（恢复源码配置）</button>
+          <div class="spacer"></div>
+          <button type="button" class="btn btn--rose" id="cfgWriteCidBtn">写入运行时</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Tab 2：账号管理 ===== -->
+    <section class="tab-panel" id="tab-acc" role="tabpanel">
+      <div class="panel-head">
+        <h2>账号管理</h2>
+        <p>新增 / 编辑 / 停用 / 删除站点账号。<b>admin 账号不可删除</b>，用于兜底防止后台锁死。</p>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <span class="status-badge" id="accModeBadge" style="margin-right:0">
+            <span class="dot"></span><span id="accModeText">模式检测中…</span>
+          </span>
+          <span class="spacer"></span>
+          <button type="button" class="btn btn--ghost btn--small" id="accRefreshBtn">🔄 刷新</button>
+          <button type="button" class="btn btn--primary" id="accAddBtn">＋ 新增账号</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:22%">账号信息</th>
+                <th style="width:12%">角色</th>
+                <th style="width:10%">状态</th>
+                <th style="width:18%">更新时间</th>
+                <th style="width:10%">模式</th>
+                <th style="width:28%;text-align:right">操作</th>
+              </tr>
+            </thead>
+            <tbody id="accTbody">
+              <!-- JS 渲染 -->
+            </tbody>
+          </table>
+        </div>
+        <div class="tbl-empty" id="accEmpty" style="display:none">
+          <div class="ico">📭</div>
+          <p>暂无账号</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="msg-toast" id="msgToast" role="status" aria-live="polite"></div>
+
+</main>
+
+<!-- Supabase + 数据访问层 + 统一导航 + 工具库 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="../env-config.js"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const AUTH = window.LoveNest && window.LoveNest.auth;
+  const DB = window.LoveNest && window.LoveNest.db;
+
+  /* ---------------- Toast ---------------- */
+  let _toastTimer = null;
+  function toast(msg, kind, duration) {
+    const el = $("msgToast"); if (!el) return;
+    kind = kind || "ok"; duration = duration || 2400;
+    el.className = "msg-toast msg-toast--" + kind + " is-visible";
+    el.textContent = msg;
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.classList.remove("is-visible"), duration);
+  }
+
+  /* ---------------- HTML escape ---------------- */
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+      ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  }
+
+  /* ---------------- 登录区（可选前台登录）---------------- */
+  function initLoginFront() {
+    const sec = $("loginSection"); if (!sec) return;
+    // 默认不显示（统一由 nav.js + login.html 走鉴权）
+    sec.style.display = "none";
+    const form = $("loginForm"); if (!form) return;
+    const pwdInp = $("lf-password");
+    $("lfTogglePwd").addEventListener("click", () => {
+      pwdInp.type = pwdInp.type === "password" ? "text" : "password";
+    });
+    form.addEventListener("submit", () => {
+      const u = $("lf-username").value.trim();
+      const p = $("lf-password").value;
+      const err = $("loginErr");
+      if (!AUTH.login(u, p)) { err.classList.add("is-visible"); return; }
+      if (!AUTH.isAdmin()) { AUTH.logout(); err.classList.add("is-visible"); return; }
+      location.href = "admin.html";
+    });
+  }
+
+  /* ---------------- Tab 切换 ---------------- */
+  function initTabs() {
+    const btns = document.querySelectorAll(".tab-btn");
+    const panels = document.querySelectorAll(".tab-panel");
+    btns.forEach(b => b.addEventListener("click", () => {
+      const t = b.getAttribute("data-tab");
+      btns.forEach(x => {
+        const active = x.getAttribute("data-tab") === t;
+        x.classList.toggle("is-active", active);
+        x.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      panels.forEach(p => p.classList.toggle("is-active", p.id === "tab-" + t));
+    }));
+  }
+
+  /* ---------------- 顶部栏：欢迎信息 + 状态 ---------------- */
+  function renderHeader() {
+    if (!AUTH) return;
+    const who = AUTH.displayName() || "管理员";
+    const whoEl = $("adminWho");
+    if (whoEl) whoEl.textContent = who;
+    updateCloudStatus();
+    // 退出
+    const logoutBtn = $("adminLogoutBtn");
+    if (logoutBtn) logoutBtn.addEventListener("click", () => {
+      if (AUTH) AUTH.logout();
+      location.replace("login.html");
+    });
+  }
+  function updateCloudStatus() {
+    const badge = $("cloudStatus"); const txt = $("cloudStatusText");
+    if (!badge || !txt) return;
+    const enabled = !!(DB && DB.enabled);
+    badge.classList.remove("status-badge--cloud", "status-badge--local");
+    if (enabled) {
+      badge.classList.add("status-badge--cloud");
+      txt.textContent = "☁️ 云端已连接";
+    } else {
+      badge.classList.add("status-badge--local");
+      txt.textContent = "💻 仅本机模式";
+    }
+  }
+
+  /* ================================================================
+     Tab 1：站点配置
+     ================================================================ */
+  const CFG_KEYS = {
+    A: "partner_a_name",
+    B: "partner_b_name",
+    ANNIV: "anniversary_date",
+    TITLE: "site_title"
+  };
+  // 读取当前站点配置（优先云端 site_config，否则 fallback 到默认值）
+  let __cfgCache = {};
+  async function loadSiteConfig() {
+    const defaults = {
+      [CFG_KEYS.A]: "师豪",
+      [CFG_KEYS.B]: "佳力",
+      [CFG_KEYS.ANNIV]: "2025-05-10",
+      [CFG_KEYS.TITLE]: "豪❤力 · 爱的小窝"
+    };
+    __cfgCache = Object.assign({}, defaults);
+    if (DB && DB.enabled) {
+      try {
+        const rows = await DB.list("site_config");
+        (rows || []).forEach(r => {
+          if (r && r.cfg_key != null && r.cfg_value != null) __cfgCache[r.cfg_key] = r.cfg_value;
+        });
+      } catch (e) { console.warn("[admin] 加载 site_config 失败:", e); }
+    }
+    // 写入表单
+    $(CFG_KEYS.A.replace(/_/g,"-")) && ($("cfg-partner-a").value = __cfgCache[CFG_KEYS.A] || "");
+    $("cfg-partner-b").value = __cfgCache[CFG_KEYS.B] || "";
+    $("cfg-anniv").value = __cfgCache[CFG_KEYS.ANNIV] || "";
+    $("cfg-title").value = __cfgCache[CFG_KEYS.TITLE] || "";
+    renderRuntimeKv();
+    renderCoupleId();
+  }
+
+  function renderRuntimeKv() {
+    const el = $("cfgRuntimeKv"); if (!el) return;
+    const cfg = (DB && DB.config) ? DB.config : {};
+    const enabled = !!(DB && DB.enabled);
+    const mask = (s) => {
+      if (!s) return "(空)";
+      if (s.length <= 12) return s;
+      return s.slice(0, 8) + "…" + s.slice(-6);
+    };
+    const rows = [
+      ["Supabase 连接状态", enabled
+        ? '<span style="color:var(--sage-deep);font-weight:500">✅ 已连接（可用）</span>'
+        : '<span style="color:var(--rose-deep);font-weight:500">❌ 未配置 / 不可用</span>'],
+      ["PROJECT_URL", cfg.PROJECT_URL || "(未配置)"],
+      ["ANON_PUBLIC_KEY", mask(cfg.ANON_PUBLIC_KEY)],
+      ["COUPLE_ID", (cfg.COUPLE_ID || "(默认)") + ' <span style="color:var(--faint);font-size:.78rem">(与云端 couples 表主键关联)</span>'],
+      ["运行时覆盖来源", cfg.__runtime
+        ? '<span style="color:var(--terracotta-deep);font-weight:500">localStorage 运行时</span>'
+        : '<span style="color:var(--sage-deep)">源码 config.js</span>'],
+      ["MAX_RETRY", String(cfg.MAX_RETRY ?? 3) + "（离线写队列最大重试次数）"],
+      ["QUEUE_FLUSH_INTERVAL_MS", String(cfg.QUEUE_FLUSH_INTERVAL_MS ?? 30000) + " ms（每 30 秒冲刷一次离线队列）"],
+      ["REFRESH_INTERVAL_MS", String(cfg.REFRESH_INTERVAL_MS ?? 120000) + " ms（每 2 分钟增量刷新云端数据）"]
+    ];
+    el.innerHTML = rows.map(([k,v]) =>
+      `<div class="k">${esc(k)}</div><div class="v mono">${v}</div>`
+    ).join("");
+  }
+
+  function renderCoupleId() {
+    const cfg = (DB && DB.config) ? DB.config : {};
+    const current = cfg.COUPLE_ID || "aaaa1111-bbbb-cccc-dddd-eeeeffff0001";
+    $("cfg-current-cid") && ($("cfg-current-cid").textContent = current);
+    $("cfg-couple-id") && ($("cfg-couple-id").placeholder = current);
+  }
+
+  async function saveSiteConfig() {
+    const patch = {
+      [CFG_KEYS.A]: $("cfg-partner-a").value.trim(),
+      [CFG_KEYS.B]: $("cfg-partner-b").value.trim(),
+      [CFG_KEYS.ANNIV]: $("cfg-anniv").value || null,
+      [CFG_KEYS.TITLE]: $("cfg-title").value.trim()
+    };
+    if (!patch[CFG_KEYS.A] || !patch[CFG_KEYS.B]) {
+      toast("请填写伴侣双方姓名", "err"); return;
+    }
+    // 本地立即更新缓存
+    Object.assign(__cfgCache, patch);
+    // 如果有云端 → upsert 4 条 key-value
+    if (DB && DB.enabled) {
+      try {
+        const cfg2 = DB.config || {};
+        const cid = cfg2.COUPLE_ID || "aaaa1111-bbbb-cccc-dddd-eeeeffff0001";
+        const by = (AUTH && AUTH.current && AUTH.current().user) || "admin";
+        for (const k of Object.keys(patch)) {
+          await DB.upsert("site_config",
+            { couple_id: cid, cfg_key: k, cfg_value: patch[k], updated_by: by },
+            ["couple_id", "cfg_key"]
+          );
+        }
+      } catch (e) {
+        console.warn("[admin] 保存 site_config 部分失败:", e);
+        toast("配置已保存（本机），但云端写入失败：" + (e.message || e), "warn", 4200);
+        return;
+      }
+      toast("✅ 配置已保存并同步云端");
+    } else {
+      toast("✅ 配置已保存（本机模式：换设备需重新配置）", "warn", 3600);
+    }
+  }
+
+  function resetSiteCfgForm() {
+    $("cfg-partner-a").value = __cfgCache[CFG_KEYS.A] || "";
+    $("cfg-partner-b").value = __cfgCache[CFG_KEYS.B] || "";
+    $("cfg-anniv").value = __cfgCache[CFG_KEYS.ANNIV] || "";
+    $("cfg-title").value = __cfgCache[CFG_KEYS.TITLE] || "";
+    toast("已重置为当前值", "ok", 1600);
+  }
+
+  function writeCoupleIdRuntime() {
+    const v = $("cfg-couple-id").value.trim();
+    if (!v) { toast("请先输入 Couple ID", "err"); return; }
+    if (!DB || !DB.applyRuntimeConfig) { toast("运行时写入不可用", "err"); return; }
+    const newCfg = DB.applyRuntimeConfig({ COUPLE_ID: v });
+    renderRuntimeKv();
+    renderCoupleId();
+    updateCloudStatus();
+    toast("✅ Couple ID 运行时已写入：" + (newCfg.COUPLE_ID || "").slice(0, 13) + "…");
+  }
+
+  function clearRuntime() {
+    if (!confirm("确定清空 localStorage 里的所有运行时覆盖？\n\n将恢复为源码 config.js 里写死的配置（PROJECT_URL / ANON_PUBLIC_KEY / COUPLE_ID / 数值参数）。")) return;
+    if (DB && DB.clearRuntimeConfig) DB.clearRuntimeConfig();
+    renderRuntimeKv();
+    renderCoupleId();
+    updateCloudStatus();
+    toast("✅ 已清空运行时覆盖，恢复源码配置");
+  }
+
+  function initCfgTab() {
+    $("cfgSaveBtn").addEventListener("click", saveSiteConfig);
+    $("cfgResetBtn").addEventListener("click", resetSiteCfgForm);
+    $("cfgRefreshBtn").addEventListener("click", async () => { await loadSiteConfig(); toast("已刷新", "ok", 1200); });
+    $("cfgWriteCidBtn").addEventListener("click", writeCoupleIdRuntime);
+    $("cfgClearRuntimeBtn").addEventListener("click", clearRuntime);
+  }
+
+  /* ================================================================
+     Tab 2：账号管理
+     ================================================================ */
+  let __accCache = [];
+
+  function updateAccModeBadge() {
+    const badge = $("accModeBadge"); const txt = $("accModeText");
+    if (!badge || !txt) return;
+    const enabled = !!(DB && DB.enabled);
+    badge.classList.remove("status-badge--cloud", "status-badge--local");
+    if (enabled) {
+      badge.classList.add("status-badge--cloud");
+      txt.textContent = "云端双写模式（Supabase）";
+    } else {
+      badge.classList.add("status-badge--local");
+      txt.textContent = "仅本机静态账号（localStorage 兜底）";
+    }
+  }
+
+  function defaultLocalAccounts() {
+    // 从 AUTH 的只读访问器拿本地静态账号（兜底）
+    const accs = AUTH && AUTH.accounts ? AUTH.accounts : {};
+    const names = AUTH && AUTH.names ? AUTH.names : {};
+    const roles = AUTH && AUTH.roles ? AUTH.roles : {};
+    return Object.keys(accs).map(u => ({
+      id: "__local__" + u,
+      username: u,
+      password: accs[u],
+      display_name: names[u] || u,
+      role: roles[u] || "user",
+      is_active: true,
+      __local: true,
+      updated_at: new Date(0).toISOString()
+    }));
+  }
+
+  async function loadAccounts() {
+    updateAccModeBadge();
+    if (DB && DB.enabled) {
+      try {
+        const rows = await DB.list("site_accounts");
+        __accCache = Array.isArray(rows) ? rows.slice() : [];
+      } catch (e) {
+        console.warn("[admin] 加载 site_accounts 失败，fallback 到本地静态:", e);
+        __accCache = defaultLocalAccounts();
+      }
+    } else {
+      __accCache = defaultLocalAccounts();
+    }
+    renderAccounts();
+  }
+
+  function renderAccounts() {
+    const tbody = $("accTbody"); const empty = $("accEmpty"); if (!tbody) return;
+    const list = __accCache.slice().sort((a, b) => {
+      // admin 永远排第一，然后 user；其次按 username
+      const ra = a.role === "admin" ? 0 : 1;
+      const rb = b.role === "admin" ? 0 : 1;
+      if (ra !== rb) return ra - rb;
+      return String(a.username || "").localeCompare(String(b.username || ""));
+    });
+    if (!list.length) { tbody.innerHTML = ""; empty.style.display = ""; return; }
+    empty.style.display = "none";
+    const canDelete = DB && DB.enabled; // 仅云端模式可删除（否则删了也白删）
+    tbody.innerHTML = list.map(a => {
+      const isAdmin = a.role === "admin";
+      const isLocal = !!a.__local;
+      const rowBtnDisableEdit = isLocal ? "disabled title=\"本地静态账号不可编辑，请先配置 Supabase\"" : "";
+      const rowBtnDisableDel = (isAdmin || isLocal || !canDelete)
+        ? "disabled title=\"" + (isAdmin ? "admin 账号不可删除" : (isLocal ? "本地静态账号不可删除" : "未连接云端")) + "\""
+        : "";
+      const toggleBtn = isLocal ? "" : (
+        a.is_active === false
+          ? `<button type="button" class="row-btn" data-act="enable" data-id="${esc(a.id)}" ${rowBtnDisableEdit}>启用</button>`
+          : `<button type="button" class="row-btn row-btn--danger" data-act="disable" data-id="${esc(a.id)}" ${rowBtnDisableEdit}>停用</button>`
+      );
+      const modeChip = isLocal
+        ? '<span class="active-chip" style="background:var(--bg-deep);color:var(--muted)">📦 静态</span>'
+        : '<span class="active-chip active-chip--ok">☁️ 云端</span>';
+      const updated = a.updated_at ? new Date(a.updated_at).toLocaleString("zh-CN", { hour12: false }) : "—";
+      return `
+        <tr data-id="${esc(a.id)}">
+          <td>
+            <div class="tbl__name">${esc(a.display_name || a.username || "")}</div>
+            <div class="tbl__uname">@${esc(a.username || "")}</div>
+          </td>
+          <td><span class="role-chip role-chip--${isAdmin ? "admin" : "user"}">${isAdmin ? "🛡 管理员" : "👤 普通用户"}</span></td>
+          <td>${a.is_active === false
+            ? '<span class="active-chip active-chip--no">⛔ 已停用</span>'
+            : '<span class="active-chip active-chip--ok">✅ 启用中</span>'}</td>
+          <td style="color:var(--faint);font-size:.82rem">${esc(updated)}</td>
+          <td>${modeChip}</td>
+          <td>
+            <div class="row-actions">
+              <button type="button" class="row-btn" data-act="edit" data-id="${esc(a.id)}" ${rowBtnDisableEdit}>编辑</button>
+              ${toggleBtn}
+              <button type="button" class="row-btn row-btn--danger" data-act="delete" data-id="${esc(a.id)}" ${rowBtnDisableDel}>删除</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join("");
+
+    tbody.querySelectorAll("button[data-act]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        const act = btn.getAttribute("data-act");
+        const acc = __accCache.find(x => String(x.id) === String(id));
+        if (!acc) return;
+        if (act === "edit") openAccModal(acc);
+        else if (act === "enable") toggleActive(acc, true);
+        else if (act === "disable") toggleActive(acc, false);
+        else if (act === "delete") deleteAcc(acc);
+      });
+    });
+  }
+
+  async function toggleActive(acc, enable) {
+    if (acc.__local || !DB || !DB.enabled) { toast("本地静态账号不支持此操作", "err"); return; }
+    const by = (AUTH && AUTH.current && AUTH.current().user) || "admin";
+    const patch = { is_active: !!enable, updated_by: by };
+    try {
+      await DB.update("site_accounts", { id: acc.id }, patch);
+      toast(enable ? "✅ 已启用账号：" + acc.username : "⛔ 已停用账号：" + acc.username, "ok");
+      await loadAccounts();
+    } catch (e) {
+      toast("操作失败：" + (e.message || e), "err");
+    }
+  }
+
+  async function deleteAcc(acc) {
+    if (acc.role === "admin") { toast("为防止后台锁死，admin 账号不可删除", "err"); return; }
+    if (acc.__local || !DB || !DB.enabled) { toast("本地静态账号不支持删除", "err"); return; }
+    if (!confirm(`确定删除账号「${acc.display_name || acc.username}」(@${acc.username})？\n删除后该账号将无法登录。`)) return;
+    try {
+      await DB.remove("site_accounts", { id: acc.id });
+      toast("✅ 已删除账号：" + acc.username);
+      await loadAccounts();
+    } catch (e) {
+      toast("删除失败：" + (e.message || e), "err");
+    }
+  }
+
+  /* ---------- 新增/编辑 弹窗 ---------- */
+  function openAccModal(acc) {
+    if (!DB || !DB.enabled) { toast("未连接云端，无法写入账号表", "warn", 3200); return; }
+    const isEdit = !!acc;
+    const title = isEdit ? "编辑账号" : "新增账号";
+    const d = acc || { username: "", password: "", display_name: "", role: "user", is_active: true };
+    const html = `
+      <div class="acc-form">
+        <div class="fld">
+          <label>用户名 <span class="req">*</span></label>
+          <input id="acc-username" type="text" value="${esc(d.username)}" ${isEdit ? "disabled" : ""} placeholder="如：zhangsan" />
+          <p class="fld__hint">登录时使用，保存后不可修改。建议字母+数字，不超过 32 字符。</p>
+        </div>
+        <div class="fld">
+          <label>角色 <span class="req">*</span></label>
+          <select id="acc-role">
+            <option value="user" ${d.role === "user" ? "selected" : ""}>👤 普通用户</option>
+            <option value="admin" ${d.role === "admin" ? "selected" : ""}>🛡 管理员（可访问后台）</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>显示名称 <span class="req">*</span></label>
+          <input id="acc-dname" type="text" value="${esc(d.display_name || "")}" placeholder="如：张三" />
+        </div>
+        <div class="fld">
+          <label>状态</label>
+          <select id="acc-active">
+            <option value="1" ${d.is_active !== false ? "selected" : ""}>✅ 启用</option>
+            <option value="0" ${d.is_active === false ? "selected" : ""}>⛔ 停用</option>
+          </select>
+        </div>
+        <div class="fld fld--pwd">
+          <label>密码 ${isEdit ? '<span style="color:var(--faint);font-style:italic;font-weight:400">（留空=不修改）</span>' : "<span class='req'>*</span>"}</label>
+          <div class="pwd-wrap" style="position:relative">
+            <input id="acc-pwd" type="password" placeholder="${isEdit ? "留空表示保持原密码" : "至少 4 位"}" />
+            <button type="button" class="pwd-toggle" id="accPwdToggle" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:transparent;color:var(--muted);cursor:pointer">👁</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:22px;display:flex;gap:10px;justify-content:flex-end;padding-top:16px;border-top:1px dashed var(--line-soft)">
+        <button type="button" class="btn btn--ghost btn--small" id="accModalCancel">取消</button>
+        <button type="button" class="btn btn--primary" id="accModalSave">💾 ${isEdit ? "保存修改" : "创建账号"}</button>
+      </div>`;
+    window.LoveNest.openModal(title, html);
+    // pwd toggle
+    setTimeout(() => {
+      const tog = document.getElementById("accPwdToggle");
+      const pw = document.getElementById("acc-pwd");
+      if (tog && pw) tog.addEventListener("click", () => pw.type = pw.type === "password" ? "text" : "password");
+      document.getElementById("accModalCancel").addEventListener("click", () => window.LoveNest.closeModal());
+      document.getElementById("accModalSave").addEventListener("click", () => saveAccFromModal(isEdit, acc));
+    }, 0);
+  }
+
+  async function saveAccFromModal(isEdit, existing) {
+    const username = document.getElementById("acc-username").value.trim();
+    const dname = document.getElementById("acc-dname").value.trim();
+    const role = document.getElementById("acc-role").value;
+    const active = document.getElementById("acc-active").value === "1";
+    const pwd = document.getElementById("acc-pwd").value;
+    if (!username) { toast("请填写用户名", "err"); return; }
+    if (!dname) { toast("请填写显示名称", "err"); return; }
+    if (!isEdit && !pwd) { toast("请设置初始密码", "err"); return; }
+    if (pwd && pwd.length < 4) { toast("密码至少 4 位", "err"); return; }
+    if (role !== "admin" && role !== "user") { toast("角色无效", "err"); return; }
+
+    const cfg = (DB && DB.config) ? DB.config : {};
+    const cid = cfg.COUPLE_ID || "aaaa1111-bbbb-cccc-dddd-eeeeffff0001";
+    const by = (AUTH && AUTH.current && AUTH.current().user) || "admin";
+    try {
+      if (isEdit) {
+        const patch = {
+          display_name: dname, role, is_active: active, updated_by: by
+        };
+        if (pwd) patch.password = pwd;
+        await DB.update("site_accounts", { id: existing.id }, patch);
+        toast("✅ 账号已更新：" + username);
+      } else {
+        // 检查用户名是否重复（本地先快速扫一遍缓存）
+        if (__accCache.some(x => String(x.username || "").toLowerCase() === username.toLowerCase())) {
+          toast("该用户名已存在", "err"); return;
+        }
+        await DB.insert("site_accounts", {
+          couple_id: cid, username, password: pwd, display_name: dname, role, is_active: true, updated_by: by
+        });
+        toast("✅ 账号已创建：" + username);
+      }
+      window.LoveNest.closeModal();
+      await loadAccounts();
+      // 账号表变化后，让 auth 模块重新从云端合并一次
+      if (AUTH && typeof AUTH.refreshFromCloud === "function") {
+        AUTH.refreshFromCloud().catch(() => {});
+      }
+    } catch (e) {
+      toast("保存失败：" + (e.message || e), "err");
+    }
+  }
+
+  function initAccTab() {
+    $("accAddBtn").addEventListener("click", () => openAccModal(null));
+    $("accRefreshBtn").addEventListener("click", async () => { await loadAccounts(); toast("已刷新账号列表", "ok", 1200); });
+  }
+
+  /* ---------------- 启动 ---------------- */
+  async function boot() {
+    if (!AUTH || !AUTH.isAdmin()) {
+      // 非管理员：nav.js 早跳转已经做了，这里再做一次保护
+      location.replace("login.html?needAdmin=1");
+      return;
+    }
+    $("adminShell").classList.add("is-visible");
+    initLoginFront();
+    initTabs();
+    initCfgTab();
+    initAccTab();
+    renderHeader();
+
+    // 等 DB.ready（确保缓存+云端冷启动合并完成）
+    if (DB && DB.ready) {
+      try { await DB.ready; } catch (_) {}
+    }
+    updateCloudStatus();
+    await loadSiteConfig();
+    await loadAccounts();
+
+    // 实时监听 site_accounts 和 site_config 表变更（轮询式 watch）
+    if (DB && DB.watch) {
+      try {
+        DB.watch("site_accounts", () => loadAccounts().catch(() => {}));
+      } catch (_) {}
+      try {
+        DB.watch("site_config", () => {
+          loadSiteConfig().catch(() => {});
+        });
+      } catch (_) {}
+    }
+  }
+
+  // DB 自动 init（db.js 内部 DOMContentLoaded 触发），这里再兜底一次 ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</body>
+</html>
