@@ -12,7 +12,9 @@
 <style>
   /* =========================================================================
      Travel Module · 旅行相册与规划 — 三种展示 + 规划板
-     与全局 Morandi 色系保持一致，仅追加组件样式
+     地图实现：方案 A（SVG + 绝对定位 · 轻量离线）
+     选择理由：1) 无外网依赖，加载即呈现 2) pin 样式完全受控莫兰迪色系
+     3) 防遮挡算法（DBSCAN + 花瓣式散开）可精准调试 4) 缩放/平移性能稳
      ========================================================================= */
 
   /* ---------- Tab 切换（模块级） ---------- */
@@ -36,7 +38,7 @@
 
   /* ---------- 子 Tab：三种展示风格切换 ---------- */
   .viewtabs{
-    display:flex;gap:4px;justify-content:center;margin:0 auto 40px;flex-wrap:wrap;
+    display:flex;gap:4px;justify-content:center;margin:0 auto 16px;flex-wrap:wrap;
   }
   .viewtabs button{
     padding:8px 16px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--bg-card);
@@ -48,14 +50,27 @@
     background:var(--sage-tint);border-color:var(--sage-soft);color:var(--sage-deep);font-weight:500
   }
 
+  /* ---------- 分组小 Tab（相册视图内：按景区 / 按时间） ---------- */
+  .grouptabs{
+    display:flex;gap:4px;justify-content:center;margin:0 auto 32px;flex-wrap:wrap;
+  }
+  .grouptabs button{
+    padding:6px 14px;border-radius:var(--r-pill);border:1px dashed var(--line);background:transparent;
+    font-size:.8rem;color:var(--faint);font-family:inherit;transition:all .25s var(--ease);
+  }
+  .grouptabs button:hover{border-color:var(--sage-soft);color:var(--sage-deep)}
+  .grouptabs button.is-active{
+    background:var(--rose-tint);border:1px solid var(--rose-soft);color:var(--rose-deep);
+    border-style:solid;font-weight:500
+  }
+
   /* ---------- 视图容器：只显示激活的 ---------- */
   .view{display:none}
   .view.is-active{display:block;animation:fadeUp .5s var(--ease)}
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
   /* ================================================================
-     View 1 · 相册视图 (Gallery View) — 按 地方 + 时间 分组
-     参照 iPad 相册：大组标题 + 瀑布/网格 + 悬停缩放
+     View 1 · 相册视图 (Gallery View)
      ================================================================ */
   .gallery-group{margin-bottom:52px}
   .gallery-group__head{
@@ -72,11 +87,12 @@
   .gallery-item{
     position:relative;aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden;cursor:pointer;
     box-shadow:var(--shadow-sm);transition:transform .35s var(--ease),box-shadow .35s var(--ease);
-    background:var(--bg-deep);
+    background:var(--bg-deep);user-select:none;
   }
   .gallery-item:hover{transform:scale(1.02);box-shadow:var(--shadow)}
   .gallery-item img{
     width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease);
+    will-change:transform;
   }
   .gallery-item:hover img{transform:scale(1.06)}
   .gallery-item__meta{
@@ -87,8 +103,42 @@
   }
   .gallery-item:hover .gallery-item__meta{opacity:1;transform:none}
   .gallery-item__meta .time{font-family:var(--ff-accent);font-style:italic;font-size:.7rem;color:rgba(255,255,255,.8)}
-  /* 精选大图：每 5 张出一张 2x2 大卡，产生节奏感 */
-  .gallery-item--featured{grid-column:span 2;grid-row:span 2;aspect-ratio:auto}
+  /* 精选大图视差 */
+  .gallery-item--featured{grid-column:span 2;grid-row:span 2;aspect-ratio:auto;will-change:transform}
+  /* 多选模式选中态 */
+  .gallery-item.is-selected{outline:3px solid var(--sage);outline-offset:-3px;transform:scale(.98)}
+  .gallery-item.is-selected::after{
+    content:"✓";position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;
+    background:var(--sage);color:var(--white);display:grid;place-items:center;font-weight:700;
+    box-shadow:0 2px 6px rgba(58,54,49,.3);
+  }
+  /* 批量操作条 */
+  .batchbar{
+    position:sticky;top:70px;z-index:15;display:none;align-items:center;gap:12px;
+    padding:10px 16px;background:rgba(237,230,218,.96);backdrop-filter:blur(10px);
+    border:1px solid var(--sage-soft);border-radius:var(--r-md);margin-bottom:20px;
+    box-shadow:var(--shadow-sm);
+  }
+  .batchbar.is-visible{display:flex;flex-wrap:wrap}
+  .batchbar__count{font-family:var(--ff-display);font-weight:600;color:var(--sage-deep);margin-right:auto}
+  /* 右键/长按菜单 */
+  .ctxmenu{
+    position:fixed;z-index:200;min-width:160px;background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:var(--r-sm);box-shadow:var(--shadow-lg);overflow:hidden;
+    animation:ctxIn .18s var(--ease);
+  }
+  @keyframes ctxIn{from{opacity:0;transform:translateY(4px) scale(.97)}to{opacity:1;transform:none}}
+  .ctxmenu__item{
+    padding:10px 16px;font-size:.88rem;color:var(--text);cursor:pointer;
+    display:flex;align-items:center;gap:10px;transition:background .15s;
+  }
+  .ctxmenu__item:hover{background:var(--sage-tint);color:var(--sage-deep)}
+  .ctxmenu__item + .ctxmenu__item{border-top:1px dashed var(--line-soft)}
+  .ctxmenu__item--danger:hover{background:var(--rose-tint);color:var(--rose-deep)}
+
+  /* 加载更多触发点 */
+  .gallery-sentinel{height:40px;text-align:center;font-size:.82rem;color:var(--faint);display:grid;place-items:center;margin:20px 0}
+
   @media(max-width:768px){
     .gallery-grid{grid-template-columns:repeat(3,1fr);gap:6px}
     .gallery-item--featured{grid-column:span 2;grid-row:span 2}
@@ -99,23 +149,29 @@
   }
 
   /* ================================================================
-     View 2 · 地图视图 (Map View) — 以重庆为中心的景点地图
-     核心难点：标记不遮挡 + 缩放合理 + 点击跳转详情
+     View 2 · 地图视图 (SVG 方案A)
      ================================================================ */
   .map-wrap{
     position:relative;width:100%;aspect-ratio:16/10;
     background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-lg);
-    overflow:hidden;box-shadow:var(--shadow);
+    overflow:hidden;box-shadow:var(--shadow);cursor:grab;touch-action:none;
   }
+  .map-wrap.is-dragging{cursor:grabbing}
   @media(max-width:768px){.map-wrap{aspect-ratio:4/5}}
-  /* 地图底图区域（用 SVG 绘制简化版中国地图 + 重庆高亮 + 连线）*/
-  .map-canvas{position:absolute;inset:0;width:100%;height:100%}
+  .map-stage{
+    position:absolute;inset:0;width:100%;height:100%;
+    will-change:transform;transform-origin:0 0;
+    transition:transform .3s var(--ease);
+  }
+  .map-wrap.is-dragging .map-stage{transition:none}
+  .map-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   /* 景点标记 pin */
   .pin{
     position:absolute;transform:translate(-50%,-100%);cursor:pointer;
     transition:transform .3s var(--ease),z-index .1s;z-index:2;
+    will-change:transform;
   }
-  .pin:hover{transform:translate(-50%,-100%) scale(1.08);z-index:10}
+  .pin:hover{transform:translate(-50%,-100%) scale(1.08);z-index:10 !important}
   .pin__marker{
     width:42px;height:42px;border-radius:50% 50% 50% 0;
     background:linear-gradient(135deg,var(--rose),var(--rose-deep));
@@ -141,12 +197,37 @@
   .pin:hover .pin__label,.pin.is-visited .pin__label{opacity:1}
   .pin--origin .pin__marker{
     background:linear-gradient(135deg,var(--sage),var(--sage-deep));
-    width:50px;height:50px;
+    width:50px;height:50px;animation:breathe 2.8s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{box-shadow:0 4px 14px rgba(126,144,116,.38),0 0 0 0 rgba(126,144,116,.5)}
+    50%{box-shadow:0 4px 20px rgba(126,144,116,.5),0 0 0 14px rgba(126,144,116,0)}
   }
   .pin--wish .pin__marker{
     background:linear-gradient(135deg,var(--taupe),var(--taupe-soft));opacity:.8
   }
-  /* 地图缩放控件 */
+  /* 聚簇 pin（zoom out 时合并显示）*/
+  .pin--cluster .pin__marker{
+    background:linear-gradient(135deg,var(--terracotta),var(--terracotta-deep));
+    color:var(--white);font-family:var(--ff-display);font-weight:600;font-size:.9rem;
+  }
+  .pin--cluster .pin__marker span{transform:rotate(45deg)}
+  /* 散开引线 */
+  .pin-leaderline{
+    stroke:var(--rose-soft);stroke-width:1.2;stroke-dasharray:3 3;fill:none;opacity:.7;
+  }
+  /* Pin preview tooltip */
+  .pin-tooltip{
+    position:absolute;z-index:20;width:150px;background:var(--bg-card);border:1px solid var(--line-soft);
+    border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow-lg);pointer-events:none;
+    opacity:0;transition:opacity .2s var(--ease),transform .2s var(--ease);transform:translateY(6px);
+  }
+  .pin-tooltip.is-visible{opacity:1;transform:none}
+  .pin-tooltip__img{width:100%;height:90px;object-fit:cover;background:var(--bg-deep)}
+  .pin-tooltip__body{padding:6px 10px}
+  .pin-tooltip__title{font-family:var(--ff-display);font-size:.88rem;color:var(--ink);font-weight:500;line-height:1.2}
+  .pin-tooltip__date{font-size:.72rem;color:var(--faint);font-family:var(--ff-accent);font-style:italic;margin-top:2px}
+
   .map-ctrl{
     position:absolute;top:14px;right:14px;display:flex;flex-direction:column;gap:6px;z-index:20;
   }
@@ -164,15 +245,21 @@
   }
   .map-legend span{display:inline-flex;align-items:center;gap:6px}
   .legend-dot{width:12px;height:12px;border-radius:50%}
+  .map-scale{
+    position:absolute;bottom:14px;right:14px;font-size:.72rem;color:var(--faint);
+    background:rgba(244,238,227,.8);padding:4px 10px;border-radius:var(--r-pill);
+    font-family:var(--ff-accent);font-style:italic;z-index:20;
+  }
 
   /* ================================================================
-     View 3 · 时间轴视图 (Timeline View) — 年-月 + 照片 + 一句话
+     View 3 · 时间轴视图
      ================================================================ */
   .tl-year{margin-bottom:52px}
   .tl-year__head{
     display:flex;align-items:baseline;gap:14px;margin-bottom:24px;
     padding:14px 0;border-top:2px solid var(--line);border-bottom:1px dashed var(--line-soft);
     position:sticky;top:62px;background:rgba(237,230,218,.94);backdrop-filter:blur(10px);z-index:5;
+    transition:transform .25s var(--ease);
   }
   .tl-year__num{font-family:var(--ff-display);font-weight:600;font-size:2.4rem;color:var(--sage-deep);line-height:1;letter-spacing:-.02em}
   .tl-year__label{font-family:var(--ff-accent);font-style:italic;color:var(--muted)}
@@ -185,6 +272,10 @@
     background:linear-gradient(180deg,var(--sage-soft),transparent);
   }
   .tl-month:last-child::before{display:none}
+  .tl-month__head{
+    position:sticky;top:calc(62px + 56px);z-index:4;background:rgba(237,230,218,.88);
+    backdrop-filter:blur(6px);padding:4px 0;border-radius:var(--r-pill);
+  }
   .tl-month__date{
     text-align:center;padding-top:6px;position:relative;
   }
@@ -198,18 +289,32 @@
   .tl-place{
     background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
     padding:18px;margin-bottom:14px;display:grid;grid-template-columns:180px 1fr;gap:18px;
-    transition:all .3s var(--ease);
+    transition:all .4s var(--ease);position:relative;overflow:hidden;
+  }
+  .tl-place::before{
+    content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--sage-tint),var(--rose-tint));
+    opacity:0;transition:opacity .5s var(--ease);pointer-events:none;mix-blend-mode:multiply;
   }
   .tl-place:hover{border-color:var(--sage-soft);transform:translateX(4px)}
+  .tl-place:hover::before{opacity:.05}
   .tl-place__cover{
     aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow-sm);
-    background:var(--bg-deep);cursor:pointer;
+    background:var(--bg-deep);cursor:pointer;transition:transform .4s var(--ease);
   }
+  .tl-place:hover .tl-place__cover{transform:scale(1.03)}
   .tl-place__cover img{width:100%;height:100%;object-fit:cover}
   .tl-place__head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
   .tl-place__name{font-family:var(--ff-display);font-size:1.2rem;color:var(--ink);font-weight:500}
   .tl-place__when{font-family:var(--ff-accent);font-style:italic;font-size:.8rem;color:var(--sage-deep)}
-  .tl-place__sentence{color:var(--text);font-size:.96rem;line-height:1.75;margin-bottom:12px}
+  .tl-place__sentence{color:var(--text);font-size:.96rem;line-height:1.75;margin-bottom:12px;
+    cursor:text;transition:background .2s;border-radius:8px;padding:2px 4px;
+  }
+  .tl-place__sentence:hover{background:var(--sage-tint)}
+  .tl-place__sentence.is-editing{background:var(--white);border:1px solid var(--sage-soft);box-shadow:inset 0 2px 4px rgba(0,0,0,.04)}
+  .tl-place__sentence textarea{
+    width:100%;min-height:80px;padding:8px;border:none;background:transparent;font:inherit;color:inherit;
+    resize:vertical;outline:none;
+  }
   .tl-place__thumbs{display:flex;gap:6px;flex-wrap:wrap}
   .tl-place__thumb{
     width:44px;height:44px;border-radius:var(--r-xs);overflow:hidden;
@@ -220,16 +325,42 @@
   .tl-place__meta{
     display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;
   }
+  /* 年度摘要卡 */
+  .tl-summary{
+    background:linear-gradient(135deg,var(--bg-card),var(--sage-tint));
+    border:1px solid var(--sage-soft);border-radius:var(--r-lg);padding:22px;margin-top:10px;
+    display:grid;grid-template-columns:140px 1fr auto;gap:18px;align-items:stretch;
+    box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+  }
+  .tl-summary::before{
+    content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;
+    background:var(--rose-tint);opacity:.6;filter:blur(20px);
+  }
+  .tl-summary__cover{
+    aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--shadow);
+    background:var(--bg-deep);
+  }
+  .tl-summary__cover img{width:100%;height:100%;object-fit:cover}
+  .tl-summary__body{z-index:1}
+  .tl-summary__title{font-family:var(--ff-display);font-size:1.1rem;color:var(--ink);font-weight:600;margin-bottom:10px}
+  .tl-summary__stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 18px;margin-bottom:14px}
+  .tl-summary__stat{display:flex;flex-direction:column;gap:2px}
+  .tl-summary__stat b{font-family:var(--ff-display);font-size:1.4rem;color:var(--sage-deep);line-height:1}
+  .tl-summary__stat span{font-size:.72rem;color:var(--muted)}
+  .tl-summary__kw{display:flex;gap:6px;flex-wrap:wrap}
+  .tl-summary__kw i{font-style:normal;font-family:var(--ff-accent);font-style:italic;font-size:.82rem;color:var(--rose-deep)}
   @media(max-width:768px){
     .tl-month{grid-template-columns:64px 1fr;gap:12px}
     .tl-month::before{left:30px}
     .tl-place{grid-template-columns:1fr}
     .tl-place__cover{aspect-ratio:16/9}
     .tl-year__head{top:56px}
+    .tl-summary{grid-template-columns:1fr}
+    .tl-summary__cover{aspect-ratio:16/9}
   }
 
   /* ================================================================
-     Wishlist · 想去的远方 — 景点 Tab + 攻略 + 交通方式对比
+     Wishlist
      ================================================================ */
   .wish-tabs{
     display:flex;gap:8px;margin-bottom:32px;overflow-x:auto;padding-bottom:6px;
@@ -267,15 +398,12 @@
   .wish-card--rose h4::before{background:var(--rose)}
   .wish-card--terracotta h4::before{background:var(--terracotta)}
 
-  /* 交通方式对比卡 */
   .trans-row{
     display:grid;grid-template-columns:86px 1fr auto;gap:14px;padding:14px 0;
     border-bottom:1px dashed var(--line-soft);align-items:center;
   }
   .trans-row:last-child{border-bottom:none}
-  .trans-row__mode{
-    text-align:center;
-  }
+  .trans-row__mode{text-align:center}
   .trans-row__mode .ico{
     width:42px;height:42px;border-radius:50%;display:grid;place-items:center;margin:0 auto 4px;
     font-size:1.1rem;background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft);
@@ -294,7 +422,6 @@
   .trans-row__pri.p2{background:var(--terracotta-tint);color:var(--terracotta-deep);border-color:var(--terracotta-soft)}
   .trans-row__pri.p3{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft)}
 
-  /* 评分条 */
   .rating-row{display:flex;align-items:center;gap:14px;padding:10px 0}
   .rating-row label{font-size:.88rem;color:var(--muted);min-width:70px}
   .rating-row .stars{font-size:1.1rem;letter-spacing:2px;color:var(--taupe)}
@@ -302,15 +429,21 @@
   .rating-row input[type=range]{flex:1;accent-color:var(--sage)}
   .rating-row .val{font-family:var(--ff-display);font-weight:600;color:var(--ink);min-width:42px;text-align:right}
 
-  /* 美食 chip 列表 */
-  .food-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .food-chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .food-chip{
     padding:6px 14px;border-radius:var(--r-pill);background:var(--bg-deep);color:var(--muted);
     font-size:.84rem;border:1px dashed var(--line-soft);cursor:pointer;transition:all .25s var(--ease);
   }
   .food-chip:hover{background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft);border-style:solid}
+  .food-chip--input{
+    background:var(--white);border-style:solid;border-color:var(--sage-soft);padding:5px 10px;
+    cursor:text;
+  }
+  .food-chip--input:focus-within{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint)}
+  .food-chip--input input{
+    border:none;outline:none;background:transparent;font:inherit;color:var(--text);width:120px;
+  }
 
-  /* Guide 来源 chip */
   .guide-row{
     display:flex;gap:8px;flex-wrap:wrap;padding:12px 0;border-bottom:1px dashed var(--line-soft);
   }
@@ -326,7 +459,6 @@
   .source-chip.qnr{background:#F0EBFF;color:#4C6FFF;border-color:#B3B8FA}
   .source-chip.ctrip{background:#0066CC;color:#FFF;border-color:#66A3FF}
 
-  /* 按钮组 */
   .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
   .wish-stat{
     display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r-pill);
@@ -335,10 +467,10 @@
   .wish-stat--done{background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft)}
 
   /* ================================================================
-     通用 · 图片查看 Modal 增强
+     Lightbox / 上传 / 编辑表单
      ================================================================ */
   .lightbox-img{
-    max-height:70vh;max-width:100%;object-fit:contain;margin:0 auto;
+    max-height:60vh;max-width:100%;object-fit:contain;margin:0 auto;
     border-radius:var(--r-sm);box-shadow:var(--shadow-lg);
   }
   .lightbox-meta{
@@ -348,21 +480,86 @@
   .lightbox-meta dt{color:var(--faint);font-family:var(--ff-accent);font-style:italic;font-size:.8rem}
   .lightbox-meta dd{color:var(--text);margin:0}
 
-  /* 上传区域 */
+  /* 表单容器（上传/编辑） */
+  .form-section{
+    margin-top:20px;padding:18px;border:1px solid var(--line-soft);border-radius:var(--r-md);
+    background:var(--bg-soft);
+  }
+  .form-section__title{
+    font-family:var(--ff-display);font-size:1rem;color:var(--ink);margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .form-section__title::before{content:"";width:3px;height:16px;background:var(--sage);border-radius:3px}
+
   .upload-zone{
     border:2px dashed var(--sage-soft);border-radius:var(--r-md);
-    padding:32px 20px;text-align:center;background:var(--bg-soft);
+    padding:28px 20px;text-align:center;background:var(--bg-soft);
     transition:all .3s var(--ease);cursor:pointer;
   }
-  .upload-zone:hover{border-color:var(--sage);background:var(--sage-tint)}
-  .upload-zone .ico{font-size:2rem;margin-bottom:10px;color:var(--sage)}
-  .upload-zone p{color:var(--muted);font-size:.9rem}
+  .upload-zone.is-dragover{border-color:var(--sage);background:var(--sage-tint);border-style:solid}
+  .upload-zone .ico{font-size:2.2rem;margin-bottom:8px;color:var(--sage)}
+  .upload-zone p{color:var(--muted);font-size:.9rem;margin:0}
+  .upload-zone small{color:var(--faint);font-size:.76rem}
+  .upload-zone input[type=file]{display:none}
+
+  .upload-preview{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:14px;
+  }
+  .upload-preview__item{
+    position:relative;aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden;
+    background:var(--bg-deep);
+  }
+  .upload-preview__item img{width:100%;height:100%;object-fit:cover}
+  .upload-preview__remove{
+    position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;
+    background:rgba(58,54,49,.7);color:var(--white);border:none;cursor:pointer;
+    display:grid;place-items:center;font-size:.75rem;line-height:1;
+  }
+  .upload-preview__remove:hover{background:var(--rose-deep)}
+  .upload-progress{
+    height:4px;background:var(--line);border-radius:var(--r-pill);overflow:hidden;margin-top:10px;display:none;
+  }
+  .upload-progress.is-visible{display:block}
+  .upload-progress>span{
+    display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sage),var(--sage-deep));
+    transition:width .2s;
+  }
+
+  .form-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+  }
+  @media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+  .form-field{display:flex;flex-direction:column;gap:5px}
+  .form-field--full{grid-column:1/-1}
+  .form-field label{font-size:.78rem;color:var(--faint);font-family:var(--ff-accent);font-style:italic;letter-spacing:.02em}
+  .form-field input,.form-field textarea{
+    padding:10px 12px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--white);
+    font-family:inherit;font-size:.92rem;color:var(--text);transition:all .2s;min-height:42px;
+  }
+  .form-field input:focus,.form-field textarea:focus{
+    outline:none;border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint);
+  }
+  .form-field textarea{resize:vertical;min-height:80px;line-height:1.7}
+
+  /* 一年前的今天卡 */
+  .memory-card{
+    max-width:640px;margin:0 auto 48px;background:linear-gradient(135deg,var(--rose-tint),var(--sage-tint));
+    border:1px solid var(--line-soft);border-radius:var(--r-lg);padding:22px;
+    display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center;
+    box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+  }
+  .memory-card__img{aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden;background:var(--bg-deep)}
+  .memory-card__img img{width:100%;height:100%;object-fit:cover}
+  .memory-card__label{font-family:var(--ff-accent);font-style:italic;font-size:.8rem;color:var(--rose-deep);letter-spacing:.1em;margin-bottom:6px}
+  .memory-card__title{font-family:var(--ff-display);font-size:1.2rem;color:var(--ink);font-weight:600;margin-bottom:6px}
+  .memory-card__desc{font-size:.88rem;color:var(--muted);line-height:1.7}
+  .memory-card__meta{margin-top:10px;font-size:.76rem;color:var(--faint);font-family:var(--ff-accent);font-style:italic}
+  @media(max-width:560px){.memory-card{grid-template-columns:1fr}.memory-card__img{aspect-ratio:16/9}}
 
   /* ===== Responsive ===== */
   @media(max-width:768px){
     .modtabs button{padding:8px 14px;font-size:.88rem}
     .viewtabs button{padding:6px 12px;font-size:.82rem}
-    .map-wrap{aspect-ratio:4/5}
     .pin__marker{width:36px;height:36px}
     .pin--origin .pin__marker{width:44px;height:44px}
     .wish-card{padding:18px}
@@ -390,6 +587,11 @@
     </div>
   </section>
 
+  <!-- ============== "一年前的今天" 回忆卡 ============== -->
+  <section class="section" style="padding:24px 0 0">
+    <div class="container" id="memoryCardRoot"></div>
+  </section>
+
   <!-- ============== 顶层大模块切换：已旅游 / 想去 ============== -->
   <section class="section" id="visited">
     <div class="container">
@@ -414,31 +616,48 @@
 
       <!-- View 1 · 相册视图 -->
       <div class="view is-active" id="view-gallery">
+        <!-- 分组 Tab：按景区 / 按时间 -->
+        <div class="grouptabs reveal" id="groupTabs" role="tablist">
+          <button class="is-active" data-groupby="place" role="tab">按景区分组</button>
+          <button data-groupby="time" role="tab">按时间分组</button>
+        </div>
+        <!-- 批量操作条 -->
+        <div class="batchbar" id="batchBar">
+          <span class="batchbar__count">已选 <span id="batchCount">0</span> 张</span>
+          <button class="btn btn--small btn--ghost" type="button" id="batchExport">📦 导出</button>
+          <button class="btn btn--small btn--ghost" type="button" id="batchTag">🏷 打标签</button>
+          <button class="btn btn--small" type="button" id="batchCancel" style="color:var(--faint)">取消</button>
+        </div>
         <div id="galleryRoot"></div>
       </div>
 
       <!-- View 2 · 地图视图 -->
       <div class="view" id="view-map">
         <div class="map-wrap reveal" id="mapRoot">
-          <!-- 地图 SVG 由 JS 渲染 -->
-          <svg class="map-canvas" id="mapCanvas" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet"></svg>
-          <!-- 景点 Pin 由 JS 渲染为绝对定位 div（便于放图片和交互） -->
-          <div id="mapPins"></div>
+          <div class="map-stage" id="mapStage">
+            <svg class="map-canvas" id="mapCanvas" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet"
+                 xmlns="http://www.w3.org/2000/svg"></svg>
+            <div id="mapPins"></div>
+            <svg class="map-canvas" id="mapOverlay" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet"
+                 style="pointer-events:auto;z-index:3" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
           <!-- 缩放控件 -->
           <div class="map-ctrl">
-            <button id="mapZoomIn" aria-label="放大">+</button>
-            <button id="mapZoomOut" aria-label="缩小">−</button>
-            <button id="mapZoomReset" aria-label="重置" style="font-size:.9rem">⟳</button>
+            <button id="mapZoomIn" aria-label="放大" title="放大">+</button>
+            <button id="mapZoomOut" aria-label="缩小" title="缩小">−</button>
+            <button id="mapZoomReset" aria-label="重置" title="重置" style="font-size:.9rem">⟳</button>
           </div>
           <!-- 图例 -->
           <div class="map-legend">
             <span><i class="legend-dot" style="background:var(--sage)"></i> 出发地 · 重庆大竹林</span>
             <span><i class="legend-dot" style="background:var(--rose)"></i> 已去过的景点</span>
+            <span><i class="legend-dot" style="background:var(--terracotta)"></i> 景点聚簇</span>
             <span><i class="legend-dot" style="background:var(--taupe);opacity:.7"></i> 计划中的远方</span>
           </div>
+          <div class="map-scale" id="mapScale">缩放 100%</div>
         </div>
         <p class="faint center reveal" style="margin-top:18px;font-size:.82rem">
-          点击任意景点 Pin，跳转到相册视图查看全部照片。缩放可查看更密集区域的标记。
+          点击任意景点 Pin 跳转到相册视图；支持鼠标拖拽平移、滚轮缩放，Pin 过密会自动聚簇或引线散开。
         </p>
       </div>
 
@@ -461,10 +680,7 @@
         </p>
       </div>
 
-      <!-- 景点 Tab 条 -->
       <div class="wish-tabs reveal" id="wishTabs" role="tablist"></div>
-
-      <!-- 景点详情面板容器 -->
       <div id="wishPanels"></div>
     </div>
   </section>
@@ -510,17 +726,14 @@
 <script src="shared/data.js"></script>
 <script>
 /* =========================================================================
-   Travel Page · 入口脚本
-   本文件提供：
-   1) View 切换（相册 / 地图 / 时间轴）框架 + 示例数据渲染骨架
-   2) Wishlist Tab 切换 + 景点面板渲染骨架
-   3) 图片点击查看 / 上传入口
-   详细功能请参见配套的 AI 开发任务提示词并行开发
+   Travel Page · 完整实现
+   地图方案：A（SVG + 绝对定位）—— 轻量、离线、莫兰迪色样式完全可控
+   数据层：JSON → localStorage → Supabase 三层
    ========================================================================= */
 document.addEventListener("DOMContentLoaded", async function () {
   "use strict";
 
-  /* ---------- Fallback 数据（当 data/travel.json 拉取失败时使用） ---------- */
+  /* ---------- Fallback 数据 ---------- */
   const FALLBACK = {
     _meta:{ title:"旅行相册", origin:"重庆大竹林", origin_coords:[29.6145,106.4799] },
     visited: { _stats:{total_places:7,total_photos:22,total_days:19}, places:[] },
@@ -528,20 +741,271 @@ document.addEventListener("DOMContentLoaded", async function () {
   };
 
   const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const $ = (id) => document.getElementById(id);
+  const uid = () => 'p_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
 
-  /* ---------- 加载数据 ---------- */
-  const DATA = await LoveNest.getJSON("data/travel.json", FALLBACK);
-  const VISITED = (DATA.visited && DATA.visited.places) || [];
-  const WISHLIST = (DATA.wishlist && DATA.wishlist.places) || [];
+  /* ==========================================================
+     一、数据层：loadTravelData / saveTravelData 三层策略
+     ========================================================== */
+  const LS_KEY = "travel-data-v1";
+  const LS_PHOTO_KEY = (id) => `lovenest:travel-photos-${id}`;
+  let DATA = null;    // 单一数据源（所有视图都从此读）
+  let VISITED = [];
+  let WISHLIST = [];
 
-  /* ==============================================================
-     一、已旅游模块 · 三种展示视图切换
-     ============================================================== */
-  const viewTabs = document.getElementById("viewTabs");
+  async function loadTravelData() {
+    // Layer 1: JSON 静态数据（兜底结构）
+    let data = await LoveNest.getJSON("data/travel.json", FALLBACK);
+
+    // Layer 2: localStorage 用户修改（优先于 JSON）
+    try {
+      const cached = localStorage.getItem(LS_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        // 按 updated_at 合并（简单地 localStorage 覆盖 JSON 空字段）
+        data = deepMergeWithLocalStorage(data, parsed);
+      }
+    } catch (e) { console.warn("localStorage travel-data 解析失败:", e); }
+
+    // Layer 2.5: normalize wishlist 结构（JSON → render 期望字段）
+    normalizeWishlist(data);
+
+    // Layer 3: Supabase（异步，不阻塞渲染，拉到后更新内存 + localStorage）
+    if (LoveNest.db && LoveNest.db.enabled) {
+      mergeTravelFromDB(data).catch(e => console.warn("DB 合并失败:", e));
+    }
+    return data;
+  }
+
+  function deepMergeWithLocalStorage(base, local) {
+    if (!local || typeof local !== "object") return base;
+    const out = JSON.parse(JSON.stringify(base));
+    // visited.places 按 id 覆盖（local 里的覆盖 base 里的）
+    const basePlaces = (out.visited && out.visited.places) || [];
+    const localPlaces = (local.visited && local.visited.places) || [];
+    const map = new Map(basePlaces.map(p => [p.id, JSON.parse(JSON.stringify(p))]));
+    localPlaces.forEach(p => {
+      const existing = map.get(p.id);
+      map.set(p.id, existing ? Object.assign(existing, p) : JSON.parse(JSON.stringify(p)));
+    });
+    out.visited = out.visited || { _stats:{}, places:[] };
+    out.visited.places = Array.from(map.values());
+    // wishlist.places 同样按 id 合并
+    const baseWish = (out.wishlist && out.wishlist.places) || [];
+    const localWish = (local.wishlist && local.wishlist.places) || [];
+    const wmap = new Map(baseWish.map(p => [p.id, JSON.parse(JSON.stringify(p))]));
+    localWish.forEach(p => {
+      const existing = wmap.get(p.id);
+      wmap.set(p.id, existing ? Object.assign(existing, p) : JSON.parse(JSON.stringify(p)));
+    });
+    out.wishlist = out.wishlist || { places:[] };
+    out.wishlist.places = Array.from(wmap.values());
+    return out;
+  }
+
+  /* --- Normalize: 把 travel.json 的 wishlist 结构转换为代码渲染期望的结构 --- */
+  function normalizeWishlist(data) {
+    if (!data.wishlist || !Array.isArray(data.wishlist.places)) return data;
+    const SEASON_MAP = { 春: "春", 夏: "夏", 秋: "秋", 冬: "冬" };
+    data.wishlist.places = data.wishlist.places.map(raw => {
+      // 如果已经是数组格式 transport，跳过（用户之前在 localStorage 里改过）
+      if (Array.isArray(raw.transport) && raw.season) return raw;
+      const seasonMap = { 春: "春", 夏: "夏", 秋: "秋", 冬: "冬" };
+      let season = "";
+      if (raw.best_season) {
+        for (const ch of raw.best_season) {
+          if (seasonMap[ch]) { season = seasonMap[ch]; break; }
+        }
+      }
+      // transport 转换：ev_drive→drive, flight, train 三档优先级
+      const transport = [];
+      const tp = raw.transport || {};
+      const addTp = (mode, obj, priority) => {
+        if (!obj) return;
+        let duration = "", cost = "", route = "", detail = "";
+        if (obj.drive_hours) duration = `约 ${obj.drive_hours} 小时`;
+        else if (obj.flight_duration) duration = obj.flight_duration;
+        else if (obj.duration) duration = obj.duration.replace(/约/, "").replace(/总计约.*/, "").trim();
+        if (obj.distance_km) detail += `全程 ${obj.distance_km} km。`;
+        if (obj.charging_notes) detail += obj.charging_notes + "。";
+        if (obj.nearest_airport) detail += `最近机场：${obj.nearest_airport}。`;
+        if (obj.airport_to_destination) detail += obj.airport_to_destination + "。";
+        if (obj.nearest_station) detail += `最近车站：${obj.nearest_station}。`;
+        if (obj.notes) detail += obj.notes + "。";
+        if (obj.route) route = obj.route;
+        if (obj.distance_km && mode === "drive") cost = Math.round(obj.distance_km * 0.18 * 2); // 两人往返油/电+过路费粗略估算
+        if (obj.flight_duration && mode === "flight") cost = "1200";
+        transport.push({ mode, route: route || (obj.nearest_airport || obj.nearest_station || ""), detail, duration, cost, priority });
+      };
+      addTp("drive", tp.ev_drive, 1);
+      addTp("flight", tp.flight, 2);
+      addTp("train", tp.train, 3);
+      // guide_sources 转换：从 guides 与 sources 组合
+      const guide_sources = [];
+      (raw.sources || []).forEach((s, i) => {
+        const platMap = { 小红书: "xhs", 抖音: "dy", 美团: "mt", 高德: "gd", 穷游: "qnr", 携程: "ctrip", 去哪儿: "qnr" };
+        guide_sources.push({ title: `${raw.name} · ${s}攻略灵感`, platform: platMap[s] || "", url: "", notes: "" });
+      });
+      (raw.guides || []).forEach(g => guide_sources.push({
+        title: g.title || g.name || g.link_title || "攻略",
+        platform: g.platform || g.source || "",
+        url: g.url || g.link || "",
+        notes: g.notes || g.comment || "",
+      }));
+      return Object.assign({}, raw, {
+        season: season,
+        estimated_days: raw.suggested_days || raw.estimated_days || 3,
+        estimated_budget: raw.estimated_budget || (raw.suggested_days ? raw.suggested_days * 1200 : null),
+        transport: transport.length ? transport : (Array.isArray(raw.transport) ? raw.transport : []),
+        ratings: raw.ratings || {
+          scenery: 8.2, food: 7.0, romance: 7.5, photo: 8.0,
+          crowd: raw.tags && raw.tags.some(t => /人多|热门|拥挤/.test(t)) ? 7.8 : 6.2,
+        },
+        guide_sources: guide_sources.length ? guide_sources : (raw.guide_sources || []),
+      });
+    });
+    return data;
+  }
+
+  async function mergeTravelFromDB(data) {
+    await LoveNest.db.ready;
+    // 从 travel_places 拉
+    try {
+      const rows = await LoveNest.db.list("travel_places");
+      if (rows && rows.length) {
+        const map = new Map((data.visited.places || []).map(p => [p.id, p]));
+        rows.forEach(r => {
+          if (!r.place_id) return;
+          const existing = map.get(r.place_id) || { id: r.place_id, photos: [], foods: [] };
+          Object.assign(existing, {
+            rating_him: r.rating_him != null ? r.rating_him : existing.rating_him,
+            rating_her: r.rating_her != null ? r.rating_her : existing.rating_her,
+            review: r.review != null ? r.review : existing.review,
+            foods: r.foods ? (Array.isArray(r.foods) ? r.foods : String(r.foods).split(",").filter(Boolean)) : existing.foods,
+          });
+          map.set(r.place_id, existing);
+        });
+        data.visited.places = Array.from(map.values());
+      }
+    } catch (e) { /* ignore, keep local */ }
+    normalizeWishlist(data);
+    saveTravelData(true);  // skip DB 避免死循环
+    refreshViews();
+  }
+
+  function saveTravelData(skipDB) {
+    // 更新统计
+    if (DATA.visited) {
+      const places = DATA.visited.places || [];
+      DATA.visited._stats = {
+        total_places: places.length,
+        total_photos: places.reduce((n,p)=>n+(p.photos? p.photos.filter(ph=>!ph.deleted_at).length:0),0),
+        total_days: places.reduce((n,p)=>n+(p.days||0),0),
+      };
+    }
+    // Layer 2: 写 localStorage（同步、立即）
+    try { localStorage.setItem(LS_KEY, JSON.stringify(DATA)); } catch (e) {}
+    // Layer 3: 写 Supabase（异步）
+    if (!skipDB && LoveNest.db && LoveNest.db.enabled) {
+      (async () => {
+        await LoveNest.db.ready;
+        for (const p of DATA.visited.places || []) {
+          try {
+            await LoveNest.db.upsert("travel_places", {
+              place_id: p.id,
+              name: p.name,
+              rating_him: p.rating_him,
+              rating_her: p.rating_her,
+              review: p.review || "",
+              foods: Array.isArray(p.foods) ? p.foods.join(",") : "",
+              updated_at: (new Date()).toISOString(),
+            }, ["couple_id", "place_id"]);
+          } catch (e) { /* offline queue 兜底 */ }
+        }
+      })();
+    }
+  }
+
+  /* --- 单张图片：localStorage base64 + 尝试 Supabase storage --- */
+  function savePhotoBase64(placeId, photoId, base64) {
+    try {
+      const key = LS_PHOTO_KEY(placeId);
+      const all = JSON.parse(localStorage.getItem(key) || "{}");
+      all[photoId] = base64;
+      localStorage.setItem(key, JSON.stringify(all));
+    } catch (e) {
+      console.warn("photo base64 存 localStorage 失败（可能超配额）:", e);
+    }
+  }
+  function getPhotoBase64(placeId, photoId) {
+    try {
+      const all = JSON.parse(localStorage.getItem(LS_PHOTO_KEY(placeId)) || "{}");
+      return all[photoId] || null;
+    } catch (e) { return null; }
+  }
+  function resolvePhotoUrl(placeId, photo) {
+    if (!photo) return "";
+    // base64 兜底
+    if (photo.url && (photo.url.startsWith("data:") || photo.url.startsWith("http"))) return photo.url;
+    const b64 = getPhotoBase64(placeId, photo.id);
+    if (b64) return b64;
+    return photo.url || "";
+  }
+
+  /* ---- 图片压缩（客户端 canvas）---- */
+  async function compressImage(file, maxLongEdge = 1920, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = reject;
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          const longest = Math.max(w, h);
+          if (longest > maxLongEdge) {
+            const r = maxLongEdge / longest;
+            w = Math.round(w * r); h = Math.round(h * r);
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          // 压缩图（用于上传 & 存储）
+          canvas.toBlob((blob) => {
+            if (!blob) return reject(new Error("canvas 压缩失败"));
+            // 缩略图
+            const tCanvas = document.createElement("canvas");
+            const tl = 320, tw = w >= h ? tl : Math.round(tl * w / h), th = w >= h ? Math.round(tl * h / w) : tl;
+            tCanvas.width = tw; tCanvas.height = th;
+            tCanvas.getContext("2d").drawImage(img, 0, 0, tw, th);
+            tCanvas.toBlob((thumbBlob) => {
+              const fr2 = new FileReader();
+              fr2.onload = () => resolve({
+                blob, thumbBlob,
+                thumbB64: fr2.result,
+                width: w, height: h,
+                fullB64: canvas.toDataURL("image/jpeg", quality),
+              });
+              fr2.onerror = reject;
+              fr2.readAsDataURL(thumbBlob || blob);
+            }, "image/jpeg", 0.82);
+          }, "image/jpeg", quality);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ==========================================================
+     二、三种视图切换 + 刷新
+     ========================================================== */
+  const viewTabs = $("viewTabs");
   const views = {
-    gallery: document.getElementById("view-gallery"),
-    map: document.getElementById("view-map"),
-    timeline: document.getElementById("view-timeline"),
+    gallery: $("view-gallery"),
+    map: $("view-map"),
+    timeline: $("view-timeline"),
   };
   let currentView = "gallery";
 
@@ -549,205 +1013,783 @@ document.addEventListener("DOMContentLoaded", async function () {
     btn.addEventListener("click", () => {
       const v = btn.getAttribute("data-view");
       if (!v || !views[v] || v === currentView) return;
-      // 更新 Tab
       viewTabs.querySelectorAll("button").forEach(b => {
         b.classList.toggle("is-active", b === btn);
         b.setAttribute("aria-selected", b === btn ? "true" : "false");
       });
-      // 更新 View
       Object.keys(views).forEach(k => views[k].classList.toggle("is-active", k === v));
       currentView = v;
-      // 如果切到地图，触发一次重绘（保证布局正确）
-      if (v === "map" && typeof renderMap === "function") {
-        // placeholder for map resize hook
-      }
+      if (v === "map") initMapView();
+      if (v === "gallery") initGalleryInteract();
+      if (v === "timeline") initTimelineInteract();
     });
   });
 
-  /* ---------- View 1 · 相册视图：按 [省份+景区] × [时间] 分组 ----------
-     结构：
-     <分组头：景区名 + 时间 + 照片数>
-       <九宫格：第1张占大格（featured），其余小格>
-     ---------------------------------------------------------------- */
+  function refreshViews() {
+    VISITED = DATA.visited.places;
+    WISHLIST = DATA.wishlist.places;
+    renderGallery(VISITED);
+    renderTimeline(VISITED);
+    // 地图只在激活时重绘
+    if (currentView === "map") initMapView();
+    renderWishlist(WISHLIST);
+  }
+
+  /* ==========================================================
+     三、相册视图 (Gallery View)
+     ========================================================== */
+  let galleryGroupBy = "place"; // "place" | "time"
+  let galleryRenderedPhotos = 0;
+  let gallerySelection = new Set(); // "placeId:photoId"
+  let galleryIsSelectMode = false;
+  let longPressTimer = null;
+
+  $("groupTabs").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      $("groupTabs").querySelectorAll("button").forEach(b => b.classList.toggle("is-active", b === btn));
+      galleryGroupBy = btn.getAttribute("data-groupby");
+      renderGallery(VISITED);
+    });
+  });
+
   function renderGallery(places) {
-    const root = document.getElementById("galleryRoot");
+    const root = $("galleryRoot");
     if (!root) return;
+    exitGallerySelectMode();
     if (!places || !places.length) {
       root.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没有照片——从第一次出行开始记起吧 ✈️</p></div>`;
       return;
     }
-    // 按开始时间倒序（最近的在前）
-    const sorted = [...places].sort((a,b) => new Date(b.start_date) - new Date(a.start_date));
-    const html = sorted.map((p, pIdx) => {
-      const photos = p.photos || [];
-      if (!photos.length) return "";
-      // 生成九宫格
-      const gridHtml = photos.map((ph, i) => {
+    galleryRenderedPhotos = 0;
+    let groups = [];
+    if (galleryGroupBy === "place") {
+      const sorted = [...places].sort((a,b) => new Date(b.start_date) - new Date(a.start_date));
+      groups = sorted.map(p => ({
+        key: p.id,
+        title: p.name,
+        meta: p.province || "",
+        sub: `${p.start_date || ""}${p.end_date && p.end_date !== p.start_date ? " ~ " + p.end_date : ""} · ${(p.photos||[]).filter(ph=>!ph.deleted_at).length} 张 · ${p.days||1} 天`,
+        items: (p.photos || []).filter(ph => !ph.deleted_at).map(ph => ({ placeId: p.id, photo: ph })),
+      }));
+    } else {
+      // 按时间：年-月分组
+      const byYM = new Map();
+      const allPhotos = [];
+      places.forEach(p => {
+        (p.photos || []).filter(ph => !ph.deleted_at).forEach(ph => {
+          allPhotos.push({ placeId: p.id, photo: ph, place: p });
+        });
+      });
+      allPhotos.sort((a,b) => new Date(b.photo.taken_at || b.place.start_date) - new Date(a.photo.taken_at || a.place.start_date));
+      allPhotos.forEach(ap => {
+        const d = new Date(ap.photo.taken_at || ap.place.start_date || 0);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+        if (!byYM.has(key)) byYM.set(key, []);
+        byYM.get(key).push(ap);
+      });
+      const YM_NAMES = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+      groups = [...byYM.keys()].sort((a,b)=>b.localeCompare(a)).map(key => {
+        const [y,m] = key.split("-");
+        const items = byYM.get(key);
+        return {
+          key, title: `${y} 年 ${YM_NAMES[parseInt(m)-1]}`,
+          meta: "",
+          sub: `${items.length} 张照片`,
+          items: items.map(ap => ({ placeId: ap.placeId, photo: ap.photo, place: ap.place })),
+        };
+      });
+    }
+
+    const html = groups.map(g => {
+      const showItems = g.items.slice(0, 40); // 首次 40 张
+      galleryRenderedPhotos += showItems.length;
+      const gridHtml = showItems.map((it, i) => {
         const isFeat = i === 0;
-        return `<figure class="gallery-item ${isFeat ? 'gallery-item--featured' : ''}" data-place="${esc(p.id)}" data-photo="${esc(ph.id)}" title="点击查看大图">
-          <img src="${esc(ph.url)}" alt="${esc(ph.caption || p.name)}" loading="lazy"/>
+        const ph = it.photo;
+        const p = it.place || VISITED.find(v => v.id === it.placeId);
+        const url = resolvePhotoUrl(it.placeId, ph);
+        return `<figure class="gallery-item ${isFeat ? 'gallery-item--featured' : ''}"
+          data-place="${esc(it.placeId)}" data-photo="${esc(ph.id)}" data-index="${i}"
+          data-key="${esc(it.placeId+':'+ph.id)}" title="点击查看大图，长按多选">
+          <img src="${esc(url)}" alt="${esc(ph.caption || (p&&p.name) || "")}" loading="lazy"/>
           <figcaption class="gallery-item__meta">
-            ${esc(ph.place_within || p.location)}<br/>
-            <span class="time">${esc((ph.taken_at || p.start_date || "").slice(0,10))}</span>
+            ${esc(ph.place_within || (p&&p.location) || "")}<br/>
+            <span class="time">${esc((ph.taken_at || (p&&p.start_date) || "").slice(0,10))}</span>
           </figcaption>
         </figure>`;
       }).join("");
-
-      return `<section class="gallery-group reveal">
+      const hasMore = g.items.length > showItems.length;
+      return `<section class="gallery-group reveal" data-groupkey="${esc(g.key)}">
         <header class="gallery-group__head">
-          <h3 class="gallery-group__title">${esc(p.name)}</h3>
-          <span class="gallery-group__meta">${esc(p.province || "")}</span>
-          <span class="gallery-group__sub">
-            ${esc(p.start_date || "")}${p.end_date && p.end_date !== p.start_date ? " ~ " + esc(p.end_date) : ""}
-            · ${photos.length} 张 · ${p.days || 1} 天
-          </span>
+          <h3 class="gallery-group__title">${esc(g.title)}</h3>
+          <span class="gallery-group__meta">${esc(g.meta)}</span>
+          <span class="gallery-group__sub">${esc(g.sub)}</span>
         </header>
         <div class="gallery-grid">${gridHtml}</div>
+        ${hasMore ? `<div class="gallery-sentinel" data-sentinel="${esc(g.key)}">↓ 向下滚动加载更多（${g.items.length - showItems.length} 张）</div>` : ""}
       </section>`;
     }).join("");
     root.innerHTML = html;
-    // 绑定图片点击
+    initGalleryInteract();
+  }
+
+  function initGalleryInteract() {
+    const root = $("galleryRoot");
+    if (!root) return;
+    // 点击 / 长按
     root.querySelectorAll(".gallery-item").forEach(el => {
-      el.addEventListener("click", () => {
-        const pid = el.getAttribute("data-place");
-        const phid = el.getAttribute("data-photo");
+      const pid = el.getAttribute("data-place");
+      const phid = el.getAttribute("data-photo");
+      const key = el.getAttribute("data-key");
+      // 视差（只对 featured）
+      if (el.classList.contains("gallery-item--featured")) {
+        const img = el.querySelector("img");
+        let tx = 0, ty = 0, ax = 0, ay = 0, raf = null;
+        el.addEventListener("mousemove", (e) => {
+          const rect = el.getBoundingClientRect();
+          const cx = (e.clientX - rect.left) / rect.width - 0.5;
+          const cy = (e.clientY - rect.top) / rect.height - 0.5;
+          tx = cx * 12; ty = cy * 12;
+          if (!raf) {
+            raf = requestAnimationFrame(function animate() {
+              ax += (tx - ax) * 0.12;
+              ay += (ty - ay) * 0.12;
+              img.style.transform = `scale(1.06) translate(${ax.toFixed(1)}px, ${ay.toFixed(1)}px)`;
+              if (Math.abs(tx-ax)>0.05 || Math.abs(ty-ay)>0.05) raf = requestAnimationFrame(animate);
+              else raf = null;
+            });
+          }
+        });
+        el.addEventListener("mouseleave", () => { tx = 0; ty = 0; if (img) img.style.transform = ""; });
+      }
+      // 长按 0.6s 进入多选
+      const startPress = (e) => {
+        longPressTimer = setTimeout(() => {
+          e.preventDefault();
+          enterGallerySelectMode();
+          toggleGallerySelection(key, el);
+        }, 600);
+      };
+      const cancelPress = () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } };
+      el.addEventListener("mousedown", startPress);
+      el.addEventListener("touchstart", startPress, { passive: true });
+      el.addEventListener("mouseup", cancelPress);
+      el.addEventListener("mouseleave", cancelPress);
+      el.addEventListener("touchend", cancelPress);
+      el.addEventListener("touchmove", cancelPress);
+      // 点击
+      el.addEventListener("click", (e) => {
+        if (galleryIsSelectMode) {
+          toggleGallerySelection(key, el);
+          return;
+        }
         openPhotoLightbox(pid, phid);
       });
+      // 右键菜单
+      el.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        openGalleryContextMenu(e.clientX, e.clientY, pid, phid, el);
+      });
     });
-    // 重新触发 reveal
+    // sentinel 加载更多
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (!en.isIntersecting) return;
+          const gk = en.target.getAttribute("data-sentinel");
+          if (!gk) return;
+          io.unobserve(en.target);
+          loadMoreGalleryGroup(gk);
+        });
+      }, { rootMargin: "200px 0px" });
+      root.querySelectorAll("[data-sentinel]").forEach(s => io.observe(s));
+    }
     if (LoveNest.initReveal) LoveNest.initReveal();
   }
-  renderGallery(VISITED);
 
-  /* ---------- View 2 · 地图视图 ----------
-     技术选型建议（留给 AI 并行开发）：
-     A) 轻量方案：SVG 绘制中国简化版轮廓 + 经纬度投影换算 + 绝对定位 Pin（当前框架预留此方案）
-        - 中国范围经纬度约：lon 73~135, lat 18~54
-        - viewBox: 0 0 1000 620；X=(lon-73)/(135-73)*1000，Y=(54-lat)/(54-18)*620
-        - Pin 不遮挡算法：检测重叠后按"就近偏移 + 引线"方式散开（或按 zoom 等级显示）
-     B) 专业方案：引入 Leaflet.js + OSM 或高德底图，MarkerCluster 处理重叠
-        - 优点：真实地图、缩放平移流畅
-        - 缺点：依赖外部 CDN、网络要求高
-     ---------------------------------------------------------------- */
-  function renderMap(visited, wishlist, origin) {
-    const svg = document.getElementById("mapCanvas");
-    const pinsLayer = document.getElementById("mapPins");
+  function loadMoreGalleryGroup(groupKey) {
+    const group = document.querySelector(`.gallery-group[data-groupkey="${groupKey}"]`);
+    if (!group) return;
+    // 重新计算该组完整数据
+    let items = [];
+    if (galleryGroupBy === "place") {
+      const p = VISITED.find(v => v.id === groupKey);
+      if (!p) return;
+      items = (p.photos || []).filter(ph => !ph.deleted_at).map(ph => ({ placeId: p.id, photo: ph, place: p }));
+    } else {
+      const allPhotos = [];
+      VISITED.forEach(p => {
+        (p.photos || []).filter(ph => !ph.deleted_at).forEach(ph => {
+          const d = new Date(ph.taken_at || p.start_date || 0);
+          const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+          if (key === groupKey) allPhotos.push({ placeId: p.id, photo: ph, place: p });
+        });
+      });
+      allPhotos.sort((a,b) => new Date(b.photo.taken_at || b.place.start_date) - new Date(a.photo.taken_at || a.place.start_date));
+      items = allPhotos;
+    }
+    const grid = group.querySelector(".gallery-grid");
+    const current = grid.querySelectorAll(".gallery-item").length;
+    const next = items.slice(current, current + 30);
+    if (!next.length) return;
+    const YM_NAMES = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+    const frag = document.createDocumentFragment();
+    next.forEach((it, i) => {
+      const ph = it.photo; const p = it.place; const url = resolvePhotoUrl(it.placeId, ph);
+      const globalIdx = current + i;
+      const el = document.createElement("figure");
+      el.className = "gallery-item";
+      el.setAttribute("data-place", it.placeId);
+      el.setAttribute("data-photo", ph.id);
+      el.setAttribute("data-key", it.placeId + ":" + ph.id);
+      el.innerHTML = `<img src="${esc(url)}" alt="${esc(ph.caption || (p&&p.name) || "")}" loading="lazy"/>
+        <figcaption class="gallery-item__meta">
+          ${esc(ph.place_within || (p&&p.location) || "")}<br/>
+          <span class="time">${esc((ph.taken_at || (p&&p.start_date) || "").slice(0,10))}</span>
+        </figcaption>`;
+      frag.appendChild(el);
+    });
+    grid.appendChild(frag);
+    const sent = group.querySelector("[data-sentinel]");
+    const remaining = items.length - (current + next.length);
+    if (remaining <= 0 && sent) sent.remove();
+    else if (sent) sent.textContent = `↓ 继续加载（${remaining} 张）`;
+    initGalleryInteract();
+  }
+
+  function enterGallerySelectMode() {
+    if (galleryIsSelectMode) return;
+    galleryIsSelectMode = true;
+    gallerySelection.clear();
+    $("batchBar").classList.add("is-visible");
+    updateBatchCount();
+  }
+  function exitGallerySelectMode() {
+    galleryIsSelectMode = false;
+    gallerySelection.clear();
+    document.querySelectorAll(".gallery-item.is-selected").forEach(el => el.classList.remove("is-selected"));
+    $("batchBar")?.classList.remove("is-visible");
+  }
+  function toggleGallerySelection(key, el) {
+    if (gallerySelection.has(key)) {
+      gallerySelection.delete(key);
+      el.classList.remove("is-selected");
+    } else {
+      gallerySelection.add(key);
+      el.classList.add("is-selected");
+    }
+    updateBatchCount();
+    if (gallerySelection.size === 0) exitGallerySelectMode();
+  }
+  function updateBatchCount() { $("batchCount").textContent = gallerySelection.size; }
+  $("batchCancel")?.addEventListener("click", exitGallerySelectMode);
+  $("batchExport")?.addEventListener("click", () => {
+    if (!gallerySelection.size) return;
+    alert(`[占位] 批量导出 ${gallerySelection.size} 张图片为 zip（未来接入 JSZip）。\n当前已选：${Array.from(gallerySelection).join(", ")}`);
+  });
+  $("batchTag")?.addEventListener("click", () => {
+    if (!gallerySelection.size) return;
+    const tag = prompt(`为选中的 ${gallerySelection.size} 张图片打标签（逗号分隔）：`);
+    if (!tag) return;
+    alert(`[占位] 已添加标签：${tag}`);
+  });
+
+  /* 右键/长按菜单 */
+  let ctxEl = null;
+  function openGalleryContextMenu(x, y, placeId, photoId, targetEl) {
+    closeContextMenu();
+    ctxEl = document.createElement("div");
+    ctxEl.className = "ctxmenu";
+    ctxEl.innerHTML = `
+      <div class="ctxmenu__item" data-act="cover">🖼 设为景区封面</div>
+      <div class="ctxmenu__item" data-act="rotate">🔄 顺时针旋转 90°</div>
+      <div class="ctxmenu__item ctxmenu__item--danger" data-act="delete">🗑 删除此照片</div>
+    `;
+    document.body.appendChild(ctxEl);
+    // 定位防溢出
+    const rect = ctxEl.getBoundingClientRect();
+    const maxX = window.innerWidth - rect.width - 8;
+    const maxY = window.innerHeight - rect.height - 8;
+    ctxEl.style.left = Math.min(x, maxX) + "px";
+    ctxEl.style.top = Math.min(y, maxY) + "px";
+    ctxEl.querySelectorAll(".ctxmenu__item").forEach(it => {
+      it.addEventListener("click", () => {
+        const act = it.getAttribute("data-act");
+        handleGalleryCtxAction(act, placeId, photoId, targetEl);
+        closeContextMenu();
+      });
+    });
+    setTimeout(() => { document.addEventListener("click", closeContextMenu, { once: true }); }, 0);
+  }
+  function closeContextMenu() { if (ctxEl) { ctxEl.remove(); ctxEl = null; } }
+
+  function handleGalleryCtxAction(act, placeId, photoId, targetEl) {
+    const place = VISITED.find(p => p.id === placeId);
+    if (!place || !place.photos) return;
+    const phIdx = place.photos.findIndex(ph => ph.id === photoId);
+    if (phIdx < 0) return;
+    if (act === "cover") {
+      const ph = place.photos[phIdx];
+      place.cover_image = resolvePhotoUrl(placeId, ph);
+      place.photos.splice(phIdx, 1);
+      place.photos.unshift(ph);
+      saveTravelData(); refreshViews();
+    } else if (act === "rotate") {
+      const ph = place.photos[phIdx];
+      ph.rotation = ((ph.rotation || 0) + 90) % 360;
+      const img = targetEl && targetEl.querySelector("img");
+      if (img) img.style.transform = `rotate(${ph.rotation}deg)`;
+      saveTravelData();
+    } else if (act === "delete") {
+      if (!confirm("确认删除这张照片吗？（软删除，保留 deleted_at 标记）")) return;
+      place.photos[phIdx].deleted_at = new Date().toISOString();
+      saveTravelData(); refreshViews();
+    }
+  }
+
+  /* ==========================================================
+     四、地图视图 (方案A · SVG + DBSCAN 聚簇 + 花瓣散开)
+     ========================================================== */
+  let mapState = {
+    scale: 1, tx: 0, ty: 0,
+    minScale: 0.6, maxScale: 2.4,
+    LON_MIN: 73, LON_MAX: 135, LAT_MIN: 18, LAT_MAX: 54,
+    W: 1000, H: 620,
+  };
+
+  function proj(lon, lat) {
+    return [
+      ((lon - mapState.LON_MIN) / (mapState.LON_MAX - mapState.LON_MIN)) * mapState.W,
+      ((mapState.LAT_MAX - lat) / (mapState.LAT_MAX - mapState.LAT_MIN)) * mapState.H,
+    ];
+  }
+
+  /* --- DBSCAN 简化版（距离阈值像素，返回 cluster 数组，每个 cluster 为 indices 集合）--- */
+  function dbscan(points, epsPx) {
+    const n = points.length;
+    const visited = new Set();
+    const clusters = [];
+    for (let i = 0; i < n; i++) {
+      if (visited.has(i)) continue;
+      const neighbors = regionQuery(i, points, epsPx);
+      visited.add(i);
+      if (neighbors.length < 2) { clusters.push([i]); continue; }
+      const cluster = [...neighbors, i];
+      const queue = neighbors.filter(x => x !== i);
+      while (queue.length) {
+        const q = queue.shift();
+        if (!visited.has(q)) {
+          visited.add(q);
+          const nbrs = regionQuery(q, points, epsPx);
+          if (nbrs.length >= 2) {
+            nbrs.forEach(nn => { if (!cluster.includes(nn)) { cluster.push(nn); queue.push(nn); } });
+          }
+          if (!cluster.includes(q)) cluster.push(q);
+        }
+      }
+      clusters.push(cluster);
+    }
+    return clusters;
+  }
+  function regionQuery(i, pts, eps) {
+    const [x1, y1] = pts[i].pxy;
+    const res = [];
+    for (let j = 0; j < pts.length; j++) {
+      if (j === i) continue;
+      const [x2, y2] = pts[j].pxy;
+      const d2 = (x1 - x2) ** 2 + (y1 - y2) ** 2;
+      if (d2 <= eps * eps) res.push(j);
+    }
+    return res;
+  }
+
+  /* 花瓣式散开：将 cluster 内的 pin 以 centroid 为圆心按花瓣排列
+     返回 Map<idx, {dx, dy}> 偏移像素（相对于原坐标） */
+  function petalSpread(pts, clusterIdxList, containerW, containerH) {
+    if (clusterIdxList.length <= 1) return new Map();
+    const n = clusterIdxList.length;
+    let cx = 0, cy = 0;
+    clusterIdxList.forEach(i => { cx += pts[i].pxy[0]; cy += pts[i].pxy[1]; });
+    cx /= n; cy /= n;
+    // 间距不超过 60px
+    const spacing = Math.min(60, 28 + n * 3);
+    const out = new Map();
+    if (n === 2) {
+      // 两个点：水平分开
+      clusterIdxList.forEach((i, k) => out.set(i, { dx: (k === 0 ? -1 : 1) * spacing / 2, dy: 0, cx, cy }));
+    } else {
+      clusterIdxList.forEach((i, k) => {
+        const angle = (k / n) * Math.PI * 2 - Math.PI / 2;
+        const r = spacing * (0.5 + (n > 5 ? 0.02 : 0.2) * Math.floor(k / 8));
+        out.set(i, { dx: Math.cos(angle) * r, dy: Math.sin(angle) * r, cx, cy });
+      });
+    }
+    return out;
+  }
+
+  function initMapView() {
+    applyMapTransform();
+    renderMap();
+    bindMapInteractions();
+  }
+
+  function applyMapTransform() {
+    const stage = $("mapStage");
+    if (!stage) return;
+    stage.style.transform = `translate(${mapState.tx}px, ${mapState.ty}px) scale(${mapState.scale})`;
+    $("mapScale") && ($("mapScale").textContent = `缩放 ${Math.round(mapState.scale * 100)}%`);
+  }
+
+  function renderMap() {
+    const svg = $("mapCanvas");
+    const pinsLayer = $("mapPins");
+    const overlay = $("mapOverlay");
     if (!svg || !pinsLayer) return;
 
-    // 投影函数：经纬度 → SVG viewBox 坐标
-    const LON_MIN = 73, LON_MAX = 135, LAT_MIN = 18, LAT_MAX = 54;
-    const W = 1000, H = 620;
-    const proj = (lon, lat) => [
-      ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * W,
-      ((LAT_MAX - lat) / (LAT_MAX - LAT_MIN)) * H
-    ];
+    const origin = DATA._meta.origin_coords;
+    const [ox, oy] = proj(origin[1], origin[0]); // origin_coords 是 [lat, lon]
 
-    // --- 第 1 步：绘制一个简化中国地图底图（SVG path，占位用）---
-    // 真实数据由 AI 开发填充。这里画一个示意的温柔色块 + 网格
-    const bg = `
+    /* ---------- 底图 SVG（简化中国轮廓 + 主要铁路/高速）---------- */
+    svg.innerHTML = buildMapBg(ox, oy);
+
+    /* ---------- 连线（从原点到各 visited 的柔和曲线）---------- */
+    const linesSvg = VISITED.map(p => {
+      if (!p.coords) return "";
+      const [x, y] = proj(p.coords[1], p.coords[0]);
+      const midX = (ox + x) / 2, midY = (oy + y) / 2;
+      const ctrlX = midX, ctrlY = Math.min(oy, y) - 60 - Math.random() * 20;
+      return `<path d="M${ox.toFixed(1)},${oy.toFixed(1)} Q${ctrlX.toFixed(1)},${ctrlY.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}"
+                    fill="none" stroke="#B85C6B" stroke-width="1.2" stroke-opacity="${0.25 + (mapState.scale - 0.6) * 0.2}"
+                    stroke-dasharray="3 5" stroke-linecap="round"/>`;
+    }).join("");
+    svg.insertAdjacentHTML("beforeend", linesSvg);
+
+    /* ---------- Pin 渲染（带防遮挡）---------- */
+    const pts = [];
+    VISITED.forEach(p => {
+      if (!p.coords) return;
+      const [x, y] = proj(p.coords[1], p.coords[0]);
+      pts.push({ type: "visited", pxy: [x, y], data: p });
+    });
+    WISHLIST.forEach(p => {
+      if (!p.coords) return;
+      const [x, y] = proj(p.coords[1], p.coords[0]);
+      pts.push({ type: "wish", pxy: [x, y], data: p });
+    });
+
+    // 根据 scale 选择防遮挡策略：
+    //   scale < 0.85 → 聚簇（合并成 N 处景点）
+    //   0.85 <= scale < 1.6 → 花瓣式散开 + 引线
+    //   scale >= 1.6 → 完全散开（重庆/四川地区尤其明显）
+    pinsLayer.innerHTML = "";
+    overlay.innerHTML = ""; // 清掉旧引线
+
+    if (mapState.scale < 0.85 && pts.length > 5) {
+      // --- 聚簇模式 ---
+      // eps 随 scale 变小而变大（距离更远的也合并）
+      const epsPx = 60 / mapState.scale;
+      // 只用 visited 聚簇，wish 单独画
+      const visPts = pts.filter(p => p.type === "visited");
+      const indices = visPts.map((_, i) => i);
+      const clusters = dbscan(visPts.map((v,i)=>({pxy:v.pxy})), Math.min(140, epsPx));
+      const clusterPins = [];
+      const assigned = new Set();
+      clusters.forEach(cl => {
+        if (cl.length <= 1) { clusterPins.push({ type: "single", indices: cl }); return; }
+        // cluster 中心：取平均
+        let cx = 0, cy = 0;
+        cl.forEach(i => { cx += visPts[i].pxy[0]; cy += visPts[i].pxy[1]; });
+        cx /= cl.length; cy /= cl.length;
+        clusterPins.push({ type: "cluster", count: cl.length, cx, cy, points: cl.map(i => visPts[i]) });
+        cl.forEach(i => assigned.add(i));
+      });
+      // 未分配的 single
+      visPts.forEach((_, i) => { if (!assigned.has(i)) clusterPins.push({ type: "single", indices: [i] }); });
+
+      clusterPins.forEach(cp => {
+        if (cp.type === "cluster") {
+          const pin = mkPinEl("pin--cluster", (cp.cx / mapState.W) * 100, (cp.cy / mapState.H) * 100,
+            null, `${cp.count} 处景点`, null);
+          pin.querySelector(".pin__marker").innerHTML = `<span>${cp.count}</span>`;
+          pinsLayer.appendChild(pin);
+          pin.addEventListener("click", () => {
+            // 点击聚簇：放大 2 倍到该 cluster 中心
+            smoothZoomTo(mapState.scale * 1.8, cp.cx, cp.cy);
+          });
+        } else {
+          const p = visPts[cp.indices[0]];
+          pinsLayer.appendChild(mkVisitedPin(p.data, (p.pxy[0] / mapState.W) * 100, (p.pxy[1] / mapState.H) * 100));
+        }
+      });
+      // wish
+      pts.filter(p => p.type === "wish").forEach(p => {
+        pinsLayer.appendChild(mkWishPin(p.data, (p.pxy[0] / mapState.W) * 100, (p.pxy[1] / mapState.H) * 100));
+      });
+      // 原点
+      const originPin = mkPinEl("pin--origin", (ox / mapState.W) * 100, (oy / mapState.H) * 100, null, "重庆大竹林 · 我们的家");
+      originPin.querySelector(".pin__marker").innerHTML = '<span style="transform:rotate(45deg);font-size:1.1rem">🏠</span>';
+      pinsLayer.appendChild(originPin);
+    } else {
+      // --- 散开模式：花瓣式 + 引线 ---
+      const visPts = pts.filter(p => p.type === "visited");
+      let offsets = new Map(); // i -> {dx, dy, cx, cy}
+      const leaderLines = [];
+      if (mapState.scale < 1.6) {
+        // 中缩放：DBSCAN + 花瓣散开
+        const epsPx = 44; // 题目要求：距离阈值 44px
+        const clusters = dbscan(visPts.map(v => ({ pxy: v.pxy })), epsPx);
+        clusters.forEach(cl => {
+          const off = petalSpread(visPts.map(v => ({ pxy: v.pxy })), cl, mapState.W, mapState.H);
+          off.forEach((v, i) => offsets.set(i, v));
+        });
+      }
+      visPts.forEach((vp, i) => {
+        const off = offsets.get(i);
+        let [x, y] = vp.pxy;
+        let origX = x, origY = y;
+        if (off) {
+          x = x + off.dx;
+          y = y + off.dy;
+          // 引线
+          leaderLines.push(`<line class="pin-leaderline" x1="${origX.toFixed(1)}" y1="${origY.toFixed(1)}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`);
+        }
+        const pin = mkVisitedPin(vp.data, (x / mapState.W) * 100, (y / mapState.H) * 100, origX, origY);
+        pinsLayer.appendChild(pin);
+      });
+      // 画引线到 overlay
+      if (leaderLines.length) overlay.innerHTML = leaderLines.join("");
+      // wish
+      pts.filter(p => p.type === "wish").forEach(p => {
+        pinsLayer.appendChild(mkWishPin(p.data, (p.pxy[0] / mapState.W) * 100, (p.pxy[1] / mapState.H) * 100));
+      });
+      // 原点
+      const originPin = mkPinEl("pin--origin", (ox / mapState.W) * 100, (oy / mapState.H) * 100, null, "重庆大竹林 · 我们的家");
+      originPin.querySelector(".pin__marker").innerHTML = '<span style="transform:rotate(45deg);font-size:1.1rem">🏠</span>';
+      pinsLayer.appendChild(originPin);
+    }
+
+    bindPinTooltips();
+  }
+
+  /* 构建地图底图（简化中国地图 + 主要铁路/高速）*/
+  function buildMapBg(ox, oy) {
+    // 简化中国地图 path（手绘低精度，仅示意莫兰迪色块）
+    const cnPath = "M180,190 C260,110 400,90 510,100 C600,108 700,80 790,130 C850,166 890,240 880,330 C872,400 820,480 720,510 C620,538 520,550 430,530 C340,510 240,480 190,410 C130,340 120,260 180,190 Z";
+    // 主要铁路 / 高速（示意）：渝新欧/沪蓉/京昆 等
+    const trLines = [
+      // 沪蓉：上海 → 成都
+      "M 880 300 Q 700 290 540 290 Q 400 290 260 260 Q 210 250 195 240",
+      // 京昆：北京 → 昆明
+      "M 580 150 Q 560 260 540 380 Q 520 460 470 500",
+      // 渝新欧：重庆 → 西北（象征性）
+      "M " + ox + " " + oy + " Q 400 220 340 180 Q 300 150 240 130",
+      // 长江（柔和蓝线）
+      "M250 380 C 350 358 440 345 520 330 C 610 312 700 290 780 298",
+      // 海岸线 点缀
+    ];
+    return `
       <defs>
         <linearGradient id="cnFill" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#F4EEE3"/>
           <stop offset="100%" stop-color="#E4DBCC"/>
         </linearGradient>
         <linearGradient id="cnStroke" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#B8C4AD" stop-opacity="0.6"/>
-          <stop offset="100%" stop-color="#D6A5AE" stop-opacity="0.6"/>
+          <stop offset="0%" stop-color="#B8C4AD" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#D6A5AE" stop-opacity="0.7"/>
         </linearGradient>
+        <radialGradient id="originHalo" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#E6ECE0" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#E6ECE0" stop-opacity="0"/>
+        </radialGradient>
       </defs>
-      <rect x="0" y="0" width="${W}" height="${H}" fill="#F8F4EC" rx="14"/>
-      <!-- 重庆/四川地区高亮柔光 -->
-      <circle cx="${proj(106.5, 29.6)[0]}" cy="${proj(106.5, 29.6)[1]}" r="160" fill="#E6ECE0" opacity="0.7"/>
-      <!-- 占位示意：简化中国地图轮廓（由 AI 替换为真实 geojson path） -->
-      <path d="M200,180 C300,120 420,100 520,110 C620,120 720,90 800,140 C880,190 900,280 880,360 C860,440 780,500 680,510 C580,520 480,560 380,530 C280,500 180,460 140,380 C100,300 100,240 200,180 Z"
-            fill="url(#cnFill)" stroke="url(#cnStroke)" stroke-width="2"/>
-      <!-- 长江示意线 -->
-      <path d="M250,380 C340,360 420,350 500,330 C580,310 660,290 760,300" fill="none" stroke="#9ECBFA" stroke-width="2.5" stroke-opacity="0.55" stroke-linecap="round"/>
+      <rect x="0" y="0" width="${mapState.W}" height="${mapState.H}" fill="#F8F4EC" rx="14"/>
+      <!-- 经纬网格（淡） -->
+      <g opacity="0.25">
+        ${[0.25,0.5,0.75].map(f=>`<line x1="0" y1="${mapState.H*f}" x2="${mapState.W}" y2="${mapState.H*f}" stroke="#D7CFC0" stroke-width="0.5" stroke-dasharray="2 4"/>`).join("")}
+        ${[0.2,0.4,0.6,0.8].map(f=>`<line x1="${mapState.W*f}" y1="0" x2="${mapState.W*f}" y2="${mapState.H}" stroke="#D7CFC0" stroke-width="0.5" stroke-dasharray="2 4"/>`).join("")}
+      </g>
+      <!-- 重庆/四川高亮柔光 -->
+      <circle cx="${ox.toFixed(1)}" cy="${oy.toFixed(1)}" r="150" fill="url(#originHalo)"/>
+      <!-- 主要铁路 / 高速公路虚线 -->
+      <g opacity="0.55">
+        ${trLines.map(d => `<path d="${d}" fill="none" stroke="#B8C4AD" stroke-width="1.2" stroke-dasharray="5 4" stroke-linecap="round"/>`).join("")}
+        <!-- 长江 -->
+        <path d="M250 380 C 350 355 440 345 520 330 C 610 312 700 295 780 298" fill="none" stroke="#9ECBFA" stroke-width="2.2" stroke-opacity="0.5" stroke-linecap="round"/>
+      </g>
+      <!-- 中国轮廓 -->
+      <path d="${cnPath}" fill="url(#cnFill)" stroke="url(#cnStroke)" stroke-width="2" stroke-linejoin="round"/>
+      <!-- 省界示意（轻虚线） -->
+      <path d="M350 240 Q 430 270 500 250 Q 560 240 600 300" fill="none" stroke="#CBBFAE" stroke-width="0.8" stroke-dasharray="3 5" opacity="0.6"/>
+      <path d="M400 360 Q 470 390 540 370" fill="none" stroke="#CBBFAE" stroke-width="0.8" stroke-dasharray="3 5" opacity="0.6"/>
+      <path d="M280 320 Q 320 340 360 320" fill="none" stroke="#CBBFAE" stroke-width="0.8" stroke-dasharray="3 5" opacity="0.6"/>
     `;
-    svg.innerHTML = bg;
-
-    // --- 第 2 步：从原点到每个 visited 画柔和连线（动画）---
-    const [ox, oy] = proj(origin[0], origin[1]);
-    const linesSvg = VISITED.map(p => {
-      if (!p.coords) return "";
-      const [x, y] = proj(p.coords[1], p.coords[0]);
-      return `<path d="M${ox},${oy} C${(ox+x)/2},${Math.min(oy,y)-60} ${(ox+x)/2+40},${Math.min(oy,y)-80} ${x},${y}"
-                    fill="none" stroke="#B85C6B" stroke-width="1.4" stroke-opacity="0.45"
-                    stroke-dasharray="4 6" stroke-linecap="round"/>`;
-    }).join("");
-    svg.insertAdjacentHTML("beforeend", linesSvg);
-
-    // --- 第 3 步：用绝对定位 div 放 Pin（便于悬停交互和小图预览）---
-    // 先把所有点计算出屏幕百分比坐标（因为外层是 aspect-ratio 容器）
-    const mkPin = (cls, lon, lat, imgUrl, title, onclick) => {
-      const [px, py] = proj(lon, lat);
-      const leftPct = (px / W) * 100;
-      const topPct = (py / H) * 100;
-      const d = document.createElement("div");
-      d.className = "pin " + cls;
-      d.style.left = leftPct + "%";
-      d.style.top = topPct + "%";
-      d.innerHTML = `
-        <div class="pin__marker">${imgUrl ? `<img src="${esc(imgUrl)}" alt="" loading="lazy"/>` : ""}</div>
-        <div class="pin__label">${esc(title)}</div>
-      `;
-      if (onclick) d.addEventListener("click", onclick);
-      return d;
-    };
-
-    pinsLayer.innerHTML = "";
-    // 原点：重庆大竹林
-    pinsLayer.appendChild(mkPin("pin--origin", origin[0], origin[1], null, "重庆大竹林 · 我们的家"));
-    // Visited 景点
-    VISITED.forEach(p => {
-      if (!p.coords) return;
-      const pin = mkPin("pin pin--visited", p.coords[1], p.coords[0], p.cover_image,
-        `${p.name} · ${p.start_date ? p.start_date.slice(0,7) : ""}`,
-        () => {
-          // 点击跳转相册视图 + 滚到对应分组
-          const tabBtn = viewTabs.querySelector('button[data-view="gallery"]');
-          if (tabBtn) tabBtn.click();
-          setTimeout(() => {
-            const target = document.querySelector(`.gallery-group [data-place="${p.id}"]`);
-            if (target) target.closest(".gallery-group").scrollIntoView({ behavior: "smooth", block: "start" });
-          }, 300);
-        }
-      );
-      pinsLayer.appendChild(pin);
-    });
-    // Wishlist 景点（灰色半透明，点击跳转到 wishlist section）
-    WISHLIST.forEach(p => {
-      if (!p.coords) return;
-      const pin = mkPin("pin pin--wish", p.coords[1], p.coords[0], null, p.name,
-        () => { document.getElementById("wishlist").scrollIntoView({behavior:"smooth"}); }
-      );
-      pinsLayer.appendChild(pin);
-    });
-
-    // --- 第 4 步：简单缩放（留给 AI 开发完善：pin 位置随缩放 + 防遮挡）---
-    let scale = 1;
-    const applyScale = () => {
-      svg.style.transform = `scale(${scale})`;
-      svg.style.transformOrigin = "center center";
-      pinsLayer.style.transform = `scale(${scale})`;
-      pinsLayer.style.transformOrigin = "center center";
-    };
-    document.getElementById("mapZoomIn").onclick  = () => { scale = Math.min(2.4, scale + 0.2); applyScale(); };
-    document.getElementById("mapZoomOut").onclick = () => { scale = Math.max(0.6, scale - 0.2); applyScale(); };
-    document.getElementById("mapZoomReset").onclick = () => { scale = 1; applyScale(); };
   }
-  // 第一次只在切到地图时渲染（避免性能），也可以直接预渲染
-  renderMap(VISITED, WISHLIST, DATA._meta.origin_coords);
 
-  /* ---------- View 3 · 时间轴视图：年-月 × 一张封面 + 一句话 ---------- */
+  function mkPinEl(cls, leftPct, topPct, imgUrl, title, onclick) {
+    const d = document.createElement("div");
+    d.className = "pin " + cls;
+    d.style.left = leftPct + "%";
+    d.style.top = topPct + "%";
+    d.innerHTML = `
+      <div class="pin__marker">${imgUrl ? `<img src="${esc(imgUrl)}" alt="" loading="lazy"/>` : ""}</div>
+      <div class="pin__label">${esc(title || "")}</div>
+      <div class="pin-tooltip"></div>
+    `;
+    if (onclick) d.addEventListener("click", onclick);
+    return d;
+  }
+
+  function mkVisitedPin(p, leftPct, topPct) {
+    const cover = resolvePhotoUrl(p.id, { url: p.cover_image, id: "__cover" }) || (p.photos && p.photos[0] && resolvePhotoUrl(p.id, p.photos[0])) || "";
+    const pin = mkPinEl("pin--visited", leftPct, topPct, cover,
+      `${p.name} · ${p.start_date ? p.start_date.slice(0,7) : ""}`,
+      () => {
+        // hash 记录
+        if (history.replaceState) history.replaceState(null, "", `#place-${p.id}`);
+        // 跳相册视图
+        const tabBtn = viewTabs.querySelector('button[data-view="gallery"]');
+        if (tabBtn) tabBtn.click();
+        setTimeout(() => {
+          const target = document.querySelector(`.gallery-item[data-place="${p.id}"]`);
+          if (target) target.closest(".gallery-group").scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 280);
+      }
+    );
+    pin.dataset.cover = cover;
+    pin.dataset.title = p.name;
+    pin.dataset.date = p.start_date || "";
+    return pin;
+  }
+
+  function mkWishPin(p, leftPct, topPct) {
+    return mkPinEl("pin--wish", leftPct, topPct, null, p.name,
+      () => { $("wishlist").scrollIntoView({behavior:"smooth"}); });
+  }
+
+  /* pin hover tooltip（140×90 缩略图 + 日期）*/
+  let currentTooltip = null;
+  function bindPinTooltips() {
+    const layer = $("mapPins");
+    layer.querySelectorAll(".pin--visited").forEach(pin => {
+      const tip = pin.querySelector(".pin-tooltip");
+      if (tip) {
+        tip.innerHTML = `
+          <img class="pin-tooltip__img" src="${esc(pin.dataset.cover)}" alt="" onerror="this.style.background='var(--bg-deep)'"/>
+          <div class="pin-tooltip__body">
+            <div class="pin-tooltip__title">${esc(pin.dataset.title || "")}</div>
+            <div class="pin-tooltip__date">${esc((pin.dataset.date||"").slice(0,10) || "")}</div>
+          </div>`;
+      }
+      pin.addEventListener("mouseenter", () => tip && tip.classList.add("is-visible"));
+      pin.addEventListener("mouseleave", () => tip && tip.classList.remove("is-visible"));
+    });
+  }
+
+  /* 地图交互：滚轮缩放 + 拖拽平移 + 按钮缩放 */
+  function bindMapInteractions() {
+    const wrap = $("mapRoot");
+    if (!wrap || wrap.__bound) return;
+    wrap.__bound = true;
+    $("mapZoomIn").onclick = () => zoomAt(null, null, +0.25);
+    $("mapZoomOut").onclick = () => zoomAt(null, null, -0.25);
+    $("mapZoomReset").onclick = () => { mapState.scale = 1; mapState.tx = 0; mapState.ty = 0; applyMapTransform(); renderMap(); };
+
+    wrap.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const rect = wrap.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      zoomAt(cx, cy, -e.deltaY * 0.002);
+    }, { passive: false });
+
+    // 拖拽
+    let isDrag = false, dragStart = null;
+    wrap.addEventListener("mousedown", (e) => {
+      if (e.target.closest(".pin")) return;
+      isDrag = true; wrap.classList.add("is-dragging");
+      dragStart = { x: e.clientX, y: e.clientY, tx0: mapState.tx, ty0: mapState.ty };
+    });
+    window.addEventListener("mousemove", (e) => {
+      if (!isDrag) return;
+      mapState.tx = dragStart.tx0 + (e.clientX - dragStart.x);
+      mapState.ty = dragStart.ty0 + (e.clientY - dragStart.y);
+      applyMapTransform();
+    });
+    window.addEventListener("mouseup", () => { isDrag = false; wrap.classList.remove("is-dragging"); });
+
+    // 触摸端
+    wrap.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1 && !e.target.closest(".pin")) {
+        isDrag = true;
+        dragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, tx0: mapState.tx, ty0: mapState.ty };
+      }
+    }, { passive: true });
+    wrap.addEventListener("touchmove", (e) => {
+      if (!isDrag || e.touches.length !== 1) return;
+      mapState.tx = dragStart.tx0 + (e.touches[0].clientX - dragStart.x);
+      mapState.ty = dragStart.ty0 + (e.touches[0].clientY - dragStart.y);
+      applyMapTransform();
+    }, { passive: true });
+    wrap.addEventListener("touchend", () => { isDrag = false; });
+  }
+
+  function zoomAt(centerX, centerY, delta) {
+    const oldScale = mapState.scale;
+    const newScale = Math.max(mapState.minScale, Math.min(mapState.maxScale, oldScale + delta));
+    if (newScale === oldScale) return;
+    const wrap = $("mapRoot");
+    const rect = wrap.getBoundingClientRect();
+    // 默认以容器中心为锚点
+    const cx = centerX != null ? centerX : rect.width / 2;
+    const cy = centerY != null ? centerY : rect.height / 2;
+    // 保持 anchor 点在容器中的位置不变
+    // anchor 逻辑：transform=translate(tx,ty) scale(s)，则内容的 x 对应容器 cx - tx = x*s → x = (cx - tx)/s
+    // 要求在新 s' 下，同一 x 对应同样 cx'：cx' - tx' = x*s' → tx' = cx' - (cx - tx0)*s'/s
+    const factor = newScale / oldScale;
+    mapState.tx = cx - (cx - mapState.tx) * factor;
+    mapState.ty = cy - (cy - mapState.ty) * factor;
+    mapState.scale = newScale;
+    applyMapTransform();
+    renderMap();
+  }
+  function smoothZoomTo(newScale, cxPx, cyPx) {
+    // cxPx/cyPx 是 stage 坐标系内的像素点（0~W / 0~H），需要转换为 wrap 容器坐标
+    const wrap = $("mapRoot");
+    const rect = wrap.getBoundingClientRect();
+    // stage 百分比位置
+    const lx = (cxPx / mapState.W) * rect.width;
+    const ly = (cyPx / mapState.H) * rect.height;
+    // 缩放中心 = stage 偏移 + 该点在当前缩放下的可视位置（近似用 wrap 中心 + 让 pin 居中）
+    // 简单做法：缩放完后，用 translate 平移把该点挪到 wrap 中心
+    const start = { s: mapState.scale, tx: mapState.tx, ty: mapState.ty };
+    // 目标：scale = newScale，并且 (cxPx, cyPx) 在容器正中心
+    // centerX = (cxPx * s / W * rectW) + tx  →  目标 centerX = rectW/2  →  tx = rectW/2 - cxPx * newScale / W * rectW
+    const targetS = newScale;
+    const targetTx = rect.width / 2 - (cxPx / mapState.W) * rect.width * targetS;
+    const targetTy = rect.height / 2 - (cyPx / mapState.H) * rect.height * targetS;
+    const dur = 420, t0 = performance.now();
+    (function step(now) {
+      const k = Math.min(1, (now - t0) / dur);
+      const ease = 1 - Math.pow(1 - k, 3); // easeOutCubic
+      mapState.scale = start.s + (targetS - start.s) * ease;
+      mapState.tx = start.tx + (targetTx - start.tx) * ease;
+      mapState.ty = start.ty + (targetTy - start.ty) * ease;
+      applyMapTransform();
+      if (k < 1) requestAnimationFrame(step);
+      else renderMap();
+    })(performance.now());
+  }
+
+  /* ==========================================================
+     五、时间轴视图
+     ========================================================== */
   function renderTimeline(places) {
-    const root = document.getElementById("timelineRoot");
+    const root = $("timelineRoot");
     if (!root) return;
     if (!places || !places.length) {
       root.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没有故事——先去第一个远方吧 🌄</p></div>`;
       return;
     }
-    // 按年-月分组（取 start_date 的年和月）
     const byYear = new Map();
     const sorted = [...places].sort((a,b) => new Date(a.start_date) - new Date(b.start_date));
     sorted.forEach(p => {
@@ -755,9 +1797,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       const y = d.getFullYear() || "未知";
       const m = d.getMonth() + 1;
       if (!byYear.has(y)) byYear.set(y, new Map());
-      const monthMap = byYear.get(y);
-      if (!monthMap.has(m)) monthMap.set(m, []);
-      monthMap.get(m).push(p);
+      const mm = byYear.get(y);
+      if (!mm.has(m)) mm.set(m, []);
+      mm.get(m).push(p);
     });
 
     const MONTH_NAMES = ["","1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
@@ -766,34 +1808,40 @@ document.addEventListener("DOMContentLoaded", async function () {
       const monthsHtml = [...monthMap.keys()].sort((a,b) => b - a).map(m => {
         const list = monthMap.get(m);
         const placesHtml = list.map(p => {
-          const thumbs = (p.photos || []).slice(1, 7).map(ph =>
-            `<div class="tl-place__thumb" data-place="${esc(p.id)}" data-photo="${esc(ph.id)}">
-               <img src="${esc(ph.url)}" alt="" loading="lazy"/>
-             </div>`).join("");
+          const photos = (p.photos || []).filter(ph => !ph.deleted_at);
+          const thumbs = photos.slice(1, 7).map(ph => {
+            const url = resolvePhotoUrl(p.id, ph);
+            return `<div class="tl-place__thumb" data-place="${esc(p.id)}" data-photo="${esc(ph.id)}">
+               <img src="${esc(url)}" alt="" loading="lazy"/>
+             </div>`;
+          }).join("");
           const tags = [];
           if (p.days) tags.push(`<span class="tag tag--sage">${p.days} 天</span>`);
           if (p.season) tags.push(`<span class="tag tag--her">${p.season} 季</span>`);
           if (p.rating_him != null || p.rating_her != null) {
-            const r = (p.rating_him + p.rating_her) / 2;
-            tags.push(`<span class="tag tag--him">❤ ${(r||0).toFixed(1)} 分</span>`);
+            const r = ((p.rating_him||0) + (p.rating_her||0)) / 2;
+            tags.push(`<span class="tag tag--him">师豪 ${(p.rating_him||0).toFixed(1)} · 佳力 ${(p.rating_her||0).toFixed(1)} · 均 ${(r||0).toFixed(1)}</span>`);
           }
-          return `<article class="tl-place">
-            <div class="tl-place__cover" data-place="${esc(p.id)}" data-photo="${(p.photos && p.photos[0] && p.photos[0].id) || ''}">
-              <img src="${esc(p.cover_image || (p.photos && p.photos[0] && p.photos[0].url) || '')}" alt="" loading="lazy"/>
+          (p.foods || []).forEach(f => tags.push(`<span class="tag tag--rose">${esc(f)}</span>`));
+          const coverUrl = resolvePhotoUrl(p.id, { url: p.cover_image, id: "__cover" }) || (photos[0] && resolvePhotoUrl(p.id, photos[0])) || "";
+          const firstPhotoId = photos[0] && photos[0].id;
+          return `<article class="tl-place" data-place="${esc(p.id)}">
+            <div class="tl-place__cover" data-place="${esc(p.id)}" data-photo="${esc(firstPhotoId || '')}">
+              <img src="${esc(coverUrl)}" alt="" loading="lazy"/>
             </div>
             <div class="tl-place__body">
               <div class="tl-place__head">
                 <h4 class="tl-place__name">${esc(p.name)}</h4>
-                <span class="tl-place__when">${esc(p.start_date || "")}</span>
+                <span class="tl-place__when">${esc(p.start_date || "")}${p.end_date && p.end_date !== p.start_date ? " ~ " + esc(p.end_date) : ""}</span>
               </div>
-              <p class="tl-place__sentence">${esc(p.review || "💭 还没写一句话感受——下次回来补上。")}</p>
+              <p class="tl-place__sentence" data-review="${esc(p.id)}">${esc(p.review || "💭 点击此处写一句话感受……（Ctrl+Enter 保存）")}</p>
               ${thumbs ? `<div class="tl-place__thumbs">${thumbs}</div>` : ""}
               ${tags.length ? `<div class="tl-place__meta">${tags.join("")}</div>` : ""}
             </div>
           </article>`;
         }).join("");
-        const totalPhotos = list.reduce((n,p) => n + ((p.photos||[]).length),0);
-        return `<div class="tl-month">
+        const totalPhotos = list.reduce((n,p) => n + ((p.photos||[]).filter(ph=>!ph.deleted_at).length),0);
+        return `<div class="tl-month" data-yearmonth="${year}-${m}">
           <div class="tl-month__date">
             <div class="tl-month__month">${MONTH_NAMES[m]}</div>
             <div class="tl-month__count">${list.length} 处 · ${totalPhotos} 张</div>
@@ -803,16 +1851,44 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>`;
       }).join("");
       const totalDays = [...monthMap.values()].flat().reduce((n,p)=> n + (p.days||0),0);
-      return `<section class="tl-year">
-        <header class="tl-year__head">
+      const yearPlaces = [...monthMap.values()].flat();
+
+      // --- 年度摘要卡 ---
+      const totalKm = estimateTotalKm(yearPlaces);
+      const bestPlace = [...yearPlaces].sort((a,b) => {
+        const ar = (a.rating_him||0) + (a.rating_her||0);
+        const br = (b.rating_him||0) + (b.rating_her||0);
+        return br - ar;
+      })[0];
+      const keywords = extractYearKeywords(yearPlaces);
+      const bestCover = bestPlace ? (resolvePhotoUrl(bestPlace.id, {url:bestPlace.cover_image,id:"__cover"}) || (bestPlace.photos && bestPlace.photos[0] && resolvePhotoUrl(bestPlace.id, bestPlace.photos[0]))) : "";
+      const summaryHtml = `<div class="tl-summary reveal">
+        <div class="tl-summary__cover">
+          ${bestCover ? `<img src="${esc(bestCover)}" alt="年度最佳"/>` : '<div style="display:grid;place-items:center;height:100%;color:var(--faint)">暂无最佳</div>'}
+        </div>
+        <div class="tl-summary__body">
+          <div class="tl-summary__title">📜 ${year} 年 · 旅行小结</div>
+          <div class="tl-summary__stats">
+            <div class="tl-summary__stat"><b>${yearPlaces.length}</b><span>段旅程</span></div>
+            <div class="tl-summary__stat"><b>${totalDays}</b><span>在路上天数</span></div>
+            <div class="tl-summary__stat"><b>${totalKm}</b><span>公里（估算）</span></div>
+            <div class="tl-summary__stat"><b>${yearPlaces.reduce((n,p)=>n+(p.photos||[]).filter(ph=>!ph.deleted_at).length,0)}</b><span>张照片</span></div>
+          </div>
+          ${keywords.length ? `<div class="tl-summary__kw">💡 年度关键词：${keywords.map(k=>`<i>${esc(k)}</i>`).join(" · ")}</div>` : ""}
+        </div>
+      </div>`;
+
+      return `<section class="tl-year" data-year="${year}">
+        <header class="tl-year__head" data-yearhead="${year}">
           <div class="tl-year__num">${year}</div>
-          <div class="tl-year__label">${[...monthMap.values()].flat().length} 段旅程 · ${totalDays} 个在路上的日子</div>
+          <div class="tl-year__label">${yearPlaces.length} 段旅程 · ${totalDays} 个在路上的日子</div>
         </header>
         ${monthsHtml}
+        ${summaryHtml}
       </section>`;
     }).join("");
     root.innerHTML = html;
-    // 绑定点击
+    // 点击
     root.querySelectorAll(".tl-place__cover, .tl-place__thumb").forEach(el => {
       el.addEventListener("click", () => {
         const pid = el.getAttribute("data-place");
@@ -820,290 +1896,528 @@ document.addEventListener("DOMContentLoaded", async function () {
         openPhotoLightbox(pid, phid);
       });
     });
+    initTimelineInteract();
   }
-  renderTimeline(VISITED);
 
-  /* ---------- 图片查看 Lightbox（复用 nav.js 的共享 modal） ---------- */
+  function initTimelineInteract() {
+    // inline-edit 感受
+    document.querySelectorAll(".tl-place__sentence[data-review]").forEach(el => {
+      el.addEventListener("click", () => {
+        if (el.classList.contains("is-editing")) return;
+        const pid = el.getAttribute("data-review");
+        const place = VISITED.find(p => p.id === pid);
+        if (!place) return;
+        el.classList.add("is-editing");
+        const cur = place.review || "";
+        el.innerHTML = `<textarea maxlength="200" placeholder="这次旅行最打动我们的是……">${esc(cur)}</textarea>`;
+        const ta = el.querySelector("textarea");
+        ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+        const save = () => {
+          place.review = ta.value.trim();
+          saveTravelData();
+          el.classList.remove("is-editing");
+          el.textContent = place.review || "💭 点击此处写一句话感受……（Ctrl+Enter 保存）";
+        };
+        ta.addEventListener("keydown", (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); save(); }
+          if (e.key === "Escape") { el.classList.remove("is-editing"); el.textContent = place.review || "💭 点击此处写一句话感受……（Ctrl+Enter 保存）"; }
+        });
+        ta.addEventListener("blur", save);
+      });
+    });
+    // 月份粘性标题让位动画（监听滚动，给上一个月的 tl-month__date 加位移让位）
+    // 简化实现：观察 intersection 并给 head 加 transform
+    if (!("IntersectionObserver" in window)) return;
+    const yearHeads = document.querySelectorAll(".tl-year__head");
+    const prevTransforms = new Map();
+    const monthDates = document.querySelectorAll(".tl-month__date");
+    // tl-year__head 让位：当 section 底部滚过时 translateY 推出
+    const yIo = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        const year = en.target.getAttribute("data-yearhead");
+        if (!year) return;
+        // en.boundingClientRect 是 tl-year__head 自身
+        const sec = en.target.closest(".tl-year");
+        if (!sec) return;
+        const secRect = sec.getBoundingClientRect();
+        const stickyTop = 62; // 对应 CSS top:62px
+        // 当 section 底部与 head 底部相碰时，将 head 向上平移
+        const headBottom = stickyTop + en.boundingClientRect.height;
+        const overflow = headBottom - secRect.bottom;
+        const ty = overflow > 0 ? -overflow : 0;
+        if (prevTransforms.get(year) !== ty) {
+          en.target.style.transform = `translateY(${ty}px)`;
+          prevTransforms.set(year, ty);
+        }
+      });
+    }, { threshold: [0, 0.05, 0.1, 0.5, 0.9, 1] });
+    yearHeads.forEach(h => yIo.observe(h));
+    if (LoveNest.initReveal) LoveNest.initReveal();
+  }
+
+  /* Haversine 距离估算 */
+  function haversineKm(a, b) {
+    if (!a || !b) return 0;
+    const [lat1, lon1] = a;
+    const [lat2, lon2] = b;
+    const R = 6371;
+    const toRad = x => x * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+    const x = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(x));
+  }
+  function estimateTotalKm(places) {
+    if (!places.length) return 0;
+    const origin = DATA._meta.origin_coords;
+    // 从原点出发 → 每个点 → 下一个点 → 回原点；简单累加
+    const pts = [origin, ...places.map(p => p.coords).filter(Boolean)];
+    let km = 0;
+    for (let i = 1; i < pts.length; i++) km += haversineKm(pts[i-1], pts[i]);
+    return Math.round(km);
+  }
+  function extractYearKeywords(places) {
+    const stopWords = new Set(["我们","的","在","了","是","一","和","与","很","都","太","也","有","不","就","都","这","那","上","下","中","去","到","回","从","很","真","最","让","把","被","说","看","想","拍","拍了","人","里","外","前","后","左","右","大","小","多","少"]);
+    const freq = new Map();
+    (places || []).forEach(p => {
+      const text = [p.name, p.province, p.location, p.review, p.season, ...(p.foods || [])].filter(Boolean).join(" ");
+      // 简单 2-gram + 4-char 以上分词
+      for (let i = 2; i <= 4; i++) {
+        for (let j = 0; j <= text.length - i; j++) {
+          const w = text.slice(j, j + i).trim();
+          if (w.length < 2) continue;
+          if (stopWords.has(w)) continue;
+          if (/[a-zA-Z0-9]/.test(w)) continue;
+          freq.set(w, (freq.get(w) || 0) + 1);
+        }
+      }
+      (p.foods || []).forEach(f => freq.set(f, (freq.get(f) || 0) + 3));
+      if (p.season) freq.set(p.season + "季", (freq.get(p.season + "季") || 0) + 2);
+    });
+    return [...freq.entries()]
+      .filter(([w,c]) => c >= 2 && w.length >= 2)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([w]) => w);
+  }
+
+  /* ==========================================================
+     六、Lightbox · 大图查看 + 上传 + 编辑感受
+     ========================================================== */
   function openPhotoLightbox(placeId, photoId) {
     const place = VISITED.find(p => p.id === placeId);
     const photo = place && (place.photos || []).find(ph => ph.id === photoId);
     if (!place) return;
-    const ph = photo || (place.photos && place.photos[0]);
+    const validPhotos = (place.photos || []).filter(ph => !ph.deleted_at);
+    const ph = photo || validPhotos[0];
     if (!ph) return;
+    const url = resolvePhotoUrl(placeId, ph);
+    const avgRating = (place.rating_him != null || place.rating_her != null)
+      ? `师豪 <b style="color:var(--terracotta-deep)">${(place.rating_him||0).toFixed(1)}</b> · 佳力 <b style="color:var(--rose-deep)">${(place.rating_her||0).toFixed(1)}</b>`
+      : `<span class="faint italic">未评分</span>`;
+    const thumbsHtml = validPhotos.length > 1 ? `
+      <div style="margin-top:16px">
+        <p class="kicker" style="margin-bottom:10px">本景区 ${validPhotos.length} 张照片</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${validPhotos.map(x => `
+            <img src="${esc(resolvePhotoUrl(placeId, x))}" alt="" loading="lazy"
+                 style="width:60px;height:60px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid ${x.id===ph.id?'var(--sage)':'transparent'}"
+                 data-ph="${esc(x.id)}" class="lb-thumb"/>
+          `).join("")}
+        </div>
+      </div>` : "";
     const html = `
-      <img class="lightbox-img" src="${esc(ph.url)}" alt="${esc(ph.caption || place.name)}"/>
+      <img class="lightbox-img" src="${esc(url)}" alt="${esc(ph.caption || place.name)}" style="transform:rotate(${ph.rotation||0}deg)"/>
       <dl class="lightbox-meta">
         <dt>景区</dt><dd>${esc(place.name)}<span class="faint"> · ${esc(place.location || "")}</span></dd>
         <dt>拍摄地</dt><dd>${esc(ph.place_within || "—")}</dd>
         <dt>时间</dt><dd>${esc(ph.taken_at || place.start_date || "")}</dd>
+        <dt>评分</dt><dd>${avgRating}</dd>
         <dt>一句话</dt><dd>${esc(place.review || "—")}</dd>
+        ${(place.foods||[]).length ? `<dt>美食</dt><dd>${place.foods.map(f=>`<span class="tag tag--rose" style="margin-right:4px">${esc(f)}</span>`).join("")}</dd>` : ""}
       </dl>
-      ${place.photos && place.photos.length > 1 ? `
-        <div style="margin-top:16px">
-          <p class="kicker" style="margin-bottom:10px">本景区更多照片（${place.photos.length} 张）</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            ${place.photos.map(x => `
-              <img src="${esc(x.url)}" alt="" loading="lazy"
-                   style="width:60px;height:60px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid ${x.id===ph.id?'var(--sage)':'transparent'}"
-                   onclick="LoveNest._openPhotoDirect('${esc(place.id)}','${esc(x.id)}')"/>
-            `).join("")}
-          </div>
-        </div>` : ""}
+      ${thumbsHtml}
+      <div id="lbForms"></div>
       <div class="btn-row">
         <button class="btn btn--small btn--primary" id="addReviewBtn" type="button">✎ 补充玩后感受</button>
         <button class="btn btn--small btn--ghost" id="uploadPhotoBtn" type="button">📷 上传更多照片</button>
       </div>
     `;
     LoveNest.openModal(place.name + " · " + (ph.caption || "照片"), html);
-    // 绑定上传 / 编辑入口（留给 AI 开发）
-    const up = document.getElementById("uploadPhotoBtn");
-    if (up) up.onclick = () => alert("[框架占位] 上传照片 UI 入口，由 AI 并行开发对接：点击后弹出上传区 → 压缩预览 → 写入 Supabase storage + travel_photos 表");
-    const ar = document.getElementById("addReviewBtn");
-    if (ar) ar.onclick = () => alert("[框架占位] 玩后感受编辑入口，由 AI 并行开发：弹出双评分(师豪/佳力) + 文字 + 美食标签表单，写入 visited 记录");
+    // 缩略图切换
+    document.querySelectorAll(".lb-thumb").forEach(t => {
+      t.addEventListener("click", () => {
+        const newPhId = t.getAttribute("data-ph");
+        LoveNest.closeModal();
+        setTimeout(() => openPhotoLightbox(placeId, newPhId), 120);
+      });
+    });
+    // 入口按钮
+    $("uploadPhotoBtn").onclick = () => showUploadForm(placeId);
+    $("addReviewBtn").onclick = () => showReviewForm(placeId);
   }
-  // 暴露给 modal 内的 onclick
-  LoveNest._openPhotoDirect = (pid, phid) => { LoveNest.closeModal(); setTimeout(()=>openPhotoLightbox(pid, phid), 150); };
 
-  /* ==============================================================
-     二、想去旅游模块 · 一个景点一个 Tab + 攻略面板
-     ============================================================== */
+  /* --- 上传更多照片表单 --- */
+  function showUploadForm(placeId) {
+    const holder = $("lbForms");
+    if (!holder) return;
+    const upInputId = "lbFileInput_" + placeId;
+    holder.innerHTML = `
+      <div class="form-section" id="uploadSec">
+        <div class="form-section__title">📷 上传照片（最多一次 10 张）</div>
+        <label class="upload-zone" for="${upInputId}" id="lbUpZone">
+          <div class="ico">⬆</div>
+          <p><b>点击选择</b> 或拖放图片到此处</p>
+          <small>自动压缩到最长边 1920px · 质量 0.85 · 同步存本地与云端</small>
+          <input type="file" id="${upInputId}" accept="image/*" multiple/>
+        </label>
+        <div class="form-grid" style="margin-top:12px">
+          <div class="form-field">
+            <label>默认拍摄地点（所有新图，可单图后改）</label>
+            <input type="text" id="upDefPlace" placeholder="如：洛绒牛场 / 金龟朝阳"/>
+          </div>
+        </div>
+        <div class="upload-preview" id="upPreview"></div>
+        <div class="upload-progress" id="upProgress"><span></span></div>
+        <div class="btn-row">
+          <button class="btn btn--small btn--primary" id="upSaveBtn" type="button" disabled>💾 确认添加到相册</button>
+          <button class="btn btn--small btn--ghost" id="upCancelBtn" type="button">取消</button>
+        </div>
+      </div>`;
+    const input = $(upInputId);
+    const zone = $("lbUpZone");
+    const preview = $("upPreview");
+    const saveBtn = $("upSaveBtn");
+    const progress = $("upProgress");
+    const defPlace = $("upDefPlace");
+    let pending = []; // [{ file, compressed:{blob, thumbB64, fullB64}, placeWithin }]
+
+    const handleFiles = async (files) => {
+      const list = Array.from(files).slice(0, 10);
+      if (!list.length) return;
+      progress.classList.add("is-visible");
+      progress.querySelector("span").style.width = "5%";
+      for (let i = 0; i < list.length; i++) {
+        try {
+          const c = await compressImage(list[i]);
+          pending.push({ file: list[i], compressed: c, placeWithin: "" });
+        } catch (e) { console.warn("压缩失败:", list[i].name, e); }
+        progress.querySelector("span").style.width = Math.round(5 + (i + 1) / list.length * 75) + "%";
+      }
+      renderPreview();
+      saveBtn.disabled = pending.length === 0;
+      progress.querySelector("span").style.width = "80%";
+    };
+    function renderPreview() {
+      preview.innerHTML = pending.map((it, i) => `
+        <div class="upload-preview__item">
+          <img src="${esc(it.compressed.thumbB64)}" alt=""/>
+          <button class="upload-preview__remove" data-idx="${i}" title="移除">✕</button>
+        </div>`).join("");
+      preview.querySelectorAll(".upload-preview__remove").forEach(b => {
+        b.onclick = () => { pending.splice(+b.getAttribute("data-idx"), 1); renderPreview(); saveBtn.disabled = pending.length === 0; };
+      });
+    }
+    input.onchange = (e) => handleFiles(e.target.files);
+    ["dragenter","dragover"].forEach(ev => zone.addEventListener(ev, (e)=>{ e.preventDefault(); zone.classList.add("is-dragover"); }));
+    ["dragleave","drop"].forEach(ev => zone.addEventListener(ev, (e)=>{ e.preventDefault(); zone.classList.remove("is-dragover"); }));
+    zone.addEventListener("drop", (e) => handleFiles(e.dataTransfer.files));
+    saveBtn.onclick = async () => {
+      if (!pending.length) return;
+      const place = VISITED.find(p => p.id === placeId);
+      if (!place) return;
+      saveBtn.disabled = true; saveBtn.textContent = "保存中...";
+      place.photos = place.photos || [];
+      const def = defPlace.value.trim();
+      for (let i = 0; i < pending.length; i++) {
+        const it = pending[i];
+        const phId = uid();
+        const takenAt = new Date(it.file.lastModified || Date.now()).toISOString();
+        const newPh = {
+          id: phId,
+          url: "",
+          caption: "",
+          taken_at: takenAt,
+          place_within: it.placeWithin || def || "",
+        };
+        place.photos.push(newPh);
+        // base64 存 localStorage 兜底
+        savePhotoBase64(placeId, phId, it.compressed.fullB64);
+        newPh.url = it.compressed.fullB64; // 内存里直接用 base64 可立即显示
+        // Supabase storage 尝试（异步不阻塞）
+        if (LoveNest.db && LoveNest.db.enabled) {
+          try {
+            await LoveNest.db.ready;
+            const sb = LoveNest.db.supabase;
+            if (sb && sb.storage) {
+              const fn = `travel/${placeId}/${phId}_${Date.now()}.jpg`;
+              const up = await sb.storage.from("lovenest").upload(fn, it.compressed.blob, {
+                contentType: "image/jpeg", upsert: true,
+              });
+              if (up && up.data && up.data.path) {
+                const { data: pub } = sb.storage.from("lovenest").getPublicUrl(up.data.path);
+                if (pub && pub.publicUrl) {
+                  newPh.url = pub.publicUrl;
+                  saveTravelData(true);
+                }
+              }
+            }
+          } catch (e) { console.warn("Supabase storage 上传失败，本地已兜底:", e); }
+        }
+      }
+      progress.querySelector("span").style.width = "100%";
+      saveTravelData();
+      setTimeout(() => {
+        LoveNest.closeModal();
+        refreshViews();
+        setTimeout(() => openPhotoLightbox(placeId, place.photos[place.photos.length - 1]?.id), 200);
+      }, 300);
+    };
+    $("upCancelBtn").onclick = () => holder.innerHTML = "";
+  }
+
+  /* --- 玩后感受表单：双评分 + 一句话 + 美食 tags --- */
+  function showReviewForm(placeId) {
+    const holder = $("lbForms");
+    if (!holder) return;
+    const place = VISITED.find(p => p.id === placeId);
+    if (!place) return;
+    const curHim = place.rating_him != null ? place.rating_him : 7.5;
+    const curHer = place.rating_her != null ? place.rating_her : 7.5;
+    const foods = Array.isArray(place.foods) ? [...place.foods] : [];
+    holder.innerHTML = `
+      <div class="form-section" id="reviewSec">
+        <div class="form-section__title">✎ 玩后感受 · 两个人的评分与一句话</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>师豪评分（0-10）</label>
+            <div class="rating-row">
+              <input type="range" id="revHim" min="0" max="10" step="0.1" value="${curHim}"/>
+              <span class="val" id="revHimVal">${curHim.toFixed(1)}</span>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>佳力评分（0-10）</label>
+            <div class="rating-row">
+              <input type="range" id="revHer" min="0" max="10" step="0.1" value="${curHer}"/>
+              <span class="val" id="revHerVal">${curHer.toFixed(1)}</span>
+            </div>
+          </div>
+          <div class="form-field form-field--full">
+            <label>一句话感受（≤200字，Ctrl+Enter 保存）</label>
+            <textarea id="revText" maxlength="200" rows="3" placeholder="这次旅行最打动我们的是……">${esc(place.review || "")}</textarea>
+          </div>
+          <div class="form-field form-field--full">
+            <label>吃过的美食（逗号分隔或回车添加）</label>
+            <div class="food-chips" id="revFoods">
+              ${foods.map(f => `<span class="food-chip" data-f="${esc(f)}">${esc(f)} <span style="opacity:.5;margin-left:4px">✕</span></span>`).join("")}
+              <span class="food-chip food-chip--input">
+                <input id="revFoodInput" placeholder="输入后 + 回车，如：牦牛肉火锅"/>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn--small btn--primary" id="revSaveBtn" type="button">💾 保存感受</button>
+          <button class="btn btn--small btn--ghost" id="revCancelBtn" type="button">取消</button>
+        </div>
+      </div>`;
+    const him = $("revHim"), her = $("revHer"), himV = $("revHimVal"), herV = $("revHerVal");
+    him.oninput = () => himV.textContent = (+him.value).toFixed(1);
+    her.oninput = () => herV.textContent = (+her.value).toFixed(1);
+    // 美食 chips
+    let curFoods = [...foods];
+    function renderFoods() {
+      $("revFoods").querySelectorAll(".food-chip[data-f]").forEach(c => c.remove());
+      const wrap = $("revFoods");
+      curFoods.forEach((f, i) => {
+        const sp = document.createElement("span");
+        sp.className = "food-chip";
+        sp.setAttribute("data-f", f);
+        sp.innerHTML = `${esc(f)} <span style="opacity:.5;margin-left:4px">✕</span>`;
+        sp.onclick = () => { curFoods.splice(i, 1); renderFoods(); };
+        wrap.insertBefore(sp, wrap.lastElementChild);
+      });
+    }
+    const fi = $("revFoodInput");
+    fi.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === ",") {
+        e.preventDefault();
+        const val = fi.value.trim().replace(/,$/, "");
+        if (val) {
+          val.split(",").map(s => s.trim()).filter(Boolean).forEach(v => curFoods.indexOf(v) < 0 && curFoods.push(v));
+          fi.value = ""; renderFoods();
+        }
+      }
+    });
+    $("revCancelBtn").onclick = () => holder.innerHTML = "";
+    $("revSaveBtn").onclick = () => {
+      place.rating_him = +him.value;
+      place.rating_her = +her.value;
+      place.review = $("revText").value.trim();
+      place.foods = curFoods;
+      saveTravelData();
+      LoveNest.closeModal();
+      refreshViews();
+      setTimeout(() => openPhotoLightbox(placeId, (place.photos && place.photos[0] && place.photos[0].id)), 180);
+    };
+    // 支持 textarea Ctrl+Enter
+    $("revText").addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); $("revSaveBtn").click(); }
+    });
+  }
+
+  /* ==========================================================
+     七、Wishlist 想去的远方
+     ========================================================== */
   function renderWishlist(places) {
-    const tabsRoot = document.getElementById("wishTabs");
-    const panelsRoot = document.getElementById("wishPanels");
-    if (!tabsRoot || !panelsRoot) return;
+    const tabs = $("wishTabs"), panels = $("wishPanels");
+    if (!tabs || !panels) return;
     if (!places || !places.length) {
-      panelsRoot.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没列愿望清单——从小红书、抖音先搜一个种草的地方吧 🌿</p></div>`;
+      tabs.innerHTML = "";
+      panels.innerHTML = `<div class="card card--inset center"><p style="color:var(--faint);font-style:italic">还没计划——先把第一个远方放进心愿清单吧 🧭</p></div>`;
       return;
     }
-    // 按 priority 升序（1 最想去）
-    const sorted = [...places].sort((a,b) => (a.priority||99) - (b.priority||99));
-
-    // Tabs
-    tabsRoot.innerHTML = sorted.map((p,i) => `
-      <button class="wish-tab ${i===0?'is-active':''}" data-wish="${esc(p.id)}" role="tab">
-        <span class="wish-tab__rank">${i+1}</span>
+    const sorted = [...places].sort((a, b) => (a.priority || 99) - (b.priority || 99));
+    tabs.innerHTML = sorted.map((p, i) => `
+      <div class="wish-tab ${i === 0 ? "is-active" : ""}" data-wish="${esc(p.id)}" role="tab">
+        <div class="wish-tab__rank">${i + 1}</div>
         <div>
           <div class="wish-tab__name">${esc(p.name)}</div>
-          <div class="wish-tab__sub">${esc(p.best_season || p.province || "")} · ${p.suggested_days||'?'} 天</div>
+          <div class="wish-tab__sub">${esc(p.province || "")}${p.estimated_days ? ` · ${p.estimated_days} 天` : ""}</div>
         </div>
-      </button>
-    `).join("");
-
-    // Panels
-    panelsRoot.innerHTML = sorted.map((p, i) => `
-      <article class="wish-panel ${i===0?'is-active':''}" data-panel="${esc(p.id)}">
+      </div>`).join("");
+    panels.innerHTML = sorted.map((p, i) => {
+      const isDone = VISITED.some(v => v.id === p.id);
+      const tags = [];
+      if (p.season) tags.push(`<span class="wish-stat">🌸 ${p.season} 季最佳</span>`);
+      if (p.estimated_budget) tags.push(`<span class="wish-stat">💰 预算 ¥${p.estimated_budget}</span>`);
+      if (p.priority === 1) tags.push(`<span class="wish-stat wish-stat--done">🔥 今年必去</span>`);
+      const transHtml = (p.transport || []).map(t => {
+        const iconMap = { flight: "✈️", train: "🚄", drive: "🚗", bus: "🚌", walk: "🚶" };
+        return `<div class="trans-row trans-row--${t.mode || "drive"}">
+          <div class="trans-row__mode">
+            <div class="ico">${iconMap[t.mode] || "🚗"}</div>
+            <div class="label">${{ flight: "飞机", train: "高铁", drive: "电车自驾", bus: "大巴", walk: "徒步" }[t.mode] || "交通"}</div>
+          </div>
+          <div class="trans-row__detail">
+            <b>${esc(t.route || "")}</b>
+            ${t.detail ? `<div>${esc(t.detail)}</div>` : ""}
+            ${t.duration || t.cost ? `<div class="note">${[t.duration ? `耗时 ${t.duration}` : "", t.cost ? `人均 ¥${t.cost}` : ""].filter(Boolean).join(" · ")}</div>` : ""}
+          </div>
+          <div><span class="trans-row__pri p${t.priority || 1}">${t.priority === 1 ? "推荐" : t.priority === 2 ? "备选" : "兜底"}</span></div>
+        </div>`;
+      }).join("");
+      const rateHtml = ["scenery", "food", "romance", "photo", "crowd"].map(k => {
+        const labelMap = { scenery: "风景指数", food: "美食指数", romance: "浪漫氛围", photo: "出片程度", crowd: "人挤人程度" };
+        const v = p.ratings && p.ratings[k] != null ? p.ratings[k] : 5;
+        return `<div class="rating-row">
+          <label>${labelMap[k]}</label>
+          <input type="range" min="1" max="10" step="0.5" value="${v}" disabled/>
+          <span class="val">${v}</span>
+        </div>`;
+      }).join("");
+      const guideHtml = (p.guide_sources || []).map(g => `
+        <div class="guide-row">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.92rem;color:var(--ink);font-weight:500">${esc(g.title || "攻略")}</div>
+            ${g.url ? `<div style="font-size:.78rem;color:var(--sage-deep);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.url)}</div>` : ""}
+            ${g.notes ? `<div style="font-size:.82rem;color:var(--muted);margin-top:4px">${esc(g.notes)}</div>` : ""}
+          </div>
+          <div><span class="source-chip ${g.platform || ""}">${{ xhs: "小红书", dy: "抖音", mt: "美团", gd: "高德", qnr: "穷游", ctrip: "携程" }[g.platform] || "攻略"}</span></div>
+        </div>`).join("");
+      return `<div class="wish-panel ${i === 0 ? "is-active" : ""}" data-wishpanel="${esc(p.id)}">
         <div class="wish-grid">
-          <!-- 左栏：基本信息 + 交通方式对比 -->
-          <div>
-            <div class="wish-card reveal" style="margin-bottom:20px">
-              <h4>📍 基本信息</h4>
-              <dl style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.92rem">
-                <dt class="faint">位置</dt><dd>${esc(p.location || "")}</dd>
-                <dt class="faint">最佳季节</dt><dd><b>${esc(p.best_season || "—")}</b></dd>
-                <dt class="faint">建议天数</dt><dd>${p.suggested_days || "—"} 天（含往返）</dd>
-                <dt class="faint">标签</dt><dd style="display:flex;gap:6px;flex-wrap:wrap">
-                  ${(p.tags||[]).map(t => `<span class="tag tag--sage">${esc(t)}</span>`).join("")}
-                </dd>
-                <dt class="faint">备注</dt><dd class="muted">${esc(p.notes || "—")}</dd>
-              </dl>
-              <div class="btn-row">
-                <button class="btn btn--small btn--rose mark-visited-btn" data-id="${esc(p.id)}" type="button">
-                  ✓ 标记为已游玩
-                </button>
-                <span class="wish-stat">${(p.sources||[]).length} 份攻略</span>
-                ${p.converted_to_visited ? `<span class="wish-stat wish-stat--done">✅ 已转化为相册</span>` : ""}
-              </div>
-            </div>
-
-            <div class="wish-card wish-card--terracotta">
-              <h4>🚗 从重庆大竹林出发 · 交通方式</h4>
-              <div class="trans-row">
-                <div class="trans-row__mode">
-                  <div class="ico">🔋</div>
-                  <div class="label">电车自驾</div>
-                </div>
-                <div class="trans-row__detail">
-                  ${p.transport && p.transport.ev_drive ? `
-                    <b>${p.transport.ev_drive.distance_km || "?"} km · 约 ${p.transport.ev_drive.drive_hours || "?"} 小时</b>
-                    <div class="note">🔌 ${esc(p.transport.ev_drive.charging_notes || "充电信息待补充")}</div>
-                    <div class="note">路线：${esc(p.transport.ev_drive.route || "")}</div>
-                  ` : `<span class="faint">距离过远或信息待整理，不推荐自驾</span>`}
-                </div>
-                <span class="trans-row__pri">优先 1</span>
-              </div>
-              <div class="trans-row trans-row--flight">
-                <div class="trans-row__mode">
-                  <div class="ico">✈️</div>
-                  <div class="label">飞机</div>
-                </div>
-                <div class="trans-row__detail">
-                  ${p.transport && p.transport.flight ? `
-                    <b>${esc(p.transport.flight.nearest_airport || "")}</b> · 直飞 ${esc(p.transport.flight.flight_duration || "")}
-                    <div class="note">机场到景区：${esc(p.transport.flight.airport_to_destination || "")}</div>
-                  ` : `<span class="faint">暂无推荐航班</span>`}
-                </div>
-                <span class="trans-row__pri p2">优先 2</span>
-              </div>
-              <div class="trans-row trans-row--train">
-                <div class="trans-row__mode">
-                  <div class="ico">🚄</div>
-                  <div class="label">高铁/火车</div>
-                </div>
-                <div class="trans-row__detail">
-                  ${p.transport && p.transport.train ? `
-                    <b>${esc(p.transport.train.nearest_station || "")}</b> · 约 ${esc(p.transport.train.duration || "")}
-                    <div class="note">${esc(p.transport.train.notes || "")}</div>
-                  ` : `<span class="faint">暂无推荐车次</span>`}
-                </div>
-                <span class="trans-row__pri p3">优先 3</span>
-              </div>
-            </div>
+          <div class="wish-card">
+            <h4>🚗 交通方案 · 电车自驾优先</h4>
+            ${transHtml || '<p class="faint italic">还没规划交通方案</p>'}
           </div>
-
-          <!-- 右栏：攻略来源 + 玩后反馈（点击已游玩后展开） -->
-          <div>
-            <div class="wish-card reveal" style="margin-bottom:20px">
-              <h4>🔍 攻略来源（需 AI 搜索填充内容）</h4>
-              <p class="faint" style="font-size:.82rem;margin-bottom:12px">
-                以下标签对应搜索平台：小红书 · 抖音 · 美团 · 高德 · 去哪儿 · 携程。
-                框架已预留 <code>guides[]</code> 数据位，留给 AI 并行开发：从各平台抓取热门攻略摘要。
-              </p>
-              <div class="guide-row">
-                ${(p.sources||[]).map(s => {
-                  const cls = ({小红书:"xhs",抖音:"dy",美团:"mt",高德:"gd",去哪儿:"qnr",携程:"ctrip"})[s] || "";
-                  return `<span class="source-chip ${cls}">${esc(s)}</span>`;
-                }).join("") || `<span class="faint italic">暂无来源标签</span>`}
-              </div>
-              <div class="guide-row" style="border:none;margin-top:10px;padding-top:4px">
-                <button class="btn btn--small btn--ghost" type="button" onclick="alert('[框架占位] AI 一键攻略：从上面平台搜索「${esc(p.name)} 旅游攻略」，汇总最佳路线、避坑、必吃。')">
-                  🤖 AI 一键生成攻略
-                </button>
-              </div>
-              <!-- 攻略内容占位 -->
-              <div class="card card--inset" style="margin-top:14px;padding:16px 18px">
-                <p class="faint" style="font-size:.88rem;line-height:1.75;font-style:italic">
-                  攻略详情加载中……<br/>
-                  这里将展示：必玩景点排序、避坑提醒、预算拆解、每日行程建议、
-                  以及各攻略的共识项和争议项（用颜色区分）。
-                </p>
-              </div>
-            </div>
-
-            <div class="wish-card wish-card--rose" id="review-card-${esc(p.id)}">
-              <h4>💞 玩后感受 & 评分</h4>
-              ${p.converted_to_visited ? `
-                <div class="rating-row">
-                  <label>师豪评分</label>
-                  <input type="range" min="0" max="10" step="0.1" value="0"/>
-                  <span class="val">0.0</span>
-                </div>
-                <div class="rating-row">
-                  <label>佳力评分</label>
-                  <input type="range" min="0" max="10" step="0.1" value="0"/>
-                  <span class="val">0.0</span>
-                </div>
-                <div class="quick-add" style="margin-top:12px">
-                  <div class="quick-add__field quick-add__field--event">
-                    <label class="quick-add__label">一句话感受</label>
-                    <input type="text" placeholder="这次旅行最打动我们的是……"/>
-                  </div>
-                </div>
-                <p class="kicker" style="margin:18px 0 10px">🍜 美食打卡（可点击标签追加）</p>
-                <div class="food-chips">
-                  <span class="food-chip">+ 添加</span>
-                </div>
-                <div class="btn-row">
-                  <button class="btn btn--small btn--primary" type="button">💾 保存感受</button>
-                  <button class="btn btn--small btn--ghost" type="button">📷 上传照片</button>
-                </div>
-              ` : `
-                <p class="muted" style="font-size:.9rem;line-height:1.75">
-                  还没去玩哦——先标记为「已游玩」，就能在这里写双评分、一句话感受、
-                  追加美食标签和上传所有照片啦。
-                </p>
-                <p class="faint" style="font-size:.8rem;margin-top:10px;font-style:italic">
-                  标记后，该景点会同步迁移到「已旅游」三种视图里。
-                </p>
-              `}
-            </div>
+          <div class="wish-card wish-card--rose">
+            <h4>💖 期待值画像</h4>
+            ${rateHtml}
+            <div style="margin-top:8px">${tags.join("")}</div>
+            ${isDone ? `<div class="btn-row"><span class="wish-stat wish-stat--done">✅ 已游玩 · 在上方已旅游模块可见照片与感受</span></div>` : ""}
+          </div>
+          <div class="wish-card wish-card--terracotta" style="grid-column:1/-1">
+            <h4>📖 收藏的攻略</h4>
+            ${guideHtml || '<p class="faint italic">从小红书 / 抖音收集来的灵感链接</p>'}
           </div>
         </div>
-      </article>
-    `).join("");
-
-    // 绑定 wish-tab 切换
-    tabsRoot.querySelectorAll(".wish-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        const id = tab.getAttribute("data-wish");
-        tabsRoot.querySelectorAll(".wish-tab").forEach(t => t.classList.toggle("is-active", t === tab));
-        panelsRoot.querySelectorAll(".wish-panel").forEach(pan => {
-          pan.classList.toggle("is-active", pan.getAttribute("data-panel") === id);
-        });
-        // 滚到面板顶部，方便查看
-        panelsRoot.scrollIntoView({behavior:"smooth",block:"start"});
+      </div>`;
+    }).join("");
+    // bind tabs
+    tabs.querySelectorAll(".wish-tab").forEach(t => {
+      t.addEventListener("click", () => {
+        tabs.querySelectorAll(".wish-tab").forEach(x => x.classList.toggle("is-active", x === t));
+        const id = t.getAttribute("data-wish");
+        panels.querySelectorAll(".wish-panel").forEach(p => p.classList.toggle("is-active", p.getAttribute("data-wishpanel") === id));
       });
     });
+  }
 
-    // 绑定「标记为已游玩」按钮
-    panelsRoot.querySelectorAll(".mark-visited-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-id");
-        alert(`[框架占位] 景点「${id}」标记为已游玩的交互流程：\n\n` +
-              `1) 弹出向导：选择游玩日期区间 + 上传第一张封面\n` +
-              `2) 自动：在 visited 新建条目，wishlist 记录标记 converted=true\n` +
-              `3) 自动滚到「已旅游-相册视图」对应新分组，引导写一句话感受\n` +
-              `4) 右侧卡片自动展开为可编辑的双评分+美食表单`);
+  /* ==========================================================
+     八、一年前的今天 · 回忆卡
+     ========================================================== */
+  function renderMemoryCard() {
+    const root = $("memoryCardRoot");
+    if (!root) return;
+    const today = new Date();
+    const md = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const candidates = [];
+    VISITED.forEach(p => {
+      (p.photos || []).filter(ph => !ph.deleted_at).forEach(ph => {
+        const d = new Date(ph.taken_at || p.start_date || 0);
+        const pmd = `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        const diffYears = today.getFullYear() - d.getFullYear();
+        if (pmd === md && diffYears > 0 && diffYears <= 5) {
+          candidates.push({ place: p, photo: ph, diffYears });
+        }
       });
     });
-
-    // 绑定评分条的实时数字
-    panelsRoot.querySelectorAll('input[type="range"]').forEach(rng => {
-      const valEl = rng.parentElement.querySelector(".val");
-      if (valEl) {
-        valEl.textContent = parseFloat(rng.value).toFixed(1);
-        rng.addEventListener("input", () => { valEl.textContent = parseFloat(rng.value).toFixed(1); });
-      }
-    });
-
+    if (!candidates.length) { root.innerHTML = ""; return; }
+    candidates.sort((a, b) => b.diffYears - a.diffYears);
+    const c = candidates[0];
+    const url = resolvePhotoUrl(c.place.id, c.photo);
+    root.innerHTML = `
+      <div class="memory-card reveal">
+        <div class="memory-card__img">${url ? `<img src="${esc(url)}" alt="回忆"/>` : ""}</div>
+        <div>
+          <div class="memory-card__label">◆ ${c.diffYears} 年 前 的 今 天 ◆</div>
+          <div class="memory-card__title">${esc(c.place.name)}</div>
+          <div class="memory-card__desc">${esc(c.place.review || `那年今日，我们正在${c.place.location || "路上"}。`)}</div>
+          <div class="memory-card__meta">${esc((c.photo.taken_at || c.place.start_date || "").slice(0, 10))} · ${esc(c.photo.place_within || c.place.location || "")}</div>
+        </div>
+      </div>`;
     if (LoveNest.initReveal) LoveNest.initReveal();
   }
-  renderWishlist(WISHLIST);
 
-  /* ---------- 导航栏注入：把「旅游相册」加入 topnav ----------
-     （实际上 nav.js 的 NAV 数组是源，这里仅在页面渲染后把 active 高亮做对。
-      正式入口需要在 nav.js 的 NAV 数组加一条。
-      这里我们用 MutationObserver + 手动替换方式，临时补入口。） */
-  (function patchNav() {
-    const addNavItem = (navEl, mobile=false) => {
-      if (!navEl) return;
-      if (navEl.querySelector('a[href="travel.html"]')) return; // 防止重复
-      const linkHtml = mobile
-        ? `<a href="travel.html" class="is-active">旅行相册<small>三种回忆方式 + 想去的远方</small></a>`
-        : `<a href="travel.html" class="is-active">旅行相册</a>`;
-      // 在 peace 之后插入
-      const peace = navEl.querySelector('a[href="peace.html"]');
-      if (peace) peace.insertAdjacentHTML("afterend", linkHtml);
-      else navEl.insertAdjacentHTML("beforeend", linkHtml);
-      // 取消其他 active
-      navEl.querySelectorAll("a").forEach(a => {
-        if (a.getAttribute("href") !== "travel.html") a.classList.remove("is-active");
-      });
-    };
-    // 等待 nav.js 注入完
-    const tryTimes = 0;
-    const tryPatch = () => {
-      const topnav = document.querySelector(".topnav");
-      const mobnav = document.querySelector(".mobile-nav");
-      if (topnav || mobnav) {
-        addNavItem(topnav, false);
-        addNavItem(mobnav, true);
-      } else if (tryTimes < 20) {
-        setTimeout(tryPatch, 80);
-      }
-    };
-    setTimeout(tryPatch, 120);
-  })();
+  /* ==========================================================
+     九、初始化
+     ========================================================== */
+  try {
+    DATA = await loadTravelData();
+  } catch (e) {
+    console.error("加载 travel 数据失败，使用 fallback:", e);
+    DATA = JSON.parse(JSON.stringify(FALLBACK));
+  }
+  VISITED = DATA.visited.places;
+  WISHLIST = DATA.wishlist.places;
+  saveTravelData(true);
+  refreshViews();
+  renderMemoryCard();
 
+  // URL hash 处理：#place-${id}
+  const hash = location.hash || "";
+  if (hash.startsWith("#place-")) {
+    const id = hash.slice(7);
+    const tabBtn = viewTabs.querySelector('button[data-view="gallery"]');
+    if (tabBtn) tabBtn.click();
+    setTimeout(() => {
+      const target = document.querySelector(`.gallery-item[data-place="${id}"]`);
+      if (target) target.closest(".gallery-group")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 300);
+  }
+
+  if (LoveNest.initReveal) LoveNest.initReveal();
 });
 </script>
 </body>
