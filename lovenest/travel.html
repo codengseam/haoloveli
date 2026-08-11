@@ -1095,7 +1095,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       const raw = localStorage.getItem(WISHLIST_STORAGE_KEY);
       if (!raw) {
-        // 无缓存 → 直接用默认
         WISHLIST = defaults;
         DATA.wishlist.places = WISHLIST;
         return true;
@@ -1110,11 +1109,50 @@ document.addEventListener("DOMContentLoaded", async function () {
       // 按 id 合并：用户已存储的优先级最高（保留用户改的 priority/converted_to_visited/自定义 guides）
       const existingMap = new Map(parsed.map(p => [String(p.id), p]));
       const merged = [];
-      // 1) 先放 storage 里已有的（原样保留，不覆盖用户自定义）
-      parsed.forEach(p => merged.push(p));
+
+      // 1) 处理 storage 里已有项：以 defaults 为底拿到所有新字段，再覆盖用户自定义字段
+      parsed.forEach(storageItem => {
+        const key = String(storageItem.id);
+        const defItem = defaultMap.get(key);
+        let mergedItem;
+        if (defItem) {
+          // 深拷贝 defaults 作为基础，确保新字段（如 transport.route_compare 等）完整注入
+          mergedItem = JSON.parse(JSON.stringify(defItem));
+          // === 用户自定义字段永不覆盖 ===
+          // priority / converted_to_visited：storage 优先
+          if (storageItem.priority != null) mergedItem.priority = storageItem.priority;
+          if (storageItem.converted_to_visited !== undefined) mergedItem.converted_to_visited = storageItem.converted_to_visited;
+          // visited_date：用户写的评分/感受/美食，保留
+          if (storageItem.visited_date) mergedItem.visited_date = storageItem.visited_date;
+          // notes / tags / best_season / suggested_days / location：用户可能编辑过，storage 优先
+          if (storageItem.notes != null && storageItem.notes !== '') mergedItem.notes = storageItem.notes;
+          if (Array.isArray(storageItem.tags) && storageItem.tags.length) mergedItem.tags = storageItem.tags;
+          if (storageItem.best_season != null && storageItem.best_season !== '') mergedItem.best_season = storageItem.best_season;
+          if (storageItem.suggested_days != null) mergedItem.suggested_days = storageItem.suggested_days;
+          if (storageItem.location != null && storageItem.location !== '') mergedItem.location = storageItem.location;
+          if (storageItem.name != null && storageItem.name !== '') mergedItem.name = storageItem.name;
+          if (storageItem.sources && storageItem.sources.length) mergedItem.sources = storageItem.sources;
+          // === guides：如果 storage 有自定义 guides 且 length>0，绝不被 defaults 覆盖 ===
+          const hasStorageGuides = (() => {
+            if (!storageItem.guides) return false;
+            if (Array.isArray(storageItem.guides)) return storageItem.guides.length > 0;
+            if (typeof storageItem.guides === 'object') return Object.keys(storageItem.guides).length > 0;
+            return false;
+          })();
+          if (hasStorageGuides) {
+            mergedItem.guides = storageItem.guides;
+          }
+        } else {
+          // defaults 中无此 id（可能是用户自定义添加的），完全保留 storage 版本
+          mergedItem = storageItem;
+        }
+        merged.push(mergedItem);
+      });
+
       // 2) 再放默认清单里有但 storage 还没有的（本次新增的5个目的地）
       defaults.forEach(p => { if (!existingMap.has(String(p.id))) merged.push(p); });
-      // 3) 去除重复 id（只保留第一条 = storage 那条）
+
+      // 3) 去除重复 id（只保留第一条 = 经过合并的那条）
       const seen = new Set();
       const dedup = merged.filter(p => {
         const k = String(p.id);
@@ -1149,107 +1187,196 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function renderGuideAccordion(guides) {
     if (!guides) return `<div class="card card--inset center"><p class="faint italic">攻略内容为空</p></div>`;
-    const itinerary = guides.itinerary || [];
-    const pitfalls = guides.pitfalls || [];
-    const foods = guides.foods || [];
-    const budget = guides.budget || {};
-    const photos = guides.photos || [];
+    const g = Array.isArray(guides) ? guides[0] : guides;
+    if (!g) return `<div class="card card--inset center"><p class="faint italic">攻略内容为空</p></div>`;
 
-    const itHtml = itinerary.length ? itinerary.map((d, idx) => `
-      <details ${idx===0?'open':''} style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:8px;overflow:hidden">
+    const mustVisit = g.must_visit || [];
+    const mvHtml = `
+      <details style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden">
         <summary style="padding:12px 16px;background:var(--bg-soft);cursor:pointer;font-family:var(--ff-display);font-weight:500;display:flex;align-items:center;gap:10px">
-          <span class="tag tag--sage">📅 Day ${d.day||idx+1}</span>
-          <span>${esc(d.title||'当日行程')}</span>
-          <span class="faint" style="margin-left:auto;font-size:.78rem;font-style:italic">${d.weather||''}</span>
+          📸 必玩景点 TOP (${mustVisit.length})
         </summary>
-        <div style="padding:14px 18px">
-          ${(d.items||[]).map(it => `
-            <div style="display:grid;grid-template-columns:80px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line-soft)">
-              <div class="faint" style="font-size:.82rem">${esc(it.time||'--:--')}</div>
-              <div>
-                <b>${esc(it.name||'景点')}</b>
-                ${it.ticket?`<span class="faint" style="margin-left:8px;font-size:.78rem">🎫 ${esc(it.ticket)}</span>`:''}
-                ${it.duration?`<span class="faint" style="margin-left:8px;font-size:.78rem">⏱ ${esc(it.duration)}</span>`:''}
-                <div class="muted" style="font-size:.82rem;margin-top:2px;line-height:1.6">${esc(it.desc||'')}</div>
-              </div>
-            </div>
-          `).join('')}
-          ${d.dinner?`<div class="muted" style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line-soft);font-size:.86rem">🍽 晚餐推荐：${esc(d.dinner)}</div>`:''}
+        <div style="padding:14px 18px;overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.86rem">
+            <thead>
+              <tr style="background:var(--bg-deep)">
+                <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--line-soft)">排名</th>
+                <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--line-soft)">景点</th>
+                <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--line-soft)">门票</th>
+                <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--line-soft)">开放时间</th>
+                <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--line-soft)">推荐理由</th>
+                <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--line-soft)">预计停留</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${mustVisit.map((m,i) => `
+                <tr style="border-bottom:1px dashed var(--line-soft)">
+                  <td style="padding:8px 10px;font-family:var(--ff-display);font-weight:600;color:var(--sage-deep)">${i+1}</td>
+                  <td style="padding:8px 10px;font-weight:500;color:var(--ink)">${esc(m.name||m.spot||'')}</td>
+                  <td style="padding:8px 10px;color:var(--text)">${esc(m.ticket||m.price||'—')}</td>
+                  <td style="padding:8px 10px;color:var(--muted);font-size:.8rem">${esc(m.open_time||m.hours||'—')}</td>
+                  <td style="padding:8px 10px;color:var(--text);line-height:1.6">${esc(m.reason||m.desc||'—')}</td>
+                  <td style="padding:8px 10px;color:var(--muted)">${esc(m.stay||m.duration||'—')}</td>
+                </tr>
+              `).join('') || `<tr><td colspan="6" style="padding:12px;text-align:center;color:var(--faint);font-style:italic">暂无数据</td></tr>`}
+            </tbody>
+          </table>
         </div>
       </details>
-    `).join('') : `<p class="faint italic">暂无行程安排</p>`;
+    `;
 
-    const pitHtml = pitfalls.length ? `
-      <div class="wish-card wish-card--rose" style="margin-top:14px;padding:16px 18px">
-        <h4 style="margin-bottom:10px">⚠️ 避坑指南（${pitfalls.length} 条）</h4>
-        <ul class="consensus-list" style="margin:0">
-          ${pitfalls.map(p => `<li style="background:var(--rose-tint);border-color:var(--rose-soft)">${p.replace(/::before/g,'')}</li>`).join('')}
-        </ul>
-      </div>
-    ` : '';
-
-    const foodHtml = foods.length ? `
-      <div class="wish-card wish-card--terracotta" style="margin-top:14px;padding:16px 18px">
-        <h4 style="margin-bottom:10px">🍜 必吃美食 Top ${foods.length}</h4>
-        ${foods.map((f,idx) => `
-          <div style="padding:10px 0;border-bottom:1px dashed var(--line-soft);display:flex;align-items:flex-start;gap:12px">
-            <div style="width:28px;height:28px;border-radius:50%;background:var(--terracotta-tint);color:var(--terracotta-deep);display:grid;place-items:center;font-family:var(--ff-display);font-weight:600;flex-shrink:0">${idx+1}</div>
-            <div style="flex:1">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <b>${esc(f.name||'美食')}</b>
-                ${f.price_per?`<span class="tag tag--her">人均 ¥${f.price_per}</span>`:''}
-                ${f.shop?`<span class="faint" style="font-size:.78rem;font-style:italic">推荐：${esc(f.shop)}</span>`:''}
-              </div>
-              <div class="food-chips" style="margin-top:6px">
-                ${(f.tags||[]).map(t=>`<span class="food-chip" style="padding:3px 10px;font-size:.76rem">${esc(t)}</span>`).join('')}
-              </div>
-              <p class="muted" style="margin:6px 0 0;font-size:.84rem;line-height:1.6">${esc(f.desc||'')}</p>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    ` : '';
-
-    const budHtml = Object.keys(budget).length ? `
-      <div class="wish-card" style="margin-top:14px;padding:16px 18px">
-        <h4 style="margin-bottom:14px">💰 预算分配（含 +20% 弹性）</h4>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
-          ${[
-            {k:'交通',v:budget.transport,ico:'🚗'},
-            {k:'住宿',v:budget.hotel,ico:'🏨'},
-            {k:'门票',v:budget.tickets,ico:'🎫'},
-            {k:'餐饮',v:budget.food,ico:'🍜'},
-          ].map(b => `
-            <div style="background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:12px;text-align:center">
-              <div style="font-size:1.2rem">${b.ico}</div>
-              <div class="faint" style="font-size:.74rem;margin:4px 0 2px">${b.k}</div>
-              <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:1.05rem">¥${Number(b.v||0).toLocaleString()}</div>
-            </div>
-          `).join('')}
+    const itKeys = g.itinerary ? Object.keys(g.itinerary).sort() : [];
+    const itHtml = `
+      <details open style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden">
+        <summary style="padding:12px 16px;background:var(--bg-soft);cursor:pointer;font-family:var(--ff-display);font-weight:500;display:flex;align-items:center;gap:10px">
+          🗓️ 按天行程 Day1-Day${itKeys.length}
+        </summary>
+        <div style="padding:14px 18px">
+          ${itKeys.length ? itKeys.map((k,idx) => {
+            const dayItems = g.itinerary[k];
+            const itemsArr = Array.isArray(dayItems) ? dayItems : (dayItems && dayItems.items ? dayItems.items : (typeof dayItems === 'string' ? [dayItems] : []));
+            return `
+              <details open style="border:1px solid var(--line-soft);border-radius:var(--r-xs);margin-bottom:8px;overflow:hidden">
+                <summary style="padding:10px 14px;background:var(--sage-tint);cursor:pointer;font-weight:500;font-family:var(--ff-display)">
+                  <span class="tag tag--sage" style="margin-right:8px">📅 ${esc(k)}</span>
+                  ${esc(dayItems && dayItems.title ? dayItems.title : '')}
+                </summary>
+                <div style="padding:10px 14px">
+                  <ul style="margin:0;padding:0;list-style:none">
+                    ${itemsArr.map(it => `<li style="padding:6px 0;color:var(--text);line-height:1.65">• ${esc(typeof it === 'string' ? it : (it.name ? it.name + (it.desc ? ' — ' + it.desc : '') : JSON.stringify(it)))}</li>`).join('')}
+                  </ul>
+                </div>
+              </details>
+            `;
+          }).join('') : `<p class="faint italic" style="padding:10px">暂无行程安排</p>`}
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:linear-gradient(90deg,var(--sage-tint),var(--rose-tint));border-radius:var(--r-sm);border:1px solid var(--sage-soft)">
-          <span class="faint" style="font-style:italic">合计（含弹性）</span>
-          <span style="font-family:var(--ff-display);font-weight:600;font-size:1.2rem;color:var(--ink)">¥ ${Math.round(Number(budget.total||Object.values(budget).reduce((a,b)=>a+Number(b||0),0)) * 1.2).toLocaleString()}</span>
+      </details>
+    `;
+
+    const pitfalls = g.pitfalls || [];
+    const pitHtml = `
+      <details style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden">
+        <summary style="padding:12px 16px;background:var(--bg-soft);cursor:pointer;font-family:var(--ff-display);font-weight:500;display:flex;align-items:center;gap:10px">
+          ⚠️ 避坑提醒 (${pitfalls.length}) 条
+        </summary>
+        <div style="padding:14px 18px">
+          <ul style="margin:0;padding:0;list-style:none">
+            ${pitfalls.map(p => `<li style="padding:8px 12px;background:var(--rose-tint);border:1px solid var(--rose-soft);border-radius:var(--r-xs);margin-bottom:6px;color:var(--text);line-height:1.6">⚠️ ${esc(typeof p === 'string' ? p : (p.text || p.desc || JSON.stringify(p)))}</li>`).join('') || `<li class="faint italic" style="padding:10px;text-align:center">暂无避坑提醒</li>`}
+          </ul>
         </div>
-      </div>
-    ` : '';
+      </details>
+    `;
 
-    const phoHtml = photos.length ? `
-      <div class="wish-card" style="margin-top:14px;padding:16px 18px;background:var(--sage-tint);border-color:var(--sage-soft)">
-        <h4 style="margin-bottom:12px">📸 最佳机位 & 时间</h4>
-        ${photos.map(ph=>`
-          <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--sage-soft)">
-            <div class="faint" style="font-size:.82rem">${esc(ph.time||'黄金时刻')}</div>
-            <div>
-              <b>${esc(ph.location||'机位')}</b>
-              <p class="muted" style="margin:4px 0 0;font-size:.84rem;line-height:1.6">${esc(ph.tips||'')}</p>
+    const foods = g.foods || (g.top5_foods ? g.top5_foods.slice(0,5) : []);
+    const foodHtml = `
+      <details style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden">
+        <summary style="padding:12px 16px;background:var(--bg-soft);cursor:pointer;font-family:var(--ff-display);font-weight:500;display:flex;align-items:center;gap:10px">
+          🍽️ Top5 美食
+        </summary>
+        <div style="padding:14px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
+          ${foods.slice(0,5).map((f,idx) => `
+            <div style="background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <div style="width:26px;height:26px;border-radius:50%;background:var(--terracotta-tint);color:var(--terracotta-deep);display:grid;place-items:center;font-family:var(--ff-display);font-weight:600;font-size:.82rem;flex-shrink:0">${idx+1}</div>
+                <div style="font-weight:500;color:var(--ink);font-size:.94rem">${esc(f.name||'')}</div>
+                <div style="margin-left:auto;font-family:var(--ff-display);font-weight:600;color:var(--rose-deep);font-size:.88rem">¥${esc(f.price_per||f.cost||f.per_capita||'?')}</div>
+              </div>
+              <div style="font-size:.82rem;color:var(--text);line-height:1.6;margin-bottom:6px">${esc(f.description||f.desc||'')}</div>
+              ${f.time_saver ? `<div style="font-size:.76rem;color:var(--sage-deep);background:var(--sage-tint);padding:4px 8px;border-radius:var(--r-xs);display:inline-block">⏱ ${esc(f.time_saver)}</div>` : ''}
             </div>
-          </div>
-        `).join('')}
-      </div>
-    ` : '';
+          `).join('') || `<div class="faint italic" style="grid-column:1/-1;padding:10px;text-align:center">暂无美食推荐</div>`}
+        </div>
+      </details>
+    `;
 
-    return `<div class="guides-accordion">${itHtml}${pitHtml}${foodHtml}${budHtml}${phoHtml}</div>`;
+    const budget = g.budget || {};
+    const bud2p = budget.budget_2people_4days || budget.budget_2people_5days || budget.budget_2people_7days || budget.budget_2people_8days || null;
+    const budKey = Object.keys(budget).find(k => k.startsWith('budget_2people_'));
+    const budDaysMatch = budKey ? budKey.match(/_(\d+)days$/) : null;
+    const budDays = budDaysMatch ? budDaysMatch[1] : 'N';
+    const budHtml = `
+      <details style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden">
+        <summary style="padding:12px 16px;background:var(--bg-soft);cursor:pointer;font-family:var(--ff-display);font-weight:500;display:flex;align-items:center;gap:10px">
+          💸 预算拆解 2 人 ${budDays} 天
+        </summary>
+        <div style="padding:14px 18px">
+          ${bud2p ? `
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              ${[
+                {key:'ev_drive',label:'🚗 EV自驾',budget:bud2p.ev_drive},
+                {key:'flight',label:'✈️ 飞机',budget:bud2p.flight},
+                {key:'train',label:'🚄 高铁',budget:bud2p.train},
+              ].map(mode => {
+                const b = mode.budget || {};
+                const trans = Number(b.transport||0);
+                const hotel = Number(b.hotel||0);
+                const food = Number(b.food||0);
+                const tickets = Number(b.tickets||0);
+                const sub = trans + hotel + food + tickets;
+                const flex = Math.round(sub * 0.2);
+                const total = sub + flex;
+                return `
+                  <div style="background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:12px 14px">
+                    <div style="font-weight:500;color:var(--ink);font-family:var(--ff-display);margin-bottom:10px;text-align:center">${mode.label}</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+                      <div style="background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);padding:8px;text-align:center">
+                        <div class="faint" style="font-size:.68rem">交通</div>
+                        <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:.9rem">¥${trans.toLocaleString()}</div>
+                      </div>
+                      <div style="background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);padding:8px;text-align:center">
+                        <div class="faint" style="font-size:.68rem">住宿</div>
+                        <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:.9rem">¥${hotel.toLocaleString()}</div>
+                      </div>
+                      <div style="background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);padding:8px;text-align:center">
+                        <div class="faint" style="font-size:.68rem">餐饮</div>
+                        <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:.9rem">¥${food.toLocaleString()}</div>
+                      </div>
+                      <div style="background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);padding:8px;text-align:center">
+                        <div class="faint" style="font-size:.68rem">门票</div>
+                        <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:.9rem">¥${tickets.toLocaleString()}</div>
+                      </div>
+                    </div>
+                    <div style="padding:6px 10px;background:var(--bg-deep);border-radius:var(--r-xs);margin-bottom:4px;display:flex;justify-content:space-between;font-size:.82rem">
+                      <span class="faint">小计</span><b>¥${sub.toLocaleString()}</b>
+                    </div>
+                    <div style="padding:6px 10px;background:var(--bg-deep);border-radius:var(--r-xs);margin-bottom:8px;display:flex;justify-content:space-between;font-size:.82rem">
+                      <span class="faint">弹性20%</span><b>¥${flex.toLocaleString()}</b>
+                    </div>
+                    <div style="background:linear-gradient(90deg,var(--sage-tint),var(--rose-tint));border-radius:var(--r-xs);padding:10px 12px;text-align:center;border:1px solid var(--sage-soft)">
+                      <div class="faint" style="font-size:.7rem;font-style:italic">总计</div>
+                      <div style="font-family:var(--ff-display);font-weight:600;font-size:1.05rem;color:var(--ink)">¥${total.toLocaleString()}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : `<p class="faint italic" style="padding:10px;text-align:center">暂无预算数据</p>`}
+        </div>
+      </details>
+    `;
+
+    const photoSpots = g.photo_spots || g.photography_spots || g.photos || [];
+    const phoHtml = `
+      <details style="border:1px solid var(--line-soft);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden">
+        <summary style="padding:12px 16px;background:var(--bg-soft);cursor:pointer;font-family:var(--ff-display);font-weight:500;display:flex;align-items:center;gap:10px">
+          📷 摄影 6 机位
+        </summary>
+        <div style="padding:14px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">
+          ${photoSpots.slice(0,6).map((sp,idx) => `
+            <div style="background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--r-sm);padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <div style="width:24px;height:24px;border-radius:50%;background:var(--sage);color:var(--white);display:grid;place-items:center;font-family:var(--ff-display);font-weight:600;font-size:.76rem;flex-shrink:0">${idx+1}</div>
+                <div style="font-weight:500;color:var(--sage-deep);font-size:.92rem">${esc(sp.spot||sp.location||sp.name||'机位'+(idx+1))}</div>
+              </div>
+              <div style="font-size:.78rem;background:var(--white);padding:3px 8px;border-radius:var(--r-pill);display:inline-block;margin-bottom:6px;color:var(--terracotta-deep)">🕒 ${esc(sp.best_time||sp.time||'黄金时刻')}</div>
+              <div style="font-size:.82rem;color:var(--text);line-height:1.6">${esc(sp.tips||sp.desc||'')}</div>
+            </div>
+          `).join('') || `<div class="faint italic" style="grid-column:1/-1;padding:10px;text-align:center">暂无摄影机位推荐</div>`}
+        </div>
+      </details>
+    `;
+
+    return `<div class="guides-accordion">${mvHtml}${itHtml}${pitHtml}${foodHtml}${budHtml}${phoHtml}</div>`;
   }
 
   function openManualSearchModal(placeId, placeName) {
@@ -1325,35 +1452,45 @@ document.addEventListener("DOMContentLoaded", async function () {
     const aiWrap = panel.querySelector('.ai-guide-area');
     if (!aiWrap) return;
 
+    const stepTexts = [
+      '① 抓取小红书博主实测',
+      '② 抖音视频机位/黄金时刻',
+      '③ 美团美食/门票价格交叉',
+      '④ 高德充电桩/拥堵/接驳',
+      '⑤ 去哪儿机票/酒店淡旺季分层',
+      '⑥ 携程预约限流/套票',
+    ];
+
     aiWrap.innerHTML = `
       <div class="ai-progress-wrap">
         <div class="progress-label"><span class="txt">🤖 AI 正在生成「${esc(place.name)}」完整攻略</span><span class="pct" id="aiPct">0%</span></div>
         <div class="progress"><span id="aiBar" style="width:0%"></span></div>
       </div>
       <div class="ai-steps-terminal" id="aiTerminal">
-        ${[
-          {n:1,t:'小红书热门笔记检索 & 去重'},
-          {n:2,t:'抖音高赞视频脚本提取关键字'},
-          {n:3,t:'美团/大众点评必吃榜 & 避坑汇总'},
-          {n:4,t:'高德路线 + 电车充电桩规划'},
-          {n:5,t:'去哪儿/携程 价格 & 门票比对'},
-          {n:6,t:'6 平台交叉比对 + 共识/争议标注'},
-        ].map(s=>`
-          <div class="ai-step ai-step--pending" data-step="${s.n}">
-            <div class="ai-step__num">${s.n}</div>
+        ${stepTexts.map((t,i)=>`
+          <div class="ai-step ai-step--pending" data-step="${i+1}">
+            <div class="ai-step__num">${i+1}</div>
             <div class="ai-step__status">○</div>
-            <div class="ai-step__desc">[${s.n}/6] ${s.t}...</div>
+            <div class="ai-step__desc">[${i+1}/6] ${t}...</div>
           </div>
         `).join('')}
+        <div id="aiTypewriterArea" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-family:&quot;JetBrains Mono&quot;,&quot;SF Mono&quot;,Consolas,monospace;font-size:.82rem;color:var(--ink);white-space:pre-wrap;line-height:1.8"></div>
       </div>
     `;
 
-    const hasKB = place.guides && Object.keys(place.guides).length > 0 && (place.guides._from_kb || place.guides.itinerary);
     const pctEl = document.getElementById('aiPct');
     const barEl = document.getElementById('aiBar');
     const termEl = document.getElementById('aiTerminal');
+    const twEl = document.getElementById('aiTypewriterArea');
     const steps = [0,17,34,51,68,85,100];
     let i = 0;
+
+    const appendTypewriter = (line) => {
+      if (!twEl) return;
+      const div = document.createElement('div');
+      div.textContent = line;
+      twEl.appendChild(div);
+    };
 
     const runStep = () => {
       if (i < steps.length) {
@@ -1362,19 +1499,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (termEl && i>0 && i<=6) {
           const prev = termEl.querySelector(`[data-step="${i-1}"]`);
           if (prev) { prev.classList.remove('is-active','is-pending'); prev.classList.add('is-done'); const st=prev.querySelector('.ai-step__status'); if(st)st.textContent='✓'; }
-          if (hasKB && i===1) {
-            const all = termEl.querySelectorAll('.ai-step');
-            all.forEach(el=>{ el.classList.remove('is-pending','is-active'); el.classList.add('is-done'); const st=el.querySelector('.ai-step__status'); if(st)st.textContent='✓'; });
-            if (pctEl) pctEl.textContent = '100%';
-            if (barEl) barEl.style.width = '100%';
-            i = 100;
-          } else {
-            const cur = termEl.querySelector(`[data-step="${i}"]`);
-            if (cur) { cur.classList.remove('is-pending'); cur.classList.add('is-active'); }
-          }
+          const cur = termEl.querySelector(`[data-step="${i}"]`);
+          if (cur) { cur.classList.remove('is-pending'); cur.classList.add('is-active'); }
+          appendTypewriter(`> [OK] ${stepTexts[i-1]}`);
         }
         i++;
-        setTimeout(runStep, hasKB ? 120 : 350);
+        setTimeout(runStep, 1000);
       } else {
         if (termEl) {
           termEl.querySelectorAll('.ai-step').forEach(el=>{
@@ -1383,8 +1513,22 @@ document.addEventListener("DOMContentLoaded", async function () {
           });
         }
         setTimeout(()=>{
-          if (hasKB) {
-            aiWrap.innerHTML = `<div class="ai-badge-big" style="margin-bottom:14px"><span class="ico">📚</span><div class="body"><div class="main">从知识库加载完成</div><div class="reason">「${esc(place.name)}」已有攻略数据，跳过搜索</div></div></div>` + renderGuideAccordion(place.guides);
+          let guidesToUse = null;
+          if (place.guides && place.guides.length && place.guides[0].must_visit && place.guides[0].must_visit.length >= 8) {
+            guidesToUse = place.guides;
+          } else {
+            const cached = localStorage['lovenest:cached_guide:' + place.name];
+            if (cached) {
+              try {
+                place.guides = [JSON.parse(cached)];
+                guidesToUse = place.guides;
+              } catch (_) {}
+            }
+          }
+
+          if (guidesToUse) {
+            aiWrap.innerHTML = `<div class="ai-badge-big" style="margin-bottom:14px"><span class="ico">📚</span><div class="body"><div class="main">从知识库加载完成</div><div class="reason">「${esc(place.name)}」已有攻略数据，跳过搜索</div></div></div>` + renderGuideAccordion(guidesToUse);
+            saveWishlistData();
           } else {
             aiWrap.innerHTML = '';
             openManualSearchModal(placeId, place.name);
@@ -1399,89 +1543,390 @@ document.addEventListener("DOMContentLoaded", async function () {
     const place = WISHLIST.find(p => p.id === placeId);
     if (!place) return;
     const today = new Date().toISOString().slice(0,10);
-    const html = `
-      <div class="wizard-wrap">
-        ${['基本信息','上传照片','评分感受','确认迁移'].map((l,i)=>({n:i+1,label:l,act:i===0})).map(s=>`
-          <div class="wizard-step ${s.act?'is-active':''}" data-wstep="${s.n}">
-            <div class="wizard-step__circle">${s.n}</div>
-            <div class="wizard-step__label">${s.label}</div>
+    const suggest_days = place.suggested_days || 2;
+    const foodPresets = ['铜锅鱼','臭鳜鱼','牦牛肉','酸汤鱼','藏式火锅','糯米饭','竹筒饭','腊猪头肉','三下锅','洋芋糍粑','杨梅汤','豆花烤鱼'];
+
+    const wizState = {
+      step: 1,
+      startDate: today,
+      days: suggest_days,
+      transport: 'ev_drive',
+      costPerPerson: 0,
+      companions: '佳力+师豪',
+      photos: [],
+      descMap: {},
+      scoreHim: 0,
+      scoreHer: 0,
+      review: '',
+      foodTags: [],
+    };
+
+    const addDaysToDate = (dateStr, days) => {
+      const d = new Date(dateStr);
+      d.setDate(d.getDate() + Number(days||0));
+      return d.toISOString().slice(0,10);
+    };
+
+    const matchSeason = (bestSeason) => {
+      const s = String(bestSeason || '');
+      const start = new Date(wizState.startDate);
+      const m = start.getMonth() + 1;
+      if (s.includes('春') && m>=3 && m<=5) return '春';
+      if (s.includes('夏') && m>=6 && m<=8) return '夏';
+      if (s.includes('秋') && m>=9 && m<=11) return '秋';
+      if (s.includes('冬') && (m===12 || m<=2)) return '冬';
+      const arr = ['冬','冬','春','春','春','夏','夏','夏','秋','秋','秋','冬'];
+      return arr[m-1] || '';
+    };
+
+    const renderWizard = () => {
+      const stepLabels = ['基本信息','上传照片','评分感受','确认迁移'];
+      const headerHtml = `
+        <div class="wizard-wrap">
+          ${stepLabels.map((l,i)=>{
+            const n = i+1;
+            const isActive = wizState.step === n;
+            const isDone = wizState.step > n;
+            return `
+              <div class="wizard-step ${isActive?'is-active':''} ${isDone?'is-done':''}" data-wstep="${n}">
+                <div class="wizard-step__circle">${isDone?'✓':n}</div>
+                <div class="wizard-step__label">${l}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      let bodyHtml = '';
+      if (wizState.step === 1) {
+        bodyHtml = `
+          <h3>🎯 把「${esc(place.name)}」标记为已游玩 · 基本信息</h3>
+          <p class="hint">填写出发日期、天数、交通方式和同行人员。</p>
+          <div class="form-row">
+            <label>游玩开始日期<span class="req">*</span></label>
+            <div class="ctrl"><input type="date" id="wvStart" value="${esc(wizState.startDate)}"/></div>
           </div>
-        `).join('')}
-      </div>
-      <div class="wizard-body">
-        <h3>🎯 把「${esc(place.name)}」标记为已游玩</h3>
-        <p class="hint">填写下面信息后，该景点会迁移到「已旅游」三种视图中。</p>
-        <div class="form-row">
-          <label>出行日期<span class="req">*</span></label>
-          <div class="ctrl dual-date">
-            <input type="date" id="wvStart" value="${today}"/>
-            <span class="sep">至</span>
-            <input type="date" id="wvEnd" value="${today}"/>
+          <div class="form-row">
+            <label>游玩天数<span class="req">*</span></label>
+            <div class="ctrl"><input type="number" id="wvDays" min="1" value="${wizState.days}" style="max-width:140px"/> 天</div>
           </div>
-        </div>
-        <div class="form-row">
-          <label>建议天数</label>
-          <div class="ctrl"><input type="number" id="wvDays" min="1" value="${place.suggested_days||2}" style="max-width:140px"/> 天</div>
-        </div>
-        <div class="form-row">
-          <label>小分组</label>
-          <div class="ctrl"><input type="text" id="wvSub" placeholder="如：九寨沟/稻城 等（可选）"/></div>
-        </div>
-        <div class="form-row">
-          <label>一句话感受</label>
-          <div class="ctrl"><textarea id="wvReview" placeholder="这次旅行最打动我们的是……"></textarea></div>
-        </div>
-        <div class="wizard-summary" style="margin-top:8px">
-          <dl>
-            <dt>景点</dt><dd>${esc(place.name)} · ${esc(place.location||'')}</dd>
-            <dt>当前优先级</dt><dd>No.${place.priority||'?'} · ${esc(place.best_season||'')}</dd>
-            <dt>攻略数量</dt><dd>${(place.sources||[]).length} 份来源</dd>
-          </dl>
-        </div>
-      </div>
-      <div class="wizard-foot">
-        <span class="step-info">第 1 / 4 步 · 基本信息</span>
-        <div class="btns">
-          <button class="btn btn--ghost" id="wvCancel" type="button">取消</button>
-          <button class="btn btn--primary" id="wvNext" type="button">下一步：上传照片 →</button>
-        </div>
-      </div>
-    `;
-    LoveNest.openModal('✈️ 标记为已游玩', html, {wide:true});
-    setTimeout(()=>{
-      const c = document.getElementById('wvCancel');
-      const n = document.getElementById('wvNext');
-      if (c) c.onclick = () => LoveNest.closeModal();
-      if (n) n.onclick = () => {
-        const s = document.getElementById('wvStart').value;
-        const e = document.getElementById('wvEnd').value;
-        const d = parseInt(document.getElementById('wvDays').value)||1;
-        const r = document.getElementById('wvReview').value;
-        place.converted_to_visited = true;
-        place.visited_date = {start:s,end:e,days:d,review:r};
-        saveWishlistData();
-        LoveNest.closeModal();
-        LoveNest.openModal('🎉 迁移成功', `
-          <p style="line-height:1.75;color:var(--text);margin-bottom:16px">
-            「${esc(place.name)}」已加入「已旅游」模块～<br/>
-            <span class="faint" style="font-style:italic">现在可以上传照片、细化双评分和美食打卡了</span>
-          </p>
-          <div class="btn-row" style="justify-content:flex-end">
-            <button class="btn btn--primary" id="ok2" type="button">去相册看看 →</button>
+          <div class="form-row">
+            <label>实际交通方式<span class="req">*</span></label>
+            <div class="ctrl" style="display:flex;gap:8px;flex-wrap:wrap">
+              <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:2px solid ${wizState.transport==='ev_drive'?'var(--sage)':'var(--line)'} ;border-radius:var(--r-pill);cursor:pointer;font-size:.9rem;background:${wizState.transport==='ev_drive'?'var(--sage-tint)':'var(--bg-card)'}">
+                <input type="radio" name="wvTransport" value="ev_drive" ${wizState.transport==='ev_drive'?'checked':''} style="accent-color:var(--sage);display:none"/>
+                🚗 电车自驾
+              </label>
+              <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:2px solid ${wizState.transport==='flight'?'var(--terracotta)':'var(--line)'} ;border-radius:var(--r-pill);cursor:pointer;font-size:.9rem;background:${wizState.transport==='flight'?'var(--terracotta-tint)':'var(--bg-card)'}">
+                <input type="radio" name="wvTransport" value="flight" ${wizState.transport==='flight'?'checked':''} style="accent-color:var(--terracotta);display:none"/>
+                ✈️ 飞机
+              </label>
+              <label style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:2px solid ${wizState.transport==='train'?'var(--rose)':'var(--line)'} ;border-radius:var(--r-pill);cursor:pointer;font-size:.9rem;background:${wizState.transport==='train'?'var(--rose-tint)':'var(--bg-card)'}">
+                <input type="radio" name="wvTransport" value="train" ${wizState.transport==='train'?'checked':''} style="accent-color:var(--rose);display:none"/>
+                🚄 高铁
+              </label>
+            </div>
           </div>
-        `);
-        setTimeout(()=>{
-          const o=document.getElementById('ok2');
-          if(o) o.onclick = ()=>{
-            LoveNest.closeModal();
-            const t = document.querySelector('#viewTabs button[data-view="gallery"]');
-            if (t) t.click();
-            document.getElementById('visited').scrollIntoView({behavior:'smooth'});
+          <div class="form-row">
+            <label>人均花费</label>
+            <div class="ctrl" style="display:flex;align-items:center;gap:8px">
+              <span class="faint">¥</span>
+              <input type="number" id="wvCost" min="0" value="${wizState.costPerPerson}" style="max-width:200px"/>
+              <span class="faint" style="font-size:.82rem;font-style:italic">元/人</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>同行人员</label>
+            <div class="ctrl"><input type="text" id="wvCompanions" value="${esc(wizState.companions)}"/></div>
+          </div>
+        `;
+      } else if (wizState.step === 2) {
+        const photoGridHtml = wizState.photos.length ? `
+          <div class="photo-upload-grid" id="photoGrid">
+            ${wizState.photos.map((ph,idx)=>`
+              <div class="photo-thumb" data-phidx="${idx}">
+                <img src="${esc(ph.dataUrl)}" alt=""/>
+                <button class="photo-thumb__edit photo-del-btn" type="button" data-del="${idx}" title="删除">×</button>
+                <div class="photo-thumb__meta">
+                  <textarea class="photo-caption-ta" placeholder="这里是我们在 ___ 的瞬间" rows="2" data-cap="${idx}" style="width:100%;padding:6px 8px;border:none;background:rgba(0,0,0,0);color:var(--white);font-family:inherit;font-size:.74rem;line-height:1.5;resize:none;outline:none">${esc(wizState.descMap[idx]||'')}</textarea>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : '';
+        bodyHtml = `
+          <h3>📸 上传旅行照片 · ${wizState.photos.length} 张已选</h3>
+          <p class="hint">可以选多张，生成九宫格预览；每张照片下方可以写一句话描述。</p>
+          <div style="margin-bottom:14px">
+            <input type="file" id="wvPhotoInput" multiple accept="image/*" style="display:none"/>
+            <button class="btn btn--primary" type="button" id="wvPickPhoto" style="width:100%;justify-content:center">📷 选择照片（可多选）</button>
+          </div>
+          ${photoGridHtml}
+        `;
+      } else if (wizState.step === 3) {
+        const tagsHtml = `
+          <div class="chip-presets">
+            ${foodPresets.map(t=>{
+              const active = wizState.foodTags.includes(t);
+              return `<span class="preset food-tag-preset" data-tag="${esc(t)}" style="${active?'background:var(--rose-tint);color:var(--rose-deep);border-color:var(--rose-soft);border-style:solid':''}">#${esc(t)}</span>`;
+            }).join('')}
+          </div>
+        `;
+        const selectedTagsHtml = wizState.foodTags.length ? `
+          <div class="chip-input" style="margin-top:10px">
+            ${wizState.foodTags.map(t=>`<span class="chip">#${esc(t)} <span class="x food-tag-x" data-rm="${esc(t)}">×</span></span>`).join('')}
+          </div>
+        ` : '';
+        bodyHtml = `
+          <h3>💞 玩后评分 & 感受</h3>
+          <p class="hint">两个人各打一个分（0-10），写一句话总评，再选几个吃到的美食标签。</p>
+          <div class="rating-row">
+            <label>佳力评分</label>
+            <input type="range" id="wvScoreHer" min="0" max="10" step="0.5" value="${wizState.scoreHer}"/>
+            <span class="val score-big" id="wvScoreHerVal" style="font-family:var(--ff-display);font-weight:600;color:var(--ink);min-width:42px;text-align:right;font-size:1.1rem">${Number(wizState.scoreHer).toFixed(1)}</span>
+          </div>
+          <div class="rating-row">
+            <label>师豪评分</label>
+            <input type="range" id="wvScoreHim" min="0" max="10" step="0.5" value="${wizState.scoreHim}"/>
+            <span class="val score-big" id="wvScoreHimVal" style="font-family:var(--ff-display);font-weight:600;color:var(--ink);min-width:42px;text-align:right;font-size:1.1rem">${Number(wizState.scoreHim).toFixed(1)}</span>
+          </div>
+          <div style="margin-top:12px">
+            <label style="font-size:.9rem;color:var(--ink);font-weight:500;display:block;margin-bottom:6px">一句话总评</label>
+            <textarea id="wvReview" placeholder="这次旅行最打动我们的是……" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-sm);font-family:inherit;font-size:.94rem;min-height:90px;line-height:1.65;resize:vertical">${esc(wizState.review)}</textarea>
+          </div>
+          <p class="kicker" style="margin:18px 0 10px">🍜 美食打卡（点击标签选中）</p>
+          ${tagsHtml}
+          ${selectedTagsHtml}
+        `;
+      } else if (wizState.step === 4) {
+        const endDate = addDaysToDate(wizState.startDate, wizState.days - 1);
+        const transportMap = {ev_drive:'🚗 电车自驾',flight:'✈️ 飞机',train:'🚄 高铁'};
+        const coverPhotos = wizState.photos.slice(0,3);
+        bodyHtml = `
+          <h3>✅ 确认迁移到已旅游模块</h3>
+          <p class="hint">下面是填写好的摘要，确认无误后点击「📦 确认迁移」。</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="wizard-summary">
+              <dl>
+                <dt>景点</dt><dd>${esc(place.name)} · ${esc(place.location||'')}</dd>
+                <dt>开始日期</dt><dd>${esc(wizState.startDate)}</dd>
+                <dt>结束日期</dt><dd>${esc(endDate)}</dd>
+                <dt>游玩天数</dt><dd>${wizState.days} 天</dd>
+                <dt>交通方式</dt><dd>${transportMap[wizState.transport]||wizState.transport}</dd>
+                <dt>人均花费</dt><dd>¥ ${Number(wizState.costPerPerson||0).toLocaleString()}</dd>
+                <dt>同行人员</dt><dd>${esc(wizState.companions)}</dd>
+                <dt>佳力评分</dt><dd style="color:var(--rose-deep);font-weight:600">${Number(wizState.scoreHer).toFixed(1)} / 10</dd>
+                <dt>师豪评分</dt><dd style="color:var(--sage-deep);font-weight:600">${Number(wizState.scoreHim).toFixed(1)} / 10</dd>
+                <dt>一句话</dt><dd style="line-height:1.6">${esc(wizState.review)||'<span class="faint italic">（未写）</span>'}</dd>
+                <dt>美食标签</dt><dd>${wizState.foodTags.length?wizState.foodTags.map(t=>`<span class="tag tag--her" style="margin-right:4px">#${esc(t)}</span>`).join(''):'<span class="faint italic">（未选）</span>'}</dd>
+              </dl>
+            </div>
+            <div>
+              <div style="font-family:var(--ff-accent);font-style:italic;color:var(--muted);font-size:.84rem;margin-bottom:8px">封面预览（${coverPhotos.length}/3）</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+                ${[0,1,2].map(i=>`
+                  <div style="aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden;background:var(--bg-deep);border:1px solid var(--line-soft)">
+                    ${coverPhotos[i]?`<img src="${esc(coverPhotos[i].dataUrl)}" alt="" style="width:100%;height:100%;object-fit:cover"/>`:`<div style="width:100%;height:100%;display:grid;place-items:center;color:var(--faint);font-size:.82rem;font-style:italic">空</div>`}
+                  </div>
+                `).join('')}
+              </div>
+              <div style="margin-top:10px;color:var(--faint);font-size:.78rem;font-style:italic">共上传 ${wizState.photos.length} 张照片</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const prevBtn = wizState.step > 1
+        ? `<button class="btn btn--ghost" id="wvPrev" type="button">← 上一步</button>`
+        : `<button class="btn btn--ghost" id="wvCancel" type="button">取消</button>`;
+      const nextBtn = wizState.step < 4
+        ? `<button class="btn btn--primary" id="wvNext" type="button">下一步 →</button>`
+        : `<button class="btn btn--primary" id="wvSubmit" type="button">📦 确认迁移到已旅游模块</button>`;
+
+      const html = `
+        ${headerHtml}
+        <div class="wizard-body">${bodyHtml}</div>
+        <div class="wizard-foot">
+          <span class="step-info">第 ${wizState.step} / 4 步 · ${stepLabels[wizState.step-1]}</span>
+          <div class="btns">${prevBtn}${nextBtn}</div>
+        </div>
+      `;
+      LoveNest.openModal('✈️ 标记为已游玩 · '+place.name, html, {wide:true});
+      setTimeout(bindWizardEvents, 50);
+    };
+
+    const bindWizardEvents = () => {
+      const cancel = document.getElementById('wvCancel');
+      const prev = document.getElementById('wvPrev');
+      const next = document.getElementById('wvNext');
+      const submit = document.getElementById('wvSubmit');
+      if (cancel) cancel.onclick = () => LoveNest.closeModal();
+      if (prev) prev.onclick = () => { wizState.step--; renderWizard(); };
+
+      if (wizState.step === 1) {
+        if (next) next.onclick = () => {
+          const s = document.getElementById('wvStart').value;
+          const d = parseInt(document.getElementById('wvDays').value)||0;
+          const tr = document.querySelector('input[name="wvTransport"]:checked');
+          if (!s) { alertToast('请选择开始日期'); return; }
+          if (d < 1) { alertToast('游玩天数至少 1 天'); return; }
+          if (!tr) { alertToast('请选择交通方式'); return; }
+          wizState.startDate = s;
+          wizState.days = d;
+          wizState.transport = tr.value;
+          wizState.costPerPerson = Number(document.getElementById('wvCost')?.value)||0;
+          const comp = document.getElementById('wvCompanions')?.value;
+          if (comp != null) wizState.companions = comp;
+          wizState.step = 2;
+          renderWizard();
+        };
+      } else if (wizState.step === 2) {
+        const pick = document.getElementById('wvPickPhoto');
+        const input = document.getElementById('wvPhotoInput');
+        if (pick && input) pick.onclick = () => input.click();
+        if (input) {
+          input.onchange = (e) => {
+            const files = Array.from(e.target.files||[]);
+            let loaded = 0;
+            files.forEach(f=>{
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                wizState.photos.push({id:'ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,8), name:f.name, dataUrl:ev.target.result});
+                loaded++;
+                if (loaded === files.length) renderWizard();
+              };
+              reader.readAsDataURL(f);
+            });
           };
-        },50);
-        renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
-      };
-    },50);
+        }
+        document.querySelectorAll('.photo-del-btn').forEach(b=>{
+          b.onclick = (e) => {
+            e.stopPropagation();
+            const idx = parseInt(b.getAttribute('data-del'));
+            wizState.photos.splice(idx,1);
+            delete wizState.descMap[idx];
+            const newMap = {};
+            wizState.photos.forEach((ph,ni)=>{ const oldKey = Object.keys(wizState.descMap).find(k=>wizState.descMap[k] && wizState.photos[parseInt(k)]?.dataUrl===ph.dataUrl); if (oldKey!=null) newMap[ni] = wizState.descMap[oldKey]; });
+            wizState.descMap = newMap;
+            renderWizard();
+          };
+        });
+        document.querySelectorAll('.photo-caption-ta').forEach(ta=>{
+          ta.oninput = () => {
+            const idx = parseInt(ta.getAttribute('data-cap'));
+            wizState.descMap[idx] = ta.value;
+          };
+        });
+        if (next) next.onclick = () => { wizState.step = 3; renderWizard(); };
+      } else if (wizState.step === 3) {
+        const him = document.getElementById('wvScoreHim');
+        const her = document.getElementById('wvScoreHer');
+        const himV = document.getElementById('wvScoreHimVal');
+        const herV = document.getElementById('wvScoreHerVal');
+        if (him && himV) him.oninput = () => { himV.textContent = Number(him.value).toFixed(1); wizState.scoreHim = Number(him.value); };
+        if (her && herV) her.oninput = () => { herV.textContent = Number(her.value).toFixed(1); wizState.scoreHer = Number(her.value); };
+        const rv = document.getElementById('wvReview');
+        if (rv) rv.oninput = () => { wizState.review = rv.value; };
+        document.querySelectorAll('.food-tag-preset').forEach(el=>{
+          el.onclick = () => {
+            const t = el.getAttribute('data-tag');
+            if (wizState.foodTags.includes(t)) wizState.foodTags = wizState.foodTags.filter(x=>x!==t);
+            else wizState.foodTags.push(t);
+            renderWizard();
+          };
+        });
+        document.querySelectorAll('.food-tag-x').forEach(el=>{
+          el.onclick = () => {
+            const t = el.getAttribute('data-rm');
+            wizState.foodTags = wizState.foodTags.filter(x=>x!==t);
+            renderWizard();
+          };
+        });
+        if (next) next.onclick = () => { wizState.step = 4; renderWizard(); };
+      } else if (wizState.step === 4) {
+        if (submit) submit.onclick = () => {
+          const idx = WISHLIST.findIndex(p=>p.id===placeId);
+          if (idx<0) return;
+          const visited_ref = "visited_" + Math.random().toString(36).slice(2,10);
+          WISHLIST[idx].converted_to_visited = true;
+          WISHLIST[idx].visited_ref = visited_ref;
+
+          const start_date = wizState.startDate;
+          const end_date = addDaysToDate(wizState.startDate, wizState.days - 1);
+          const season = matchSeason(place.best_season);
+          const photoRecords = wizState.photos.map((ph,ni)=>({
+            id: ph.id,
+            url: ph.dataUrl,
+            caption: wizState.descMap[ni] || ''
+          }));
+          const newVisited = {
+            id: visited_ref,
+            name: place.name,
+            location: place.location || '',
+            province: place.location ? place.location.split(/[,，]/)[0] : '',
+            start_date,
+            end_date,
+            days: wizState.days,
+            season,
+            transport: wizState.transport,
+            cost_per_person: wizState.costPerPerson,
+            companions: wizState.companions,
+            cover_image: photoRecords[0]?.url || '',
+            rating_him: wizState.scoreHim,
+            rating_her: wizState.scoreHer,
+            review: wizState.review,
+            foods: wizState.foodTags.slice(),
+            coords: place.coords,
+            photos: photoRecords,
+          };
+          if (!DATA.visited) DATA.visited = {_stats:{},places:[]};
+          if (!Array.isArray(DATA.visited.places)) DATA.visited.places = [];
+          DATA.visited.places.push(newVisited);
+          if (typeof VISITED !== 'undefined') VISITED.push(newVisited);
+
+          try { localStorage[WISHLIST_STORAGE_KEY] = JSON.stringify(WISHLIST); } catch(_) {}
+          if (typeof saveDataToLocalStorage === 'function') {
+            try { saveDataToLocalStorage(); } catch(_) {}
+          }
+          if (window.LoveNest && LoveNest.db && LoveNest.db.upsert) {
+            LoveNest.db.upsert('wishlist_places', {id: placeId, converted_to_visited:true, visited_ref: visited_ref, updated_at: new Date().toISOString()}, ['id']).catch(()=>{});
+          }
+
+          loadWishlistData();
+          const filtered = currentSeason==='all' ? WISHLIST : WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason));
+          renderWishlist(filtered);
+          if (typeof renderVisited === 'function') {
+            try { renderVisited(DATA.visited.places || VISITED); } catch(_) {}
+          }
+
+          LoveNest.closeModal();
+          setTimeout(()=>{
+            const successHtml = `
+              <p style="line-height:1.75;color:var(--text);margin-bottom:16px">
+                🎉 「${esc(place.name)}」已成功迁移到「已旅游」模块～<br/>
+                <span class="faint" style="font-style:italic">可以在相册/地图/时间轴三种视图中查看啦</span>
+              </p>
+              <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn--primary" id="wvSuccessOk" type="button">好的 ✓</button>
+              </div>
+            `;
+            LoveNest.openModal('迁移成功', successHtml);
+            setTimeout(()=>{
+              const ok = document.getElementById('wvSuccessOk');
+              if (ok) ok.onclick = () => LoveNest.closeModal();
+            },50);
+            setTimeout(()=>LoveNest.closeModal(), 2000);
+          },100);
+        };
+      }
+    };
+
+    const alertToast = (msg) => {
+      LoveNest.openModal('提示', `<p style="color:var(--muted);line-height:1.7">${esc(msg)}</p><div class="btn-row" style="justify-content:flex-end;margin-top:14px"><button class="btn btn--primary" id="wvToastOk">好的</button></div>`);
+      setTimeout(()=>{ const o=document.getElementById('wvToastOk'); if(o)o.onclick=()=>LoveNest.closeModal(); },50);
+    };
+
+    renderWizard();
   }
 
   function openAddPlaceModal() {
@@ -2167,9 +2612,45 @@ document.addEventListener("DOMContentLoaded", async function () {
       ` : "");
 
       const guideSources = (p.sources && p.sources.length) ? p.sources.slice(0,6) : DEFAULT_SOURCES;
+      const chipTitle = "top3共识 + 争议比例：60%/40%";
+      const isAbroad = (p.id === 'wish-maldives') || ((transport.flight && transport.flight.flight_duration && String(transport.flight.flight_duration).includes('重庆→')) && (p.notes && String(p.notes).includes('护照')));
+      const dist = evDist || trainDist || flightDist;
 
       return `
       <article class="wish-panel ${i===0?'is-active':''}" data-panel="${esc(p.id)}">
+        <div class="panel-top-actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <button class="btn btn--sage ai-guide-btn" type="button" data-aiid="${esc(p.id)}" style="margin:0">
+            🤖 AI 一键生成攻略
+          </button>
+          <button class="btn btn--ghost scroll-to-guide-btn" type="button" data-guid="${esc(p.id)}" style="margin:0" title="${esc(chipTitle)}">
+            📊 六平台来源交叉比对
+            <span style="display:inline-flex;gap:3px;margin-left:8px">
+              ${['xhs','dy','mt','gd','qnr','ctrip'].map(cls=>`<span class="source-chip ${cls}" style="padding:1px 6px;font-size:.62rem;cursor:default;pointer-events:none">${{xhs:'小红书',dy:'抖音',mt:'美团',gd:'高德',qnr:'去哪儿',ctrip:'携程'}[cls]}</span>`).join('')}
+            </span>
+          </button>
+          ${p.converted_to_visited ? `
+            <button class="btn btn--ghost goto-visited-btn" type="button" data-goto="${esc(p.id)}" style="margin:0;color:var(--muted);border-color:var(--line);cursor:pointer">
+              📌 已游玩 · 查看回忆卡
+            </button>
+          ` : `
+            <button class="btn btn--primary mark-visited-btn" type="button" data-id="${esc(p.id)}" style="margin:0">
+              ✅ 标记为已游玩（向导式4步）
+            </button>
+          `}
+        </div>
+        ${getAIRecTag(transport)}
+        ${dist > 900 ? `
+          <div style="padding:12px 16px;border-radius:var(--r-sm);border:1px solid var(--rose-soft);background:var(--rose-tint);margin-bottom:14px;display:flex;align-items:flex-start;gap:10px">
+            <span style="font-size:1.1rem;color:var(--rose-deep);flex-shrink:0;margin-top:1px">⚠️</span>
+            <div style="flex:1;min-width:0;font-size:.88rem;color:var(--text);line-height:1.6">单日行驶超 900km，建议分 2 天或改高铁/飞机</div>
+          </div>
+        ` : ''}
+        ${isAbroad ? `
+          <div style="padding:12px 16px;border-radius:var(--r-sm);border:1px solid var(--sage-soft);background:var(--sage-tint);margin-bottom:14px;display:flex;align-items:flex-start;gap:10px">
+            <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px">🌏</span>
+            <div style="flex:1;min-width:0;font-size:.88rem;color:var(--text);line-height:1.6">出国：护照有效期≥6个月+落地签/签证+时差</div>
+          </div>
+        ` : ''}
         <div class="wish-grid">
           <div>
             <div class="wish-card reveal" style="margin-bottom:20px">
@@ -2184,7 +2665,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <dt class="faint">备注</dt><dd class="muted">${esc(p.notes || "—")}</dd>
               </dl>
               <div class="btn-row">
-                <button class="btn btn--small btn--rose mark-visited-btn" data-id="${esc(p.id)}" type="button">✓ 标记为已游玩</button>
                 <span class="wish-stat">${guideSources.length} 份攻略</span>
                 ${p.converted_to_visited ? `<span class="wish-stat wish-stat--done">✅ 已转化为相册</span>` : ""}
                 ${p.guides && Object.keys(p.guides).length ? `<span class="wish-stat wish-stat--done">📚 攻略已生成</span>` : ""}
@@ -2192,12 +2672,251 @@ document.addEventListener("DOMContentLoaded", async function () {
             </div>
 
             <div class="wish-card wish-card--terracotta">
-              <h4>🚗 从重庆大竹林出发 · 交通方式</h4>
+              <h4>📦 出行方式对比（🚗电车自驾 vs ✈️飞机 vs 🚄高铁）</h4>
               ${getAIRecTag(transport)}
               ${evWarnHtml}
-              ${evHtml}
-              ${flightHtml}
-              ${trainDistHtml}
+              <div class="transport-compare-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px">
+
+                ${(transport.ev_drive && evDist > 0) ? `
+                <div style="border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:14px;background:var(--bg-card)">
+                  <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:1rem;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                    🚗 电车自驾
+                    <span class="tag tag--sage" style="font-size:.66rem">单程 ${evDist||'—'}km</span>
+                  </div>
+                  ${(() => {
+                    const rc = transport.ev_drive && transport.ev_drive.route_compare;
+                    const ra = rc && rc.route_a ? rc.route_a : {};
+                    const rb = rc && rc.route_b ? rc.route_b : {};
+                    return `
+                    <div class="route-compare" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                      <div style="position:relative;padding:8px 10px;border:1px solid var(--sage-soft);border-radius:var(--r-xs);background:var(--sage-tint)">
+                        <small style="position:absolute;top:-6px;right:6px;padding:1px 6px;background:var(--sage);color:#fff;border-radius:999px;font-size:.62rem">推荐</small>
+                        <div class="faint" style="font-size:.68rem;margin-bottom:2px">A 线 · ${esc(ra.name||'推荐路线')}</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:.76rem;margin:4px 0">
+                          <div><span class="faint">里程：</span><b>${ra.distance_km||'—'}km</b></div>
+                          <div><span class="faint">时长：</span><b>${ra.drive_hours||'—'}h</b></div>
+                          <div><span class="faint">过路费：</span><b>¥${ra.toll_fee||'—'}</b></div>
+                        </div>
+                        ${ra.pros?`<div style="font-size:.72rem;color:var(--sage-deep);margin-top:2px">✓ ${esc(ra.pros)}</div>`:''}
+                        ${ra.cons?`<div style="font-size:.72rem;color:var(--rose-deep);margin-top:2px">✗ ${esc(ra.cons)}</div>`:''}
+                      </div>
+                      <div style="position:relative;padding:8px 10px;border:1px solid var(--line-soft);border-radius:var(--r-xs);background:var(--bg-soft)">
+                        <small style="position:absolute;top:-6px;right:6px;padding:1px 6px;background:var(--sage);color:#fff;border-radius:999px;font-size:.62rem;opacity:.7">最短</small>
+                        <div class="faint" style="font-size:.68rem;margin-bottom:2px">B 线 · ${esc(rb.name||'最短距离')}</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:.76rem;margin:4px 0">
+                          <div><span class="faint">里程：</span><b>${rb.distance_km||'—'}km</b></div>
+                          <div><span class="faint">时长：</span><b>${rb.drive_hours||'—'}h</b></div>
+                          <div><span class="faint">过路费：</span><b>¥${rb.toll_fee||'—'}</b></div>
+                        </div>
+                        ${rb.pros?`<div style="font-size:.72rem;color:var(--sage-deep);margin-top:2px">✓ ${esc(rb.pros)}</div>`:''}
+                        ${rb.cons?`<div style="font-size:.72rem;color:var(--rose-deep);margin-top:2px">✗ ${esc(rb.cons)}</div>`:''}
+                      </div>
+                    </div>`;
+                  })()}
+                  <div class="faint" style="font-size:.72rem;margin-bottom:6px">🔌 充电站列表</div>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+                    ${(() => {
+                      const cs = (transport.ev_drive && transport.ev_drive.charging_stations) || [];
+                      const defaultCs = [
+                        {name:'G50 沪渝高速 · 冷水服务区',type:'快充',ports:'8',dist_from_start_km:'180',recommended:true},
+                        {name:'G42 沪蓉高速 · 巫山服务区',type:'快充',ports:'6',dist_from_start_km:'360',recommended:false},
+                        {name:'市区 · 特来电充电站',type:'快充',ports:'12',dist_from_start_km:'520',recommended:true},
+                        {name:'景区停车场 · 国家电网',type:'慢充',ports:'4',dist_from_start_km:'640',recommended:false}
+                      ];
+                      const list = cs.length ? cs : defaultCs;
+                      return list.slice(0, Math.max(4, list.length)).map((c, ci) => `
+                        <div style="padding:6px 10px;border:1px solid ${c.recommended?'var(--sage-soft)':'var(--line-soft)'};border-radius:var(--r-xs);background:${c.recommended?'var(--sage-tint)':'var(--bg-soft)'};display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center">
+                          <div style="font-size:.72rem;color:var(--muted);font-family:var(--ff-mono)">${c.dist_from_start_km||'—'}km</div>
+                          <div style="min-width:0">
+                            <div style="font-size:.8rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.name||('充电站 '+(ci+1)))}</div>
+                            <div style="font-size:.68rem;color:var(--muted)">${esc(c.type||'—')} · ${c.ports||'—'}枪</div>
+                          </div>
+                          ${c.recommended?'<span style="font-size:.6rem;color:var(--sage-deep)">★</span>':''}
+                        </div>
+                      `).join('');
+                    })()}
+                  </div>
+                  <div style="padding:8px 10px;background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);margin-bottom:10px;font-size:.78rem">
+                    ${(() => {
+                      const s500 = transport.ev_drive && transport.ev_drive.sedan_500km_range ? transport.ev_drive.sedan_500km_range : {};
+                      const s600 = transport.ev_drive && transport.ev_drive.suv_600km_range ? transport.ev_drive.suv_600km_range : {};
+                      const s500KWh = s500.kwh_100km || Math.round(evDist*0.15*100/Math.max(evDist,1));
+                      const s500Total = s500.total_kwh || Math.round(evDist*0.15);
+                      const s500Times = s500.charge_times || (s500Total > 400 ? 3 : (s500Total > 200 ? 2 : 1));
+                      const s600KWh = s600.kwh_100km || Math.round(evDist*0.20*100/Math.max(evDist,1));
+                      const s600Total = s600.total_kwh || Math.round(evDist*0.20);
+                      const s600Times = s600.charge_times || (s600Total > 480 ? 3 : (s600Total > 240 ? 2 : 1));
+                      return `
+                      <div style="display:grid;grid-template-columns:1fr;gap:6px">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                          <span style="font-weight:500">🚘 轿车 500km 续航</span>
+                          <span style="font-family:var(--ff-display);font-size:.74rem">${s500KWh||'—'}kWh/100 · 总${s500Total||'—'}kWh · ${s500Times||'—'}次补能</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                          <span style="font-weight:500">🚙 SUV 600km 续航</span>
+                          <span style="font-family:var(--ff-display);font-size:.74rem">${s600KWh||'—'}kWh/100 · 总${s600Total||'—'}kWh · ${s600Times||'—'}次补能</span>
+                        </div>
+                      </div>`;
+                    })()}
+                  </div>
+                  <div style="padding:8px 10px;background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--r-xs);font-size:.78rem">
+                    ${(() => {
+                      const fees = transport.ev_drive && transport.ev_drive.fees ? transport.ev_drive.fees : {};
+                      const toll = fees.toll_fee || Math.round(evDist*0.45);
+                      const chg = fees.charging_fee || Math.round(evDist*0.15*1.5);
+                      const total = fees.total_round_trip || (toll + chg) * 2;
+                      return `
+                      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center">
+                        <div>
+                          <div class="faint" style="font-size:.66rem">高速费(单程)</div>
+                          <div style="font-family:var(--ff-display);font-weight:600">¥${toll||'—'}</div>
+                        </div>
+                        <div>
+                          <div class="faint" style="font-size:.66rem">充电费(单程)</div>
+                          <div style="font-family:var(--ff-display);font-weight:600">¥${chg||'—'}</div>
+                        </div>
+                        <div>
+                          <div class="faint" style="font-size:.66rem">往返总</div>
+                          <div style="font-family:var(--ff-display);font-weight:600;color:var(--terracotta-deep)">¥${total||'—'}</div>
+                        </div>
+                      </div>`;
+                    })()}
+                  </div>
+                  ${evDist > 900 ? `
+                    <div style="padding:10px 12px;border-radius:var(--r-xs);border:1px solid var(--rose-soft);background:var(--rose-tint);margin-top:10px;display:flex;align-items:flex-start;gap:8px;font-size:.76rem">
+                      <span style="flex-shrink:0">⚠️</span>
+                      <div style="flex:1;line-height:1.5;color:var(--rose-deep)">单程 ${evDist}km 超长距离，建议分 2 天或搭配高铁/飞机</div>
+                    </div>
+                  ` : ''}
+                </div>
+                ` : `
+                <div style="border:1px dashed var(--line-soft);border-radius:var(--r-sm);padding:14px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center">
+                  <span class="faint italic" style="font-size:.82rem">🚗 暂无电车自驾数据</span>
+                </div>
+                `}
+
+                ${transport.flight ? `
+                <div style="border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:14px;background:var(--bg-card)">
+                  <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:1rem;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                    ✈️ 飞机
+                    <span class="tag tag--sage" style="font-size:.66rem">单程 ${flightDist||'—'}km</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">
+                    ${(() => {
+                      const pt = transport.flight && transport.flight.price_tiers ? transport.flight.price_tiers : {};
+                      const tiers = [
+                        {label:'🌻 旺季',key:'peak',price:pt.peak||(1580+Math.round(flightDist*0.8))},
+                        {label:'🍃 平季',key:'mid',price:pt.mid||(980+Math.round(flightDist*0.4))},
+                        {label:'❄️ 淡季',key:'low',price:pt.low||(480+Math.round(flightDist*0.2))}
+                      ];
+                      return tiers.map(t => `
+                        <div style="padding:8px 6px;background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);text-align:center">
+                          <div class="faint" style="font-size:.66rem">${t.label}</div>
+                          <div style="font-family:var(--ff-display);font-weight:600;color:var(--terracotta-deep);font-size:.92rem;margin:2px 0">💰¥${t.price||'—'}</div>
+                        </div>
+                      `).join('');
+                    })()}
+                  </div>
+                  <div class="faint" style="font-size:.72rem;margin-bottom:6px">🛫 机场对比</div>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+                    ${(() => {
+                      const ac = transport.flight && transport.flight.airport_compare ? transport.flight.airport_compare : [];
+                      const defaults = [
+                        {name:transport.flight.nearest_airport||'主机场',dist_to_scenic_km:Math.round(flightDist*0.08),drive_hours:'1.5',pros:'航班多 · 最近',cons:'票价偏高'},
+                        {name:'备用机场',dist_to_scenic_km:Math.round(flightDist*0.12),drive_hours:'2.5',pros:'票价便宜15%',cons:'车程多1h'},
+                        {name:'重庆江北中转',dist_to_scenic_km:Math.round(flightDist*0.02),drive_hours:'0.5',pros:'航班选择多',cons:'需二次安检'}
+                      ];
+                      const list = ac.length ? ac : defaults;
+                      return list.slice(0,3).map((a, ai) => `
+                        <div style="padding:6px 10px;background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs)">
+                          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">
+                            <b style="font-size:.82rem">${ai+1}. ${esc(a.name||'机场')}</b>
+                            <span class="faint" style="font-size:.68rem">${a.dist_to_scenic_km||'—'}km · ${a.drive_hours||'—'}h</span>
+                          </div>
+                          <div style="font-size:.68rem;line-height:1.5">
+                            ${a.pros?`<span style="color:var(--sage-deep)">✓${esc(a.pros)}</span>`:''}
+                            ${a.cons?`<span class="faint" style="margin-left:6px">· ${esc(a.cons)}</span>`:''}
+                          </div>
+                        </div>
+                      `).join('');
+                    })()}
+                  </div>
+                  <div class="faint" style="font-size:.72rem;margin-bottom:6px">🚕 机场到景区接驳</div>
+                  <div style="display:flex;flex-direction:column;gap:5px">
+                    ${(() => {
+                      const atd = transport.flight && transport.flight.airport_to_destination ? transport.flight.airport_to_destination : {};
+                      const opts = [
+                        atd.option1 || {name:'打车/网约车',total_time:'1.5h',total_cost:80+Math.round(flightDist*0.05)},
+                        atd.option2 || {name:'机场大巴',total_time:'2.5h',total_cost:30+Math.round(flightDist*0.01)},
+                        atd.option3 || {name:'高铁转线',total_time:'2h',total_cost:50+Math.round(flightDist*0.03)}
+                      ];
+                      return opts.map(o => `
+                        <div style="padding:5px 8px;background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--r-xs);display:flex;justify-content:space-between;align-items:center;font-size:.76rem">
+                          <span style="font-weight:500">${esc(o.name||'接驳方式')}</span>
+                          <span style="font-family:var(--ff-display);color:var(--muted)">${o.total_time||'—'} · ¥${o.total_cost||'—'}</span>
+                        </div>
+                      `).join('');
+                    })()}
+                  </div>
+                </div>
+                ` : `
+                <div style="border:1px dashed var(--line-soft);border-radius:var(--r-sm);padding:14px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center">
+                  <span class="faint italic" style="font-size:.82rem">✈️ 暂无航班数据</span>
+                </div>
+                `}
+
+                ${transport.train ? `
+                <div style="border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:14px;background:var(--bg-card)">
+                  <div style="font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:1rem;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                    🚄 高铁/火车
+                    <span class="tag tag--sage" style="font-size:.66rem">单程 ${trainDist||'—'}km</span>
+                  </div>
+                  <div class="faint" style="font-size:.72rem;margin-bottom:6px">🚄 推荐车次</div>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+                    ${(() => {
+                      const rt = transport.train && transport.train.recommended_trains ? transport.train.recommended_trains : [];
+                      const defaults = [
+                        {train_no:'G1976',dep_time:'08:12',arr_time:'12:45',duration:'4h33m',second_class_price:468},
+                        {train_no:'G1888',dep_time:'10:30',arr_time:'15:02',duration:'4h32m',second_class_price:468}
+                      ];
+                      const list = rt.length ? rt : defaults;
+                      return list.slice(0, Math.max(2, list.length)).map(s => `
+                        <div style="padding:6px 10px;background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-xs);display:grid;grid-template-columns:80px 1fr auto;gap:6px;align-items:center">
+                          <b style="font-size:.8rem;font-family:var(--ff-display)">${esc(s.train_no||'—')}</b>
+                          <div style="font-size:.72rem;line-height:1.5">
+                            <div style="font-family:var(--ff-mono);color:var(--ink)">${esc(s.dep_time||'—')} - ${esc(s.arr_time||'—')}</div>
+                            <div class="faint">时长 ${esc(s.duration||'—')}</div>
+                          </div>
+                          <div style="font-family:var(--ff-display);font-weight:600;color:var(--rose-deep);font-size:.86rem">¥${s.second_class_price||'—'}</div>
+                        </div>
+                      `).join('');
+                    })()}
+                  </div>
+                  <div class="faint" style="font-size:.72rem;margin-bottom:6px">🚕 到站接驳（${esc(transport.train.nearest_station||'目的地站')}）</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                    ${(() => {
+                      const st = transport.train && transport.train.station_transfer ? transport.train.station_transfer : {};
+                      const bus = st.bus || {name:'公交/地铁',total_time:'1h',total_cost:8,desc:'经济实惠，需换乘'};
+                      const taxi = st.taxi || {name:'打车',total_time:'30min',total_cost:60,desc:'直达景区门口'};
+                      return [bus, taxi].map(o => `
+                        <div style="padding:6px 8px;background:var(--rose-tint);border:1px solid var(--rose-soft);border-radius:var(--r-xs);font-size:.74rem">
+                          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">
+                            <b>${esc(o.name||'—')}</b>
+                            <span style="font-family:var(--ff-display);color:var(--rose-deep);font-weight:600">¥${o.total_cost||'—'}</span>
+                          </div>
+                          <div class="faint" style="font-size:.66rem">时长 ${o.total_time||'—'}${o.desc?(' · '+esc(o.desc)):''}</div>
+                        </div>
+                      `).join('');
+                    })()}
+                  </div>
+                </div>
+                ` : `
+                <div style="border:1px dashed var(--line-soft);border-radius:var(--r-sm);padding:14px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center">
+                  <span class="faint italic" style="font-size:.82rem">🚄 暂无高铁数据</span>
+                </div>
+                `}
+
+              </div>
             </div>
           </div>
 
@@ -2211,11 +2930,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }).join("")}
               </div>
               <div class="source-summary-wrap" id="srcSum-${esc(p.id)}" style="display:none;margin-bottom:14px"></div>
-              <div style="margin-bottom:14px">
-                <button class="btn btn--primary ai-guide-btn" type="button" data-aiid="${esc(p.id)}" style="width:100%;justify-content:center">
-                  🤖 ${p.guides && Object.keys(p.guides).length ? '重新生成攻略（从知识库加载优先）' : 'AI 一键生成攻略'}
-                </button>
-              </div>
               <div class="ai-guide-area" id="aiArea-${esc(p.id)}">
                 ${(p.guides && Object.keys(p.guides).length) ? renderGuideAccordion(p.guides) : `
                   <div class="card card--inset" style="padding:16px 18px;background:var(--bg-soft);border-style:dashed">
@@ -2333,30 +3047,41 @@ document.addEventListener("DOMContentLoaded", async function () {
         e.stopPropagation();
         const id = btn.getAttribute("data-del");
         const place = WISHLIST.find(p=>p.id===id);
-        const hasGuides = place && place.guides && Object.keys(place.guides).length;
         const html = `
-          <p style="line-height:1.75;color:var(--text);margin-bottom:16px">
-            确定删除「<b>${esc(place?.name||'景点')}</b>」吗？
+          <p style="line-height:1.75;color:var(--text);margin-bottom:18px">
+            确定删除「<b>${esc(place?.name||'景点')}</b>」吗？请选择删除方式：
           </p>
-          <div style="padding:12px 14px;background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--r-sm);margin-bottom:16px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-              <input type="checkbox" id="keepGuides" ${hasGuides?'checked':''} style="accent-color:var(--sage);width:18px;height:18px"/>
-              <span style="font-size:.9rem"><b>保留攻略？</b>（下次添加同名景点会自动加载）</span>
-            </label>
-          </div>
-          <div class="btn-row" style="justify-content:flex-end">
-            <button class="btn btn--ghost" id="delCancel" type="button">取消</button>
-            <button class="btn btn--rose" id="delConfirm" type="button">✕ 确认删除</button>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+            <button class="btn btn--primary" id="delKeepGuides" type="button" style="justify-content:flex-start;text-align:left;padding:12px 16px">
+              <span style="font-size:1.05rem;margin-right:8px">💾</span>
+              <span style="flex:1">
+                <b>保留攻略数据到本地缓存</b>
+                <span class="faint" style="display:block;font-size:.76rem;font-style:italic;margin-top:2px">下次生成同名景点攻略更快</span>
+              </span>
+            </button>
+            <button class="btn btn--rose" id="delFullDelete" type="button" style="justify-content:flex-start;text-align:left;padding:12px 16px">
+              <span style="font-size:1.05rem;margin-right:8px">🗑️</span>
+              <span style="flex:1">
+                <b>完全删除（包含攻略缓存）</b>
+                <span class="faint" style="display:block;font-size:.76rem;font-style:italic;margin-top:2px">所有相关数据彻底清除</span>
+              </span>
+            </button>
+            <button class="btn btn--ghost" id="delCancel" type="button" style="justify-content:center;padding:10px 16px">
+              取消
+            </button>
           </div>
         `;
         LoveNest.openModal('删除确认', html);
         setTimeout(()=>{
           document.getElementById('delCancel').onclick = () => LoveNest.closeModal();
-          document.getElementById('delConfirm').onclick = () => {
-            const keep = document.getElementById('keepGuides').checked;
+          const doDelete = (keepGuides) => {
             WISHLIST = WISHLIST.filter(p => {
               if (p.id !== id) return true;
-              if (keep && p.guides) { localStorage.setItem('lovenest:cached_guide:'+p.name, JSON.stringify(p.guides)); }
+              if (keepGuides && p.guides) {
+                localStorage.setItem('lovenest:cached_guide:'+p.name, JSON.stringify(p.guides));
+              } else {
+                localStorage.removeItem('lovenest:cached_guide:'+p.name);
+              }
               return false;
             });
             WISHLIST.forEach((p,idx)=>p.priority = idx+1);
@@ -2364,6 +3089,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             LoveNest.closeModal();
             renderWishlist(currentSeason==='all'?WISHLIST:WISHLIST.filter(p=>(p.best_season||'').includes(currentSeason)));
           };
+          document.getElementById('delKeepGuides').onclick = () => doDelete(true);
+          document.getElementById('delFullDelete').onclick = () => doDelete(false);
         },50);
       };
     });
@@ -2425,8 +3152,79 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.querySelectorAll('.source-summary-wrap').forEach(w=>{w.style.display='none';w.innerHTML='';w.dataset.openSrc='';});
         document.querySelectorAll('.source-chip[data-src]').forEach(c=>c.classList.remove("is-open"));
         chip.classList.add("is-open");
-        const cons = SRC_CONSENSUS[src] || ['该平台攻略内容详实','用户反馈较为真实','适合作为参考之一'];
-        const disp = SRC_DISPUTE[src] || ['细节呈现略有差异，建议交叉比对'];
+
+        const place = WISHLIST.find(p => p.id === pid);
+        const g = ((place && place.guides) || [])[0] || {};
+        const sc = g.source_consensus && g.source_consensus[src];
+
+        let cons, disp;
+        if (sc) {
+          cons = sc.top3 || sc.consensus || [];
+          disp = sc.debate || sc.dispute || [];
+        } else {
+          cons = SRC_CONSENSUS[src] || ['该平台攻略内容详实','用户反馈较为真实','适合作为参考之一'];
+          disp = SRC_DISPUTE[src] || ['细节呈现略有差异，建议交叉比对'];
+        }
+
+        const parseDebateRatio = (debateStr) => {
+          const m = String(debateStr).match(/(\d+)%[^/]*\/\s*(\d+)%/);
+          if (m) return [parseInt(m[1]), parseInt(m[2])];
+          const m2 = String(debateStr).match(/(\d+):(\d+)/);
+          if (m2) {
+            const total = parseInt(m2[1]) + parseInt(m2[2]);
+            return [Math.round(parseInt(m2[1])/total*100), Math.round(parseInt(m2[2])/total*100)];
+          }
+          return [50, 50];
+        };
+
+        const disputeHtml = (disp||[]).map((dStr, di) => {
+          const [pA, pB] = parseDebateRatio(dStr);
+          let textA = 'A 观点', textB = 'B 观点';
+          const matchAB = String(dStr).match(/^(.+?)(?:→|：|:)\s*(.+?)$/);
+          if (matchAB) {
+            const title = matchAB[1];
+            const rest = matchAB[2];
+            const splitIdx = rest.search(/\s*(?:\/|vs|VS)\s*/);
+            if (splitIdx > 0) {
+              textA = rest.slice(0, splitIdx).trim().replace(/^\d+%\s*/, '').replace(/^\d+:\d+\s*/, '');
+              textB = rest.slice(splitIdx).trim().replace(/^[\/\s]+/, '').replace(/^\d+%\s*/, '').replace(/^\d+:\d+\s*/, '');
+            }
+            return `
+              <div class="dispute-item">
+                <div class="dispute-item__q">${esc(title)}</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                  <div style="flex:0 0 ${pA}%;text-align:right;font-size:.76rem;font-weight:600;color:var(--sage-deep)">${pA}%</div>
+                  <div style="flex:0 0 ${pB}%;text-align:left;font-size:.76rem;font-weight:600;color:var(--rose-deep)">${pB}%</div>
+                </div>
+                <div style="display:flex;align-items:stretch;height:18px;border-radius:var(--r-pill);overflow:hidden;border:1px solid var(--line-soft)">
+                  <div style="flex:0 0 ${pA}%;background:var(--sage-tint)"></div>
+                  <div style="width:1px;background:var(--line)"></div>
+                  <div style="flex:1;background:var(--rose-tint)"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+                  <div style="padding:4px 8px;background:var(--sage-tint);border:1px solid var(--sage-soft);border-radius:var(--r-xs);font-size:.76rem;color:var(--text)">${esc(textA)}</div>
+                  <div style="padding:4px 8px;background:var(--rose-tint);border:1px solid var(--rose-soft);border-radius:var(--r-xs);font-size:.76rem;color:var(--text)">${esc(textB)}</div>
+                </div>
+              </div>
+            `;
+          }
+          return `
+            <div class="dispute-item">
+              <div class="dispute-item__q">争议项 ${di+1}</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                <div style="flex:0 0 ${pA}%;text-align:right;font-size:.76rem;font-weight:600;color:var(--sage-deep)">${pA}%</div>
+                <div style="flex:0 0 ${pB}%;text-align:left;font-size:.76rem;font-weight:600;color:var(--rose-deep)">${pB}%</div>
+              </div>
+              <div style="display:flex;align-items:stretch;height:18px;border-radius:var(--r-pill);overflow:hidden;border:1px solid var(--line-soft)">
+                <div style="flex:0 0 ${pA}%;background:var(--sage-tint)"></div>
+                <div style="width:1px;background:var(--line)"></div>
+                <div style="flex:1;background:var(--rose-tint)"></div>
+              </div>
+              <div style="font-size:.78rem;color:var(--muted);margin-top:6px">${esc(typeof dStr === 'string' ? dStr : JSON.stringify(dStr))}</div>
+            </div>
+          `;
+        }).join('');
+
         wrap.dataset.openSrc = src;
         wrap.style.display = "block";
         wrap.innerHTML = `
@@ -2434,21 +3232,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             <div class="source-summary__head">
               <span class="source-chip ${SOURCE_CHIP_CLASS[src]||''}">${esc(src)}</span>
               <span class="src-name" style="margin-left:8px">${esc(src)}攻略 · 交叉比对摘要</span>
-              <span class="src-count" style="margin-left:auto">3 共识 / 1 争议</span>
+              <span class="src-count" style="margin-left:auto">${cons.length} 共识 / ${disp.length} 争议</span>
             </div>
             <ul class="consensus-list">
               ${cons.map(c=>`<li><b>共识：</b>${esc(c)}</li>`).join('')}
             </ul>
-            <div class="dispute-item">
-              <div class="dispute-item__q">争议项</div>
-              <div class="dispute-item__opts">
-                ${disp.map(d=>`
-                  <div class="dispute-item__opt is-major">
-                    <span class="src-tag">${esc(src)}</span><span>${esc(d)}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
+            ${disputeHtml || '<div class="dispute-item"><div class="dispute-item__q">暂无公开争议项</div></div>'}
           </div>
         `;
       });
@@ -2458,6 +3247,27 @@ document.addEventListener("DOMContentLoaded", async function () {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         runAIGuideGen(btn.getAttribute("data-aiid"));
+      });
+    });
+
+    panelsRoot.querySelectorAll(".scroll-to-guide-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const guid = btn.getAttribute("data-guid");
+        const panel = document.querySelector(`[data-panel="${guid}"]`);
+        if (panel) {
+          const guideArea = panel.querySelector('.ai-guide-area') || panel.querySelector('[id^="chipRow-"]');
+          if (guideArea) guideArea.scrollIntoView({behavior:"smooth",block:"start"});
+        }
+      });
+    });
+
+    panelsRoot.querySelectorAll(".goto-visited-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const t = document.querySelector('#viewTabs button[data-view="gallery"]');
+        if (t) t.click();
+        document.getElementById('visited').scrollIntoView({behavior:'smooth'});
       });
     });
   }
