@@ -2,7 +2,10 @@
   "_meta": {
     "title": "旅游相册与规划",
     "origin": "重庆大竹林",
-    "origin_coords": [29.6145, 106.4799],
+    "origin_coords": [
+      29.6145,
+      106.4799
+    ],
     "last_updated": "2026-08-10"
   },
   "visited": {
@@ -16,7 +19,10 @@
         "id": "jinyunshan-202502",
         "name": "缙云山",
         "location": "重庆市北碚区",
-        "coords": [29.8411, 106.3866],
+        "coords": [
+          29.8411,
+          106.3866
+        ],
         "province": "重庆",
         "start_date": "2025-02-01",
         "end_date": "2025-02-01",
@@ -41,7 +47,10 @@
         "id": "aba-202505",
         "name": "阿坝州 · 爱心石雪山",
         "location": "四川省阿坝藏族羌族自治州",
-        "coords": [31.8994, 102.2216],
+        "coords": [
+          31.8994,
+          102.2216
+        ],
         "province": "四川",
         "start_date": "2025-05-01",
         "end_date": "2025-05-03",
@@ -51,7 +60,10 @@
         "rating_him": 8.1,
         "rating_her": 8.1,
         "review": "雪山日出前的爱心石，成为我们相恋的见证。",
-        "foods": ["藏式火锅", "牦牛肉包子"],
+        "foods": [
+          "藏式火锅",
+          "牦牛肉包子"
+        ],
         "photos": [
           {
             "id": "p1",
@@ -80,7 +92,10 @@
         "id": "leshan-202507",
         "name": "乐山大佛",
         "location": "四川省乐山市",
-        "coords": [29.5447, 103.7703],
+        "coords": [
+          29.5447,
+          103.7703
+        ],
         "province": "四川",
         "start_date": "2025-07-05",
         "end_date": "2025-07-06",
@@ -90,7 +105,10 @@
         "rating_him": 7.6,
         "rating_her": 7.6,
         "review": "大佛脚下的夏日，人很多但心很静。",
-        "foods": ["跷脚牛肉", "甜皮鸭"],
+        "foods": [
+          "跷脚牛肉",
+          "甜皮鸭"
+        ],
         "photos": [
           {
             "id": "p1",
@@ -112,7 +130,10 @@
         "id": "simianshan-202507",
         "name": "四面山",
         "location": "重庆市江津区",
-        "coords": [28.6689, 106.3956],
+        "coords": [
+          28.6689,
+          106.3956
+        ],
         "province": "重庆",
         "start_date": "2025-07-12",
         "end_date": "2025-07-13",
@@ -144,7 +165,10 @@
         "id": "jinfo-202508",
         "name": "金佛山",
         "location": "重庆市南川区",
-        "coords": [28.9981, 107.1578],
+        "coords": [
+          28.9981,
+          107.1578
+        ],
         "province": "重庆",
         "start_date": "2025-08-09",
         "end_date": "2025-08-10",
@@ -154,7 +178,9 @@
         "rating_him": null,
         "rating_her": null,
         "review": "",
-        "foods": ["方竹笋炖鸡"],
+        "foods": [
+          "方竹笋炖鸡"
+        ],
         "photos": [
           {
             "id": "p1",
@@ -190,7 +216,10 @@
         "id": "sanxia-202508",
         "name": "三峡之巅",
         "location": "重庆市奉节县",
-        "coords": [31.0414, 109.4686],
+        "coords": [
+          31.0414,
+          109.4686
+        ],
         "province": "重庆",
         "start_date": "2025-08-17",
         "end_date": "2025-08-18",
@@ -200,7 +229,10 @@
         "rating_him": 7.65,
         "rating_her": 7.65,
         "review": "在夔门之上大笑，长江在脚下奔流。",
-        "foods": ["奉节脐橙", "盬子鸡"],
+        "foods": [
+          "奉节脐橙",
+          "盬子鸡"
+        ],
         "photos": [
           {
             "id": "p1",
@@ -222,7 +254,10 @@
         "id": "daocheng-202510",
         "name": "稻城亚丁",
         "location": "四川省甘孜藏族自治州稻城县",
-        "coords": [28.4246, 100.3181],
+        "coords": [
+          28.4246,
+          100.3181
+        ],
         "province": "四川",
         "start_date": "2025-10-01",
         "end_date": "2025-10-05",
@@ -232,7 +267,11 @@
         "rating_him": 8.55,
         "rating_her": 8.55,
         "review": "雪山日出确认了——这样的风景，就是我们想要的。",
-        "foods": ["青稞饼", "酥油茶", "牦牛肉汤锅"],
+        "foods": [
+          "青稞饼",
+          "酥油茶",
+          "牦牛肉汤锅"
+        ],
         "photos": [
           {
             "id": "p1",
@@ -275,22 +314,43 @@
   },
   "wishlist": {
     "_strategy": {
-      "transport_priority": ["EV自驾（高速）", "飞机", "高铁/火车"],
+      "transport_priority": [
+        "EV自驾（高速）",
+        "飞机",
+        "高铁/火车"
+      ],
       "origin": "重庆大竹林",
-      "origin_coords": [29.6145, 106.4799]
+      "origin_coords": [
+        29.6145,
+        106.4799
+      ]
     },
     "places": [
       {
         "id": "wish-liboshi",
         "name": "荔波小七孔",
         "location": "贵州省黔南布依族苗族自治州荔波县",
-        "coords": [25.4292, 107.8890],
+        "coords": [
+          25.4292,
+          107.889
+        ],
         "province": "贵州",
         "priority": 1,
         "best_season": "夏末秋初（7-9月）",
         "suggested_days": 3,
-        "tags": ["山水", "避暑", "自驾友好"],
-        "sources": ["小红书", "携程", "去哪儿", "抖音", "美团", "高德"],
+        "tags": [
+          "山水",
+          "避暑",
+          "自驾友好"
+        ],
+        "sources": [
+          "小红书",
+          "携程",
+          "去哪儿",
+          "抖音",
+          "美团",
+          "高德"
+        ],
         "transport": {
           "ev_drive": {
             "distance_km": 480,
@@ -315,15 +375,48 @@
               }
             },
             "charging_stations": [
-              {"name": "G75綦江服务区", "type": "国家电网快充", "ports": 8, "distance_from_origin": 90},
-              {"name": "G75遵义服务区", "type": "特来电快充", "ports": 12, "distance_from_origin": 240},
-              {"name": "G75息烽服务区", "type": "国家电网快充", "ports": 6, "distance_from_origin": 340},
-              {"name": "G75都匀服务区", "type": "星星充电快充", "ports": 10, "distance_from_origin": 420},
-              {"name": "荔波县游客中心充电站", "type": "南方电网快充", "ports": 8, "distance_from_origin": 480}
+              {
+                "name": "G75綦江服务区",
+                "type": "国家电网快充",
+                "ports": 8,
+                "distance_from_origin": 90
+              },
+              {
+                "name": "G75遵义服务区",
+                "type": "特来电快充",
+                "ports": 12,
+                "distance_from_origin": 240
+              },
+              {
+                "name": "G75息烽服务区",
+                "type": "国家电网快充",
+                "ports": 6,
+                "distance_from_origin": 340
+              },
+              {
+                "name": "G75都匀服务区",
+                "type": "星星充电快充",
+                "ports": 10,
+                "distance_from_origin": 420
+              },
+              {
+                "name": "荔波县游客中心充电站",
+                "type": "南方电网快充",
+                "ports": 8,
+                "distance_from_origin": 480
+              }
             ],
             "power_consumption": {
-              "sedan_500km_range": {"kwh_per_100km": 15, "total_kwh": 72, "charging_times": 2},
-              "suv_600km_range": {"kwh_per_100km": 20, "total_kwh": 96, "charging_times": 2}
+              "sedan_500km_range": {
+                "kwh_per_100km": 15,
+                "total_kwh": 72,
+                "charging_times": 2
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 20,
+                "total_kwh": 96,
+                "charging_times": 2
+              }
             },
             "cost_estimate": {
               "charging_fee": 95,
@@ -342,23 +435,77 @@
               "peak_season": 950
             },
             "airport_compare": [
-              {"name": "贵阳龙洞堡国际机场(KWE)", "distance_to_scenic": 280, "drive_hours": 3.5, "pros": "航班最多、票价最低", "cons": "到景区还需转乘"},
-              {"name": "荔波机场(LLB)", "distance_to_scenic": 25, "drive_hours": 0.5, "pros": "离景区最近", "cons": "航班极少、票价偏高"},
-              {"name": "都匀东站(高铁替代)", "distance_to_scenic": 80, "drive_hours": 1.2, "pros": "贵南高铁直达、班次多", "cons": "非机场选项"}
+              {
+                "name": "贵阳龙洞堡国际机场(KWE)",
+                "distance_to_scenic": 280,
+                "drive_hours": 3.5,
+                "pros": "航班最多、票价最低",
+                "cons": "到景区还需转乘"
+              },
+              {
+                "name": "荔波机场(LLB)",
+                "distance_to_scenic": 25,
+                "drive_hours": 0.5,
+                "pros": "离景区最近",
+                "cons": "航班极少、票价偏高"
+              },
+              {
+                "name": "都匀东站(高铁替代)",
+                "distance_to_scenic": 80,
+                "drive_hours": 1.2,
+                "pros": "贵南高铁直达、班次多",
+                "cons": "非机场选项"
+              }
             ],
             "airport_to_destination": {
-              "option1": {"name": "高铁转大巴", "detail": "贵阳机场→贵阳北站(地铁30min)→都匀东站(高铁40min ¥70)→小七孔(大巴1.5h ¥35)", "total_time": "3.5h", "total_cost": 120},
-              "option2": {"name": "景区直通车", "detail": "贵阳机场直达小七孔景区专线大巴", "total_time": "4h", "total_cost": 110},
-              "option3": {"name": "包车/网约车", "detail": "贵阳机场直达小七孔东门", "total_time": "3.5h", "total_cost": 600}
+              "option1": {
+                "name": "高铁转大巴",
+                "detail": "贵阳机场→贵阳北站(地铁30min)→都匀东站(高铁40min ¥70)→小七孔(大巴1.5h ¥35)",
+                "total_time": "3.5h",
+                "total_cost": 120
+              },
+              "option2": {
+                "name": "景区直通车",
+                "detail": "贵阳机场直达小七孔景区专线大巴",
+                "total_time": "4h",
+                "total_cost": 110
+              },
+              "option3": {
+                "name": "包车/网约车",
+                "detail": "贵阳机场直达小七孔东门",
+                "total_time": "3.5h",
+                "total_cost": 600
+              }
             }
           },
           "train": {
             "nearest_station": "荔波站",
             "duration": "重庆西 → 荔波站：约3.5h（贵南高铁）",
             "recommended_trains": [
-              {"train_no": "G3591", "depart": "重庆西 08:00", "arrive": "荔波 11:32", "duration": "3h32m", "price_seat2": 298, "price_seat1": 478},
-              {"train_no": "G3711", "depart": "重庆西 12:15", "arrive": "荔波 15:48", "duration": "3h33m", "price_seat2": 298, "price_seat1": 478},
-              {"train_no": "G4167", "depart": "重庆西 17:40", "arrive": "荔波 21:15", "duration": "3h35m", "price_seat2": 298, "price_seat1": 478}
+              {
+                "train_no": "G3591",
+                "depart": "重庆西 08:00",
+                "arrive": "荔波 11:32",
+                "duration": "3h32m",
+                "price_seat2": 298,
+                "price_seat1": 478
+              },
+              {
+                "train_no": "G3711",
+                "depart": "重庆西 12:15",
+                "arrive": "荔波 15:48",
+                "duration": "3h33m",
+                "price_seat2": 298,
+                "price_seat1": 478
+              },
+              {
+                "train_no": "G4167",
+                "depart": "重庆西 17:40",
+                "arrive": "荔波 21:15",
+                "duration": "3h35m",
+                "price_seat2": 298,
+                "price_seat1": 478
+              }
             ],
             "station_transfer": {
               "bus": "荔波站11路公交直达小七孔东门，¥5，车程20min",
@@ -371,14 +518,70 @@
         "guides": [
           {
             "must_visit": [
-              {"rank": 1, "name": "卧龙潭", "ticket": "含在联票内", "open_time": "07:30-17:00", "reason": "蓝绿宝石色湖面，景区颜值天花板，瀑布漂流起点", "spend_time": "45min"},
-              {"rank": 2, "name": "小七孔古桥", "ticket": "含在联票内", "open_time": "07:30-17:00", "reason": "建于1836年清道光年间，景区地标，响水河水映七孔倒影", "spend_time": "40min"},
-              {"rank": 3, "name": "68级跌水瀑布", "ticket": "含在联票内", "open_time": "07:30-17:00", "reason": "层层叠叠瀑布群，响水河核心景观，可涉水", "spend_time": "50min"},
-              {"rank": 4, "name": "翠谷瀑布", "ticket": "含在联票内", "open_time": "07:30-17:00", "reason": "《跟着贝尔去冒险》取景地，山间飞瀑如白练", "spend_time": "30min"},
-              {"rank": 5, "name": "水上森林", "ticket": "含在联票内", "open_time": "07:30-17:00", "reason": "喀斯特岩溶水上森林，可穿溯溪鞋踩水穿行", "spend_time": "60min"},
-              {"rank": 6, "name": "鸳鸯湖", "ticket": "含联票，划船¥30-50/人", "open_time": "08:00-16:30", "reason": "两棵参天古树环抱湖泊，划船穿越水上迷宫", "spend_time": "60min"},
-              {"rank": 7, "name": "拉雅瀑布", "ticket": "含在联票内", "open_time": "07:30-17:00", "reason": "瀑高30米，可从瀑布后方穿过，清凉扑面", "spend_time": "20min"},
-              {"rank": 8, "name": "大七孔天生桥", "ticket": "含大小七孔联票", "open_time": "07:30-16:30", "reason": "东方凯旋门，高60米的喀斯特天然石桥", "spend_time": "90min"}
+              {
+                "rank": 1,
+                "name": "卧龙潭",
+                "ticket": "含在联票内",
+                "open_time": "07:30-17:00",
+                "reason": "蓝绿宝石色湖面，景区颜值天花板，瀑布漂流起点",
+                "spend_time": "45min"
+              },
+              {
+                "rank": 2,
+                "name": "小七孔古桥",
+                "ticket": "含在联票内",
+                "open_time": "07:30-17:00",
+                "reason": "建于1836年清道光年间，景区地标，响水河水映七孔倒影",
+                "spend_time": "40min"
+              },
+              {
+                "rank": 3,
+                "name": "68级跌水瀑布",
+                "ticket": "含在联票内",
+                "open_time": "07:30-17:00",
+                "reason": "层层叠叠瀑布群，响水河核心景观，可涉水",
+                "spend_time": "50min"
+              },
+              {
+                "rank": 4,
+                "name": "翠谷瀑布",
+                "ticket": "含在联票内",
+                "open_time": "07:30-17:00",
+                "reason": "《跟着贝尔去冒险》取景地，山间飞瀑如白练",
+                "spend_time": "30min"
+              },
+              {
+                "rank": 5,
+                "name": "水上森林",
+                "ticket": "含在联票内",
+                "open_time": "07:30-17:00",
+                "reason": "喀斯特岩溶水上森林，可穿溯溪鞋踩水穿行",
+                "spend_time": "60min"
+              },
+              {
+                "rank": 6,
+                "name": "鸳鸯湖",
+                "ticket": "含联票，划船¥30-50/人",
+                "open_time": "08:00-16:30",
+                "reason": "两棵参天古树环抱湖泊，划船穿越水上迷宫",
+                "spend_time": "60min"
+              },
+              {
+                "rank": 7,
+                "name": "拉雅瀑布",
+                "ticket": "含在联票内",
+                "open_time": "07:30-17:00",
+                "reason": "瀑高30米，可从瀑布后方穿过，清凉扑面",
+                "spend_time": "20min"
+              },
+              {
+                "rank": 8,
+                "name": "大七孔天生桥",
+                "ticket": "含大小七孔联票",
+                "open_time": "07:30-16:30",
+                "reason": "东方凯旋门，高60米的喀斯特天然石桥",
+                "spend_time": "90min"
+              }
             ],
             "itinerary": {
               "Day1": [
@@ -418,40 +621,168 @@
               "雨季（6-7月）河水变黄，最佳看水是8-9月雨季刚过水量充足且清澈"
             ],
             "food_top5": [
-              {"rank": 1, "name": "荔波酸汤鱼", "avg_price_per_person": 85, "description": "红酸汤+稻花鱼，贵州招牌，漳江夜食街的老彭酸汤鱼口碑最高"},
-              {"rank": 2, "name": "杨梅汤+杨梅冰", "avg_price_per_person": 15, "description": "荔波特色冰饮，酸甜解暑，老街口桥头老字号必喝"},
-              {"rank": 3, "name": "竹筒饭", "avg_price_per_person": 25, "description": "香糯米+腊肉丁装鲜竹筒蒸制，竹香四溢"},
-              {"rank": 4, "name": "豆花烤鱼", "avg_price_per_person": 70, "description": "烤鲤鱼铺嫩豆花+辣椒调料，荔波宵夜首选"},
-              {"rank": 5, "name": "布依族糯米饭", "avg_price_per_person": 20, "description": "五色花糯米饭配腌菜腊肉，民族特色主食"}
+              {
+                "rank": 1,
+                "name": "荔波酸汤鱼",
+                "avg_price_per_person": 85,
+                "description": "红酸汤+稻花鱼，贵州招牌，漳江夜食街的老彭酸汤鱼口碑最高"
+              },
+              {
+                "rank": 2,
+                "name": "杨梅汤+杨梅冰",
+                "avg_price_per_person": 15,
+                "description": "荔波特色冰饮，酸甜解暑，老街口桥头老字号必喝"
+              },
+              {
+                "rank": 3,
+                "name": "竹筒饭",
+                "avg_price_per_person": 25,
+                "description": "香糯米+腊肉丁装鲜竹筒蒸制，竹香四溢"
+              },
+              {
+                "rank": 4,
+                "name": "豆花烤鱼",
+                "avg_price_per_person": 70,
+                "description": "烤鲤鱼铺嫩豆花+辣椒调料，荔波宵夜首选"
+              },
+              {
+                "rank": 5,
+                "name": "布依族糯米饭",
+                "avg_price_per_person": 20,
+                "description": "五色花糯米饭配腌菜腊肉，民族特色主食"
+              }
             ],
             "budget": {
               "transport_ev_self_drive": 650,
               "transport_flight_per_person": 800,
               "transport_train_per_person": 350,
-              "accommodation_per_night": {"budget": 200, "mid_range": 400, "luxury": 800},
-              "food_per_day_per_person": {"budget": 80, "mid_range": 150, "luxury": 250},
-              "tickets_per_person": {"联票旺季含观光车": 170, "鸳鸯湖划船": 40, "卧龙潭漂流": 50, "合计": 260},
+              "accommodation_per_night": {
+                "budget": 200,
+                "mid_range": 400,
+                "luxury": 800
+              },
+              "food_per_day_per_person": {
+                "budget": 80,
+                "mid_range": 150,
+                "luxury": 250
+              },
+              "tickets_per_person": {
+                "联票旺季含观光车": 170,
+                "鸳鸯湖划船": 40,
+                "卧龙潭漂流": 50,
+                "合计": 260
+              },
               "budget_2people_3days": {
-                "ev_drive": {"交通": 650, "住宿": 800, "餐饮": 600, "门票": 520, "小计": 2570, "弹性20%": 514, "总计": 3084},
-                "flight": {"交通": 1600, "住宿": 800, "餐饮": 600, "门票": 520, "小计": 3520, "弹性20%": 704, "总计": 4224},
-                "train": {"交通": 700, "住宿": 800, "餐饮": 600, "门票": 520, "小计": 2620, "弹性20%": 524, "总计": 3144}
+                "ev_drive": {
+                  "交通": 650,
+                  "住宿": 800,
+                  "餐饮": 600,
+                  "门票": 520,
+                  "小计": 2570,
+                  "弹性20%": 514,
+                  "总计": 3084
+                },
+                "flight": {
+                  "交通": 1600,
+                  "住宿": 800,
+                  "餐饮": 600,
+                  "门票": 520,
+                  "小计": 3520,
+                  "弹性20%": 704,
+                  "总计": 4224
+                },
+                "train": {
+                  "交通": 700,
+                  "住宿": 800,
+                  "餐饮": 600,
+                  "门票": 520,
+                  "小计": 2620,
+                  "弹性20%": 524,
+                  "总计": 3144
+                }
               }
             },
             "photo_guide": [
-              {"spot": "卧龙潭观景台", "best_time": "08:00-09:30", "tips": "无风水面如镜，蓝绿渐变倒影最纯净，站栈道中段俯拍全景"},
-              {"spot": "小七孔古桥", "best_time": "16:30-17:30", "tips": "夕阳西下金光打桥面，桥下游步道拍桥+水面倒影全景"},
-              {"spot": "68级跌水瀑布", "best_time": "10:00-11:00", "tips": "慢门拍流水丝滑感，站中段观景台侧拍层层瀑布"},
-              {"spot": "翠谷瀑布", "best_time": "14:00-15:00", "tips": "低角度仰拍瀑布+山林，人物站瀑下方显气势"},
-              {"spot": "水上森林", "best_time": "全天", "tips": "人物踩水抓拍，林间丁达尔光+水面反射出片"},
-              {"spot": "鸳鸯湖", "best_time": "09:00-10:30", "tips": "船头拍双树抱湖，晨雾未散更梦幻"}
+              {
+                "spot": "卧龙潭观景台",
+                "best_time": "08:00-09:30",
+                "tips": "无风水面如镜，蓝绿渐变倒影最纯净，站栈道中段俯拍全景"
+              },
+              {
+                "spot": "小七孔古桥",
+                "best_time": "16:30-17:30",
+                "tips": "夕阳西下金光打桥面，桥下游步道拍桥+水面倒影全景"
+              },
+              {
+                "spot": "68级跌水瀑布",
+                "best_time": "10:00-11:00",
+                "tips": "慢门拍流水丝滑感，站中段观景台侧拍层层瀑布"
+              },
+              {
+                "spot": "翠谷瀑布",
+                "best_time": "14:00-15:00",
+                "tips": "低角度仰拍瀑布+山林，人物站瀑下方显气势"
+              },
+              {
+                "spot": "水上森林",
+                "best_time": "全天",
+                "tips": "人物踩水抓拍，林间丁达尔光+水面反射出片"
+              },
+              {
+                "spot": "鸳鸯湖",
+                "best_time": "09:00-10:30",
+                "tips": "船头拍双树抱湖，晨雾未散更梦幻"
+              }
             ],
             "source_consensus": {
-              "小红书": {"top3": ["西门进下坡省力路线", "卧龙潭漂流必体验", "古桥傍晚拍倒影"], "debate": "水上森林要不要带换洗衣物？6成人主张带，4人认为没必要"},
-              "携程": {"top3": ["联票玩两天含大七孔", "提前3天预约限流", "旺季8点前入园错峰"], "debate": "荔波住县城还是景区旁？55%住县城方便吃，45%景区旁省通勤"},
-              "去哪儿": {"top3": ["8-9月水最清澈", "自驾EV充电方便", "茂兰可做一日延伸"], "debate": "鸳鸯湖划船值不值？6成人必去，4人说风景普通"},
-              "抖音": {"top3": ["穿亮色裙拍古桥", "水上森林踩水视频爆火", "酸汤鱼探店打卡"], "debate": "要不要去瑶山古寨？50%推荐民族体验，50%说商业"},
-              "美团": {"top3": ["170元联票性价比最高", "观光车40元必买", "古城民宿¥200左右"], "debate": "是否需要跟团？6成自驾自由行，4成省心选小团"},
-              "高德": {"top3": ["景区停车场车位充足", "都匀到荔波高速畅通", "导航西门而非东门"], "debate": "茂兰保护区值不值得去？55%原始森林爱好者推荐，45%说路难走"}
+              "小红书": {
+                "top3": [
+                  "西门进下坡省力路线",
+                  "卧龙潭漂流必体验",
+                  "古桥傍晚拍倒影"
+                ],
+                "debate": "水上森林要不要带换洗衣物？6成人主张带，4人认为没必要"
+              },
+              "携程": {
+                "top3": [
+                  "联票玩两天含大七孔",
+                  "提前3天预约限流",
+                  "旺季8点前入园错峰"
+                ],
+                "debate": "荔波住县城还是景区旁？55%住县城方便吃，45%景区旁省通勤"
+              },
+              "去哪儿": {
+                "top3": [
+                  "8-9月水最清澈",
+                  "自驾EV充电方便",
+                  "茂兰可做一日延伸"
+                ],
+                "debate": "鸳鸯湖划船值不值？6成人必去，4人说风景普通"
+              },
+              "抖音": {
+                "top3": [
+                  "穿亮色裙拍古桥",
+                  "水上森林踩水视频爆火",
+                  "酸汤鱼探店打卡"
+                ],
+                "debate": "要不要去瑶山古寨？50%推荐民族体验，50%说商业"
+              },
+              "美团": {
+                "top3": [
+                  "170元联票性价比最高",
+                  "观光车40元必买",
+                  "古城民宿¥200左右"
+                ],
+                "debate": "是否需要跟团？6成自驾自由行，4成省心选小团"
+              },
+              "高德": {
+                "top3": [
+                  "景区停车场车位充足",
+                  "都匀到荔波高速畅通",
+                  "导航西门而非东门"
+                ],
+                "debate": "茂兰保护区值不值得去？55%原始森林爱好者推荐，45%说路难走"
+              }
             }
           }
         ],
@@ -463,13 +794,27 @@
         "id": "wish-jiuzhaigou",
         "name": "九寨沟",
         "location": "四川省阿坝藏族羌族自治州九寨沟县",
-        "coords": [33.0612, 103.9192],
+        "coords": [
+          33.0612,
+          103.9192
+        ],
         "province": "四川",
-        "priority": 1,
+        "priority": 2,
         "best_season": "秋季（10月中-11月初，彩林）/ 冬季（12-2月，蓝冰）",
         "suggested_days": 4,
-        "tags": ["世界遗产", "水景极致", "季节性强"],
-        "sources": ["小红书", "携程", "去哪儿", "抖音", "美团", "高德"],
+        "tags": [
+          "世界遗产",
+          "水景极致",
+          "季节性强"
+        ],
+        "sources": [
+          "小红书",
+          "携程",
+          "去哪儿",
+          "抖音",
+          "美团",
+          "高德"
+        ],
         "transport": {
           "ev_drive": {
             "distance_km": 620,
@@ -494,15 +839,48 @@
               }
             },
             "charging_stations": [
-              {"name": "G93遂宁服务区", "type": "国家电网快充", "ports": 10, "distance_from_origin": 170},
-              {"name": "成都绕城东服务区", "type": "特来电快充", "ports": 16, "distance_from_origin": 310},
-              {"name": "G5绵阳服务区", "type": "星星充电快充", "ports": 12, "distance_from_origin": 430},
-              {"name": "平武县充电站", "type": "国家电网快充", "ports": 8, "distance_from_origin": 540},
-              {"name": "九寨沟县游客中心充电站", "type": "国家电网快充", "ports": 10, "distance_from_origin": 620}
+              {
+                "name": "G93遂宁服务区",
+                "type": "国家电网快充",
+                "ports": 10,
+                "distance_from_origin": 170
+              },
+              {
+                "name": "成都绕城东服务区",
+                "type": "特来电快充",
+                "ports": 16,
+                "distance_from_origin": 310
+              },
+              {
+                "name": "G5绵阳服务区",
+                "type": "星星充电快充",
+                "ports": 12,
+                "distance_from_origin": 430
+              },
+              {
+                "name": "平武县充电站",
+                "type": "国家电网快充",
+                "ports": 8,
+                "distance_from_origin": 540
+              },
+              {
+                "name": "九寨沟县游客中心充电站",
+                "type": "国家电网快充",
+                "ports": 10,
+                "distance_from_origin": 620
+              }
             ],
             "power_consumption": {
-              "sedan_500km_range": {"kwh_per_100km": 16, "total_kwh": 99, "charging_times": 3},
-              "suv_600km_range": {"kwh_per_100km": 22, "total_kwh": 136, "charging_times": 3}
+              "sedan_500km_range": {
+                "kwh_per_100km": 16,
+                "total_kwh": 99,
+                "charging_times": 3
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 22,
+                "total_kwh": 136,
+                "charging_times": 3
+              }
             },
             "cost_estimate": {
               "charging_fee": 140,
@@ -521,22 +899,69 @@
               "peak_season": 1800
             },
             "airport_compare": [
-              {"name": "九寨黄龙机场(JZH)", "distance_to_scenic": 88, "drive_hours": 1.5, "pros": "离九寨沟最近，海拔3448m", "cons": "高原机场易因天气取消，票价波动大"},
-              {"name": "成都双流/天府机场", "distance_to_scenic": 420, "drive_hours": 6, "pros": "航班最多票价便宜，高铁转黄龙九寨站", "cons": "到景区还需6h以上"},
-              {"name": "绵阳南郊机场(MIG)", "distance_to_scenic": 340, "drive_hours": 5, "pros": "离九寨比成都近，中转选项", "cons": "航班少"}
+              {
+                "name": "九寨黄龙机场(JZH)",
+                "distance_to_scenic": 88,
+                "drive_hours": 1.5,
+                "pros": "离九寨沟最近，海拔3448m",
+                "cons": "高原机场易因天气取消，票价波动大"
+              },
+              {
+                "name": "成都双流/天府机场",
+                "distance_to_scenic": 420,
+                "drive_hours": 6,
+                "pros": "航班最多票价便宜，高铁转黄龙九寨站",
+                "cons": "到景区还需6h以上"
+              },
+              {
+                "name": "绵阳南郊机场(MIG)",
+                "distance_to_scenic": 340,
+                "drive_hours": 5,
+                "pros": "离九寨比成都近，中转选项",
+                "cons": "航班少"
+              }
             ],
             "airport_to_destination": {
-              "option1": {"name": "机场专线大巴", "detail": "JZH机场→九寨沟口漳扎镇，官方大巴约1.5h", "total_time": "1.5h", "total_cost": 50},
-              "option2": {"name": "拼车/包车", "detail": "机场4人拼车直达景区酒店", "total_time": "1.5h", "total_cost": 80},
-              "option3": {"name": "高铁黄龙九寨站", "detail": "成都东→黄龙九寨站(高铁2h ¥128)→九寨沟口大巴(1.5h ¥50)", "total_time": "5h", "total_cost": 178}
+              "option1": {
+                "name": "机场专线大巴",
+                "detail": "JZH机场→九寨沟口漳扎镇，官方大巴约1.5h",
+                "total_time": "1.5h",
+                "total_cost": 50
+              },
+              "option2": {
+                "name": "拼车/包车",
+                "detail": "机场4人拼车直达景区酒店",
+                "total_time": "1.5h",
+                "total_cost": 80
+              },
+              "option3": {
+                "name": "高铁黄龙九寨站",
+                "detail": "成都东→黄龙九寨站(高铁2h ¥128)→九寨沟口大巴(1.5h ¥50)",
+                "total_time": "5h",
+                "total_cost": 178
+              }
             }
           },
           "train": {
             "nearest_station": "黄龙九寨站（川青铁路）",
             "duration": "重庆西 → 成都东 → 黄龙九寨站：约4.5h（中转）",
             "recommended_trains": [
-              {"train_no": "G8601+C6005", "depart": "重庆西 07:15→成都东 08:48→黄龙九寨 11:40", "arrive": "黄龙九寨 11:40", "duration": "4h25m", "price_seat2": 274, "transfer": "成都东中转40min"},
-              {"train_no": "G8615+C6009", "depart": "重庆西 10:00→成都东11:35→黄龙九寨14:28", "arrive": "黄龙九寨 14:28", "duration": "4h28m", "price_seat2": 274, "transfer": "成都东中转35min"}
+              {
+                "train_no": "G8601+C6005",
+                "depart": "重庆西 07:15→成都东 08:48→黄龙九寨 11:40",
+                "arrive": "黄龙九寨 11:40",
+                "duration": "4h25m",
+                "price_seat2": 274,
+                "transfer": "成都东中转40min"
+              },
+              {
+                "train_no": "G8615+C6009",
+                "depart": "重庆西 10:00→成都东11:35→黄龙九寨14:28",
+                "arrive": "黄龙九寨 14:28",
+                "duration": "4h28m",
+                "price_seat2": 274,
+                "transfer": "成都东中转35min"
+              }
             ],
             "station_transfer": {
               "bus": "黄龙九寨站→九寨沟口漳扎镇旅游专线大巴，¥50，车程约1.5h",
@@ -549,15 +974,78 @@
         "guides": [
           {
             "must_visit": [
-              {"rank": 1, "name": "五花海", "ticket": "含在景区联票内", "open_time": "旺季07:30-17:00 淡季08:30-14:00", "reason": "九寨沟颜值天花板，湖水五彩斑斓如上帝调色盘", "spend_time": "60min"},
-              {"rank": 2, "name": "诺日朗瀑布", "ticket": "含在景区联票内", "open_time": "旺季07:30-17:00 淡季08:30-14:00", "reason": "中国最宽高山钙华瀑布，宽320米，86版西游记取景", "spend_time": "40min"},
-              {"rank": 3, "name": "黄龙五彩池", "ticket": "旺季¥170 淡季¥60", "open_time": "旺季08:00-17:30 淡季09:00-16:00", "reason": "黄龙顶流，693个钙化彩池群，海拔3576m", "spend_time": "90min"},
-              {"rank": 4, "name": "珍珠滩瀑布", "ticket": "含在景区联票内", "open_time": "旺季07:30-17:00", "reason": "86版西游记片尾取景，水流如珍珠碎银滚落", "spend_time": "45min"},
-              {"rank": 5, "name": "长海", "ticket": "含在景区联票内", "open_time": "旺季07:30-17:00", "reason": "九寨沟最大最深海子，群山环抱雪山倒映", "spend_time": "30min"},
-              {"rank": 6, "name": "镜海", "ticket": "含在景区联票内", "open_time": "旺季07:30-17:00", "reason": "风平浪静时完美倒映山林天空，镜像奇观", "spend_time": "30min"},
-              {"rank": 7, "name": "五彩池（则查洼沟）", "ticket": "含在景区联票内", "open_time": "旺季07:30-17:00", "reason": "小巧精致池水澄澈，四季不冻", "spend_time": "20min"},
-              {"rank": 8, "name": "树正群海", "ticket": "含在景区联票内", "open_time": "旺季07:30-17:00", "reason": "19个湖泊层层叠叠，树在水中生，水在林间流", "spend_time": "50min"},
-              {"rank": 9, "name": "黄龙争艳池", "ticket": "含在黄龙门票内", "open_time": "旺季08:00-17:30", "reason": "黄龙第二大彩池群，658个彩池色彩缤纷", "spend_time": "40min"}
+              {
+                "rank": 1,
+                "name": "五花海",
+                "ticket": "含在景区联票内",
+                "open_time": "旺季07:30-17:00 淡季08:30-14:00",
+                "reason": "九寨沟颜值天花板，湖水五彩斑斓如上帝调色盘",
+                "spend_time": "60min"
+              },
+              {
+                "rank": 2,
+                "name": "诺日朗瀑布",
+                "ticket": "含在景区联票内",
+                "open_time": "旺季07:30-17:00 淡季08:30-14:00",
+                "reason": "中国最宽高山钙华瀑布，宽320米，86版西游记取景",
+                "spend_time": "40min"
+              },
+              {
+                "rank": 3,
+                "name": "黄龙五彩池",
+                "ticket": "旺季¥170 淡季¥60",
+                "open_time": "旺季08:00-17:30 淡季09:00-16:00",
+                "reason": "黄龙顶流，693个钙化彩池群，海拔3576m",
+                "spend_time": "90min"
+              },
+              {
+                "rank": 4,
+                "name": "珍珠滩瀑布",
+                "ticket": "含在景区联票内",
+                "open_time": "旺季07:30-17:00",
+                "reason": "86版西游记片尾取景，水流如珍珠碎银滚落",
+                "spend_time": "45min"
+              },
+              {
+                "rank": 5,
+                "name": "长海",
+                "ticket": "含在景区联票内",
+                "open_time": "旺季07:30-17:00",
+                "reason": "九寨沟最大最深海子，群山环抱雪山倒映",
+                "spend_time": "30min"
+              },
+              {
+                "rank": 6,
+                "name": "镜海",
+                "ticket": "含在景区联票内",
+                "open_time": "旺季07:30-17:00",
+                "reason": "风平浪静时完美倒映山林天空，镜像奇观",
+                "spend_time": "30min"
+              },
+              {
+                "rank": 7,
+                "name": "五彩池（则查洼沟）",
+                "ticket": "含在景区联票内",
+                "open_time": "旺季07:30-17:00",
+                "reason": "小巧精致池水澄澈，四季不冻",
+                "spend_time": "20min"
+              },
+              {
+                "rank": 8,
+                "name": "树正群海",
+                "ticket": "含在景区联票内",
+                "open_time": "旺季07:30-17:00",
+                "reason": "19个湖泊层层叠叠，树在水中生，水在林间流",
+                "spend_time": "50min"
+              },
+              {
+                "rank": 9,
+                "name": "黄龙争艳池",
+                "ticket": "含在黄龙门票内",
+                "open_time": "旺季08:00-17:30",
+                "reason": "黄龙第二大彩池群，658个彩池色彩缤纷",
+                "spend_time": "40min"
+              }
             ],
             "itinerary": {
               "Day1": [
@@ -602,40 +1090,168 @@
               "冬季11月后部分海子结冰，树正沟栈道关闭，景区执行淡季轮休政策"
             ],
             "food_top5": [
-              {"rank": 1, "name": "藏式土火锅", "avg_price_per_person": 120, "description": "铜锅炭火，牦牛肉+藏香猪+菌菇拼盘，漳扎镇央宗藏家宴口碑最好"},
-              {"rank": 2, "name": "牦牛肉串", "avg_price_per_person": 40, "description": "现切现烤牦牛肉，撒藏地辣椒，边坝老街夜市10元3串"},
-              {"rank": 3, "name": "青稞饼+酥油茶", "avg_price_per_person": 30, "description": "青稞饼外脆里软配咸香酥油茶，缓解高反绝配，臧家早餐标配"},
-              {"rank": 4, "name": "洋芋糍粑", "avg_price_per_person": 25, "description": "九寨沟特产，土豆捣泥蘸蜂蜜或酸菜汤，Q弹入味"},
-              {"rank": 5, "name": "酸菜面块", "avg_price_per_person": 35, "description": "藏式传统主食，酸菜汤底扯面块，汤鲜开胃"}
+              {
+                "rank": 1,
+                "name": "藏式土火锅",
+                "avg_price_per_person": 120,
+                "description": "铜锅炭火，牦牛肉+藏香猪+菌菇拼盘，漳扎镇央宗藏家宴口碑最好"
+              },
+              {
+                "rank": 2,
+                "name": "牦牛肉串",
+                "avg_price_per_person": 40,
+                "description": "现切现烤牦牛肉，撒藏地辣椒，边坝老街夜市10元3串"
+              },
+              {
+                "rank": 3,
+                "name": "青稞饼+酥油茶",
+                "avg_price_per_person": 30,
+                "description": "青稞饼外脆里软配咸香酥油茶，缓解高反绝配，臧家早餐标配"
+              },
+              {
+                "rank": 4,
+                "name": "洋芋糍粑",
+                "avg_price_per_person": 25,
+                "description": "九寨沟特产，土豆捣泥蘸蜂蜜或酸菜汤，Q弹入味"
+              },
+              {
+                "rank": 5,
+                "name": "酸菜面块",
+                "avg_price_per_person": 35,
+                "description": "藏式传统主食，酸菜汤底扯面块，汤鲜开胃"
+              }
             ],
             "budget": {
               "transport_ev_self_drive": 980,
               "transport_flight_per_person": 1300,
               "transport_train_per_person": 450,
-              "accommodation_per_night": {"budget": 250, "mid_range": 500, "luxury": 1500},
-              "food_per_day_per_person": {"budget": 100, "mid_range": 200, "luxury": 350},
-              "tickets_per_person": {"九寨旺季门票190+观光车90": 280, "黄龙旺季门票170+索道80": 250, "千古情演出280": 280, "合计": 810},
+              "accommodation_per_night": {
+                "budget": 250,
+                "mid_range": 500,
+                "luxury": 1500
+              },
+              "food_per_day_per_person": {
+                "budget": 100,
+                "mid_range": 200,
+                "luxury": 350
+              },
+              "tickets_per_person": {
+                "九寨旺季门票190+观光车90": 280,
+                "黄龙旺季门票170+索道80": 250,
+                "千古情演出280": 280,
+                "合计": 810
+              },
               "budget_2people_4days": {
-                "ev_drive": {"交通": 980, "住宿": 1500, "餐饮": 1200, "门票": 1620, "小计": 5300, "弹性20%": 1060, "总计": 6360},
-                "flight": {"交通": 2600, "住宿": 1500, "餐饮": 1200, "门票": 1620, "小计": 6920, "弹性20%": 1384, "总计": 8304},
-                "train": {"交通": 900, "住宿": 1500, "餐饮": 1200, "门票": 1620, "小计": 5220, "弹性20%": 1044, "总计": 6264}
+                "ev_drive": {
+                  "交通": 980,
+                  "住宿": 1500,
+                  "餐饮": 1200,
+                  "门票": 1620,
+                  "小计": 5300,
+                  "弹性20%": 1060,
+                  "总计": 6360
+                },
+                "flight": {
+                  "交通": 2600,
+                  "住宿": 1500,
+                  "餐饮": 1200,
+                  "门票": 1620,
+                  "小计": 6920,
+                  "弹性20%": 1384,
+                  "总计": 8304
+                },
+                "train": {
+                  "交通": 900,
+                  "住宿": 1500,
+                  "餐饮": 1200,
+                  "门票": 1620,
+                  "小计": 5220,
+                  "弹性20%": 1044,
+                  "总计": 6264
+                }
               }
             },
             "photo_guide": [
-              {"spot": "五花海虎嘴崖观景台", "best_time": "09:30-10:30", "tips": "俯拍五花海全景，光线穿林打湖面显五彩，是九寨明信片机位"},
-              {"spot": "诺日朗瀑布观景台", "best_time": "10:00-11:00（有彩虹概率高）", "tips": "广角镜头拍320米宽全景，清晨水雾+阳光易现彩虹"},
-              {"spot": "镜海", "best_time": "07:00-08:00", "tips": "无风早拍完美倒影，人物剪影+镜像构图，9点后必起风"},
-              {"spot": "黄龙五彩池", "best_time": "10:00-11:00", "tips": "阳光直射彩池颜色最饱和，从观景台居高临下拍池群弧线"},
-              {"spot": "珍珠滩瀑布", "best_time": "14:00-15:00", "tips": "慢门拍水流丝绸感，阳光打水珠拍星光效果"},
-              {"spot": "长海", "best_time": "16:00-17:00", "tips": "侧光拍雪山倒映+独臂老人松，傍晚金色山尖"}
+              {
+                "spot": "五花海虎嘴崖观景台",
+                "best_time": "09:30-10:30",
+                "tips": "俯拍五花海全景，光线穿林打湖面显五彩，是九寨明信片机位"
+              },
+              {
+                "spot": "诺日朗瀑布观景台",
+                "best_time": "10:00-11:00（有彩虹概率高）",
+                "tips": "广角镜头拍320米宽全景，清晨水雾+阳光易现彩虹"
+              },
+              {
+                "spot": "镜海",
+                "best_time": "07:00-08:00",
+                "tips": "无风早拍完美倒影，人物剪影+镜像构图，9点后必起风"
+              },
+              {
+                "spot": "黄龙五彩池",
+                "best_time": "10:00-11:00",
+                "tips": "阳光直射彩池颜色最饱和，从观景台居高临下拍池群弧线"
+              },
+              {
+                "spot": "珍珠滩瀑布",
+                "best_time": "14:00-15:00",
+                "tips": "慢门拍水流丝绸感，阳光打水珠拍星光效果"
+              },
+              {
+                "spot": "长海",
+                "best_time": "16:00-17:00",
+                "tips": "侧光拍雪山倒映+独臂老人松，傍晚金色山尖"
+              }
             ],
             "source_consensus": {
-              "小红书": {"top3": ["五花海虎嘴崖全景必拍", "黄龙索道上步行下省力", "镜海8点前无风拍倒影"], "debate": "要不要住山顶？6成说没必要沟外住性价比高，4成说赶时间可以"},
-              "携程": {"top3": ["彩林季10.15-11.5最美", "门票提前10天官网约", "九寨+黄龙搭配4天正好"], "debate": "千古情演出值不值？55%推荐藏文化体验，45%说票价不值"},
-              "去哪儿": {"top3": ["10月中下旬彩林最佳", "EV自驾平武充满电进山", "川青铁路黄龙九寨站开通了"], "debate": "冬季去值不值？6成蓝冰雪景绝了，4成海子冻住风景打折"},
-              "抖音": {"top3": ["诺日朗瀑布86西游记打卡", "穿红裙蓝湖拍大片", "藏服写真景区门口¥300起"], "debate": "藏服写真必拍吗？50%拍了出片，50%说流水线不值"},
-              "美团": {"top3": ["九寨280+黄龙250联票省钱", "漳扎镇民宿¥300左右", "牦牛肉火锅点评榜必吃"], "debate": "要不要跟团？55%自由行更灵活，45%含交通门票省心"},
-              "高德": {"top3": ["景区P2停车场距入口近", "平武到九寨冬季需防滑链", "黄龙九寨站出口有景区直通车"], "debate": "自驾还是高铁？6成自驾灵活，4成高铁安全省精力"}
+              "小红书": {
+                "top3": [
+                  "五花海虎嘴崖全景必拍",
+                  "黄龙索道上步行下省力",
+                  "镜海8点前无风拍倒影"
+                ],
+                "debate": "要不要住山顶？6成说没必要沟外住性价比高，4成说赶时间可以"
+              },
+              "携程": {
+                "top3": [
+                  "彩林季10.15-11.5最美",
+                  "门票提前10天官网约",
+                  "九寨+黄龙搭配4天正好"
+                ],
+                "debate": "千古情演出值不值？55%推荐藏文化体验，45%说票价不值"
+              },
+              "去哪儿": {
+                "top3": [
+                  "10月中下旬彩林最佳",
+                  "EV自驾平武充满电进山",
+                  "川青铁路黄龙九寨站开通了"
+                ],
+                "debate": "冬季去值不值？6成蓝冰雪景绝了，4成海子冻住风景打折"
+              },
+              "抖音": {
+                "top3": [
+                  "诺日朗瀑布86西游记打卡",
+                  "穿红裙蓝湖拍大片",
+                  "藏服写真景区门口¥300起"
+                ],
+                "debate": "藏服写真必拍吗？50%拍了出片，50%说流水线不值"
+              },
+              "美团": {
+                "top3": [
+                  "九寨280+黄龙250联票省钱",
+                  "漳扎镇民宿¥300左右",
+                  "牦牛肉火锅点评榜必吃"
+                ],
+                "debate": "要不要跟团？55%自由行更灵活，45%含交通门票省心"
+              },
+              "高德": {
+                "top3": [
+                  "景区P2停车场距入口近",
+                  "平武到九寨冬季需防滑链",
+                  "黄龙九寨站出口有景区直通车"
+                ],
+                "debate": "自驾还是高铁？6成自驾灵活，4成高铁安全省精力"
+              }
             }
           }
         ],
@@ -644,16 +1260,446 @@
         "visited_ref": null
       },
       {
+        "id": "wish-lixiaolu",
+        "name": "理小路 · 越野穿越（理县→小金）",
+        "location": "四川阿坝州 · 理县—四姑娘山",
+        "cover": "",
+        "priority": 3,
+        "best_season": "夏（6-8 月，漫山野花/溪流碧绿）/ 秋（10 月，彩林斑斓）",
+        "suggested_days": 4,
+        "tags": [
+          "川西硬核穿越",
+          "无人区风光",
+          "熊猫大道支线"
+        ],
+        "sources": [
+          "小红书",
+          "抖音",
+          "美团",
+          "高德",
+          "去哪儿",
+          "携程"
+        ],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 580,
+            "drive_hours": 9,
+            "route": "重庆 → 成都 → 都江堰 → 汶川 → 理县 → 米亚罗 → 理小路垭口 → 四姑娘山镇 → 小金 → 重庆（环线不走回头）",
+            "route_compare": {
+              "route_a": {
+                "name": "理县穿→四姑娘山（正向经典）",
+                "distance_km": 580,
+                "drive_hours": 9,
+                "toll_fee": 260,
+                "pros": "从缓到难，逐步适应海拔，理县补给点多",
+                "cons": "下山路多需检查刹车"
+              },
+              "route_b": {
+                "name": "四姑娘山穿→理县（反向更虐）",
+                "distance_km": 600,
+                "drive_hours": 9.5,
+                "toll_fee": 270,
+                "pros": "直面大坡考验四驱，体验更强",
+                "cons": "补给少海拔骤升易高反"
+              }
+            },
+            "charging_stations": [
+              {
+                "name": "G93 铜梁服务区",
+                "type": "特来电快充",
+                "ports": 10,
+                "distance_from_origin": 120
+              },
+              {
+                "name": "G4217 都江堰服务区",
+                "type": "国网快充",
+                "ports": 14,
+                "distance_from_origin": 310
+              },
+              {
+                "name": "G4217 汶川充电站",
+                "type": "国网快充",
+                "ports": 8,
+                "distance_from_origin": 380
+              },
+              {
+                "name": "理县木达藏寨民宿慢充",
+                "type": "交流慢充 7kw×2",
+                "ports": 2,
+                "distance_from_origin": 450
+              },
+              {
+                "name": "四姑娘山镇游客中心快充",
+                "type": "星星充电",
+                "ports": 6,
+                "distance_from_origin": 580
+              }
+            ],
+            "power_consumption": {
+              "sedan_500km_range": {
+                "kwh_per_100km": 16,
+                "total_kwh": 93,
+                "charging_times": 3
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 24,
+                "total_kwh": 139,
+                "charging_times": 3
+              }
+            },
+            "cost_estimate": {
+              "charging_fee": 110,
+              "toll_fee": 260,
+              "total_round_trip": 740
+            },
+            "warning_900km": false,
+            "charging_notes": "全程580km电车可驾驭，EV穿越注意：理小路中段约50km砂石非铺装+坡度大，续航打6折；尽量四驱；冬季须防滑链"
+          },
+          "flight": {
+            "nearest_airport": "无飞机（成都后租车自驾）",
+            "flight_duration": "—",
+            "notes": "无直飞机场；建议重庆-成都东高铁1h，再都江堰租车出发"
+          },
+          "train": {
+            "nearest_station": "成都东 → 都江堰/青城山",
+            "duration": "重庆西→成都东 约1h15m → 都江堰 约30m",
+            "recommended_trains": [
+              {
+                "train_no": "G8602+C6117",
+                "depart": "重庆西 08:00→成都东 09:15→都江堰 10:05",
+                "arrive": "都江堰 10:05",
+                "duration": "2h05m",
+                "price_seat2": 156,
+                "transfer": "成都东地铁转犀浦换乘"
+              }
+            ],
+            "station_transfer": {
+              "bus": "都江堰客运站→汶川/理县大巴¥35",
+              "taxi": "都江堰站打车到理县¥280"
+            },
+            "notes": "建议到都江堰后租SUV/硬派越野，再走理小路穿越"
+          }
+        },
+        "guides": [
+          {
+            "must_visit": [
+              {
+                "rank": 1,
+                "name": "理小路垭口 · 4550m",
+                "ticket": "无",
+                "open_time": "全天（冬季12-3月封路）",
+                "reason": "穿越最高点，云海翻涌+远眺蜀山皇后四姑娘幺妹峰",
+                "spend_time": "40min"
+              },
+              {
+                "rank": 2,
+                "name": "米亚罗 · 霸王山",
+                "ticket": "¥80（季节性）",
+                "open_time": "08:00-17:00",
+                "reason": "川西红叶天花板，山谷彩林+温泉",
+                "spend_time": "2.5h"
+              },
+              {
+                "rank": 3,
+                "name": "毕棚沟 · 龙王海/红石滩",
+                "ticket": "¥100+观光车¥60",
+                "open_time": "07:30-17:00",
+                "reason": "理县王牌景区，雪山冰川湖泊红石",
+                "spend_time": "4h"
+              },
+              {
+                "rank": 4,
+                "name": "四姑娘山 · 双桥沟",
+                "ticket": "¥100+观光车¥70",
+                "open_time": "07:00-17:30",
+                "reason": "最成熟山谷，布达拉峰/人参果坪/红杉林",
+                "spend_time": "5h"
+              },
+              {
+                "rank": 5,
+                "name": "理小路 · 秘境高山湖泊",
+                "ticket": "无（徒步可达）",
+                "open_time": "6-10月",
+                "reason": "沿路串珠海子，人少水清倒影绝美",
+                "spend_time": "1.5h"
+              },
+              {
+                "rank": 6,
+                "name": "理县 · 古尔沟温泉",
+                "ticket": "¥128-298",
+                "open_time": "10:00-23:00",
+                "reason": "穿越后解乏神品，真硫磺温泉",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 7,
+                "name": "桃坪羌寨（老寨）",
+                "ticket": "¥60",
+                "open_time": "08:30-18:00",
+                "reason": "东方古堡，千年羌族地下水网迷宫",
+                "spend_time": "1.5h"
+              },
+              {
+                "rank": 8,
+                "name": "双桥沟 · 红杉林末站",
+                "ticket": "含双桥沟套票",
+                "open_time": "07:00-17:30",
+                "reason": "观光车终点站海拔3840，近看大雪山冰川",
+                "spend_time": "50min"
+              },
+              {
+                "rank": 9,
+                "name": "长坪沟 · 喇嘛寺",
+                "ticket": "¥80+马费/徒步",
+                "open_time": "07:00-17:00",
+                "reason": "徒步进入原始森林，朝山坪正面观四姑娘",
+                "spend_time": "4h"
+              }
+            ],
+            "itinerary": {
+              "Day1": [
+                "08:00 重庆出发，铜梁/都江堰服务区补能",
+                "13:00 汶川午餐+采购补给（氧气瓶/巧克力/面包）",
+                "16:30 入住理县酒店，适应海拔（县城1888m）",
+                "19:00 理县藏式土火锅+青稞饼晚餐",
+                "20:30 检查车胎：建议放低胎压到2.3，备防滑链"
+              ],
+              "Day2": [
+                "06:30 早餐后出发，沿G317→米亚罗段穿越",
+                "09:00 霸王山观景台+彩林拍摄（秋季重点）",
+                "11:30 午餐自带干粮，路上无餐厅",
+                "13:00 正式进入理小路（非铺装50km，低速四驱）",
+                "15:30 理小路垭口4550m停留30min，勿剧烈运动",
+                "17:30 下到双桥沟旁或四姑娘山镇，海拔3200m",
+                "19:00 四姑娘山镇牦牛肉汤锅"
+              ],
+              "Day3": [
+                "07:30 早起双桥沟景区，观光车直达红杉林",
+                "09:00 红杉林→布达拉峰→四姑娜措→人参果坪逐站下",
+                "12:30 景区出口午餐",
+                "14:00 可选：长坪沟徒步或轻骑2小时到喇嘛寺",
+                "17:30 返回镇上，可选古尔沟温泉(车程1.5h)解乏",
+                "19:30 藏式烧烤+酥油茶"
+              ],
+              "Day4": [
+                "08:00 退房，桃坪羌寨老寨停留",
+                "10:30 汶川上高速返程",
+                "12:00 都江堰/资阳服务区补能午餐",
+                "17:30 返抵重庆"
+              ]
+            },
+            "pitfalls": [
+              "理小路仅适合SUV/硬派越野+高底盘，轿车禁行；雨季7-8月极易塌方需查路况公众号「阿坝交通」",
+              "垭口4550m+高反概率高：提前3天吃红景天/丹参滴丸，上车即带便携氧",
+              "中段约50km无信号（移动/电信全断），提前下载离线地图；严禁单车独行，至少2车同行带救援绳",
+              "冬季12月-次年3月垭口积雪>20cm必须防滑链，部分路段暗冰，新手勿入",
+              "四姑娘山/毕棚沟必须提前3天公众号预约，限流严重；节假日7点前到景区门口避排队",
+              "藏寨骑马/骑马照相先谈好价格（拍照/单圈/全程三种价），避免被临时加价",
+              "穿越后刹车过热：长下坡用手动档低速档/发动机制动，不要一直踩刹车",
+              "川西路限速严格（60/80区间测速多），高速服务区查酒驾，路上藏区牦牛穿路要让行"
+            ],
+            "food_top5": [
+              {
+                "rank": 1,
+                "name": "藏式土火锅",
+                "avg_price_per_person": 110,
+                "description": "铜锅牦牛肉+藏香猪+野菜+青稞饼，理县老寨最正宗",
+                "time_saver": "提前电话订锅，现炖需40分钟"
+              },
+              {
+                "rank": 2,
+                "name": "牦牛肉汤锅",
+                "avg_price_per_person": 98,
+                "description": "带皮牦牛肉慢炖4小时，蘸小米辣+香菜",
+                "time_saver": "下午6点前去，旺季翻台慢"
+              },
+              {
+                "rank": 3,
+                "name": "酸菜面块",
+                "avg_price_per_person": 28,
+                "description": "羌族家常面食，手工面片+山野菜酸菜汤底",
+                "time_saver": "路边小店均有，3分钟出餐"
+              },
+              {
+                "rank": 4,
+                "name": "粉蒸牦牛肉/藏包",
+                "avg_price_per_person": 42,
+                "description": "藏式小笼包（牦牛肉馅）+ 粉蒸牛肉，早餐首选",
+                "time_saver": "酒店楼下即可解决"
+              },
+              {
+                "rank": 5,
+                "name": "酥油茶+糌粑",
+                "avg_price_per_person": 18,
+                "description": "解乏抗高反神器，咸口酥油茶搭配糌粑手捏成团",
+                "time_saver": "用餐时店家可免费续一杯"
+              }
+            ],
+            "budget": {
+              "transport_ev_self_drive": 740,
+              "transport_flight_per_person": 0,
+              "transport_train_per_person": 160,
+              "accommodation_per_night": {
+                "budget": 160,
+                "mid_range": 380,
+                "luxury": 780
+              },
+              "food_per_day_per_person": {
+                "budget": 80,
+                "mid_range": 150,
+                "luxury": 260
+              },
+              "tickets_per_person": {
+                "理小路垭口": 0,
+                "毕棚沟100+车60": 160,
+                "双桥沟100+车70": 170,
+                "桃坪羌寨60": 60,
+                "温泉168": 168,
+                "合计": 558
+              },
+              "budget_2people_4days": {
+                "ev_drive": {
+                  "交通": 740,
+                  "住宿": 1520,
+                  "餐饮": 1200,
+                  "门票": 1116,
+                  "小计": 4576,
+                  "弹性20%": 915,
+                  "总计": 5491
+                },
+                "flight": {
+                  "交通": 0,
+                  "住宿": 1520,
+                  "餐饮": 1200,
+                  "门票": 1116,
+                  "小计": 3836,
+                  "弹性20%": 767,
+                  "总计": 4603
+                },
+                "train": {
+                  "交通": 320,
+                  "住宿": 1520,
+                  "餐饮": 1200,
+                  "门票": 1116,
+                  "小计": 4156,
+                  "弹性20%": 831,
+                  "总计": 4987
+                }
+              }
+            },
+            "photo_guide": [
+              {
+                "spot": "理小路垭口4550云海",
+                "best_time": "07:00-09:00",
+                "tips": "逆光剪影拍路牌，长焦压缩群峰+云海翻腾，注意风大镜头稳"
+              },
+              {
+                "spot": "霸王山彩林",
+                "best_time": "10月中下旬 10:00-12:00",
+                "tips": "侧光拍红叶颜色通透，小溪前景低角度"
+              },
+              {
+                "spot": "双桥沟布达拉峰倒影",
+                "best_time": "09:30-10:30",
+                "tips": "无风时人参果坪湖拍雪山倒影，CPL消除水面反光"
+              },
+              {
+                "spot": "四姑娘幺妹峰日照金山",
+                "best_time": "06:10-06:40（依季节）",
+                "tips": "猫鼻梁观景台/朝山坪，长曝光暖色调"
+              },
+              {
+                "spot": "毕棚沟红石滩",
+                "best_time": "11:00-12:00（阴天也好）",
+                "tips": "红石配雪山，反差色构图"
+              },
+              {
+                "spot": "桃坪羌寨碉楼小巷",
+                "best_time": "16:30-17:30",
+                "tips": "仰拍碉楼透视+光影切割墙面"
+              }
+            ],
+            "source_consensus": {
+              "小红书": {
+                "top3": [
+                  "霸王山彩林周末火爆",
+                  "长坪沟徒步到木骡子必体验",
+                  "桃坪羌寨老寨非新寨"
+                ],
+                "debate": "要不要住山顶？60%镇上睡舒服，40%山上日照金山值"
+              },
+              "抖音": {
+                "top3": [
+                  "视频实拍真实感强",
+                  "黄金时刻/机位精准",
+                  "部分滤镜过重需甄别"
+                ],
+                "debate": "网红打卡地值得去吗？55%现场确实出片，45%人挤人体验差"
+              },
+              "美团": {
+                "top3": [
+                  "当地美食 Top 榜可信",
+                  "门票套餐团购价对比",
+                  "真实差评能看坑点"
+                ],
+                "debate": "一日游团购靠谱吗？50%低价团藏购物，50%纯玩团性价比高"
+              },
+              "高德": {
+                "top3": [
+                  "理小路实时路况公众号最准",
+                  "四姑娘山镇快充桩少需补满",
+                  "G317区间测速点多"
+                ],
+                "debate": "硬派越野还是城市SUV？55%建议至少带四驱，45%2驱小心慢开也能过"
+              },
+              "去哪儿": {
+                "top3": [
+                  "机票/酒店提前月订省",
+                  "季节错峰避坑建议",
+                  "行李清单 & 签证须知"
+                ],
+                "debate": "住市区还是景区附近？65%景区省时间，35%市区便宜美食多"
+              },
+              "携程": {
+                "top3": [
+                  "门票提前 3 天预约",
+                  "接送机/包车价格透明",
+                  "亲子/蜜月房型筛选"
+                ],
+                "debate": "要不要买套票？55%套票划算，45%捆绑项目用不上浪费"
+              }
+            }
+          }
+        ],
+        "notes": "必须四驱+结伴+查路况；雨季/冬季慎行",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
         "id": "wish-zhangjiajie",
         "name": "张家界",
         "location": "湖南省张家界市",
-        "coords": [29.1172, 110.4793],
+        "coords": [
+          29.1172,
+          110.4793
+        ],
         "province": "湖南",
-        "priority": 2,
+        "priority": 4,
         "best_season": "春（4-5月，杜鹃花开）/ 秋（9-11月，天高云淡）",
         "suggested_days": 4,
-        "tags": ["山岳奇观", "阿凡达取景", "玻璃栈道"],
-        "sources": ["小红书", "携程", "去哪儿", "抖音", "美团", "高德"],
+        "tags": [
+          "山岳奇观",
+          "阿凡达取景",
+          "玻璃栈道"
+        ],
+        "sources": [
+          "小红书",
+          "携程",
+          "去哪儿",
+          "抖音",
+          "美团",
+          "高德"
+        ],
         "transport": {
           "ev_drive": {
             "distance_km": 580,
@@ -678,15 +1724,48 @@
               }
             },
             "charging_stations": [
-              {"name": "G65南川服务区", "type": "国家电网快充", "ports": 8, "distance_from_origin": 130},
-              {"name": "G65黔江服务区", "type": "特来电快充", "ports": 10, "distance_from_origin": 280},
-              {"name": "G65秀山服务区", "type": "国家电网快充", "ports": 8, "distance_from_origin": 420},
-              {"name": "G5513常德服务区", "type": "星星充电快充", "ports": 12, "distance_from_origin": 510},
-              {"name": "张家界武陵源游客中心充电站", "type": "国家电网快充", "ports": 10, "distance_from_origin": 580}
+              {
+                "name": "G65南川服务区",
+                "type": "国家电网快充",
+                "ports": 8,
+                "distance_from_origin": 130
+              },
+              {
+                "name": "G65黔江服务区",
+                "type": "特来电快充",
+                "ports": 10,
+                "distance_from_origin": 280
+              },
+              {
+                "name": "G65秀山服务区",
+                "type": "国家电网快充",
+                "ports": 8,
+                "distance_from_origin": 420
+              },
+              {
+                "name": "G5513常德服务区",
+                "type": "星星充电快充",
+                "ports": 12,
+                "distance_from_origin": 510
+              },
+              {
+                "name": "张家界武陵源游客中心充电站",
+                "type": "国家电网快充",
+                "ports": 10,
+                "distance_from_origin": 580
+              }
             ],
             "power_consumption": {
-              "sedan_500km_range": {"kwh_per_100km": 15, "total_kwh": 87, "charging_times": 2},
-              "suv_600km_range": {"kwh_per_100km": 20, "total_kwh": 116, "charging_times": 2}
+              "sedan_500km_range": {
+                "kwh_per_100km": 15,
+                "total_kwh": 87,
+                "charging_times": 2
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 20,
+                "total_kwh": 116,
+                "charging_times": 2
+              }
             },
             "cost_estimate": {
               "charging_fee": 110,
@@ -705,23 +1784,77 @@
               "peak_season": 1200
             },
             "airport_compare": [
-              {"name": "张家界荷花机场(DYG)", "distance_to_wulingyuan": 40, "drive_hours": 0.7, "pros": "最近、张家界市区内", "cons": "航班相对少"},
-              {"name": "长沙黄花机场(CSX)", "distance_to_wulingyuan": 340, "drive_hours": 4, "pros": "航班最多票价最低", "cons": "高铁转张家界西还需2h"},
-              {"name": "常德桃花源机场(CGD)", "distance_to_wulingyuan": 190, "drive_hours": 2.5, "pros": "中转折中选项", "cons": "航班少"}
+              {
+                "name": "张家界荷花机场(DYG)",
+                "distance_to_wulingyuan": 40,
+                "drive_hours": 0.7,
+                "pros": "最近、张家界市区内",
+                "cons": "航班相对少"
+              },
+              {
+                "name": "长沙黄花机场(CSX)",
+                "distance_to_wulingyuan": 340,
+                "drive_hours": 4,
+                "pros": "航班最多票价最低",
+                "cons": "高铁转张家界西还需2h"
+              },
+              {
+                "name": "常德桃花源机场(CGD)",
+                "distance_to_wulingyuan": 190,
+                "drive_hours": 2.5,
+                "pros": "中转折中选项",
+                "cons": "航班少"
+              }
             ],
             "airport_to_destination": {
-              "option1": {"name": "机场4路公交转景区直通车", "detail": "荷花机场→张家界市区（4路公交¥2）→武陵源景区直通车¥20", "total_time": "1.5h", "total_cost": 22},
-              "option2": {"name": "打车/网约车", "detail": "荷花机场直达武陵源景区标志门", "total_time": "45min", "total_cost": 120},
-              "option3": {"name": "包车（含天门山线路）", "detail": "机场→天门山→武陵源全程包车", "total_time": "灵活", "total_cost": 400}
+              "option1": {
+                "name": "机场4路公交转景区直通车",
+                "detail": "荷花机场→张家界市区（4路公交¥2）→武陵源景区直通车¥20",
+                "total_time": "1.5h",
+                "total_cost": 22
+              },
+              "option2": {
+                "name": "打车/网约车",
+                "detail": "荷花机场直达武陵源景区标志门",
+                "total_time": "45min",
+                "total_cost": 120
+              },
+              "option3": {
+                "name": "包车（含天门山线路）",
+                "detail": "机场→天门山→武陵源全程包车",
+                "total_time": "灵活",
+                "total_cost": 400
+              }
             }
           },
           "train": {
             "nearest_station": "张家界西站",
             "duration": "重庆西 → 张家界西：约4.5h（渝怀高铁直达）",
             "recommended_trains": [
-              {"train_no": "G6521", "depart": "重庆西 07:42", "arrive": "张家界西 12:08", "duration": "4h26m", "price_seat2": 339, "price_seat1": 542},
-              {"train_no": "G6523", "depart": "重庆西 11:15", "arrive": "张家界西 15:42", "duration": "4h27m", "price_seat2": 339, "price_seat1": 542},
-              {"train_no": "G6531", "depart": "重庆西 15:28", "arrive": "张家界西 19:56", "duration": "4h28m", "price_seat2": 339, "price_seat1": 542}
+              {
+                "train_no": "G6521",
+                "depart": "重庆西 07:42",
+                "arrive": "张家界西 12:08",
+                "duration": "4h26m",
+                "price_seat2": 339,
+                "price_seat1": 542
+              },
+              {
+                "train_no": "G6523",
+                "depart": "重庆西 11:15",
+                "arrive": "张家界西 15:42",
+                "duration": "4h27m",
+                "price_seat2": 339,
+                "price_seat1": 542
+              },
+              {
+                "train_no": "G6531",
+                "depart": "重庆西 15:28",
+                "arrive": "张家界西 19:56",
+                "duration": "4h28m",
+                "price_seat2": 339,
+                "price_seat1": 542
+              }
             ],
             "station_transfer": {
               "bus": "张家界西站→武陵源标志门：景区直通车¥20，车程约1h",
@@ -734,14 +1867,70 @@
         "guides": [
           {
             "must_visit": [
-              {"rank": 1, "name": "袁家界·哈利路亚山", "ticket": "含武陵源联票", "open_time": "07:00-18:00", "reason": "阿凡达悬浮山原型，乾坤柱+天下第一桥，武陵源核心", "spend_time": "90min"},
-              {"rank": 2, "name": "天门山·玻璃栈道", "ticket": "A线套票¥285含索道+扶梯", "open_time": "旺季07:00-18:00 淡季08:00-17:30", "reason": "世界最长7.5km索道+99道弯通天大道+3段玻璃栈道", "spend_time": "1天"},
-              {"rank": 3, "name": "天子山·西海峰林", "ticket": "含武陵源联票", "open_time": "07:00-18:00", "reason": "御笔峰+仙女散花+贺龙公园，峰林奇观代表作", "spend_time": "75min"},
-              {"rank": 4, "name": "金鞭溪", "ticket": "含武陵源联票", "open_time": "07:00-18:00", "reason": "7.5km峡谷溪水步道，86版西游记取景，猕猴群出没", "spend_time": "2.5h"},
-              {"rank": 5, "name": "十里画廊", "ticket": "含联票，小火车往返¥52", "open_time": "07:00-18:00", "reason": "采药老人+三姐妹峰，坐小火车看峡谷峰林", "spend_time": "60min"},
-              {"rank": 6, "name": "杨家界·天波府", "ticket": "含武陵源联票", "open_time": "07:00-18:00", "reason": "乌龙寨土匪窝+天然长城城墙，人少景奇", "spend_time": "90min"},
-              {"rank": 7, "name": "天门洞+999天梯", "ticket": "含天门山套票", "open_time": "07:00-18:00", "reason": "世界最高天然穿山溶洞，999级上天梯震撼", "spend_time": "60min"},
-              {"rank": 8, "name": "黄石寨", "ticket": "含联票，索道往返¥118", "open_time": "07:00-18:00", "reason": "不上黄石寨枉到张家界，六奇阁全景观景台", "spend_time": "90min"}
+              {
+                "rank": 1,
+                "name": "袁家界·哈利路亚山",
+                "ticket": "含武陵源联票",
+                "open_time": "07:00-18:00",
+                "reason": "阿凡达悬浮山原型，乾坤柱+天下第一桥，武陵源核心",
+                "spend_time": "90min"
+              },
+              {
+                "rank": 2,
+                "name": "天门山·玻璃栈道",
+                "ticket": "A线套票¥285含索道+扶梯",
+                "open_time": "旺季07:00-18:00 淡季08:00-17:30",
+                "reason": "世界最长7.5km索道+99道弯通天大道+3段玻璃栈道",
+                "spend_time": "1天"
+              },
+              {
+                "rank": 3,
+                "name": "天子山·西海峰林",
+                "ticket": "含武陵源联票",
+                "open_time": "07:00-18:00",
+                "reason": "御笔峰+仙女散花+贺龙公园，峰林奇观代表作",
+                "spend_time": "75min"
+              },
+              {
+                "rank": 4,
+                "name": "金鞭溪",
+                "ticket": "含武陵源联票",
+                "open_time": "07:00-18:00",
+                "reason": "7.5km峡谷溪水步道，86版西游记取景，猕猴群出没",
+                "spend_time": "2.5h"
+              },
+              {
+                "rank": 5,
+                "name": "十里画廊",
+                "ticket": "含联票，小火车往返¥52",
+                "open_time": "07:00-18:00",
+                "reason": "采药老人+三姐妹峰，坐小火车看峡谷峰林",
+                "spend_time": "60min"
+              },
+              {
+                "rank": 6,
+                "name": "杨家界·天波府",
+                "ticket": "含武陵源联票",
+                "open_time": "07:00-18:00",
+                "reason": "乌龙寨土匪窝+天然长城城墙，人少景奇",
+                "spend_time": "90min"
+              },
+              {
+                "rank": 7,
+                "name": "天门洞+999天梯",
+                "ticket": "含天门山套票",
+                "open_time": "07:00-18:00",
+                "reason": "世界最高天然穿山溶洞，999级上天梯震撼",
+                "spend_time": "60min"
+              },
+              {
+                "rank": 8,
+                "name": "黄石寨",
+                "ticket": "含联票，索道往返¥118",
+                "open_time": "07:00-18:00",
+                "reason": "不上黄石寨枉到张家界，六奇阁全景观景台",
+                "spend_time": "90min"
+              }
             ],
             "itinerary": {
               "Day1": [
@@ -792,40 +1981,171 @@
               "张家界大峡谷玻璃桥（¥259）和天门山玻璃栈道是两个不同景区，离武陵源远，时间紧可不去"
             ],
             "food_top5": [
-              {"rank": 1, "name": "三下锅", "avg_price_per_person": 75, "description": "张家界招牌，核桃肉+肥肠+猪肚干煸干锅，胡师傅三下锅最有名"},
-              {"rank": 2, "name": "土家腊猪头肉", "avg_price_per_person": 60, "description": "烟薰腊猪头切片配蒜叶炒，张家界特色腊味"},
-              {"rank": 3, "name": "岩耳炖土鸡", "avg_price_per_person": 110, "description": "张家界山间岩耳+土鸡清炖，山珍滋补汤品"},
-              {"rank": 4, "name": "湘西米粉", "avg_price_per_person": 18, "description": "牛肉粉/猪脚粉，早餐必吃，老武米粉老字号"},
-              {"rank": 5, "name": "葛根粉炒腊肉", "avg_price_per_person": 55, "description": "张家界特产葛根粉切片炒腊肉，Q弹腊肉香浓"}
+              {
+                "rank": 1,
+                "name": "三下锅",
+                "avg_price_per_person": 75,
+                "description": "张家界招牌，核桃肉+肥肠+猪肚干煸干锅，胡师傅三下锅最有名"
+              },
+              {
+                "rank": 2,
+                "name": "土家腊猪头肉",
+                "avg_price_per_person": 60,
+                "description": "烟薰腊猪头切片配蒜叶炒，张家界特色腊味"
+              },
+              {
+                "rank": 3,
+                "name": "岩耳炖土鸡",
+                "avg_price_per_person": 110,
+                "description": "张家界山间岩耳+土鸡清炖，山珍滋补汤品"
+              },
+              {
+                "rank": 4,
+                "name": "湘西米粉",
+                "avg_price_per_person": 18,
+                "description": "牛肉粉/猪脚粉，早餐必吃，老武米粉老字号"
+              },
+              {
+                "rank": 5,
+                "name": "葛根粉炒腊肉",
+                "avg_price_per_person": 55,
+                "description": "张家界特产葛根粉切片炒腊肉，Q弹腊肉香浓"
+              }
             ],
             "budget": {
               "transport_ev_self_drive": 810,
               "transport_flight_per_person": 850,
               "transport_train_per_person": 400,
-              "accommodation_per_night": {"budget": 200, "mid_range": 400, "luxury": 1000},
-              "food_per_day_per_person": {"budget": 90, "mid_range": 160, "luxury": 280},
-              "tickets_per_person": {"武陵源联票236": 236, "百龙天梯72+天子山索道72": 144, "黄石寨索道118": 118, "天门山A线套票285": 285, "十里画廊小火车52": 52, "魅力湘西演出228": 228, "合计": 1063},
+              "accommodation_per_night": {
+                "budget": 200,
+                "mid_range": 400,
+                "luxury": 1000
+              },
+              "food_per_day_per_person": {
+                "budget": 90,
+                "mid_range": 160,
+                "luxury": 280
+              },
+              "tickets_per_person": {
+                "武陵源联票236": 236,
+                "百龙天梯72+天子山索道72": 144,
+                "黄石寨索道118": 118,
+                "天门山A线套票285": 285,
+                "十里画廊小火车52": 52,
+                "魅力湘西演出228": 228,
+                "合计": 1063
+              },
               "budget_2people_4days": {
-                "ev_drive": {"交通": 810, "住宿": 1600, "餐饮": 1280, "门票": 2126, "小计": 5816, "弹性20%": 1163, "总计": 6979},
-                "flight": {"交通": 1700, "住宿": 1600, "餐饮": 1280, "门票": 2126, "小计": 6706, "弹性20%": 1341, "总计": 8047},
-                "train": {"交通": 800, "住宿": 1600, "餐饮": 1280, "门票": 2126, "小计": 5806, "弹性20%": 1161, "总计": 6967}
+                "ev_drive": {
+                  "交通": 810,
+                  "住宿": 1600,
+                  "餐饮": 1280,
+                  "门票": 2126,
+                  "小计": 5816,
+                  "弹性20%": 1163,
+                  "总计": 6979
+                },
+                "flight": {
+                  "交通": 1700,
+                  "住宿": 1600,
+                  "餐饮": 1280,
+                  "门票": 2126,
+                  "小计": 6706,
+                  "弹性20%": 1341,
+                  "总计": 8047
+                },
+                "train": {
+                  "交通": 800,
+                  "住宿": 1600,
+                  "餐饮": 1280,
+                  "门票": 2126,
+                  "小计": 5806,
+                  "弹性20%": 1161,
+                  "总计": 6967
+                }
               }
             },
             "photo_guide": [
-              {"spot": "袁家界迷魂台/乾坤柱", "best_time": "10:00-11:00", "tips": "广角拍悬浮山全景，云雾天更仙境，阿凡达取景台是最佳机位"},
-              {"spot": "天子山御笔峰", "best_time": "08:00-09:00（晨雾）", "tips": "长焦拍御笔三峰特写，晨雾环绕最出片，贺龙公园观景台"},
-              {"spot": "天门山玻璃栈道", "best_time": "09:00-10:00", "tips": "低角度拍脚踩玻璃+深渊，俯拍人物+悬崖，恐高患者慎拍"},
-              {"spot": "天门洞", "best_time": "14:00-15:00（阳光穿洞）", "tips": "洞下仰拍999天梯+门洞光影，穿洞佛光概率高"},
-              {"spot": "金鞭溪千里相会", "best_time": "09:00-10:00", "tips": "溪水+奇峰倒影，慢门拍流水丝滑感"},
-              {"spot": "杨家界天波府", "best_time": "15:00-16:00", "tips": "侧光拍天然长城城墙状峰林，层峦叠嶂层次感强"}
+              {
+                "spot": "袁家界迷魂台/乾坤柱",
+                "best_time": "10:00-11:00",
+                "tips": "广角拍悬浮山全景，云雾天更仙境，阿凡达取景台是最佳机位"
+              },
+              {
+                "spot": "天子山御笔峰",
+                "best_time": "08:00-09:00（晨雾）",
+                "tips": "长焦拍御笔三峰特写，晨雾环绕最出片，贺龙公园观景台"
+              },
+              {
+                "spot": "天门山玻璃栈道",
+                "best_time": "09:00-10:00",
+                "tips": "低角度拍脚踩玻璃+深渊，俯拍人物+悬崖，恐高患者慎拍"
+              },
+              {
+                "spot": "天门洞",
+                "best_time": "14:00-15:00（阳光穿洞）",
+                "tips": "洞下仰拍999天梯+门洞光影，穿洞佛光概率高"
+              },
+              {
+                "spot": "金鞭溪千里相会",
+                "best_time": "09:00-10:00",
+                "tips": "溪水+奇峰倒影，慢门拍流水丝滑感"
+              },
+              {
+                "spot": "杨家界天波府",
+                "best_time": "15:00-16:00",
+                "tips": "侧光拍天然长城城墙状峰林，层峦叠嶂层次感强"
+              }
             ],
             "source_consensus": {
-              "小红书": {"top3": ["天门山A线索道上省力", "袁家界阿凡达悬浮山必拍", "三下锅胡师傅店必吃"], "debate": "要不要去大峡谷玻璃桥？6成说不如天门山，4成说世界最高值得去"},
-              "携程": {"top3": ["4天2+1+1：武陵源2天+天门山1天+凤凰1天", "武陵源环保车必买", "魅力湘西演出推荐"], "debate": "住武陵源还是市区？65%住武陵源玩景区方便，35%住市区去天门山方便"},
-              "去哪儿": {"top3": ["十一前9-10月最佳不晒", "武陵源门票4天有效超值", "EV充电花垣服务区最方便"], "debate": "杨家界值不值？55%人少景奇推荐，45%说路远景色重复"},
-              "抖音": {"top3": ["玻璃栈道尖叫视频爆火", "天门洞999天梯挑战", "百龙天梯垂直高度打卡"], "debate": "要不要请导游？50%野导坑人，50%纯玩小团省心"},
-              "美团": {"top3": ["¥236景车联票性价比最高", "胡师傅三下锅人均80好评", "魅力湘西¥228口碑好"], "debate": "天门山C线值得吗？55%推荐A线，45%C线少排队"},
-              "高德": {"top3": ["武陵源标志门P1停车场最大", "张家界西站到景区直通车¥20", "天门山索道下站停车场暂不能停"], "debate": "自驾还是高铁？6成自驾灵活串凤凰，4成高铁省心力"}
+              "小红书": {
+                "top3": [
+                  "天门山A线索道上省力",
+                  "袁家界阿凡达悬浮山必拍",
+                  "三下锅胡师傅店必吃"
+                ],
+                "debate": "要不要去大峡谷玻璃桥？6成说不如天门山，4成说世界最高值得去"
+              },
+              "携程": {
+                "top3": [
+                  "4天2+1+1：武陵源2天+天门山1天+凤凰1天",
+                  "武陵源环保车必买",
+                  "魅力湘西演出推荐"
+                ],
+                "debate": "住武陵源还是市区？65%住武陵源玩景区方便，35%住市区去天门山方便"
+              },
+              "去哪儿": {
+                "top3": [
+                  "十一前9-10月最佳不晒",
+                  "武陵源门票4天有效超值",
+                  "EV充电花垣服务区最方便"
+                ],
+                "debate": "杨家界值不值？55%人少景奇推荐，45%说路远景色重复"
+              },
+              "抖音": {
+                "top3": [
+                  "玻璃栈道尖叫视频爆火",
+                  "天门洞999天梯挑战",
+                  "百龙天梯垂直高度打卡"
+                ],
+                "debate": "要不要请导游？50%野导坑人，50%纯玩小团省心"
+              },
+              "美团": {
+                "top3": [
+                  "¥236景车联票性价比最高",
+                  "胡师傅三下锅人均80好评",
+                  "魅力湘西¥228口碑好"
+                ],
+                "debate": "天门山C线值得吗？55%推荐A线，45%C线少排队"
+              },
+              "高德": {
+                "top3": [
+                  "武陵源标志门P1停车场最大",
+                  "张家界西站到景区直通车¥20",
+                  "天门山索道下站停车场暂不能停"
+                ],
+                "debate": "自驾还是高铁？6成自驾灵活串凤凰，4成高铁省心力"
+              }
             }
           }
         ],
@@ -837,13 +2157,27 @@
         "id": "wish-xishuangbanna",
         "name": "西双版纳",
         "location": "云南省西双版纳傣族自治州",
-        "coords": [22.0028, 100.7974],
+        "coords": [
+          22.0028,
+          100.7974
+        ],
         "province": "云南",
-        "priority": 2,
+        "priority": 5,
         "best_season": "冬春（11-次年4月，旱季，避寒），4月中旬泼水节",
         "suggested_days": 5,
-        "tags": ["热带风情", "避寒", "异域美食"],
-        "sources": ["小红书", "携程", "去哪儿", "抖音", "美团", "高德"],
+        "tags": [
+          "热带风情",
+          "避寒",
+          "异域美食"
+        ],
+        "sources": [
+          "小红书",
+          "携程",
+          "去哪儿",
+          "抖音",
+          "美团",
+          "高德"
+        ],
         "transport": {
           "ev_drive": {
             "distance_km": 1320,
@@ -868,16 +2202,54 @@
               }
             },
             "charging_stations": [
-              {"name": "G75遵义服务区", "type": "特来电快充", "ports": 12, "distance_from_origin": 240},
-              {"name": "G60贵阳服务区", "type": "国家电网快充", "ports": 16, "distance_from_origin": 460},
-              {"name": "G78昆明西服务区", "type": "特来电快充", "ports": 20, "distance_from_origin": 880},
-              {"name": "G8511玉溪服务区", "type": "国家电网快充", "ports": 10, "distance_from_origin": 980},
-              {"name": "G8511普洱服务区", "type": "星星充电快充", "ports": 8, "distance_from_origin": 1170},
-              {"name": "西双版纳告庄充电站", "type": "南方电网快充", "ports": 16, "distance_from_origin": 1320}
+              {
+                "name": "G75遵义服务区",
+                "type": "特来电快充",
+                "ports": 12,
+                "distance_from_origin": 240
+              },
+              {
+                "name": "G60贵阳服务区",
+                "type": "国家电网快充",
+                "ports": 16,
+                "distance_from_origin": 460
+              },
+              {
+                "name": "G78昆明西服务区",
+                "type": "特来电快充",
+                "ports": 20,
+                "distance_from_origin": 880
+              },
+              {
+                "name": "G8511玉溪服务区",
+                "type": "国家电网快充",
+                "ports": 10,
+                "distance_from_origin": 980
+              },
+              {
+                "name": "G8511普洱服务区",
+                "type": "星星充电快充",
+                "ports": 8,
+                "distance_from_origin": 1170
+              },
+              {
+                "name": "西双版纳告庄充电站",
+                "type": "南方电网快充",
+                "ports": 16,
+                "distance_from_origin": 1320
+              }
             ],
             "power_consumption": {
-              "sedan_500km_range": {"kwh_per_100km": 15, "total_kwh": 198, "charging_times": 5},
-              "suv_600km_range": {"kwh_per_100km": 22, "total_kwh": 290, "charging_times": 5}
+              "sedan_500km_range": {
+                "kwh_per_100km": 15,
+                "total_kwh": 198,
+                "charging_times": 5
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 22,
+                "total_kwh": 290,
+                "charging_times": 5
+              }
             },
             "cost_estimate": {
               "charging_fee": 260,
@@ -896,22 +2268,69 @@
               "peak_season": 1600
             },
             "airport_compare": [
-              {"name": "西双版纳嘎洒机场(JHG)", "distance_to_gaozhuang": 12, "drive_hours": 0.3, "pros": "离告庄最近，15min到", "cons": "泼水节期间机票暴涨3-5倍"},
-              {"name": "昆明长水机场(KMG)", "distance_to_gaozhuang": 540, "drive_hours": 6.5, "pros": "航班最多票价便宜，可中转高铁3h到版纳", "cons": "还需再转"},
-              {"name": "普洱思茅机场(SYM)", "distance_to_gaozhuang": 120, "drive_hours": 1.8, "pros": "小众机场偶尔低价，顺路游普洱茶山", "cons": "航班极少"}
+              {
+                "name": "西双版纳嘎洒机场(JHG)",
+                "distance_to_gaozhuang": 12,
+                "drive_hours": 0.3,
+                "pros": "离告庄最近，15min到",
+                "cons": "泼水节期间机票暴涨3-5倍"
+              },
+              {
+                "name": "昆明长水机场(KMG)",
+                "distance_to_gaozhuang": 540,
+                "drive_hours": 6.5,
+                "pros": "航班最多票价便宜，可中转高铁3h到版纳",
+                "cons": "还需再转"
+              },
+              {
+                "name": "普洱思茅机场(SYM)",
+                "distance_to_gaozhuang": 120,
+                "drive_hours": 1.8,
+                "pros": "小众机场偶尔低价，顺路游普洱茶山",
+                "cons": "航班极少"
+              }
             ],
             "airport_to_destination": {
-              "option1": {"name": "景区直通车", "detail": "机场→告庄西双景专线，版纳安心游小程序¥5/人", "total_time": "30min", "total_cost": 5},
-              "option2": {"name": "打车/网约车", "detail": "嘎洒机场直达告庄大金塔", "total_time": "20min", "total_cost": 35},
-              "option3": {"name": "机场大巴+公交", "detail": "机场大巴¥25→泼水广场→公交1路¥2到告庄", "total_time": "1h", "total_cost": 27}
+              "option1": {
+                "name": "景区直通车",
+                "detail": "机场→告庄西双景专线，版纳安心游小程序¥5/人",
+                "total_time": "30min",
+                "total_cost": 5
+              },
+              "option2": {
+                "name": "打车/网约车",
+                "detail": "嘎洒机场直达告庄大金塔",
+                "total_time": "20min",
+                "total_cost": 35
+              },
+              "option3": {
+                "name": "机场大巴+公交",
+                "detail": "机场大巴¥25→泼水广场→公交1路¥2到告庄",
+                "total_time": "1h",
+                "total_cost": 27
+              }
             }
           },
           "train": {
             "nearest_station": "西双版纳站（中老铁路）",
             "duration": "重庆西 → 昆明南（4.5h） → 西双版纳（3h），总计约8.5h（含中转）",
             "recommended_trains": [
-              {"train_no": "G2851+C307", "depart": "重庆西 08:00→昆明南 12:25→西双版纳 15:40", "arrive": "西双版纳 15:40", "duration": "7h40m", "price_seat2": 572, "transfer": "昆明南中转约40min"},
-              {"train_no": "G2853+C311", "depart": "重庆西 10:15→昆明南14:30→西双版纳17:48", "arrive": "西双版纳 17:48", "duration": "7h33m", "price_seat2": 572, "transfer": "昆明南中转约35min"}
+              {
+                "train_no": "G2851+C307",
+                "depart": "重庆西 08:00→昆明南 12:25→西双版纳 15:40",
+                "arrive": "西双版纳 15:40",
+                "duration": "7h40m",
+                "price_seat2": 572,
+                "transfer": "昆明南中转约40min"
+              },
+              {
+                "train_no": "G2853+C311",
+                "depart": "重庆西 10:15→昆明南14:30→西双版纳17:48",
+                "arrive": "西双版纳 17:48",
+                "duration": "7h33m",
+                "price_seat2": 572,
+                "transfer": "昆明南中转约35min"
+              }
             ],
             "station_transfer": {
               "bus": "西双版纳站1号公交→告庄西双景，¥5，车程约35min",
@@ -924,14 +2343,70 @@
         "guides": [
           {
             "must_visit": [
-              {"rank": 1, "name": "中科院西双版纳热带植物园", "ticket": "门票¥104，电瓶车西区¥50/东区¥50", "open_time": "08:00-17:30", "reason": "中国最大热带植物园，5A景区，王莲+绞杀榕+热带雨林，必去", "spend_time": "5h"},
-              {"rank": 2, "name": "告庄西双景+星光夜市", "ticket": "免费开放", "open_time": "全天（夜市19:00-23:00最旺）", "reason": "大金塔+六国水上市场+东南亚最大夜市，版纳地标", "spend_time": "4h"},
-              {"rank": 3, "name": "曼听公园+总佛寺", "ticket": "曼听¥40含总佛寺", "open_time": "08:00-18:00", "reason": "傣王御花园，10:30大象表演，傣装拍照圣地", "spend_time": "3h"},
-              {"rank": 4, "name": "野象谷", "ticket": "门票¥58，雨林牧象¥198", "open_time": "08:00-18:00", "reason": "中国唯一野象观测地，高空观象栈道+牧象互动", "spend_time": "4h"},
-              {"rank": 5, "name": "望天树景区", "ticket": "门票¥75，空中走廊¥50，游船¥50", "open_time": "08:30-18:00", "reason": "世界最高树冠走廊，热带雨林奇观，南腊河游船", "spend_time": "4h"},
-              {"rank": 6, "name": "傣族园（橄榄坝）", "ticket": "门票¥45，泼水体验¥60", "open_time": "08:00-18:00", "reason": "5个傣家自然村寨，天天泼水节，傣家竹楼体验", "spend_time": "3h"},
-              {"rank": 7, "name": "基诺山寨", "ticket": "套票¥160含表演", "open_time": "09:00-17:00", "reason": "中国最后一个少数民族基诺族，大鼓舞+文化体验", "spend_time": "2.5h"},
-              {"rank": 8, "name": "勐泐大佛寺", "ticket": "门票¥120，泼水¥40", "open_time": "08:00-17:30", "reason": "南传佛教圣地，10:00/14:00/16:00泼水活动", "spend_time": "2h"}
+              {
+                "rank": 1,
+                "name": "中科院西双版纳热带植物园",
+                "ticket": "门票¥104，电瓶车西区¥50/东区¥50",
+                "open_time": "08:00-17:30",
+                "reason": "中国最大热带植物园，5A景区，王莲+绞杀榕+热带雨林，必去",
+                "spend_time": "5h"
+              },
+              {
+                "rank": 2,
+                "name": "告庄西双景+星光夜市",
+                "ticket": "免费开放",
+                "open_time": "全天（夜市19:00-23:00最旺）",
+                "reason": "大金塔+六国水上市场+东南亚最大夜市，版纳地标",
+                "spend_time": "4h"
+              },
+              {
+                "rank": 3,
+                "name": "曼听公园+总佛寺",
+                "ticket": "曼听¥40含总佛寺",
+                "open_time": "08:00-18:00",
+                "reason": "傣王御花园，10:30大象表演，傣装拍照圣地",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 4,
+                "name": "野象谷",
+                "ticket": "门票¥58，雨林牧象¥198",
+                "open_time": "08:00-18:00",
+                "reason": "中国唯一野象观测地，高空观象栈道+牧象互动",
+                "spend_time": "4h"
+              },
+              {
+                "rank": 5,
+                "name": "望天树景区",
+                "ticket": "门票¥75，空中走廊¥50，游船¥50",
+                "open_time": "08:30-18:00",
+                "reason": "世界最高树冠走廊，热带雨林奇观，南腊河游船",
+                "spend_time": "4h"
+              },
+              {
+                "rank": 6,
+                "name": "傣族园（橄榄坝）",
+                "ticket": "门票¥45，泼水体验¥60",
+                "open_time": "08:00-18:00",
+                "reason": "5个傣家自然村寨，天天泼水节，傣家竹楼体验",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 7,
+                "name": "基诺山寨",
+                "ticket": "套票¥160含表演",
+                "open_time": "09:00-17:00",
+                "reason": "中国最后一个少数民族基诺族，大鼓舞+文化体验",
+                "spend_time": "2.5h"
+              },
+              {
+                "rank": 8,
+                "name": "勐泐大佛寺",
+                "ticket": "门票¥120，泼水¥40",
+                "open_time": "08:00-17:30",
+                "reason": "南传佛教圣地，10:00/14:00/16:00泼水活动",
+                "spend_time": "2h"
+              }
             ],
             "itinerary": {
               "Day1": [
@@ -988,40 +2463,172 @@
               "4月13-15日泼水节住宿需提前3月订，涨价5-10倍，机票3倍起"
             ],
             "food_top5": [
-              {"rank": 1, "name": "香茅草烤鸡/烤鱼", "avg_price_per_person": 65, "description": "傣味灵魂，香茅草裹土鸡炭火烤，曼飞龙烤鸡老字号最正宗"},
-              {"rank": 2, "name": "舂鸡脚/舂牛肝菌", "avg_price_per_person": 25, "description": "柠檬+小米辣+香草捣碎鸡爪酸辣开胃，舂系列是版纳招牌"},
-              {"rank": 3, "name": "泡鲁达", "avg_price_per_person": 18, "description": "椰奶西米+缅甸面包干+椰丝，甜品冷饮，婉泰咖啡最有名"},
-              {"rank": 4, "name": "菠萝紫米饭", "avg_price_per_person": 22, "description": "鲜菠萝挖空装紫糯米蒸制，香甜软糯傣族主食"},
-              {"rank": 5, "name": "傣味包烧", "avg_price_per_person": 75, "description": "芭蕉叶包菌菇/脑花/牛肉炭火烤，春武里和曼飞龙都不错"}
+              {
+                "rank": 1,
+                "name": "香茅草烤鸡/烤鱼",
+                "avg_price_per_person": 65,
+                "description": "傣味灵魂，香茅草裹土鸡炭火烤，曼飞龙烤鸡老字号最正宗"
+              },
+              {
+                "rank": 2,
+                "name": "舂鸡脚/舂牛肝菌",
+                "avg_price_per_person": 25,
+                "description": "柠檬+小米辣+香草捣碎鸡爪酸辣开胃，舂系列是版纳招牌"
+              },
+              {
+                "rank": 3,
+                "name": "泡鲁达",
+                "avg_price_per_person": 18,
+                "description": "椰奶西米+缅甸面包干+椰丝，甜品冷饮，婉泰咖啡最有名"
+              },
+              {
+                "rank": 4,
+                "name": "菠萝紫米饭",
+                "avg_price_per_person": 22,
+                "description": "鲜菠萝挖空装紫糯米蒸制，香甜软糯傣族主食"
+              },
+              {
+                "rank": 5,
+                "name": "傣味包烧",
+                "avg_price_per_person": 75,
+                "description": "芭蕉叶包菌菇/脑花/牛肉炭火烤，春武里和曼飞龙都不错"
+              }
             ],
             "budget": {
               "transport_ev_self_drive": 2000,
               "transport_flight_per_person": 1000,
               "transport_train_per_person": 600,
-              "accommodation_per_night": {"budget": 200, "mid_range": 450, "luxury": 1200},
-              "food_per_day_per_person": {"budget": 100, "mid_range": 180, "luxury": 300},
-              "tickets_per_person": {"中科院植物园104+电瓶车100": 204, "曼听40": 40, "野象谷58+牧象198": 256, "望天树75+走廊50+船50": 175, "傣族园45+泼水60": 105, "基诺山寨160": 160, "大佛寺120+泼水40": 160, "合计": 1100},
+              "accommodation_per_night": {
+                "budget": 200,
+                "mid_range": 450,
+                "luxury": 1200
+              },
+              "food_per_day_per_person": {
+                "budget": 100,
+                "mid_range": 180,
+                "luxury": 300
+              },
+              "tickets_per_person": {
+                "中科院植物园104+电瓶车100": 204,
+                "曼听40": 40,
+                "野象谷58+牧象198": 256,
+                "望天树75+走廊50+船50": 175,
+                "傣族园45+泼水60": 105,
+                "基诺山寨160": 160,
+                "大佛寺120+泼水40": 160,
+                "合计": 1100
+              },
               "budget_2people_5days": {
-                "ev_drive": {"交通": 2000, "住宿": 2000, "餐饮": 1800, "门票": 2200, "小计": 8000, "弹性20%": 1600, "总计": 9600},
-                "flight": {"交通": 2000, "住宿": 2000, "餐饮": 1800, "门票": 2200, "小计": 8000, "弹性20%": 1600, "总计": 9600},
-                "train": {"交通": 1200, "住宿": 2000, "餐饮": 1800, "门票": 2200, "小计": 7200, "弹性20%": 1440, "总计": 8640}
+                "ev_drive": {
+                  "交通": 2000,
+                  "住宿": 2000,
+                  "餐饮": 1800,
+                  "门票": 2200,
+                  "小计": 8000,
+                  "弹性20%": 1600,
+                  "总计": 9600
+                },
+                "flight": {
+                  "交通": 2000,
+                  "住宿": 2000,
+                  "餐饮": 1800,
+                  "门票": 2200,
+                  "小计": 8000,
+                  "弹性20%": 1600,
+                  "总计": 9600
+                },
+                "train": {
+                  "交通": 1200,
+                  "住宿": 2000,
+                  "餐饮": 1800,
+                  "门票": 2200,
+                  "小计": 7200,
+                  "弹性20%": 1440,
+                  "总计": 8640
+                }
               }
             },
             "photo_guide": [
-              {"spot": "告庄大金塔+星光夜市", "best_time": "19:30-21:00", "tips": "大金塔二楼俯拍夜市全景，人站塔前+夜市灯光虚化背景，傣装出片"},
-              {"spot": "中科院植物园王莲池", "best_time": "09:00-10:00", "tips": "仰拍人物坐王莲（承重60kg内），莲叶蓝天倒影，西区大门第一个池"},
-              {"spot": "曼听公园傣王行宫", "best_time": "10:30-11:30", "tips": "傣装+宫殿金色屋顶，花园走廊纵深拍，总佛寺白墙红塔"},
-              {"spot": "望天树空中走廊", "best_time": "11:00-12:00", "tips": "俯拍脚下36米雨林，人物扶栏仰拍树叶丁达尔光"},
-              {"spot": "野象谷雨林牧象", "best_time": "08:30-09:30", "tips": "人物摸幼象互动抓拍，雨林背景绿色+大象肤色对比"},
-              {"spot": "傣族园泼水广场", "best_time": "15:00-16:00", "tips": "高速快门抓拍泼水瞬间，水珠+欢笑动态感"}
+              {
+                "spot": "告庄大金塔+星光夜市",
+                "best_time": "19:30-21:00",
+                "tips": "大金塔二楼俯拍夜市全景，人站塔前+夜市灯光虚化背景，傣装出片"
+              },
+              {
+                "spot": "中科院植物园王莲池",
+                "best_time": "09:00-10:00",
+                "tips": "仰拍人物坐王莲（承重60kg内），莲叶蓝天倒影，西区大门第一个池"
+              },
+              {
+                "spot": "曼听公园傣王行宫",
+                "best_time": "10:30-11:30",
+                "tips": "傣装+宫殿金色屋顶，花园走廊纵深拍，总佛寺白墙红塔"
+              },
+              {
+                "spot": "望天树空中走廊",
+                "best_time": "11:00-12:00",
+                "tips": "俯拍脚下36米雨林，人物扶栏仰拍树叶丁达尔光"
+              },
+              {
+                "spot": "野象谷雨林牧象",
+                "best_time": "08:30-09:30",
+                "tips": "人物摸幼象互动抓拍，雨林背景绿色+大象肤色对比"
+              },
+              {
+                "spot": "傣族园泼水广场",
+                "best_time": "15:00-16:00",
+                "tips": "高速快门抓拍泼水瞬间，水珠+欢笑动态感"
+              }
             ],
             "source_consensus": {
-              "小红书": {"top3": ["告庄傣装写真¥40租不拍套餐", "中科院植物园玩一天分东西区", "星光夜市吃去曼斗村"], "debate": "泼水节要不要去？65%氛围爆炸，35%人多住贵"},
-              "携程": {"top3": ["中科院植物园提前3天预约", "望天树+傣族园拼一日游团", "野象谷牧象要早约"], "debate": "基诺山寨值不值？55%少数民族文化体验独特，45%表演商业"},
-              "去哪儿": {"top3": ["11月-次年4月旱季最佳", "机票提前1月买避开泼水节", "EV自驾必须分段2天以上"], "debate": "望天树太远要不要去？6成说空中走廊必体验，4成说雨林和植物园重复"},
-              "抖音": {"top3": ["星光夜市傣装小姐姐爆火", "雨林牧象幼象摸头杀", "泡鲁达婉泰打卡"], "debate": "傣秀演出值不值？50%舞台震撼推荐，50%票价¥320太贵"},
-              "美团": {"top3": ["婉泰泡鲁达Top1必喝", "曼飞龙烤鸡套餐¥88双人", "春武里排队王提前取号"], "debate": "要不要报一日游？55%省心接送门票，45%自由行更灵活时间自由"},
-              "高德": {"top3": ["告庄内电动车2元/h方便", "机场直通车¥5最划算", "去望天山路途远建议早出发"], "debate": "住告庄还是市区？65%告庄方便玩夜市，35%市区便宜安静"}
+              "小红书": {
+                "top3": [
+                  "告庄傣装写真¥40租不拍套餐",
+                  "中科院植物园玩一天分东西区",
+                  "星光夜市吃去曼斗村"
+                ],
+                "debate": "泼水节要不要去？65%氛围爆炸，35%人多住贵"
+              },
+              "携程": {
+                "top3": [
+                  "中科院植物园提前3天预约",
+                  "望天树+傣族园拼一日游团",
+                  "野象谷牧象要早约"
+                ],
+                "debate": "基诺山寨值不值？55%少数民族文化体验独特，45%表演商业"
+              },
+              "去哪儿": {
+                "top3": [
+                  "11月-次年4月旱季最佳",
+                  "机票提前1月买避开泼水节",
+                  "EV自驾必须分段2天以上"
+                ],
+                "debate": "望天树太远要不要去？6成说空中走廊必体验，4成说雨林和植物园重复"
+              },
+              "抖音": {
+                "top3": [
+                  "星光夜市傣装小姐姐爆火",
+                  "雨林牧象幼象摸头杀",
+                  "泡鲁达婉泰打卡"
+                ],
+                "debate": "傣秀演出值不值？50%舞台震撼推荐，50%票价¥320太贵"
+              },
+              "美团": {
+                "top3": [
+                  "婉泰泡鲁达Top1必喝",
+                  "曼飞龙烤鸡套餐¥88双人",
+                  "春武里排队王提前取号"
+                ],
+                "debate": "要不要报一日游？55%省心接送门票，45%自由行更灵活时间自由"
+              },
+              "高德": {
+                "top3": [
+                  "告庄内电动车2元/h方便",
+                  "机场直通车¥5最划算",
+                  "去望天山路途远建议早出发"
+                ],
+                "debate": "住告庄还是市区？65%告庄方便玩夜市，35%市区便宜安静"
+              }
             }
           }
         ],
@@ -1030,16 +2637,502 @@
         "visited_ref": null
       },
       {
+        "id": "wish-fuxianhu",
+        "name": "云南抚仙湖（慢生活 5 日）",
+        "location": "云南玉溪 · 江川区/澄江市",
+        "cover": "",
+        "priority": 6,
+        "best_season": "冬（11-3 月，避寒暖阳+海鸥）/ 春（4-5 月，蓝花楹+樱花）",
+        "suggested_days": 5,
+        "tags": [
+          "琉璃万顷",
+          "湖景民宿躺平",
+          "铜锅鱼必吃"
+        ],
+        "sources": [
+          "小红书",
+          "抖音",
+          "美团",
+          "高德",
+          "去哪儿",
+          "携程"
+        ],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 820,
+            "drive_hours": 11,
+            "route": "重庆 → 泸州 → 毕节 → 六盘水 → 曲靖 → 昆明 → 澄江抚仙湖",
+            "route_compare": {
+              "route_a": {
+                "name": "G85渝昆高速主线（推荐）",
+                "distance_km": 820,
+                "drive_hours": 11,
+                "toll_fee": 410,
+                "pros": "全程高速，充电站密集，昆明补给方便",
+                "cons": "⚠️820km略远，建议中途住1晚或分2天"
+              },
+              "route_b": {
+                "name": "G75兰海转G80广昆经百色",
+                "distance_km": 860,
+                "drive_hours": 11.5,
+                "toll_fee": 430,
+                "pros": "顺游罗平油菜花/普者黑",
+                "cons": "多40km且百色段充电桩少"
+              }
+            },
+            "charging_stations": [
+              {
+                "name": "G93江津服务区",
+                "type": "特来电快充",
+                "ports": 10,
+                "distance_from_origin": 160
+              },
+              {
+                "name": "G76叙永服务区",
+                "type": "国网快充",
+                "ports": 12,
+                "distance_from_origin": 280
+              },
+              {
+                "name": "G85六盘水服务区",
+                "type": "国网快充",
+                "ports": 10,
+                "distance_from_origin": 460
+              },
+              {
+                "name": "G85曲靖服务区",
+                "type": "特来电快充",
+                "ports": 14,
+                "distance_from_origin": 680
+              },
+              {
+                "name": "呈贡新区万象城快充",
+                "type": "星星充电",
+                "ports": 20,
+                "distance_from_origin": 800
+              },
+              {
+                "name": "抚仙湖月亮湾停车场快充",
+                "type": "当地慢充×2",
+                "ports": 2,
+                "distance_from_origin": 820
+              }
+            ],
+            "power_consumption": {
+              "sedan_500km_range": {
+                "kwh_per_100km": 15,
+                "total_kwh": 123,
+                "charging_times": 3
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 23,
+                "total_kwh": 189,
+                "charging_times": 4
+              }
+            },
+            "cost_estimate": {
+              "charging_fee": 150,
+              "toll_fee": 410,
+              "total_round_trip": 1120
+            },
+            "warning_900km": false,
+            "charging_notes": "820km一天到达略赶，建议贵阳/六盘水中途住一晚；抚仙湖快充少，民宿多带慢充枪"
+          },
+          "flight": {
+            "nearest_airport": "昆明长水 KMG",
+            "flight_duration": "1h25m",
+            "price_tiers": {
+              "low_season": 380,
+              "mid_season": 600,
+              "peak_season": 1100
+            },
+            "airport_compare": [
+              {
+                "name": "昆明长水(KMG)",
+                "distance_to_fuxian": 70,
+                "drive_hours": 1.2,
+                "pros": "航班最多价格最低",
+                "cons": "还需包车/高铁转澄江"
+              },
+              {
+                "name": "玉溪大营街(YXG 支线)",
+                "distance_to_fuxian": 45,
+                "drive_hours": 1,
+                "pros": "更近",
+                "cons": "航班极少，价格贵"
+              }
+            ],
+            "airport_to_destination": {
+              "option1": {
+                "name": "机场大巴+包车",
+                "detail": "KMG→昆明南部客运站¥25→澄江大巴¥40→抚仙湖各镇打车¥30",
+                "total_time": "3h",
+                "total_cost": 95
+              },
+              "option2": {
+                "name": "包车直达民宿门口",
+                "detail": "KMG长水直接包车到禄充/孤山岛民宿",
+                "total_time": "1.2h",
+                "total_cost": 260
+              },
+              "option3": {
+                "name": "昆明南高铁→玉溪站",
+                "detail": "KMG地铁→昆明南¥6→玉溪¥34→抚仙湖包车¥80",
+                "total_time": "2.5h",
+                "total_cost": 120
+              }
+            }
+          },
+          "train": {
+            "nearest_station": "昆明南 / 玉溪站",
+            "duration": "重庆西→昆明南 约4h30m→玉溪/澄江包车",
+            "recommended_trains": [
+              {
+                "train_no": "G2885",
+                "depart": "重庆西 08:05→昆明南 12:35",
+                "arrive": "昆明南 12:35",
+                "duration": "4h30m",
+                "price_seat2": 344
+              },
+              {
+                "train_no": "G2883",
+                "depart": "重庆西 10:30→昆明南 15:00",
+                "arrive": "昆明南 15:00",
+                "duration": "4h30m",
+                "price_seat2": 344
+              }
+            ],
+            "station_transfer": {
+              "bus": "昆明南→澄江高铁专线¥45约1.5h",
+              "taxi": "昆明南包车到抚仙湖¥220"
+            },
+            "notes": "昆明南有直达澄江高铁专线，不必转昆明站"
+          }
+        },
+        "guides": [
+          {
+            "must_visit": [
+              {
+                "rank": 1,
+                "name": "禄充风景区 · 波息湾",
+                "ticket": "¥60",
+                "open_time": "08:00-18:00",
+                "reason": "抚仙湖核心景区，金色沙滩+笔架山观全景",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 2,
+                "name": "孤山岛（孤山含船）",
+                "ticket": "¥50含船票",
+                "open_time": "08:00-17:30",
+                "reason": "湖中唯一岛屿，水下古城遗址传说地",
+                "spend_time": "2.5h"
+              },
+              {
+                "rank": 3,
+                "name": "月亮湾湿地公园",
+                "ticket": "¥40（酒店住户凭房卡免费）",
+                "open_time": "09:00-18:00",
+                "reason": "白沙滩+1000亩湿地，亲子遛娃首选",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 4,
+                "name": "抚仙湖骑行绿道 · 时光栈道",
+                "ticket": "免费",
+                "open_time": "全天",
+                "reason": "28km沿湖骑行，樱花谷/烟区营拍照点",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 5,
+                "name": "明星鱼洞 · 车水捕鱼",
+                "ticket": "¥30",
+                "open_time": "08:00-17:00",
+                "reason": "非遗捕鱼场景+铜锅鱼一条街发源地",
+                "spend_time": "1.5h"
+              },
+              {
+                "rank": 6,
+                "name": "澄江化石地自然博物馆",
+                "ticket": "免费需预约",
+                "open_time": "周三-周日09:00-17:00",
+                "reason": "世界自然遗产，5.3亿年寒武纪大爆发展藏",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 7,
+                "name": "广龙小镇 · 星光夜市",
+                "ticket": "免费",
+                "open_time": "16:00-23:00",
+                "reason": "仿傣泰式夜市，日落+铜锅鱼大排档",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 8,
+                "name": "磨盘山国家森林公园",
+                "ticket": "¥40",
+                "open_time": "08:00-18:00",
+                "reason": "俯瞰抚仙湖全景最佳点，云海+风车",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 9,
+                "name": "抚仙湖潜水（自由潜/体验潜）",
+                "ticket": "¥380-1280",
+                "open_time": "提前1天预约",
+                "reason": "Ⅰ类水质，能见度10m+，看水下\"古城\"石柱",
+                "spend_time": "3h"
+              }
+            ],
+            "itinerary": {
+              "Day1": [
+                "08:00 重庆→昆明南高铁（或飞机长水）",
+                "13:00 昆明南→抚仙湖禄充，办理湖景民宿入住",
+                "15:00 禄充波息湾金沙滩踩水+笔架山步道",
+                "18:30 禄充渔村铜锅鱼+洋芋焖饭晚餐",
+                "20:30 湖边夜景散步，星空"
+              ],
+              "Day2": [
+                "08:30 早餐后骑电动车沿时光栈道→樱花谷→热水塘",
+                "12:00 明星鱼洞铜锅鱼午餐+看车水捕鱼展示",
+                "14:30 孤山岛船游+登岛",
+                "17:30 磨盘山日落俯瞰抚仙湖",
+                "19:00 广龙小镇夜市傣味烧烤"
+              ],
+              "Day3": [
+                "09:00 月亮湾湿地公园白沙滩躺椅晒太阳（亲子首选）",
+                "12:00 湖畔石锅鱼+三道菜午餐",
+                "14:00 可选：抚仙湖体验潜水或桨板SUP",
+                "17:30 帆船基地湖上风帆体验（¥180/1h）",
+                "19:30 民宿阳台湖景小酒吧"
+              ],
+              "Day4": [
+                "09:30 澄江化石地自然博物馆（5.3亿年寒武纪）",
+                "12:00 澄江市区藕粉+凉米线小吃午餐",
+                "14:00 抚仙湖希尔顿下午茶（不住也可付费）",
+                "16:30 小凹村田园摘蓝莓/草莓（季节限定）",
+                "19:00 民宿烧烤派对+看日落"
+              ],
+              "Day5": [
+                "08:30 收拾行李",
+                "10:00 返昆明南/长水机场",
+                "返程重庆"
+              ]
+            },
+            "pitfalls": [
+              "抚仙湖是Ⅰ类水源保护区，全域禁游泳（违规罚500-2000）、禁扔垃圾、禁私船下水；只有月亮湾等指定沙滩可以下水玩",
+              "禄充风景区渔庄铜锅鱼：进门先问清楚是\"公斤\"还是\"市斤\"；抗浪鱼贵(¥480/kg)不要点，青鱼/草鱼¥80-120/kg就好",
+              "广龙夜市/禄充周末停车位紧张，16点后就满；建议电动车或步行",
+              "水下\"古城\"其实是汉代墓葬/聚落遗址，不是真的\"庞贝古城\"；体验潜看到的是石柱+鱼群，不要对\"古建筑\"期望过高",
+              "民宿湖景房注意：东岸看日落，西岸看日出；禄充/立昌人多热闹，小湾/热水塘安静私密",
+              "紫外线极强（海拔1722m），防晒霜/帽子/墨镜三件套必备；水面反射光容易晒伤脖子和耳朵",
+              "冬季11月-次年3月有红嘴鸥迁徙，记得带面包鸥粮；但不要投其它食物",
+              "环湖路全程限速60，移动测速多；喝酒不开车，代驾环湖要¥150起"
+            ],
+            "food_top5": [
+              {
+                "rank": 1,
+                "name": "抚仙湖铜锅鱼",
+                "avg_price_per_person": 90,
+                "description": "用本地湖水+铜锅活煮抚仙湖草鱼/青鱼，蘸水用胡辣子+薄荷+折耳根",
+                "time_saver": "选禄充\"老渔村\"那家，提前1小时订鱼（现杀现煮20分钟）"
+              },
+              {
+                "rank": 2,
+                "name": "铜锅洋芋焖饭",
+                "avg_price_per_person": 38,
+                "description": "铜锅底铺猪油+宣威火腿丁+土豆丁+米饭，锅巴超香",
+                "time_saver": "与铜锅鱼同时下单，省10分钟"
+              },
+              {
+                "rank": 3,
+                "name": "澄江凉米线+冰粉",
+                "avg_price_per_person": 18,
+                "description": "老街老字号，酸辣甜凉米线+玫瑰冰粉",
+                "time_saver": "下午1点去避开12点排队高峰"
+              },
+              {
+                "rank": 4,
+                "name": "三道菜（羊汤锅+腌鱼+杂锅菜）",
+                "avg_price_per_person": 78,
+                "description": "澄江本地特色套餐，三道菜配铜锅饭",
+                "time_saver": "提前1h预订，现做"
+              },
+              {
+                "rank": 5,
+                "name": "抚仙湖藕粉+鲜花饼",
+                "avg_price_per_person": 25,
+                "description": "德春牌藕粉早餐/伴手礼，嘉华鲜花饼现烤",
+                "time_saver": "澄江超市直接买，比景区便宜30%"
+              }
+            ],
+            "budget": {
+              "transport_ev_self_drive": 1120,
+              "transport_flight_per_person": 650,
+              "transport_train_per_person": 380,
+              "accommodation_per_night": {
+                "budget": 150,
+                "mid_range": 420,
+                "luxury": 1080
+              },
+              "food_per_day_per_person": {
+                "budget": 90,
+                "mid_range": 160,
+                "luxury": 280
+              },
+              "tickets_per_person": {
+                "禄充60": 60,
+                "孤山岛含船50": 50,
+                "月亮湾40": 40,
+                "明星鱼洞30": 30,
+                "磨盘山40": 40,
+                "潜水体验380": 380,
+                "合计": 600
+              },
+              "budget_2people_5days": {
+                "ev_drive": {
+                  "交通": 1120,
+                  "住宿": 2100,
+                  "餐饮": 1600,
+                  "门票": 1200,
+                  "小计": 6020,
+                  "弹性20%": 1204,
+                  "总计": 7224
+                },
+                "flight": {
+                  "交通": 1300,
+                  "住宿": 2100,
+                  "餐饮": 1600,
+                  "门票": 1200,
+                  "小计": 6200,
+                  "弹性20%": 1240,
+                  "总计": 7440
+                },
+                "train": {
+                  "交通": 760,
+                  "住宿": 2100,
+                  "餐饮": 1600,
+                  "门票": 1200,
+                  "小计": 5660,
+                  "弹性20%": 1132,
+                  "总计": 6792
+                }
+              }
+            },
+            "photo_guide": [
+              {
+                "spot": "磨盘山俯瞰抚仙湖全景",
+                "best_time": "18:00-18:40（日落前20min）",
+                "tips": "接片3张拼全景，前景风车远景湖水"
+              },
+              {
+                "spot": "广龙小镇夜市日落+灯笼",
+                "best_time": "19:00-19:40",
+                "tips": "蓝调时刻，灯笼前景+天边晚霞，慢门长曝"
+              },
+              {
+                "spot": "禄充波息湾金沙滩+笔架山",
+                "best_time": "07:00-08:00（日出）",
+                "tips": "沙滩模特+湖水反光，低机位"
+              },
+              {
+                "spot": "时光栈道樱花谷",
+                "best_time": "09:30-10:30",
+                "tips": "栈道延伸构图，樱花前景；若无花用广角拍湖天一色"
+              },
+              {
+                "spot": "孤山岛无人机航拍",
+                "best_time": "11:00-12:00",
+                "tips": "垂直俯瞰心形湖，注意禁飞区（机场附近可能受限）"
+              },
+              {
+                "spot": "湖景民宿浴缸",
+                "best_time": "20:00-21:00",
+                "tips": "泡浴+窗外湖景，酒店浴袍+红酒杯"
+              }
+            ],
+            "source_consensus": {
+              "小红书": {
+                "top3": [
+                  "小湾村民宿湖景浴缸yyds",
+                  "禄充铜锅鱼先问斤两",
+                  "广龙夜市比星光夜市人少好拍"
+                ],
+                "debate": "住禄充热闹还是住小湾安静？65%小湾私密出片，35%禄充吃饭方便"
+              },
+              "抖音": {
+                "top3": [
+                  "视频实拍真实感强",
+                  "黄金时刻/机位精准",
+                  "部分滤镜过重需甄别"
+                ],
+                "debate": "网红打卡地值得去吗？55%现场确实出片，45%人挤人体验差"
+              },
+              "美团": {
+                "top3": [
+                  "铜锅鱼双人餐¥188最划算",
+                  "月亮湾买年卡¥80全年免费",
+                  "藕粉超市比景区便宜"
+                ],
+                "debate": "要不要体验潜水？55%能见度10米值得，45%冷且贵"
+              },
+              "高德": {
+                "top3": [
+                  "自驾路线/充电桩最新",
+                  "景区停车场/实时拥堵",
+                  "接驳大巴时刻表准确"
+                ],
+                "debate": "自驾好还是高铁好？60%自驾随性，40%停车累更适合高铁/包车"
+              },
+              "去哪儿": {
+                "top3": [
+                  "机票/酒店提前月订省",
+                  "季节错峰避坑建议",
+                  "行李清单 & 签证须知"
+                ],
+                "debate": "住市区还是景区附近？65%景区省时间，35%市区便宜美食多"
+              },
+              "携程": {
+                "top3": [
+                  "门票提前 3 天预约",
+                  "接送机/包车价格透明",
+                  "亲子/蜜月房型筛选"
+                ],
+                "debate": "要不要买套票？55%套票划算，45%捆绑项目用不上浪费"
+              }
+            }
+          }
+        ],
+        "notes": "铜锅鱼先问公斤/市斤！禁下水游泳！",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
         "id": "wish-huangshan",
         "name": "黄山 · 宏村",
         "location": "安徽省黄山市",
-        "coords": [30.1344, 118.1688],
+        "coords": [
+          30.1344,
+          118.1688
+        ],
         "province": "安徽",
-        "priority": 3,
+        "priority": 7,
         "best_season": "春（4-5月，杜鹃+云海）/ 秋（10-11月，彩叶）/ 冬（12-2月，雾凇雪景）",
         "suggested_days": 4,
-        "tags": ["五岳归来不看山", "徽州古村落", "云海日出"],
-        "sources": ["小红书", "携程", "去哪儿", "抖音", "美团", "高德"],
+        "tags": [
+          "五岳归来不看山",
+          "徽州古村落",
+          "云海日出"
+        ],
+        "sources": [
+          "小红书",
+          "携程",
+          "去哪儿",
+          "抖音",
+          "美团",
+          "高德"
+        ],
         "transport": {
           "ev_drive": {
             "distance_km": 1180,
@@ -1064,15 +3157,48 @@
               }
             },
             "charging_stations": [
-              {"name": "G50石柱服务区", "type": "国家电网快充", "ports": 8, "distance_from_origin": 230},
-              {"name": "G50宜昌长江大桥服务区", "type": "特来电快充", "ports": 12, "distance_from_origin": 480},
-              {"name": "G50武汉江夏服务区", "type": "特来电快充", "ports": 20, "distance_from_origin": 780},
-              {"name": "G50安庆服务区", "type": "国家电网快充", "ports": 10, "distance_from_origin": 1010},
-              {"name": "G3黄山汤口镇充电站", "type": "星星充电快充", "ports": 12, "distance_from_origin": 1180}
+              {
+                "name": "G50石柱服务区",
+                "type": "国家电网快充",
+                "ports": 8,
+                "distance_from_origin": 230
+              },
+              {
+                "name": "G50宜昌长江大桥服务区",
+                "type": "特来电快充",
+                "ports": 12,
+                "distance_from_origin": 480
+              },
+              {
+                "name": "G50武汉江夏服务区",
+                "type": "特来电快充",
+                "ports": 20,
+                "distance_from_origin": 780
+              },
+              {
+                "name": "G50安庆服务区",
+                "type": "国家电网快充",
+                "ports": 10,
+                "distance_from_origin": 1010
+              },
+              {
+                "name": "G3黄山汤口镇充电站",
+                "type": "星星充电快充",
+                "ports": 12,
+                "distance_from_origin": 1180
+              }
             ],
             "power_consumption": {
-              "sedan_500km_range": {"kwh_per_100km": 15, "total_kwh": 177, "charging_times": 4},
-              "suv_600km_range": {"kwh_per_100km": 22, "total_kwh": 260, "charging_times": 4}
+              "sedan_500km_range": {
+                "kwh_per_100km": 15,
+                "total_kwh": 177,
+                "charging_times": 4
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 22,
+                "total_kwh": 260,
+                "charging_times": 4
+              }
             },
             "cost_estimate": {
               "charging_fee": 230,
@@ -1091,22 +3217,69 @@
               "peak_season": 1500
             },
             "airport_compare": [
-              {"name": "黄山屯溪机场(TXN)", "distance_to_tangkou": 65, "drive_hours": 1.1, "pros": "最近1h到汤口，市区有机场大巴", "cons": "航班少直飞有限"},
-              {"name": "杭州萧山机场(HGH)", "distance_to_tangkou": 260, "drive_hours": 3, "pros": "航班最多，高铁到黄山北1.5h", "cons": "还需转"},
-              {"name": "合肥新桥机场(HFE)", "distance_to_tangkou": 300, "drive_hours": 3.5, "pros": "中部中转枢纽", "cons": "到黄山比杭州远"}
+              {
+                "name": "黄山屯溪机场(TXN)",
+                "distance_to_tangkou": 65,
+                "drive_hours": 1.1,
+                "pros": "最近1h到汤口，市区有机场大巴",
+                "cons": "航班少直飞有限"
+              },
+              {
+                "name": "杭州萧山机场(HGH)",
+                "distance_to_tangkou": 260,
+                "drive_hours": 3,
+                "pros": "航班最多，高铁到黄山北1.5h",
+                "cons": "还需转"
+              },
+              {
+                "name": "合肥新桥机场(HFE)",
+                "distance_to_tangkou": 300,
+                "drive_hours": 3.5,
+                "pros": "中部中转枢纽",
+                "cons": "到黄山比杭州远"
+              }
             ],
             "airport_to_destination": {
-              "option1": {"name": "机场大巴转景区直通车", "detail": "TXN机场→屯溪市区（机场大巴¥20）→汤口镇（景区直通车¥30）", "total_time": "2h", "total_cost": 50},
-              "option2": {"name": "包车直达", "detail": "TXN机场包车直达汤口镇黄山南入口", "total_time": "1.2h", "total_cost": 200},
-              "option3": {"name": "高铁杭州东中转", "detail": "HGH机场→杭州东（地铁¥7）→黄山北（高铁¥180约1.5h）→汤口直通车¥25", "total_time": "4h", "total_cost": 212}
+              "option1": {
+                "name": "机场大巴转景区直通车",
+                "detail": "TXN机场→屯溪市区（机场大巴¥20）→汤口镇（景区直通车¥30）",
+                "total_time": "2h",
+                "total_cost": 50
+              },
+              "option2": {
+                "name": "包车直达",
+                "detail": "TXN机场包车直达汤口镇黄山南入口",
+                "total_time": "1.2h",
+                "total_cost": 200
+              },
+              "option3": {
+                "name": "高铁杭州东中转",
+                "detail": "HGH机场→杭州东（地铁¥7）→黄山北（高铁¥180约1.5h）→汤口直通车¥25",
+                "total_time": "4h",
+                "total_cost": 212
+              }
             }
           },
           "train": {
             "nearest_station": "黄山北站",
             "duration": "重庆西 → 黄山北：约7h（合肥/上饶中转）",
             "recommended_trains": [
-              {"train_no": "G1755+G1611", "depart": "重庆西 07:30→合肥南 13:05→黄山北 15:00", "arrive": "黄山北 15:00", "duration": "7h30m", "price_seat2": 603, "transfer": "合肥南中转约35min"},
-              {"train_no": "G1333+G1659", "depart": "重庆西 10:02→上饶 15:48→黄山北 17:02", "arrive": "黄山北 17:02", "duration": "7h00m", "price_seat2": 619, "transfer": "上饶中转约25min"}
+              {
+                "train_no": "G1755+G1611",
+                "depart": "重庆西 07:30→合肥南 13:05→黄山北 15:00",
+                "arrive": "黄山北 15:00",
+                "duration": "7h30m",
+                "price_seat2": 603,
+                "transfer": "合肥南中转约35min"
+              },
+              {
+                "train_no": "G1333+G1659",
+                "depart": "重庆西 10:02→上饶 15:48→黄山北 17:02",
+                "arrive": "黄山北 17:02",
+                "duration": "7h00m",
+                "price_seat2": 619,
+                "transfer": "上饶中转约25min"
+              }
             ],
             "station_transfer": {
               "bus": "黄山北站→汤口镇换乘中心：景区直通车¥25，车程约1h",
@@ -1119,14 +3292,70 @@
         "guides": [
           {
             "must_visit": [
-              {"rank": 1, "name": "黄山·光明顶", "ticket": "含黄山门票", "open_time": "旺季06:30-17:30 淡季07:30-16:30", "reason": "黄山第二高峰海拔1860m，云海日出最佳观景点+气象站", "spend_time": "40min"},
-              {"rank": 2, "name": "黄山·迎客松（玉屏楼）", "ticket": "含黄山门票，玉屏索道¥90", "open_time": "旺季06:30-17:30", "reason": "黄山名片千年古松，玉屏楼前合影必拍，天都峰/莲花峰入口", "spend_time": "30min"},
-              {"rank": 3, "name": "西海大峡谷", "ticket": "含黄山门票，地轨缆车¥100", "open_time": "旺季07:00-17:00 冬季关闭", "reason": "黄山梦幻景区，一环二环险峻秀丽，网红地轨小火车", "spend_time": "3h"},
-              {"rank": 4, "name": "宏村", "ticket": "¥104三天有效", "open_time": "07:30-17:30", "reason": "中国画里乡村，世界文化遗产，月沼+南湖+承志堂徽派建筑", "spend_time": "4h"},
-              {"rank": 5, "name": "黄山·飞来石+排云亭", "ticket": "含黄山门票", "open_time": "旺季06:30-17:30", "reason": "红楼梦取景飞来石，排云亭观西海云海最佳", "spend_time": "50min"},
-              {"rank": 6, "name": "黄山·始信峰（黑虎松+连理松）", "ticket": "含黄山门票，云谷索道¥80", "open_time": "旺季06:30-17:30", "reason": "黄山奇松博物馆，不到始信峰不见黄山松", "spend_time": "40min"},
-              {"rank": 7, "name": "西递古村", "ticket": "¥90三天有效", "open_time": "07:30-18:00", "reason": "世界文化遗产，胡文光刺史坊+敬爱堂+追慕堂徽派三雕", "spend_time": "3h"},
-              {"rank": 8, "name": "黄山·天都峰（轮休中2026可能开）", "ticket": "含黄山门票", "open_time": "以当年公告为准", "reason": "黄山最险峰鲫鱼背，不登天都峰等于一场空，5年轮休制", "spend_time": "2h"}
+              {
+                "rank": 1,
+                "name": "黄山·光明顶",
+                "ticket": "含黄山门票",
+                "open_time": "旺季06:30-17:30 淡季07:30-16:30",
+                "reason": "黄山第二高峰海拔1860m，云海日出最佳观景点+气象站",
+                "spend_time": "40min"
+              },
+              {
+                "rank": 2,
+                "name": "黄山·迎客松（玉屏楼）",
+                "ticket": "含黄山门票，玉屏索道¥90",
+                "open_time": "旺季06:30-17:30",
+                "reason": "黄山名片千年古松，玉屏楼前合影必拍，天都峰/莲花峰入口",
+                "spend_time": "30min"
+              },
+              {
+                "rank": 3,
+                "name": "西海大峡谷",
+                "ticket": "含黄山门票，地轨缆车¥100",
+                "open_time": "旺季07:00-17:00 冬季关闭",
+                "reason": "黄山梦幻景区，一环二环险峻秀丽，网红地轨小火车",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 4,
+                "name": "宏村",
+                "ticket": "¥104三天有效",
+                "open_time": "07:30-17:30",
+                "reason": "中国画里乡村，世界文化遗产，月沼+南湖+承志堂徽派建筑",
+                "spend_time": "4h"
+              },
+              {
+                "rank": 5,
+                "name": "黄山·飞来石+排云亭",
+                "ticket": "含黄山门票",
+                "open_time": "旺季06:30-17:30",
+                "reason": "红楼梦取景飞来石，排云亭观西海云海最佳",
+                "spend_time": "50min"
+              },
+              {
+                "rank": 6,
+                "name": "黄山·始信峰（黑虎松+连理松）",
+                "ticket": "含黄山门票，云谷索道¥80",
+                "open_time": "旺季06:30-17:30",
+                "reason": "黄山奇松博物馆，不到始信峰不见黄山松",
+                "spend_time": "40min"
+              },
+              {
+                "rank": 7,
+                "name": "西递古村",
+                "ticket": "¥90三天有效",
+                "open_time": "07:30-18:00",
+                "reason": "世界文化遗产，胡文光刺史坊+敬爱堂+追慕堂徽派三雕",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 8,
+                "name": "黄山·天都峰（轮休中2026可能开）",
+                "ticket": "含黄山门票",
+                "open_time": "以当年公告为准",
+                "reason": "黄山最险峰鲫鱼背，不登天都峰等于一场空，5年轮休制",
+                "spend_time": "2h"
+              }
             ],
             "itinerary": {
               "Day1": [
@@ -1177,44 +3406,1554 @@
               "后山云谷寺上比前山慈光阁上省力太多，体力一般务必后山上，不要硬爬全程索道"
             ],
             "food_top5": [
-              {"rank": 1, "name": "臭鳜鱼", "avg_price_per_person": 95, "description": "徽州菜头牌，闻臭吃香蒜瓣肉，汤口老街大老爷家徽菜最正宗", "time_saver": "现做需等20分钟，可提前电话预订"},
-              {"rank": 2, "name": "毛豆腐", "avg_price_per_person": 28, "description": "徽州特色发酵毛霉菌豆腐煎制，外酥里嫩，屯溪老街和宏村小摊最地道"},
-              {"rank": 3, "name": "黄山烧饼（蟹壳黄）", "avg_price_per_person": 20, "description": "梅干菜扣肉馅烤酥饼，薄脆多层，特产手信首选，救驾烧饼老字号"},
-              {"rank": 4, "name": "石耳炖土鸡", "avg_price_per_person": 120, "description": "黄山石耳（山珍地衣）+本地土鸡清炖，滋补鲜美，山脚下农家乐"},
-              {"rank": 5, "name": "问政山笋炒腊肉", "avg_price_per_person": 68, "description": "春笋鲜嫩+徽州腊肉咸香，徽州山笋名菜"}
+              {
+                "rank": 1,
+                "name": "臭鳜鱼",
+                "avg_price_per_person": 95,
+                "description": "徽州菜头牌，闻臭吃香蒜瓣肉，汤口老街大老爷家徽菜最正宗",
+                "time_saver": "现做需等20分钟，可提前电话预订"
+              },
+              {
+                "rank": 2,
+                "name": "毛豆腐",
+                "avg_price_per_person": 28,
+                "description": "徽州特色发酵毛霉菌豆腐煎制，外酥里嫩，屯溪老街和宏村小摊最地道"
+              },
+              {
+                "rank": 3,
+                "name": "黄山烧饼（蟹壳黄）",
+                "avg_price_per_person": 20,
+                "description": "梅干菜扣肉馅烤酥饼，薄脆多层，特产手信首选，救驾烧饼老字号"
+              },
+              {
+                "rank": 4,
+                "name": "石耳炖土鸡",
+                "avg_price_per_person": 120,
+                "description": "黄山石耳（山珍地衣）+本地土鸡清炖，滋补鲜美，山脚下农家乐"
+              },
+              {
+                "rank": 5,
+                "name": "问政山笋炒腊肉",
+                "avg_price_per_person": 68,
+                "description": "春笋鲜嫩+徽州腊肉咸香，徽州山笋名菜"
+              }
             ],
             "budget": {
               "transport_ev_self_drive": 1700,
               "transport_flight_per_person": 1000,
               "transport_train_per_person": 650,
-              "accommodation_per_night": {"budget": 180, "mid_range": 450, "luxury": 1200, "山顶": 1500},
-              "food_per_day_per_person": {"budget": 100, "mid_range": 180, "luxury": 300},
-              "tickets_per_person": {"黄山旺季门票190+景区车38": 228, "云谷索道80+玉屏索道90": 170, "西海大峡谷地轨100": 100, "宏村104": 104, "西递90": 90, "温泉168": 168, "合计": 860},
+              "accommodation_per_night": {
+                "budget": 180,
+                "mid_range": 450,
+                "luxury": 1200,
+                "山顶": 1500
+              },
+              "food_per_day_per_person": {
+                "budget": 100,
+                "mid_range": 180,
+                "luxury": 300
+              },
+              "tickets_per_person": {
+                "黄山旺季门票190+景区车38": 228,
+                "云谷索道80+玉屏索道90": 170,
+                "西海大峡谷地轨100": 100,
+                "宏村104": 104,
+                "西递90": 90,
+                "温泉168": 168,
+                "合计": 860
+              },
               "budget_2people_4days": {
-                "ev_drive": {"交通": 1700, "住宿": 1800, "餐饮": 1440, "门票": 1720, "小计": 6660, "弹性20%": 1332, "总计": 7992},
-                "flight": {"交通": 2000, "住宿": 1800, "餐饮": 1440, "门票": 1720, "小计": 6960, "弹性20%": 1392, "总计": 8352},
-                "train": {"交通": 1300, "住宿": 1800, "餐饮": 1440, "门票": 1720, "小计": 6260, "弹性20%": 1252, "总计": 7512}
+                "ev_drive": {
+                  "交通": 1700,
+                  "住宿": 1800,
+                  "餐饮": 1440,
+                  "门票": 1720,
+                  "小计": 6660,
+                  "弹性20%": 1332,
+                  "总计": 7992
+                },
+                "flight": {
+                  "交通": 2000,
+                  "住宿": 1800,
+                  "餐饮": 1440,
+                  "门票": 1720,
+                  "小计": 6960,
+                  "弹性20%": 1392,
+                  "总计": 8352
+                },
+                "train": {
+                  "交通": 1300,
+                  "住宿": 1800,
+                  "餐饮": 1440,
+                  "门票": 1720,
+                  "小计": 6260,
+                  "弹性20%": 1252,
+                  "总计": 7512
+                }
               }
             },
             "photo_guide": [
-              {"spot": "光明顶日出/云海", "best_time": "05:00-06:00（依季节，提前查官网日出时间）", "tips": "广角拍东海群峰+云海，日出前1小时到位占机位，气象站平台和炼丹峰最佳"},
-              {"spot": "迎客松（玉屏楼前）", "best_time": "15:00-16:00（下午顺光）", "tips": "人物与千年古松合影，松枝伸展姿态用广角拍全，天都峰背景"},
-              {"spot": "西海大峡谷地轨小火车", "best_time": "10:00-11:00", "tips": "地轨车上俯拍峡谷全景，车头位置最佳，二环节点俯拍谷底"},
-              {"spot": "宏村月沼夜景", "best_time": "20:00-21:30", "tips": "红灯笼倒映圆月形水塘，慢门长曝光水如镜，倒影对称构图"},
-              {"spot": "宏村南湖春晓晨雾", "best_time": "06:30-07:30（秋季最佳）", "tips": "南湖画桥+徽派白墙黛瓦+晨雾倒影，中国画意境，人少空镜"},
-              {"spot": "飞来石（红楼梦取景）", "best_time": "09:00-10:00", "tips": "侧光拍巨石独立悬崖，排云亭方向借位人物推石头创意照"}
+              {
+                "spot": "光明顶日出/云海",
+                "best_time": "05:00-06:00（依季节，提前查官网日出时间）",
+                "tips": "广角拍东海群峰+云海，日出前1小时到位占机位，气象站平台和炼丹峰最佳"
+              },
+              {
+                "spot": "迎客松（玉屏楼前）",
+                "best_time": "15:00-16:00（下午顺光）",
+                "tips": "人物与千年古松合影，松枝伸展姿态用广角拍全，天都峰背景"
+              },
+              {
+                "spot": "西海大峡谷地轨小火车",
+                "best_time": "10:00-11:00",
+                "tips": "地轨车上俯拍峡谷全景，车头位置最佳，二环节点俯拍谷底"
+              },
+              {
+                "spot": "宏村月沼夜景",
+                "best_time": "20:00-21:30",
+                "tips": "红灯笼倒映圆月形水塘，慢门长曝光水如镜，倒影对称构图"
+              },
+              {
+                "spot": "宏村南湖春晓晨雾",
+                "best_time": "06:30-07:30（秋季最佳）",
+                "tips": "南湖画桥+徽派白墙黛瓦+晨雾倒影，中国画意境，人少空镜"
+              },
+              {
+                "spot": "飞来石（红楼梦取景）",
+                "best_time": "09:00-10:00",
+                "tips": "侧光拍巨石独立悬崖，排云亭方向借位人物推石头创意照"
+              }
             ],
             "source_consensus": {
-              "小红书": {"top3": ["后山云谷寺上省力", "住山顶白云宾馆看日出", "宏村住一晚拍晨雾夜景"], "debate": "西海大峡谷走不走完全程？6成说走到谷底坐地轨，4成说体力不够只走一环"},
-              "携程": {"top3": ["天都/莲花5年轮休查官网", "门票提前3天约限流3万", "宏村西递买联票省¥15"], "debate": "宏村住村内还是村外？60%村内夜景晨雾方便，40%村外便宜一半"},
-              "去哪儿": {"top3": ["10月中下旬秋彩叶最美", "12-2月冬雾凇门票半价", "武汉住一晚EV自驾分段"], "debate": "翡翠谷/太平湖要不要去？55%情人谷推荐拍婚纱照，45%时间紧只玩主景区"},
-              "抖音": {"top3": ["西海小火车网红打卡", "飞来石红楼梦借位推石", "迎客松千手观音合影梗"], "debate": "要不要挑战天都峰鲫鱼背？55%人生一次必登，45%安全第一放弃"},
-              "美团": {"top3": ["汤口臭鳜鱼¥90双人套餐", "黄山毛峰茶¥200/斤伴手礼", "宏村¥104含3天进出超值"], "debate": "跟团还是自由行？50%自由行灵活时间，50%含往返交通门票省心"},
-              "高德": {"top3": ["汤口新国线换乘中心停车最大", "屯溪机场大巴¥20到市区", "黄山北站去宏村专线¥30"], "debate": "自驾到汤口还是停北站？6成停汤口靠近，4成北站停车再转"}
+              "小红书": {
+                "top3": [
+                  "后山云谷寺上省力",
+                  "住山顶白云宾馆看日出",
+                  "宏村住一晚拍晨雾夜景"
+                ],
+                "debate": "西海大峡谷走不走完全程？6成说走到谷底坐地轨，4成说体力不够只走一环"
+              },
+              "携程": {
+                "top3": [
+                  "天都/莲花5年轮休查官网",
+                  "门票提前3天约限流3万",
+                  "宏村西递买联票省¥15"
+                ],
+                "debate": "宏村住村内还是村外？60%村内夜景晨雾方便，40%村外便宜一半"
+              },
+              "去哪儿": {
+                "top3": [
+                  "10月中下旬秋彩叶最美",
+                  "12-2月冬雾凇门票半价",
+                  "武汉住一晚EV自驾分段"
+                ],
+                "debate": "翡翠谷/太平湖要不要去？55%情人谷推荐拍婚纱照，45%时间紧只玩主景区"
+              },
+              "抖音": {
+                "top3": [
+                  "西海小火车网红打卡",
+                  "飞来石红楼梦借位推石",
+                  "迎客松千手观音合影梗"
+                ],
+                "debate": "要不要挑战天都峰鲫鱼背？55%人生一次必登，45%安全第一放弃"
+              },
+              "美团": {
+                "top3": [
+                  "汤口臭鳜鱼¥90双人套餐",
+                  "黄山毛峰茶¥200/斤伴手礼",
+                  "宏村¥104含3天进出超值"
+                ],
+                "debate": "跟团还是自由行？50%自由行灵活时间，50%含往返交通门票省心"
+              },
+              "高德": {
+                "top3": [
+                  "汤口新国线换乘中心停车最大",
+                  "屯溪机场大巴¥20到市区",
+                  "黄山北站去宏村专线¥30"
+                ],
+                "debate": "自驾到汤口还是停北站？6成停汤口靠近，4成北站停车再转"
+              }
             }
           }
         ],
         "notes": "黄山建议住山顶一晚看日出日落，宏村西递各半天足够",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
+        "id": "wish-qinggan-dahuanxian",
+        "name": "青甘大环线（8 日 · 经典闭环）",
+        "location": "青海西宁 + 甘肃敦煌 · 3200km 环线",
+        "cover": "",
+        "priority": 8,
+        "best_season": "夏（6-8 月，青海湖油菜花+茶卡盐湖）/ 秋（9 月中下旬，胡杨林+彩丘）",
+        "suggested_days": 8,
+        "tags": [
+          "一生必走的大环线",
+          "茶卡天空之镜",
+          "莫高窟月牙泉"
+        ],
+        "sources": [
+          "小红书",
+          "抖音",
+          "美团",
+          "高德",
+          "去哪儿",
+          "携程"
+        ],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 1280,
+            "drive_hours": 17,
+            "route": "重庆 → 陇南 → 天水 → 兰州 → 西宁（落地租车环线3200km）",
+            "route_compare": {
+              "route_a": {
+                "name": "G75→G6 经天水/兰州到西宁",
+                "distance_km": 1280,
+                "drive_hours": 17,
+                "toll_fee": 630,
+                "pros": "充电桩最密集",
+                "cons": "⚠️超900km警告！建议分2天，兰州住1晚"
+              },
+              "route_b": {
+                "name": "G50→G2012 经武威到西宁",
+                "distance_km": 1310,
+                "drive_hours": 17.5,
+                "toll_fee": 650,
+                "pros": "顺游武威雷台",
+                "cons": "武威段充电桩少"
+              }
+            },
+            "charging_stations": [
+              {
+                "name": "G75合川服务区",
+                "type": "国网快充",
+                "ports": 12,
+                "distance_from_origin": 120
+              },
+              {
+                "name": "G75陇南武都服务区",
+                "type": "国网快充",
+                "ports": 10,
+                "distance_from_origin": 430
+              },
+              {
+                "name": "G22兰州万达茂",
+                "type": "特来电快充",
+                "ports": 18,
+                "distance_from_origin": 820
+              },
+              {
+                "name": "G6海东服务区",
+                "type": "国网快充",
+                "ports": 10,
+                "distance_from_origin": 1060
+              },
+              {
+                "name": "西宁海湖万达广场",
+                "type": "星星充电",
+                "ports": 22,
+                "distance_from_origin": 1280
+              }
+            ],
+            "power_consumption": {
+              "sedan_500km_range": {
+                "kwh_per_100km": 15,
+                "total_kwh": 192,
+                "charging_times": 4
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 23,
+                "total_kwh": 294,
+                "charging_times": 5
+              }
+            },
+            "cost_estimate": {
+              "charging_fee": 250,
+              "toll_fee": 630,
+              "total_round_trip": 3200
+            },
+            "warning_900km": true,
+            "charging_notes": "⚠️单程1280km超900km警告！建议飞西宁落地租油车/混动走环线；若自驾电车，兰州/天水住1晚再走"
+          },
+          "flight": {
+            "nearest_airport": "西宁曹家堡 XNN",
+            "flight_duration": "2h10m",
+            "price_tiers": {
+              "low_season": 680,
+              "mid_season": 1100,
+              "peak_season": 1900
+            },
+            "airport_compare": [
+              {
+                "name": "西宁曹家堡(XNN)",
+                "distance_to_downtown": 30,
+                "drive_hours": 0.5,
+                "pros": "环线起点最近",
+                "cons": "暑期票价高"
+              },
+              {
+                "name": "兰州中川(LHW)",
+                "distance_to_downtown": 70,
+                "drive_hours": 1.3,
+                "pros": "便宜¥400，可先玩兰州再高铁西宁¥61",
+                "cons": "需额外转"
+              },
+              {
+                "name": "敦煌莫高国际机场(DNH)",
+                "distance_to_mogao": 15,
+                "drive_hours": 0.3,
+                "pros": "反方向环线终点，避开人群",
+                "cons": "航班极少"
+              }
+            ],
+            "airport_to_destination": {
+              "option1": {
+                "name": "机场大巴西宁市区",
+                "detail": "XNN→市区八一路客运站¥21",
+                "total_time": "40m",
+                "total_cost": 21
+              },
+              "option2": {
+                "name": "包车+环线套餐",
+                "detail": "XNN机场接机→青甘8天环线SUV 6000-8000元/车",
+                "total_time": "—",
+                "total_cost": 6500
+              },
+              "option3": {
+                "name": "落地租车",
+                "detail": "XNN机场→一嗨/神州混动SUV ¥420/天×8=¥3360",
+                "total_time": "30m",
+                "total_cost": 3360
+              }
+            }
+          },
+          "train": {
+            "nearest_station": "西宁站",
+            "duration": "重庆西→西宁：约11-13h（动车/Z/快客）",
+            "recommended_trains": [
+              {
+                "train_no": "D751 动卧",
+                "depart": "重庆北 20:35→西宁 次日08:10",
+                "arrive": "西宁 08:10",
+                "duration": "11h35m（睡一晚）",
+                "price_seat2": 468,
+                "transfer": "无（直达）"
+              },
+              {
+                "train_no": "K2637（新空快速）",
+                "depart": "重庆 07:10→西宁 20:00",
+                "arrive": "西宁 20:00",
+                "duration": "12h50m",
+                "price_seat2": 156
+              },
+              {
+                "train_no": "张掖-敦煌动车转",
+                "depart": "张掖西→敦煌 D2751 约2h",
+                "arrive": "敦煌",
+                "duration": "2h",
+                "price_seat2": 148,
+                "transfer": "张掖转"
+              }
+            ],
+            "station_transfer": {
+              "bus": "西宁站→八一路客运站环线接驳点¥15",
+              "taxi": "西宁站打车到塔尔寺¥80"
+            },
+            "notes": "环线建议落地后租车或拼团包车，公共交通不现实"
+          }
+        },
+        "guides": [
+          {
+            "must_visit": [
+              {
+                "rank": 1,
+                "name": "莫高窟（数字+实体窟 A 类票）",
+                "ticket": "¥238",
+                "open_time": "08:30-16:30 需分时预约",
+                "reason": "世界文化遗产，735窟/2410泥彩塑/4.5万㎡壁画",
+                "spend_time": "4-5h"
+              },
+              {
+                "rank": 2,
+                "name": "鸣沙山·月牙泉",
+                "ticket": "¥110（可3天重复进出）",
+                "open_time": "05:00-20:30",
+                "reason": "沙漠中的一弯清泉，骑骆驼+滑沙+日落星星",
+                "spend_time": "5h"
+              },
+              {
+                "rank": 3,
+                "name": "青海湖 · 二郎剑/黑马河",
+                "ticket": "¥90",
+                "open_time": "全天",
+                "reason": "中国最大咸水湖，6-8月油菜花+镜面",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 4,
+                "name": "茶卡盐湖 · 天空一号",
+                "ticket": "¥60+小火车¥50",
+                "open_time": "07:00-21:00",
+                "reason": "真正天空之镜，无人机航拍必去",
+                "spend_time": "4h"
+              },
+              {
+                "rank": 5,
+                "name": "张掖七彩丹霞",
+                "ticket": "¥74+观光车¥20",
+                "open_time": "05:30-20:30",
+                "reason": "彩色丘陵，4号平台观日落最佳",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 6,
+                "name": "塔尔寺",
+                "ticket": "¥70",
+                "open_time": "08:00-17:30",
+                "reason": "藏传佛教格鲁派六大寺之一，酥油花+壁画+堆绣三绝",
+                "spend_time": "2.5h"
+              },
+              {
+                "rank": 7,
+                "name": "嘉峪关关城+悬壁长城",
+                "ticket": "¥110 套票",
+                "open_time": "08:30-18:00",
+                "reason": "天下第一雄关，长城起点，悬臂长城远拍S曲线",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 8,
+                "name": "翡翠湖（大柴旦）",
+                "ticket": "¥85",
+                "open_time": "09:00-18:00",
+                "reason": "比茶卡更纯净的翡翠色盐湖，无滤镜出片",
+                "spend_time": "2.5h"
+              },
+              {
+                "rank": 9,
+                "name": "U型公路 · G315 国道780km处",
+                "ticket": "免费（路边）",
+                "open_time": "全天",
+                "reason": "中国版66号公路，U型起伏机位",
+                "spend_time": "30min"
+              }
+            ],
+            "itinerary": {
+              "Day1": [
+                "重庆飞西宁曹家堡 / 或 重庆北→西宁动卧",
+                "机场/站后取车（推荐混动SUV），入住西宁",
+                "17:00 塔尔寺 下午光线好人少",
+                "19:30 莫家街/水井巷手抓羊肉+酸奶",
+                "20:30 采购环线物资：氧气瓶×4、泡面、巧克力、防晒霜100+、防晒面罩"
+              ],
+              "Day2": [
+                "07:30 西宁→塔尔寺→日月山→倒淌河→青海湖二郎剑",
+                "11:30 青海湖二郎剑景区+湖边油菜花田",
+                "13:30 青海湖旁藏民家访午餐",
+                "15:30 驾车→茶卡镇",
+                "18:00 茶卡盐湖日落（如果天气好）",
+                "住茶卡镇/茶卡天空一号附近民宿"
+              ],
+              "Day3": [
+                "05:30 茶卡天空一号日出+无人镜面",
+                "09:00 早餐后驱车→可鲁克湖→U型公路→水上雅丹",
+                "15:00 乌素特水上雅丹公园",
+                "18:30 大柴旦翡翠湖日落",
+                "住大柴旦镇"
+              ],
+              "Day4": [
+                "08:30 大柴旦→当金山口→阿克塞石油小镇→阳关",
+                "12:30 阳关仿古建筑+骑骆驼体验",
+                "15:30 敦煌古城影视基地",
+                "18:30 入住敦煌市酒店",
+                "20:00 沙洲夜市：驴肉黄面+胡羊焖饼+李广杏"
+              ],
+              "Day5": [
+                "08:30 莫高窟 A类票（数字中心+12实体窟+专业讲解）",
+                "13:30 市区午餐",
+                "15:30 鸣沙山·月牙泉（避开正午）",
+                "18:30 骑骆驼看日落（日落前1h出发）",
+                "20:30 可选：又见敦煌/敦煌盛典晚会"
+              ],
+              "Day6": [
+                "08:00 敦煌→瓜州（免费吃瓜）→嘉峪关",
+                "13:00 嘉峪关关城+悬壁长城+长城第一墩",
+                "17:30 前往张掖市",
+                "20:00 张掖市搓鱼面/鸡肉焖卷子晚餐"
+              ],
+              "Day7": [
+                "05:30 早起张掖七彩丹霞日出（1号平台）",
+                "09:00 4号/5号平台深度观景",
+                "12:00 张掖→门源（7-8月油菜花）→祁连大草原",
+                "16:30 祁连山大草原骑马体验",
+                "19:30 刚察县/西海镇入住"
+              ],
+              "Day8": [
+                "07:00 青海湖黑马河日出（青海湖最佳日出点）",
+                "10:30 金银滩草原/原子城",
+                "13:00 返西宁还车",
+                "16:00 飞重庆 / 或 动卧D752 晚发车次日到重庆"
+              ]
+            },
+            "pitfalls": [
+              "莫高窟 A类票（¥238看12窟含讲解）必须提前7-30天在「莫高窟参观预约」小程序预约；暑期7月中-8月中秒空，B类票（¥100看4窟）无讲解体验差很多",
+              "高原反应：黑马河3200/大柴旦3400/橡皮山3817，提前吃红景天7天；刚上高原第一天不要洗澡洗头",
+              "茶卡盐湖要选晴天上午去；阴天镜面效果为0；注意脚套（¥10）防止盐层划伤脚",
+              "鸣沙山要避开正午，沙子温度80°C+烫脚；下午4点后再进，门票3天有效",
+              "翡翠湖/水上雅丹/U型公路一路无手机信号，提前下载离线地图；不要离开主路硬派越野去沙漠，救援极贵",
+              "紫外线+风蚀极端强：防晒衣/面罩/墨镜/防晒唇膏缺一不可；早晚温差>20°C，带冲锋衣+羽绒服",
+              "不要在青海湖岸边牧民私自收费小路进入（常¥20/车停好后变¥200/人），走正规景区或官方观景台",
+              "环线包车旺季（7-8月）¥700+/天，低于¥500/天的会带你去购物点/强制加油卡/景点外自费"
+            ],
+            "food_top5": [
+              {
+                "rank": 1,
+                "name": "手抓羊肉",
+                "avg_price_per_person": 98,
+                "description": "宁夏/青海手抓白条，肋条部位蘸椒盐+蒜瓣，西宁马忠食府",
+                "time_saver": "旺季排1.5h，提前美团排队"
+              },
+              {
+                "rank": 2,
+                "name": "胡羊焖饼",
+                "avg_price_per_person": 78,
+                "description": "敦煌特色，胡羊大盘+贴饼子焖，沙洲夜市正宗",
+                "time_saver": "现做需30min，可先点再逛夜市"
+              },
+              {
+                "rank": 3,
+                "name": "驴肉黄面",
+                "avg_price_per_person": 42,
+                "description": "敦煌顺张老字号，驴肉切片+黄面蘸酱",
+                "time_saver": "上午11点前去，人少"
+              },
+              {
+                "rank": 4,
+                "name": "张掖鸡肉焖卷子",
+                "avg_price_per_person": 58,
+                "description": "张掖特色，走地鸡+面饼条现焖",
+                "time_saver": "一份够2人吃"
+              },
+              {
+                "rank": 5,
+                "name": "青海酸奶（牦牛老酸奶）",
+                "avg_price_per_person": 12,
+                "description": "牦牛奶发酵，上面一层黄油，撒炒青稞+蜂蜜",
+                "time_saver": "随处可见，德禄酸奶老字号"
+              }
+            ],
+            "budget": {
+              "transport_ev_self_drive": 3200,
+              "transport_flight_per_person": 1300,
+              "transport_train_per_person": 470,
+              "accommodation_per_night": {
+                "budget": 200,
+                "mid_range": 550,
+                "luxury": 1400
+              },
+              "food_per_day_per_person": {
+                "budget": 120,
+                "mid_range": 220,
+                "luxury": 380
+              },
+              "tickets_per_person": {
+                "莫高窟A238": 238,
+                "鸣沙山110": 110,
+                "青海湖90": 90,
+                "茶卡天空一号60+车50": 110,
+                "丹霞74+车20": 94,
+                "塔尔寺70": 70,
+                "嘉峪关110": 110,
+                "翡翠湖85": 85,
+                "合计": 907
+              },
+              "budget_2people_8days": {
+                "ev_drive": {
+                  "交通": 3200,
+                  "住宿": 4400,
+                  "餐饮": 2880,
+                  "门票": 1814,
+                  "小计": 13140,
+                  "弹性20%": 2628,
+                  "总计": 15768
+                },
+                "flight": {
+                  "交通": 2600,
+                  "住宿": 4400,
+                  "餐饮": 2880,
+                  "门票": 1814,
+                  "小计": 12560,
+                  "弹性20%": 2512,
+                  "总计": 15072
+                },
+                "train": {
+                  "交通": 940,
+                  "住宿": 4400,
+                  "餐饮": 2880,
+                  "门票": 1814,
+                  "小计": 10034,
+                  "弹性20%": 2007,
+                  "总计": 12041
+                }
+              }
+            },
+            "photo_guide": [
+              {
+                "spot": "鸣沙山·月牙泉日落+骑骆驼",
+                "best_time": "19:00-20:00",
+                "tips": "长焦压缩骆驼队+金色沙浪；滑沙低角度仰拍剪影"
+              },
+              {
+                "spot": "茶卡天空一号镜面",
+                "best_time": "06:30-08:00（日出后无风）",
+                "tips": "广角+无云天，倒影对称；穿红色/黄色长裙"
+              },
+              {
+                "spot": "张掖七彩丹霞4号日落平台",
+                "best_time": "18:40-19:30",
+                "tips": "偏光镜/CPL增强彩丘饱和度，接片拼接色彩层次"
+              },
+              {
+                "spot": "U型公路G315 780k桩",
+                "best_time": "10:00-11:00",
+                "tips": "路中央拍U型起伏，长焦100mm以上压缩；注意避车！"
+              },
+              {
+                "spot": "翡翠湖航拍",
+                "best_time": "10:00-12:00",
+                "tips": "无人机Mavic垂直俯瞰，翡翠色+白色盐田格子"
+              },
+              {
+                "spot": "青海湖油菜花+湖",
+                "best_time": "07:00-08:00",
+                "tips": "油菜花黄金边+蓝色湖面+蓝天白云，三分构图"
+              }
+            ],
+            "source_consensus": {
+              "小红书": {
+                "top3": [
+                  "最新博主实测穿搭出片",
+                  "小众机位 & 网红餐厅避雷",
+                  "排队预警/路线变更"
+                ],
+                "debate": "自由行还是半自由行？60%自己订更灵活，40%当地团省心划算"
+              },
+              "抖音": {
+                "top3": [
+                  "视频实拍真实感强",
+                  "黄金时刻/机位精准",
+                  "部分滤镜过重需甄别"
+                ],
+                "debate": "网红打卡地值得去吗？55%现场确实出片，45%人挤人体验差"
+              },
+              "美团": {
+                "top3": [
+                  "当地美食 Top 榜可信",
+                  "门票套餐团购价对比",
+                  "真实差评能看坑点"
+                ],
+                "debate": "一日游团购靠谱吗？50%低价团藏购物，50%纯玩团性价比高"
+              },
+              "高德": {
+                "top3": [
+                  "自驾路线/充电桩最新",
+                  "景区停车场/实时拥堵",
+                  "接驳大巴时刻表准确"
+                ],
+                "debate": "自驾好还是高铁好？60%自驾随性，40%停车累更适合高铁/包车"
+              },
+              "去哪儿": {
+                "top3": [
+                  "7月中旬青海湖油菜花最盛",
+                  "9月胡杨林彩丘最美",
+                  "避开国庆前3天价翻3倍"
+                ],
+                "debate": "翡翠湖还是茶卡？55%翡翠湖人少水绿，45%茶卡网红值得到"
+              },
+              "携程": {
+                "top3": [
+                  "莫高窟A票提前30天抢",
+                  "8天环线包车SUV最省心",
+                  "鸣沙山门票3天有效反复进出"
+                ],
+                "debate": "正穿还是反穿？60%西宁→敦煌正穿人多，40%敦煌→西宁反穿日落刚好"
+              }
+            }
+          }
+        ],
+        "notes": "莫高窟A票提前抢！高反+强UV+充电少建议落地混动",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
+        "id": "wish-huangshan-shanding",
+        "name": "黄山风景区（山顶看日出 · 纯山版）",
+        "location": "安徽黄山市 · 黄山风景区",
+        "cover": "",
+        "priority": 9,
+        "best_season": "冬（12-2 月，雾凇+冰挂+雪凇+人少免票）/ 春（4 月下旬杜鹃）",
+        "suggested_days": 4,
+        "tags": [
+          "五岳归来不看山",
+          "日出云海",
+          "西海大峡谷"
+        ],
+        "sources": [
+          "小红书",
+          "抖音",
+          "美团",
+          "高德",
+          "去哪儿",
+          "携程"
+        ],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 1180,
+            "drive_hours": 15,
+            "route": "重庆 → 武汉 → 安庆 → 黄山汤口镇",
+            "route_compare": {
+              "route_a": {
+                "name": "G50沪渝主线",
+                "distance_km": 1180,
+                "drive_hours": 15,
+                "toll_fee": 590,
+                "pros": "充电桩密集",
+                "cons": "⚠️1180km超900km，武汉住1晚"
+              },
+              "route_b": {
+                "name": "G65包茂转G56杭瑞",
+                "distance_km": 1220,
+                "drive_hours": 15.5,
+                "toll_fee": 610,
+                "pros": "庐山/婺源顺路",
+                "cons": "更远"
+              }
+            },
+            "charging_stations": [
+              {
+                "name": "G50石柱",
+                "type": "国网",
+                "ports": 8,
+                "distance_from_origin": 230
+              },
+              {
+                "name": "G50宜昌长江大桥",
+                "type": "特来电",
+                "ports": 12,
+                "distance_from_origin": 480
+              },
+              {
+                "name": "G50武汉江夏",
+                "type": "特来电",
+                "ports": 20,
+                "distance_from_origin": 780
+              },
+              {
+                "name": "G50安庆",
+                "type": "国网",
+                "ports": 10,
+                "distance_from_origin": 1010
+              },
+              {
+                "name": "汤口镇快充",
+                "type": "星星充电",
+                "ports": 12,
+                "distance_from_origin": 1180
+              }
+            ],
+            "power_consumption": {
+              "sedan_500km_range": {
+                "kwh_per_100km": 15,
+                "total_kwh": 177,
+                "charging_times": 4
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 22,
+                "total_kwh": 260,
+                "charging_times": 4
+              }
+            },
+            "cost_estimate": {
+              "charging_fee": 230,
+              "toll_fee": 590,
+              "total_round_trip": 1700
+            },
+            "warning_900km": true,
+            "charging_notes": "⚠️超900km警告！武汉住1晚；山区段续航打8折"
+          },
+          "flight": {
+            "nearest_airport": "黄山屯溪 TXN",
+            "flight_duration": "2h",
+            "price_tiers": {
+              "low_season": 480,
+              "mid_season": 800,
+              "peak_season": 1500
+            },
+            "airport_compare": [
+              {
+                "name": "屯溪TXN",
+                "pros": "最近",
+                "cons": "航班少"
+              },
+              {
+                "name": "杭州HGH",
+                "pros": "航班多",
+                "cons": "转高铁"
+              }
+            ],
+            "airport_to_destination": {
+              "option1": {
+                "name": "TXN→汤口景区直通车",
+                "detail": "屯溪机场→汤口景区车",
+                "total_time": "2h",
+                "total_cost": 50
+              }
+            }
+          },
+          "train": {
+            "nearest_station": "黄山北站",
+            "duration": "重庆西→合肥→黄山北 约7h",
+            "recommended_trains": [
+              {
+                "train_no": "G1755+G1611",
+                "depart": "重庆西07:30→合肥南13:05→黄山北15:00",
+                "arrive": "黄山北 15:00",
+                "duration": "7h30m",
+                "price_seat2": 603
+              }
+            ],
+            "station_transfer": {
+              "bus": "黄山北→汤口¥25/1h"
+            },
+            "notes": "高铁后汤口直通车上山"
+          }
+        },
+        "guides": [
+          {
+            "must_visit": [
+              {
+                "rank": 1,
+                "name": "光明顶 · 日出+云海",
+                "ticket": "含黄山门票",
+                "open_time": "全天",
+                "reason": "黄山第二高峰海拔1860m，日出云海最佳",
+                "spend_time": "1h"
+              },
+              {
+                "rank": 2,
+                "name": "玉屏楼 · 迎客松",
+                "ticket": "含+玉屏索道¥90",
+                "open_time": "随景区",
+                "reason": "黄山名片千年古松",
+                "spend_time": "30min"
+              },
+              {
+                "rank": 3,
+                "name": "西海大峡谷 · 一环二环+网红地轨",
+                "ticket": "含+地轨¥100",
+                "open_time": "旺季开",
+                "reason": "梦幻景区",
+                "spend_time": "3h"
+              },
+              {
+                "rank": 4,
+                "name": "始信峰+黑虎松+连理松",
+                "ticket": "含+云谷索道¥80",
+                "open_time": "随景区",
+                "reason": "黄山奇松博物馆",
+                "spend_time": "40min"
+              },
+              {
+                "rank": 5,
+                "name": "飞来石（红楼梦取景）",
+                "ticket": "含",
+                "open_time": "随景区",
+                "reason": "排云亭侧",
+                "spend_time": "30min"
+              },
+              {
+                "rank": 6,
+                "name": "天都峰鲫鱼背（轮休）",
+                "ticket": "含",
+                "open_time": "查公告",
+                "reason": "黄山最险",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 7,
+                "name": "莲花亭（轮休交替）",
+                "ticket": "含",
+                "open_time": "查公告",
+                "reason": "黄山最高峰1864m",
+                "spend_time": "1.5h"
+              },
+              {
+                "rank": 8,
+                "name": "北海 · 猴子观海",
+                "ticket": "含",
+                "open_time": "随景区",
+                "reason": "清凉台云海奇景",
+                "spend_time": "20min"
+              },
+              {
+                "rank": 9,
+                "name": "百步云梯+鳌鱼峰",
+                "ticket": "含",
+                "open_time": "随景区",
+                "reason": "惊险栈道",
+                "spend_time": "30min"
+              }
+            ],
+            "itinerary": {
+              "Day1": [
+                "重庆出发→汤口镇入住山脚",
+                "晚上臭鳜鱼+毛豆腐",
+                "准备冲锋衣/头灯/登山杖/干粮"
+              ],
+              "Day2": [
+                "05:30 早餐→新国线¥19到云谷寺→云谷索道¥80上",
+                "07:00 白鹅岭→始信峰→黑虎松→连理松→梦笔生花→清凉台",
+                "09:30 狮子峰→排云亭→飞来石",
+                "11:30 登光明顶看全景",
+                "★住山顶白云/狮林/玉屏楼宾馆（¥1000-2500/晚）",
+                "17:30 光明顶/丹霞峰看日落"
+              ],
+              "Day3": [
+                "04:30 起床→光明顶看日出（提前官网查日出时间+占机位）",
+                "07:00 早餐→天海→鳌鱼峰→百步云梯→莲花亭/天都峰（依轮休）",
+                "10:00 迎客松合影→玉屏",
+                "12:00 云谷寺上→排云亭→西海大峡谷北→一环险峻→二环壮丽→谷底",
+                "13:30 谷底网红地轨小火车上天海¥100",
+                "16:00 索道下山→汤口温泉¥168",
+                "住汤口镇"
+              ],
+              "Day4": [
+                "返程重庆"
+              ]
+            },
+            "pitfalls": [
+              "天都/莲花5年轮休制！查官网，不然白跑",
+              "山顶住宿¥1000+提前1-2月订",
+              "西海冬季关，雨季栈道关闭",
+              "门票限流3万/日，必须提前预约",
+              "日出前4h起，租军大衣¥50",
+              "别信¥50低价一日游（购物团）",
+              "后山上省力，慈光阁下",
+              "雾凇/雪凇要12月-2月冬季才能看到"
+            ],
+            "food_top5": [
+              {
+                "rank": 1,
+                "name": "臭鳜鱼",
+                "avg_price_per_person": 95,
+                "description": "闻臭吃香",
+                "time_saver": "现做20min"
+              },
+              {
+                "rank": 2,
+                "name": "毛豆腐",
+                "avg_price_per_person": 28,
+                "description": "发酵煎",
+                "time_saver": "老街小摊"
+              },
+              {
+                "rank": 3,
+                "name": "黄山烧饼（蟹壳黄）",
+                "avg_price_per_person": 20,
+                "description": "梅干菜扣肉酥饼",
+                "time_saver": "救驾老字号"
+              },
+              {
+                "rank": 4,
+                "name": "石耳炖土鸡",
+                "avg_price_per_person": 120,
+                "description": "山珍地衣+土鸡",
+                "time_saver": "山脚下农家乐"
+              },
+              {
+                "rank": 5,
+                "name": "问政山笋炒腊肉",
+                "avg_price_per_person": 68,
+                "description": "春笋+徽州腊肉",
+                "time_saver": "春季必点"
+              }
+            ],
+            "budget": {
+              "transport_ev_self_drive": 1700,
+              "transport_flight_per_person": 1000,
+              "transport_train_per_person": 650,
+              "accommodation_per_night": {
+                "budget": 180,
+                "mid_range": 450,
+                "luxury": 1200,
+                "山顶": 1500
+              },
+              "food_per_day_per_person": {
+                "budget": 100,
+                "mid_range": 180,
+                "luxury": 300
+              },
+              "tickets_per_person": {
+                "黄山门票190+车38": 228,
+                "云谷80+玉屏90": 170,
+                "西海地轨100": 100,
+                "温泉168": 168,
+                "山顶住宿分摊": 750,
+                "合计": 1416
+              },
+              "budget_2people_4days": {
+                "ev_drive": {
+                  "交通": 1700,
+                  "住宿": 3000,
+                  "餐饮": 1440,
+                  "门票": 2832,
+                  "小计": 8972,
+                  "弹性20%": 1794,
+                  "总计": 10766
+                },
+                "flight": {
+                  "交通": 2000,
+                  "住宿": 3000,
+                  "餐饮": 1440,
+                  "门票": 2832,
+                  "小计": 9272,
+                  "弹性20%": 1854,
+                  "总计": 11126
+                },
+                "train": {
+                  "交通": 1300,
+                  "住宿": 3000,
+                  "餐饮": 1440,
+                  "门票": 2832,
+                  "小计": 8572,
+                  "弹性20%": 1714,
+                  "总计": 10286
+                }
+              }
+            },
+            "photo_guide": [
+              {
+                "spot": "光明顶日出云海",
+                "best_time": "04:30-06:00（依季节）",
+                "tips": "广角+ND镜，炼丹峰/气象站平台占机位"
+              },
+              {
+                "spot": "迎客松下午顺光",
+                "best_time": "15:00-16:00",
+                "tips": "人物+古松+天都峰背景"
+              },
+              {
+                "spot": "西海地轨",
+                "best_time": "10:00-11:00",
+                "tips": "车头俯拍"
+              },
+              {
+                "spot": "飞来石借位推",
+                "best_time": "09:00",
+                "tips": "红楼梦创意照"
+              },
+              {
+                "spot": "猴子观海云海",
+                "best_time": "08:00-09:00",
+                "tips": "清凉台云海"
+              },
+              {
+                "spot": "冬季雾凇",
+                "best_time": "12月-2月雪后",
+                "tips": "白色+松枝"
+              }
+            ],
+            "source_consensus": {
+              "小红书": {
+                "top3": [
+                  "住山顶白云看日出",
+                  "冬季雾凇门票半价",
+                  "后山云谷上省力"
+                ],
+                "debate": "西海带不带小孩？60%不带太险，40%坐地轨可以"
+              },
+              "抖音": {
+                "top3": [
+                  "视频实拍真实感强",
+                  "黄金时刻/机位精准",
+                  "部分滤镜过重需甄别"
+                ],
+                "debate": "网红打卡地值得去吗？55%现场确实出片，45%人挤人体验差"
+              },
+              "美团": {
+                "top3": [
+                  "当地美食 Top 榜可信",
+                  "门票套餐团购价对比",
+                  "真实差评能看坑点"
+                ],
+                "debate": "一日游团购靠谱吗？50%低价团藏购物，50%纯玩团性价比高"
+              },
+              "高德": {
+                "top3": [
+                  "自驾路线/充电桩最新",
+                  "景区停车场/实时拥堵",
+                  "接驳大巴时刻表准确"
+                ],
+                "debate": "自驾好还是高铁好？60%自驾随性，40%停车累更适合高铁/包车"
+              },
+              "去哪儿": {
+                "top3": [
+                  "机票/酒店提前月订省",
+                  "季节错峰避坑建议",
+                  "行李清单 & 签证须知"
+                ],
+                "debate": "住市区还是景区附近？65%景区省时间，35%市区便宜美食多"
+              },
+              "携程": {
+                "top3": [
+                  "门票提前 3 天预约",
+                  "接送机/包车价格透明",
+                  "亲子/蜜月房型筛选"
+                ],
+                "debate": "要不要买套票？55%套票划算，45%捆绑项目用不上浪费"
+              }
+            }
+          }
+        ],
+        "notes": "纯山版主打山顶日出+西海；宏村/西递另见「黄山·宏村」条目",
+        "converted_to_visited": false,
+        "visited_ref": null
+      },
+      {
+        "id": "wish-maldives",
+        "name": "马尔代夫 · 蜜月岛精选（水上别墅 + 鲸鲨浮潜）",
+        "location": "马尔代夫共和国 · 马累北环礁/南环礁",
+        "cover": "",
+        "priority": 10,
+        "best_season": "旱季（11 月 - 次年 4 月，天蓝海静，鲸鲨共游 1-3 月高峰）",
+        "suggested_days": 7,
+        "tags": [
+          "蜜月天堂",
+          "一价全包水屋",
+          "鲸鲨/海龟浮潜"
+        ],
+        "sources": [
+          "小红书",
+          "抖音",
+          "美团",
+          "高德",
+          "去哪儿",
+          "携程"
+        ],
+        "transport": {
+          "ev_drive": {
+            "distance_km": 5500,
+            "drive_hours": 0,
+            "route": "无陆路可行（需飞机出国）",
+            "route_compare": {
+              "route_a": {
+                "name": "自驾→重庆江北机场",
+                "distance_km": 5500,
+                "drive_hours": 0,
+                "toll_fee": 0,
+                "pros": "—",
+                "cons": "⚠️出国，无陆路可达"
+              },
+              "route_b": {
+                "name": "无",
+                "distance_km": 0,
+                "drive_hours": 0,
+                "toll_fee": 0,
+                "pros": "—",
+                "cons": "—"
+              }
+            },
+            "charging_stations": [],
+            "power_consumption": {
+              "sedan_500km_range": {
+                "kwh_per_100km": 0,
+                "total_kwh": 0,
+                "charging_times": 0
+              },
+              "suv_600km_range": {
+                "kwh_per_100km": 0,
+                "total_kwh": 0,
+                "charging_times": 0
+              }
+            },
+            "cost_estimate": {
+              "charging_fee": 0,
+              "toll_fee": 0,
+              "total_round_trip": 0
+            },
+            "warning_900km": true,
+            "charging_notes": "⚠️出国 5500km！电车/高铁/自驾均不可行，唯一交通：飞机。"
+          },
+          "flight": {
+            "nearest_airport": "马累易卜拉欣·纳西尔 MLE",
+            "flight_duration": "重庆→马累 约6.5h 直飞（马尔代夫国家航空 Q2，每周三/五/日）",
+            "price_tiers": {
+              "low_season": 5500,
+              "mid_season": 9000,
+              "peak_season": 15000
+            },
+            "airport_compare": [
+              {
+                "name": "重庆江北→马累MLE 直飞Q2",
+                "pros": "6.5h不转机",
+                "cons": "班次少，仅周三五"
+              },
+              {
+                "name": "重庆→吉隆坡→马累 亚航转机",
+                "pros": "便宜¥3-6k",
+                "cons": "转机+20h"
+              },
+              {
+                "name": "重庆→新加坡→马累 新航转机",
+                "pros": "餐食好行李2件",
+                "cons": "稍贵"
+              }
+            ],
+            "airport_to_destination": {
+              "option1": {
+                "name": "快艇 Speedboat",
+                "detail": "MLE→近岛度假村（20km内），约20-40min",
+                "total_time": "30m",
+                "total_cost": 1200
+              },
+              "option2": {
+                "name": "水上飞机 Seaplane",
+                "detail": "MLE码头→中远岛（50-100km），约40-60min，航拍视角",
+                "total_time": "1h",
+                "total_cost": 3800
+              },
+              "option3": {
+                "name": "内陆飞机+快艇",
+                "detail": "MLE→远岛（100km+），内陆航班+快艇",
+                "total_time": "2.5h",
+                "total_cost": 4500
+              }
+            }
+          },
+          "train": {
+            "nearest_station": "无",
+            "duration": "无铁路",
+            "recommended_trains": [],
+            "station_transfer": {},
+            "notes": "马尔代夫是群岛国家，无铁路系统"
+          }
+        },
+        "guides": [
+          {
+            "must_visit": [
+              {
+                "rank": 1,
+                "name": "水上别墅 Water Villa（沙屋+水屋各住2晚）",
+                "ticket": "¥6000-18000/晚/房",
+                "open_time": "入住全天",
+                "reason": "透明玻璃地板+私人泳池+日出甲板",
+                "spend_time": "24h × 4晚"
+              },
+              {
+                "rank": 2,
+                "name": "鲸鲨共游 Snorkeling with Whale Shark",
+                "ticket": "¥880-1580/人/次",
+                "open_time": "06:00-11:00（1-3月高峰）",
+                "reason": "世界最大鱼类，温顺滤食，南阿里环礁必体验",
+                "spend_time": "3.5h"
+              },
+              {
+                "rank": 3,
+                "name": "魔鬼鱼（Manta Ray）夜潜喂食",
+                "ticket": "¥680-1280/人",
+                "open_time": "20:30-22:00",
+                "reason": "码头灯光下，20+条Manta绕圈，荧光梦幻",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 4,
+                "name": "无人沙洲 Sandbank 野餐",
+                "ticket": "¥1500-2800/2人",
+                "open_time": "半天",
+                "reason": "退潮时浮出水面的白沙滩，私密海岛感",
+                "spend_time": "5h"
+              },
+              {
+                "rank": 5,
+                "name": "日落海钓 + 现场BBQ",
+                "ticket": "¥800-1600/2人",
+                "open_time": "16:30-20:30",
+                "reason": "手钓金枪鱼/鲣鱼，烤自己钓的鱼",
+                "spend_time": "4h"
+              },
+              {
+                "rank": 6,
+                "name": "水下餐厅 Ithaa / Soneva in Aqua",
+                "ticket": "¥2000-5000/人/餐",
+                "open_time": "午/晚",
+                "reason": "世界首个全玻璃海底餐厅，5m深看热带鱼游",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 7,
+                "name": "浮潜 House Reef（礁屋自带珊瑚）",
+                "ticket": "免费",
+                "open_time": "全天",
+                "reason": "水屋下楼直接下水，能见度30m，海龟/小丑鱼/珊瑚",
+                "spend_time": "2h"
+              },
+              {
+                "rank": 8,
+                "name": "SPA 精油按摩（海景丛林）",
+                "ticket": "¥1200-2500/90min",
+                "open_time": "10:00-22:00",
+                "reason": "蜜月Couple Massage，海景/丛林/水上",
+                "spend_time": "1.5h"
+              },
+              {
+                "rank": 9,
+                "name": "马尔代夫本地岛（马富施/居民岛）",
+                "ticket": "往返快艇¥500",
+                "open_time": "09:00-18:00",
+                "reason": "感受当地人生活，海滩酒吧更便宜",
+                "spend_time": "4h"
+              }
+            ],
+            "itinerary": {
+              "Day1": [
+                "16:00 重庆江北机场T3集合（提前3h）",
+                "19:30 直飞Q2 重庆→马累 6.5h（时差-3h）",
+                "22:00（当地19:00） 抵达马累MLE机场，度假村接机",
+                "20:30 水飞/快艇到岛，入住2晚 Beach Villa 沙屋",
+                "22:00 蜜月欢迎香槟+花瓣铺床"
+              ],
+              "Day2": [
+                "08:30 早餐（一价全包AI：酒吧/餐厅/咖啡随便点）",
+                "10:30 House Reef浮潜（面镜+呼吸管）",
+                "12:30 主餐厅自助午餐",
+                "15:00 独木舟/立式桨板SUP",
+                "18:30 沙屋私人沙滩日落鸡尾酒",
+                "20:00 烛光晚宴海鲜龙虾"
+              ],
+              "Day3": [
+                "06:00 早起鲸鲨共游团（南阿里环礁）",
+                "10:30 返回，沙屋补觉",
+                "12:00 午餐",
+                "14:00 SPA Couple Massage 90min（蜜月赠送）",
+                "18:30 魔鬼鱼夜潜喂食",
+                "20:30 沙滩BBQ自助餐+当地乐队"
+              ],
+              "Day4": [
+                "10:00 换房：沙屋→Water Villa 水屋（酒店免费帮搬行李）",
+                "12:00 水屋自带泳池+玻璃地板看鱼",
+                "14:30 泳池边看书/晒太阳",
+                "16:30 日落海钓",
+                "19:30 现场BBQ烤自己钓的金枪鱼"
+              ],
+              "Day5": [
+                "09:00 无人沙洲Sandbank野餐",
+                "13:00 返回水屋",
+                "15:00 可选：水上摩托/拖翼伞（自费）",
+                "18:30 水屋甲板日落香槟",
+                "20:00 可选：海底餐厅Ithaa晚餐（需提前预约）"
+              ],
+              "Day6": [
+                "自由日：浮潜/看书/发呆/瑜伽课",
+                "下午16:00 本地岛（居民岛）游览",
+                "19:00 蜜月离别晚宴（酒店赠送）"
+              ],
+              "Day7": [
+                "11:00 退房Check Out",
+                "12:00 快艇/水飞返马累MLE",
+                "14:00 MLE机场免税店采购（巧克力/红茶/海龟纪念品）",
+                "17:00 直飞返重庆",
+                "次日07:00 抵重庆"
+              ]
+            },
+            "pitfalls": [
+              "签证：马尔代夫对中国护照30天免费落地签，需持有效期6个月以上护照+往返机票+酒店预订单；但疫情/政策变时查中国领事服务网",
+              "选岛：蜜月首选「一价全包AI」度假村（Club Med Kani/Finolhu/Siyam World），沙屋+水屋各2晚（4晚起），水屋差价大但值得",
+              "水飞 vs 快艇：近岛快艇30min省钱；中远岛水飞40min可航拍；但水飞下午4点后停飞，若晚班机到马累须住马累1晚",
+              "小费文化：行李员$1/件，打扫$2/床/天（放枕头），管家$20-50/次， SPA/餐厅10%服务费已含账单，不要重复给",
+              "防晒：赤道紫外线爆表，SPF100+；下水穿防晒衣（珊瑚白化禁止普通防晒霜化学成分）；水母衣/浮潜袜防刮+防晒",
+              "珊瑚保育：不要踩珊瑚，不要触摸任何海洋生物，尤其不要拿海星/海螺拍照",
+              "货币：通用美元现金$20/$50小面额+Visa/Master信用卡；当地币拉菲亚Rf但旅游区全用美元",
+              "网络：大部分度假村WiFi覆盖，但远岛/出海活动无信号，可购买本地Dhiraagu电话卡10GB/$25"
+            ],
+            "food_top5": [
+              {
+                "rank": 1,
+                "name": "马尔代夫龙虾BBQ",
+                "avg_price_per_person": 550,
+                "description": "一价全包度假村通常每周1晚龙虾夜，澳洲大龙虾炭烤+香槟",
+                "time_saver": "提前1天预约座位"
+              },
+              {
+                "rank": 2,
+                "name": "金枪鱼刺身/寿司",
+                "avg_price_per_person": 280,
+                "description": "本地黄鳍金枪鱼当天现捕，刺身极鲜",
+                "time_saver": "日落海钓后现场烤/刺身"
+              },
+              {
+                "rank": 3,
+                "name": "椰子咖喱虾 + 蒸石斑鱼",
+                "avg_price_per_person": 320,
+                "description": "本地岛居民岛餐厅：椰浆咖喱+热带香料",
+                "time_saver": "马富施居民岛餐厅便宜一半"
+              },
+              {
+                "rank": 4,
+                "name": "热带水果拼盘 + 鲜榨芒果汁",
+                "avg_price_per_person": 68,
+                "description": "菠萝蜜/番石榴/西番莲/芒果/椰子，早餐随便拿",
+                "time_saver": "AI全包免费"
+              },
+              {
+                "rank": 5,
+                "name": "海底餐厅 Ithaa 七道式",
+                "avg_price_per_person": 3800,
+                "description": "Conrad Rangali岛世界首家海底餐厅，7道法式+葡萄酒",
+                "time_saver": "提前1个月预约，情侣蜜月首选"
+              }
+            ],
+            "budget": {
+              "transport_ev_self_drive": 0,
+              "transport_flight_per_person": 9000,
+              "transport_train_per_person": 0,
+              "accommodation_per_night": {
+                "budget": 4000,
+                "mid_range": 9000,
+                "luxury": 25000
+              },
+              "food_per_day_per_person": {
+                "budget": 0,
+                "mid_range": 0,
+                "luxury": 0,
+                "note": "蜜月一价全包AI含全部餐饮酒水"
+              },
+              "tickets_per_person": {
+                "鲸鲨浮潜": 1200,
+                "Manta夜潜": 900,
+                "沙洲野餐": 1400,
+                "日落海钓BBQ": 1200,
+                "SPA90min": 1500,
+                "水上摩托/拖伞": 1200,
+                "合计": 7400
+              },
+              "budget_2people_7days": {
+                "ev_drive": {
+                  "交通": 0,
+                  "住宿": 0,
+                  "餐饮": 0,
+                  "门票": 0,
+                  "小计": 0,
+                  "弹性20%": 0,
+                  "总计": 0,
+                  "note": "无EV选项，只能飞机"
+                },
+                "flight": {
+                  "交通": 18000,
+                  "住宿": 26000,
+                  "餐饮": 0,
+                  "门票": 14800,
+                  "小计": 58800,
+                  "弹性20%": 1560,
+                  "总计": 60360
+                },
+                "train": {
+                  "交通": 0,
+                  "住宿": 0,
+                  "餐饮": 0,
+                  "门票": 0,
+                  "小计": 0,
+                  "弹性20%": 0,
+                  "总计": 0,
+                  "note": "无铁路"
+                }
+              }
+            },
+            "photo_guide": [
+              {
+                "spot": "水屋泳池+蓝调时刻",
+                "best_time": "18:40-19:10（日落后20min）",
+                "tips": "慢门长曝光，三角架；泳池灯+天边蓝调+镜面倒影"
+              },
+              {
+                "spot": "沙洲沙滩裙+无人机",
+                "best_time": "09:00-10:00",
+                "tips": "无人机航拍心形沙洲，白裙随风"
+              },
+              {
+                "spot": "鲸鲨水下GoPro",
+                "best_time": "07:00-09:00",
+                "tips": "侧面平行拍，不要靠近尾鳍/头部；保持3米"
+              },
+              {
+                "spot": "海底餐厅Ithaa七道",
+                "best_time": "午餐12:00-13:00",
+                "tips": "鱼群环绕+玻璃窗外透，情侣碰杯"
+              },
+              {
+                "spot": "魔鬼鱼Manta夜潜",
+                "best_time": "21:00",
+                "tips": "广角+水下手电，20+条Manta盘旋光影"
+              },
+              {
+                "spot": "日落鸡尾酒沙屋",
+                "best_time": "18:30",
+                "tips": "香槟杯剪影+日落海面金光"
+              }
+            ],
+            "source_consensus": {
+              "小红书": {
+                "top3": [
+                  "蜜月送花瓣铺床+SPA 提前写邮件",
+                  "Finolhu/Siyam性价比高",
+                  "水下餐厅Conrad Rangali要提前月订"
+                ],
+                "debate": "沙屋还是水屋？60%各2晚体验全，40%水屋贵直接连住4晚"
+              },
+              "抖音": {
+                "top3": [
+                  "视频实拍真实感强",
+                  "黄金时刻/机位精准",
+                  "部分滤镜过重需甄别"
+                ],
+                "debate": "网红打卡地值得去吗？55%现场确实出片，45%人挤人体验差"
+              },
+              "美团": {
+                "top3": [
+                  "当地美食 Top 榜可信",
+                  "门票套餐团购价对比",
+                  "真实差评能看坑点"
+                ],
+                "debate": "一日游团购靠谱吗？50%低价团藏购物，50%纯玩团性价比高"
+              },
+              "高德": {
+                "top3": [
+                  "自驾路线/充电桩最新",
+                  "景区停车场/实时拥堵",
+                  "接驳大巴时刻表准确"
+                ],
+                "debate": "自驾好还是高铁好？60%自驾随性，40%停车累更适合高铁/包车"
+              },
+              "去哪儿": {
+                "top3": [
+                  "11-4月旱季天蓝海静",
+                  "1-3月鲸鲨出现率90%+",
+                  "5-10月雨季便宜一半但雷暴多"
+                ],
+                "debate": "马富施居民岛穷游值吗？55%价格低美食好但设施差，45%直接度假村AI省心蜜月该花就花"
+              },
+              "携程": {
+                "top3": [
+                  "门票提前 3 天预约",
+                  "接送机/包车价格透明",
+                  "亲子/蜜月房型筛选"
+                ],
+                "debate": "要不要买套票？55%套票划算，45%捆绑项目用不上浪费"
+              }
+            }
+          }
+        ],
+        "notes": "出国！护照有效期≥6个月；30天落地签；唯一交通飞机；蜜月首选一价全包沙+水各2晚",
         "converted_to_visited": false,
         "visited_ref": null
       }

@@ -1088,15 +1088,49 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function loadWishlistData() {
     try {
+      // 先取 travel.json 默认清单（本次升级已含10个目的地：含新增5个）
+      const defaults = (DATA && DATA.wishlist && Array.isArray(DATA.wishlist.places))
+        ? DATA.wishlist.places.slice() : [];
+      const defaultMap = new Map(defaults.map(p => [String(p.id), p]));
+
       const raw = localStorage.getItem(WISHLIST_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length) {
-          WISHLIST = parsed;
-          DATA.wishlist.places = WISHLIST;
-          return true;
-        }
+      if (!raw) {
+        // 无缓存 → 直接用默认
+        WISHLIST = defaults;
+        DATA.wishlist.places = WISHLIST;
+        return true;
       }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed) || !parsed.length) {
+        WISHLIST = defaults;
+        DATA.wishlist.places = WISHLIST;
+        return true;
+      }
+
+      // 按 id 合并：用户已存储的优先级最高（保留用户改的 priority/converted_to_visited/自定义 guides）
+      const existingMap = new Map(parsed.map(p => [String(p.id), p]));
+      const merged = [];
+      // 1) 先放 storage 里已有的（原样保留，不覆盖用户自定义）
+      parsed.forEach(p => merged.push(p));
+      // 2) 再放默认清单里有但 storage 还没有的（本次新增的5个目的地）
+      defaults.forEach(p => { if (!existingMap.has(String(p.id))) merged.push(p); });
+      // 3) 去除重复 id（只保留第一条 = storage 那条）
+      const seen = new Set();
+      const dedup = merged.filter(p => {
+        const k = String(p.id);
+        if (seen.has(k)) return false;
+        seen.add(k); return true;
+      });
+      // 4) 按 priority 升序重排，缺失的优先级设 99 末尾
+      dedup.forEach(p => { if (!p.priority) p.priority = 99; });
+      dedup.sort((a, b) => (Number(a.priority) || 99) - (Number(b.priority) || 99));
+      dedup.forEach((p, i) => { p.priority = i + 1; });
+
+      WISHLIST = dedup;
+      DATA.wishlist.places = WISHLIST;
+      // 合并后立即写回 storage，下次启动无需再合并
+      try { saveWishlistData(); } catch (_) {}
+      return true;
     } catch (e) { console.warn("loadWishlistData failed", e); }
     return false;
   }
