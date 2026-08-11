@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>美食偏好 · 师豪 ❤ 佳力</title>
+<meta name="description" content="记录家庭成员各自喜欢的美食、评分和理由——买菜做饭不纠结。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* ========== 美食页专属样式 ========== */
+  .hero__sub{margin-top:12px;font-size:1rem;color:var(--muted);max-width:560px;margin-left:auto;margin-right:auto}
+
+  /* 人物切换按钮组 */
+  .filter-bar{
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;
+    max-width:900px;margin:0 auto 22px;padding:14px 18px;
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
+  }
+  .filter-bar__label{font-size:.82rem;color:var(--muted);font-family:var(--ff-accent);font-style:italic;letter-spacing:.06em}
+  .chip-group{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{
+    padding:7px 16px;border-radius:var(--r-pill);font-size:.86rem;font-weight:500;
+    background:var(--bg-deep);color:var(--muted);border:1px solid var(--line-soft);cursor:pointer;
+    transition:all .25s var(--ease);user-select:none;
+  }
+  .chip:hover{border-color:var(--sage-soft);color:var(--sage-deep)}
+  .chip--active{
+    background:var(--sage);color:var(--white);border-color:var(--sage);
+  }
+  .chip--him.chip--active{background:var(--terracotta);border-color:var(--terracotta)}
+  .chip--her.chip--active{background:var(--rose);border-color:var(--rose)}
+
+  /* 工具栏 */
+  .toolbar{
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center;
+    max-width:1120px;margin:0 auto 20px;padding:0 22px;
+  }
+  .btn--sm{padding:8px 14px;font-size:.82rem}
+  .sync-hint{
+    max-width:760px;margin:16px auto 0;padding:14px 18px;
+    background:var(--bg-tint);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    font-size:.84rem;color:var(--muted);line-height:1.7;
+  }
+  .sync-hint strong{color:var(--sage-deep)}
+  .sync-hint code{
+    background:rgba(0,0,0,.05);padding:2px 6px;border-radius:4px;font-size:.82em;
+    font-family:ui-monospace,Consolas,monospace;
+  }
+
+  /* 分析总结区 */
+  .analysis-grid{
+    display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    max-width:1120px;margin:0 auto;
+  }
+  .profile-card{
+    background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);
+    padding:24px;transition:all .3s var(--ease);
+  }
+  .profile-card--him{border-top:4px solid var(--terracotta)}
+  .profile-card--her{border-top:4px solid var(--rose)}
+  .profile-card--both{border-top:4px solid var(--sage-deep)}
+  .profile-card__head{
+    display:flex;align-items:center;gap:12px;margin-bottom:14px;
+  }
+  .profile-card__avatar{
+    width:48px;height:48px;border-radius:50%;
+    display:grid;place-items:center;color:#fff;font-weight:600;font-size:1.1rem;
+  }
+  .profile-card--him .profile-card__avatar{background:linear-gradient(135deg,var(--terracotta),#a55d47)}
+  .profile-card--her .profile-card__avatar{background:linear-gradient(135deg,var(--rose),var(--rose-deep))}
+  .profile-card--both .profile-card__avatar{background:linear-gradient(135deg,var(--sage),var(--sage-deep))}
+  .profile-card__name{font-family:var(--ff-display);font-size:1.2rem;color:var(--ink);font-weight:600}
+  .profile-card__sum{font-size:.82rem;color:var(--muted);margin-top:2px}
+  .profile-card__stat{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;
+    padding:12px;background:var(--bg-soft);border-radius:var(--r-sm);
+  }
+  .stat-item{text-align:center}
+  .stat-item__num{font-family:var(--ff-display);font-size:1.4rem;color:var(--ink);font-weight:600}
+  .stat-item__label{font-size:.72rem;color:var(--muted);margin-top:2px}
+  .profile-card__tags{display:flex;gap:6px;flex-wrap:wrap}
+  .tag-cloud{margin-top:10px}
+  .common-foods{
+    display:flex;flex-direction:column;gap:8px;margin-top:10px;
+  }
+  .common-food{
+    display:flex;align-items:center;gap:10px;padding:8px 12px;
+    background:var(--sage-tint);border-radius:var(--r-sm);font-size:.9rem;
+  }
+
+  /* 分模块展示区 */
+  .category-section{margin-bottom:36px}
+  .category-head{
+    display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:10px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .category-icon{
+    width:40px;height:40px;border-radius:var(--r-sm);
+    display:grid;place-items:center;font-size:1.2rem;
+    background:var(--sage-tint);
+  }
+  .category-title{font-family:var(--ff-display);font-size:1.3rem;color:var(--ink);font-weight:600}
+  .category-count{font-size:.8rem;color:var(--muted);font-family:var(--ff-accent);font-style:italic}
+
+  /* 食物行（一行一个） */
+  .food-table{
+    width:100%;border-collapse:separate;border-spacing:0 8px;
+  }
+  .food-row{
+    background:var(--bg-card);border:1px solid var(--line-soft);
+    transition:all .25s var(--ease);
+  }
+  .food-row:hover{border-color:var(--sage-soft);box-shadow:var(--shadow-sm)}
+  .food-row td{
+    padding:14px 16px;vertical-align:top;
+  }
+  .food-row td:first-child{border-radius:var(--r-sm) 0 0 var(--r-sm)}
+  .food-row td:last-child{border-radius:0 var(--r-sm) var(--r-sm) 0}
+  .food-name{
+    display:flex;align-items:center;gap:10px;font-weight:600;color:var(--ink);font-size:1rem;
+  }
+  .food-owner{
+    flex-shrink:0;
+  }
+  .food-meta{font-size:.82rem;color:var(--muted);margin-top:6px;line-height:1.6}
+  .food-reason{font-size:.9rem;color:var(--text);line-height:1.6;margin-top:4px}
+  .food-review{font-size:.84rem;color:var(--muted);line-height:1.7;margin-top:6px;padding-left:10px;border-left:2px solid var(--line-soft)}
+  .food-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+
+  /* 评分星星 */
+  .rating{
+    display:inline-flex;gap:2px;font-size:1rem;white-space:nowrap;
+  }
+  .rating__star{color:var(--line)}
+  .rating__star--fill{color:#D4A24C}
+  .rating__num{margin-left:6px;font-family:var(--ff-display);font-weight:600;color:var(--ink);font-size:.95rem}
+
+  /* 操作按钮 */
+  .row-actions{
+    display:flex;gap:6px;justify-content:flex-end;white-space:nowrap;
+  }
+  .icon-btn{
+    width:32px;height:32px;border-radius:var(--r-sm);border:1px solid var(--line-soft);
+    background:var(--bg-soft);color:var(--muted);display:grid;place-items:center;
+    font-size:.85rem;cursor:pointer;transition:all .2s var(--ease);
+  }
+  .icon-btn:hover{border-color:var(--sage-soft);color:var(--sage-deep);background:var(--sage-tint)}
+  .icon-btn--danger:hover{border-color:var(--rose-soft);color:var(--rose-deep);background:var(--rose-tint)}
+
+  /* 空状态 */
+  .empty-state{
+    text-align:center;padding:40px 20px;color:var(--muted);
+    border:2px dashed var(--line-soft);border-radius:var(--r-md);
+  }
+  .empty-state p{margin-top:8px;font-size:.9rem}
+
+  /* 编辑/新增弹窗表单 */
+  .edit-field{margin-bottom:12px}
+  .edit-field label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px;font-weight:500}
+  .edit-field input,.edit-field textarea,.edit-field select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);
+    font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);
+    transition:border-color .2s;
+  }
+  .edit-field input:focus,.edit-field textarea:focus,.edit-field select:focus{
+    outline:none;border-color:var(--sage);
+  }
+  .edit-field textarea{min-height:70px;resize:vertical;line-height:1.6}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-row--full{grid-template-columns:1fr}
+  @media (max-width:640px){.form-row{grid-template-columns:1fr}}
+
+  /* 评分滑块 */
+  .rating-slider{
+    display:flex;align-items:center;gap:12px;
+  }
+  .rating-slider input[type=range]{
+    flex:1;accent-color:var(--sage);
+  }
+  .rating-preview{
+    min-width:110px;text-align:center;
+  }
+
+  /* 标签输入 */
+  .tags-input-wrap{
+    display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--line);
+    border-radius:var(--r-sm);background:var(--bg);min-height:44px;align-items:center;
+  }
+  .tags-input-wrap:focus-within{border-color:var(--sage)}
+  .tag-pill{
+    display:inline-flex;align-items:center;gap:4px;padding:3px 10px;
+    background:var(--sage-tint);color:var(--sage-deep);border-radius:var(--r-pill);
+    font-size:.8rem;border:1px solid var(--sage-soft);
+  }
+  .tag-pill button{
+    background:none;border:none;color:var(--sage-deep);cursor:pointer;font-size:.9rem;
+    line-height:1;padding:0 0 0 2px;
+  }
+  .tag-pill input[type=text]{
+    border:none;outline:none;background:transparent;padding:4px 2px;
+    font-size:.85rem;min-width:80px;
+  }
+
+  @media (max-width:768px){
+    .food-table{display:block}
+    .food-row{display:block;border-radius:var(--r-md);margin-bottom:12px;padding:14px}
+    .food-row td{display:block;padding:6px 0;border:none !important;border-radius:0 !important}
+    .row-actions{justify-content:flex-start;margin-top:10px}
+  }
+</style>
+</head>
+<body data-page="food">
+<main>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero__bg"></div>
+  <div class="hero__inner">
+    <p class="kicker hero__kicker reveal">Foodie Love Map · 舌尖上的我们</p>
+    <h1 class="hero__title reveal" data-delay="1">美食偏好档案</h1>
+    <p class="hero__names reveal" data-delay="2">师豪 <span class="heart">❤</span> 佳力</p>
+    <p class="hero__sub reveal" data-delay="2" id="hero-intro">民以食为天，爱一个人就记下 TA 爱吃的每一样。买菜、做饭、下馆子，再也不用纠结"吃什么"。</p>
+    <div class="hero__actions reveal" data-delay="3">
+      <a href="#analysis" class="btn btn--primary">口味画像分析</a>
+      <a href="#list" class="btn btn--ghost">浏览美食清单</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 00 口味分析总结 ========== -->
+<section class="section section--tint" id="analysis">
+  <div class="container">
+    <div class="section__head reveal">
+      <span class="section__num">00</span>
+      <h2 class="section__title">口味画像 · 分析总结</h2>
+      <p class="section__desc">两个人的偏好拼在一起，就是这个小窝的味觉 DNA。</p>
+    </div>
+    <div class="analysis-grid reveal" id="analysisGrid">
+      <!-- 由 JS 渲染：师豪画像 / 佳力画像 / 共同爱好 / 全局统计 -->
+    </div>
+  </div>
+</section>
+
+<!-- ========== 01 美食清单 ========== -->
+<section class="section" id="list">
+  <div class="container">
+
+    <!-- 人物 + 类型筛选 -->
+    <div class="reveal">
+      <div class="filter-bar">
+        <span class="filter-bar__label">👤 人物</span>
+        <div class="chip-group" id="ownerFilter">
+          <button class="chip chip--active" data-owner="all">全部</button>
+          <button class="chip chip--him" data-owner="him">师豪</button>
+          <button class="chip chip--her" data-owner="her">佳力</button>
+        </div>
+        <span style="width:1px;height:24px;background:var(--line-soft);margin:0 6px"></span>
+        <span class="filter-bar__label">🍽 类型</span>
+        <div class="chip-group" id="categoryFilter">
+          <button class="chip chip--active" data-cat="all">全部</button>
+          <button class="chip" data-cat="meal">🍲 正餐</button>
+          <button class="chip" data-cat="snack">🍿 零食</button>
+          <button class="chip" data-cat="fruit">🍎 水果</button>
+          <button class="chip" data-cat="veg">🥬 蔬菜</button>
+          <button class="chip" data-cat="drink">🥤 饮品</button>
+          <button class="chip" data-cat="other">✨ 其他</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 工具栏 -->
+    <div class="toolbar reveal" id="food-toolbar">
+      <button class="btn btn--ghost btn--sm" id="btnAddFood" type="button">+ 新增美食</button>
+      <button class="btn btn--ghost btn--sm" id="btnExport" type="button">⬇ 导出 JSON</button>
+      <button class="btn btn--ghost btn--sm" id="btnImport" type="button">⬆ 导入 JSON</button>
+      <input type="file" id="fileImport" accept=".json" style="display:none" />
+    </div>
+
+    <div class="sync-hint reveal" id="syncHint" style="display:none">
+      <p><strong>📦 数据保存方式有两种（互相兼容，可切换）：</strong></p>
+      <p><strong>方式 A · 云端跨设备同步（推荐）—— Supabase 云数据库</strong>：数据实时写入 PostgreSQL，<strong>切换浏览器 / 换电脑 / 手机端 都能立刻看到同一份数据</strong>。首次配置只需 3 步（见家庭关系网顶部说明）。</p>
+      <p><strong>方式 B · 本机手动同步（无需任何配置）</strong>：点击「<strong>⬇ 导出 JSON</strong>」下载数据，换设备时再「⬆ 导入 JSON」导回来。</p>
+    </div>
+
+    <!-- 分模块列表 -->
+    <div class="reveal" id="foodContainer" style="margin-top:30px">
+      <!-- 由 JS 渲染：每个 category 一个 section -->
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== Crosslinks ========== -->
+<section class="section section--tint">
+  <div class="container">
+    <div class="section__head reveal">
+      <p class="kicker">Next · 继续走</p>
+      <h2 class="section__title">吃好了，日子就过好了</h2>
+    </div>
+    <div class="crosslinks reveal">
+      <a class="crosslink" href="family.html">
+        <span class="crosslink__icon">🏠</span>
+        <span class="crosslink__title">家庭关系网</span>
+        <span class="crosslink__desc">双方父母的饮食喜好也记在档案里，下次回家做饭更懂他们。</span>
+        <span class="crosslink__arrow">前往 →</span>
+      </a>
+      <a class="crosslink" href="milestones.html">
+        <span class="crosslink__icon">🪴</span>
+        <span class="crosslink__title">人生里程碑</span>
+        <span class="crosslink__desc">从求婚到婚礼，把每一顿"值得纪念的饭"放进时间轴里。</span>
+        <span class="crosslink__arrow">前往 →</span>
+      </a>
+      <a class="crosslink" href="index.html">
+        <span class="crosslink__icon">←</span>
+        <span class="crosslink__title">回到仪表盘</span>
+        <span class="crosslink__desc">爱的小窝首页，看看今天还有什么要一起做的小事。</span>
+        <span class="crosslink__arrow">返回 →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Supabase + 数据访问层 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="../env-config.js"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
+<script src="shared/nav.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ============================================================
+     FALLBACK 初始数据（镜像 data/food.json）
+     ============================================================ */
+  const FALLBACK = {
+    intro: "民以食为天，爱一个人就记下 TA 爱吃的每一样。把两个人的口味装进同一个小窝，买菜、做饭、下馆子都不纠结。",
+    profile_tags: {
+      him: { name: "师豪", summary: "肉食为主 · 鲜 & 有味道 & 辣 · 高蛋白爱好者", tags: ["鲜","有味道","辣","高蛋白","肉食"] },
+      her: { name: "佳力", summary: "素菜 & 主食 · 面食党 · 无辣不欢", tags: ["素菜","主食","面","辣"] }
+    },
+    preferences: [
+      { id:"f_shihao_1", owner:"him", name:"番茄炒蛋", category:"meal",  rating:9,  reason:"鲜、高蛋白、下饭神器", review:"番茄酸甜开胃，鸡蛋嫩滑，拌饭一绝，家常味天花板", tags:["鲜","高蛋白","下饭","家常"] },
+      { id:"f_shihao_2", owner:"him", name:"蒸蛋",     category:"meal",  rating:8,  reason:"嫩、鲜、高蛋白、清淡养胃", review:"入口即化，口感嫩滑，配生抽香油，简单又好吃", tags:["鲜","高蛋白","清淡","嫩"] },
+      { id:"f_shihao_3", owner:"him", name:"海带",     category:"veg",   rating:7,  reason:"鲜、健康、低卡", review:"凉拌爽脆，炖汤入味，吃着有海洋的鲜味", tags:["鲜","健康","低卡","爽脆"] },
+      { id:"f_shihao_4", owner:"him", name:"红烧牛肉", category:"meal",  rating:10, reason:"香、有味道、高蛋白、肉食满足", review:"红烧入味、肥瘦相间、酱汁浓郁，配米饭绝了，肉食主义的最爱", tags:["高蛋白","肉食","入味","香"] },
+      { id:"f_shihao_5", owner:"him", name:"烧烤",     category:"snack", rating:9,  reason:"辣、香、有味道、夜宵灵魂", review:"烤串焦香四溢，撒上辣椒孜然，啤酒伴侣，夜宵首选", tags:["辣","香","夜宵","重口味"] },
+      { id:"f_shihao_6", owner:"him", name:"火锅",     category:"meal",  rating:10, reason:"辣、鲜、肉食盛宴、热闹", review:"牛油锅底够味，毛肚鸭肠牛肉涮起来，围坐一起的幸福感拉满", tags:["辣","鲜","肉食","社交"] },
+      { id:"f_shihao_7", owner:"him", name:"串串",     category:"meal",  rating:9,  reason:"辣、有味道、选择多、接地气", review:"签签牛肉、掌中宝、郡肝，一串一口，吃的就是巴适", tags:["辣","重口味","接地气","肉食"] },
+      { id:"f_shihao_8", owner:"him", name:"豆腐",     category:"veg",   rating:8,  reason:"鲜、高蛋白、百变、嫩滑", review:"麻婆豆腐够味、豆花嫩滑、豆腐汤鲜，怎么做都好吃", tags:["鲜","高蛋白","嫩滑","百变"] },
+
+      { id:"f_jiali_1",  owner:"her", name:"面",       category:"meal",  rating:9,  reason:"主食、辣、碳水快乐", review:"重庆小面、牛肉面、肥肠面，早上一碗面，一天都满足", tags:["主食","辣","碳水","重庆味"] },
+      { id:"f_jiali_2",  owner:"her", name:"米粉",     category:"meal",  rating:8,  reason:"主食、顺滑、家乡味", review:"彭水米粉粗细合适，臊子香，嗦一口就是回家的感觉", tags:["主食","顺滑","家乡味","碳水"] },
+      { id:"f_jiali_3",  owner:"her", name:"苕皮",     category:"snack", rating:9,  reason:"辣、Q弹、烤着香", review:"烤苕皮裹酸萝卜香菜，外焦里糯，咬一口满足感爆棚", tags:["辣","Q弹","烧烤","糯"] },
+      { id:"f_jiali_4",  owner:"her", name:"红苕粉",   category:"meal",  rating:8,  reason:"主食、辣、顺滑、彭水味", review:"彭水酸辣粉，红薯粉劲道，酸辣开胃，家乡味道", tags:["主食","辣","顺滑","家乡味"] },
+      { id:"f_jiali_5",  owner:"her", name:"干锅鸡杂", category:"meal",  rating:9,  reason:"辣、素菜多、下饭、重口味", review:"鸡杂脆嫩，藕片土豆魔芋入味，干锅干香，下饭神器", tags:["辣","下饭","素菜","脆嫩"] },
+      { id:"f_jiali_6",  owner:"her", name:"榴莲",     category:"fruit", rating:10, reason:"甜、香、水果之王、独特", review:"榴莲肉绵密香甜，入口即化，越吃越上头，独特的香气让人欲罢不能", tags:["甜","绵密","香甜","独特"] },
+      { id:"f_jiali_7",  owner:"her", name:"儿菜",     category:"veg",   rating:7,  reason:"素菜、清爽、家常", review:"儿菜清炒或煮汤，清爽解腻，家常菜的温暖", tags:["素菜","清爽","家常","解腻"] },
+      { id:"f_jiali_8",  owner:"her", name:"渣海椒",   category:"other", rating:8,  reason:"辣、下饭、彭水特色、发酵香", review:"渣海椒回锅肉或炒鸡蛋，发酵的酸辣味，彭水人的下饭灵魂", tags:["辣","下饭","发酵","彭水特色"] },
+      { id:"f_jiali_9",  owner:"her", name:"火锅",     category:"meal",  rating:10, reason:"辣、素菜多、一起吃更开心", review:"火锅煮贡菜苕皮土豆毛肚，辣得过瘾，和喜欢的人一起吃更幸福", tags:["辣","素菜","社交","重口味"] },
+      { id:"f_jiali_10", owner:"her", name:"串串",     category:"meal",  rating:9,  reason:"辣、选择多、素菜也香", review:"签签贡菜、土豆、藕片、木耳，蘸干油碟，巴适得板", tags:["辣","素菜","接地气","选择多"] },
+      { id:"f_jiali_11", owner:"her", name:"淀粉肠",   category:"snack", rating:8,  reason:"香、脆、路边摊回忆", review:"炸得金黄焦脆的淀粉肠，刷上辣椒面，童年回忆拉满", tags:["香","脆","油炸","童年味"] },
+      { id:"f_jiali_12", owner:"her", name:"贡菜",     category:"veg",   rating:8,  reason:"脆、素菜、火锅必备", review:"火锅烫几秒就好，嘎嘣脆的口感，一口一个停不下来", tags:["脆","素菜","火锅","清爽"] },
+      { id:"f_jiali_13", owner:"her", name:"土豆",     category:"veg",   rating:9,  reason:"素菜、百变、碳水快乐", review:"土豆丝、土豆片、狼牙土豆、炸薯条，怎么做都爱吃", tags:["素菜","碳水","百变","香脆"] }
+    ]
+  };
+
+  /* 分类元数据 */
+  const CATEGORIES = {
+    meal:  { label: "🍲 正餐菜肴", icon: "🍲", desc: "米饭杀手 · 一顿的主角" },
+    snack: { label: "🍿 小吃零食", icon: "🍿", desc: "夜宵加餐 · 快乐源泉" },
+    fruit: { label: "🍎 水果甜点", icon: "🍎", desc: "餐后甜蜜 · 维生素补给" },
+    veg:   { label: "🥬 蔬菜素味", icon: "🥬", desc: "清爽健康 · 餐桌清流" },
+    drink: { label: "🥤 饮品酒水", icon: "🥤", desc: "一杯入魂 · 解渴或微醺" },
+    other: { label: "✨ 其他风味", icon: "✨", desc: "发酵、调味、地方特色" }
+  };
+
+  const OWNERS = {
+    him: { name: "师豪", tagClass: "tag--him", chipClass: "chip--him" },
+    her: { name: "佳力", tagClass: "tag--her", chipClass: "chip--her" }
+  };
+
+  /* ---------- utils ---------- */
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function uid() { return "f_" + Math.random().toString(36).slice(2, 10); }
+
+  /* 评分渲染：1-10 分 → 5 星 + 数值 */
+  function renderRating(rating) {
+    const r = Math.max(1, Math.min(10, Number(rating) || 1));
+    const stars = Math.round(r / 2); // 10→5, 5→2.5→3
+    let html = '<span class="rating" title="评分 ' + r + '/10">';
+    for (let i = 1; i <= 5; i++) {
+      html += '<span class="rating__star' + (i <= stars ? ' rating__star--fill' : '') + '">★</span>';
+    }
+    html += '<span class="rating__num">' + r + '</span>';
+    html += '</span>';
+    return html;
+  }
+
+  /* ============================================================
+     云同步状态 & 数据存取（同 family 模式）
+     ============================================================ */
+  let __foods = [];
+  let __filterOwner = "all";
+  let __filterCat = "all";
+
+  function isCloudConfigured() {
+    return !!(window.LoveNest && window.LoveNest.db && window.LoveNest.db.enabled);
+  }
+  function renderStatusBadge() {
+    const tb = document.getElementById("food-toolbar");
+    if (!tb) return;
+    let badge = document.getElementById("cloud-status-badge");
+    const configured = isCloudConfigured();
+    const label = configured
+      ? '<span title="已配置 Supabase，数据跨浏览器 / 跨设备自动同步">☁️ 云端同步</span>'
+      : '<span title="未配置 Supabase 密钥，数据仅保存在本机浏览器；换浏览器 / 换设备前记得先导出 JSON">💻 本机模式</span>';
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.id = "cloud-status-badge";
+      badge.className = "tag " + (configured ? "tag--sage" : "tag--rose");
+      badge.style.cursor = "help";
+      badge.style.flex = "0 0 auto";
+      badge.style.marginRight = "auto";
+      tb.insertBefore(badge, tb.firstChild);
+    }
+    badge.className = "tag " + (configured ? "tag--sage" : "tag--rose");
+    badge.innerHTML = label;
+    badge.onclick = function () {
+      const hint = document.getElementById("syncHint");
+      if (hint) {
+        hint.style.display = "block";
+        hint.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    };
+  }
+
+  async function refreshFromDB(basePrefs) {
+    const keyField = "id";
+    const cache = JSON.parse(localStorage.getItem("lovenest:db:cache:food_preferences") || "null");
+    const fromCache = Array.isArray(cache) ? cache.slice() : [];
+    const liveCfg = (window.LoveNest && window.LoveNest.db && window.LoveNest.db.config) || window.LOVENEST_SUPABASE_CONFIG || {};
+
+    let merged = fromCache.slice();
+    if (LoveNest.db.enabled) {
+      try {
+        if (liveCfg.PROJECT_URL && !String(liveCfg.PROJECT_URL).includes("YOUR-PROJECT")
+            && liveCfg.ANON_PUBLIC_KEY && !String(liveCfg.ANON_PUBLIC_KEY).includes("YOUR-ANON")
+            && window.supabase) {
+          try {
+            const _client = window.supabase.createClient(
+              liveCfg.PROJECT_URL, liveCfg.ANON_PUBLIC_KEY,
+              { auth: { persistSession: false, autoRefreshToken: false } }
+            );
+            const { data, error } = await _client.from("food_preferences").select("*")
+              .eq("couple_id", liveCfg.COUPLE_ID);
+            if (!error && Array.isArray(data)) {
+              const map = new Map();
+              fromCache.forEach(r => { if (r[keyField] != null) map.set(String(r[keyField]), { ...r }); });
+              (data || []).forEach(r => {
+                if (r[keyField] == null) return;
+                const k = String(r[keyField]);
+                const ex = map.get(k);
+                if (!ex) { map.set(k, r); return; }
+                const eu = ex.updated_at || 0, ru = r.updated_at || 0;
+                if (new Date(ru) > new Date(eu)) map.set(k, r);
+              });
+              merged = Array.from(map.values());
+              localStorage.setItem("lovenest:db:cache:food_preferences", JSON.stringify(merged));
+            }
+          } catch (_) {}
+        }
+      } catch (_) {}
+    }
+
+    if (merged && merged.length) {
+      __foods = merged.slice();
+    } else {
+      const seeds = (basePrefs || []).slice();
+      for (const p of seeds) {
+        try { await LoveNest.db.upsert('food_preferences', p, ['id']); } catch (e) {}
+      }
+      const re = await LoveNest.db.list('food_preferences');
+      __foods = (re && re.length ? re : seeds).slice();
+    }
+  }
+
+  const FoodStore = {
+    load() { return __foods.slice(); },
+    async save(list) {
+      __foods = list;
+      let lastErr = null;
+      for (const m of list) {
+        try { await LoveNest.db.upsert('food_preferences', m, ['id']); }
+        catch (e) { lastErr = e; }
+      }
+      return { configured: isCloudConfigured(), lastErr };
+    },
+    async removeOne(id) {
+      try { await LoveNest.db.remove('food_preferences', { id }); } catch (e) {}
+      __foods = __foods.filter(x => x.id !== id);
+    },
+    export(fullData) {
+      const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "food-preferences.json";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 200);
+    },
+    async import(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (data && Array.isArray(data.preferences)) {
+              await this.save(data.preferences);
+              resolve(data);
+            } else {
+              reject(new Error("文件格式不正确：缺少 preferences 数组"));
+            }
+          } catch (err) {
+            reject(new Error("JSON 解析失败：" + err.message));
+          }
+        };
+        reader.onerror = () => reject(new Error("文件读取失败"));
+        reader.readAsText(file);
+      });
+    }
+  };
+
+  /* 简易 toast */
+  function showToast(msg, opts) {
+    const k = opts && opts.kind === "warn" ? "tag--rose" : "tag--sage";
+    let t = document.getElementById("globalToast");
+    if (!t) {
+      t = document.createElement("div");
+      t.id = "globalToast";
+      t.style.cssText = "position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);z-index:999;opacity:0;transition:all .35s var(--ease);";
+      document.body.appendChild(t);
+    }
+    t.className = "tag " + k;
+    t.style.padding = "10px 18px";
+    t.style.fontSize = ".9rem";
+    t.textContent = msg;
+    requestAnimationFrame(() => {
+      t.style.opacity = "1";
+      t.style.transform = "translateX(-50%) translateY(0)";
+    });
+    const dur = (opts && opts.duration) || 2600;
+    clearTimeout(t.__timer);
+    t.__timer = setTimeout(() => {
+      t.style.opacity = "0";
+      t.style.transform = "translateX(-50%) translateY(20px)";
+    }, dur);
+  }
+
+  /* ============================================================
+     分析总结渲染
+     ============================================================ */
+  function analyzeProfile(list, owner) {
+    const items = list.filter(x => x.owner === owner);
+    const info = OWNERS[owner] || { name: owner };
+    if (!items.length) return { items, info, count: 0, avgRating: 0, catCount: {}, tagCount: [], topCat: null };
+    const avg = items.reduce((s, x) => s + (Number(x.rating) || 0), 0) / items.length;
+    const catCount = {};
+    items.forEach(x => { catCount[x.category] = (catCount[x.category] || 0) + 1; });
+    const tagFreq = {};
+    items.forEach(x => {
+      const tags = Array.isArray(x.tags) ? x.tags : (typeof x.tags === "string" ? (x.tags.split(",").map(s => s.trim()).filter(Boolean)) : []);
+      tags.forEach(t => { tagFreq[t] = (tagFreq[t] || 0) + 1; });
+    });
+    const tagCount = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const topCat = Object.entries(catCount).sort((a, b) => b[1] - a[1])[0] || null;
+    return { items, info, count: items.length, avgRating: avg, catCount, tagCount, topCat };
+  }
+
+  function findCommonFoods(aList, bList) {
+    const setA = new Set(aList.map(x => x.name.trim()));
+    const result = [];
+    bList.forEach(x => {
+      if (setA.has(x.name.trim())) {
+        const a = aList.find(y => y.name.trim() === x.name.trim());
+        result.push({ name: x.name, aRating: a ? a.rating : x.rating, bRating: x.rating });
+      }
+    });
+    return result;
+  }
+
+  function renderAnalysis(list) {
+    const grid = document.getElementById("analysisGrid");
+    if (!grid) return;
+
+    const him = analyzeProfile(list, "him");
+    const her = analyzeProfile(list, "her");
+    const common = findCommonFoods(him.items, her.items);
+
+    const totalCount = list.length;
+    const globalAvg = totalCount ? list.reduce((s, x) => s + (Number(x.rating) || 0), 0) / totalCount : 0;
+    const allCatCount = {};
+    list.forEach(x => { allCatCount[x.category] = (allCatCount[x.category] || 0) + 1; });
+
+    function profileCardHTML(profile, variant) {
+      const avg = profile.avgRating.toFixed(1);
+      const catHtml = Object.entries(profile.catCount).map(([cat, n]) => {
+        const meta = CATEGORIES[cat] || { label: cat, icon: "✨" };
+        return `<span class="tag">${meta.icon} ${escapeHtml(meta.label.split(" ")[1] || meta.label)} × ${n}</span>`;
+      }).join("");
+      const tagHtml = profile.tagCount.map(([tag, n]) => {
+        const weight = Math.min(1.2, 0.8 + n * 0.1);
+        return `<span class="tag" style="font-size:${weight}rem">${escapeHtml(tag)}${n > 1 ? " ×" + n : ""}</span>`;
+      }).join("");
+
+      return `
+        <div class="profile-card profile-card--${variant}">
+          <div class="profile-card__head">
+            <div class="profile-card__avatar">${variant === "him" ? "豪" : "力"}</div>
+            <div>
+              <div class="profile-card__name">${profile.info.name}的口味</div>
+              <div class="profile-card__sum">${variant === "him" ? "肉食为主 · 鲜 & 有味道 & 辣" : "素菜 & 主食 · 面食党 · 无辣不欢"}</div>
+            </div>
+          </div>
+          <div class="profile-card__stat">
+            <div class="stat-item"><div class="stat-item__num">${profile.count}</div><div class="stat-item__label">收录美食</div></div>
+            <div class="stat-item"><div class="stat-item__num">${avg}</div><div class="stat-item__label">平均评分</div></div>
+            <div class="stat-item"><div class="stat-item__num">${profile.topCat ? (CATEGORIES[profile.topCat[0]]?.label.split(" ")[1] || profile.topCat[0]) : "—"}</div><div class="stat-item__label">最爱类别</div></div>
+          </div>
+          <div style="margin-top:8px">
+            <p class="kicker" style="margin-bottom:8px;font-size:.72rem">类别分布</p>
+            <div class="profile-card__tags">${catHtml || '<span class="faint">暂无数据</span>'}</div>
+          </div>
+          <div class="tag-cloud">
+            <p class="kicker" style="margin-bottom:8px;font-size:.72rem">关键词 · 越大越爱</p>
+            <div class="profile-card__tags">${tagHtml || '<span class="faint">暂无标签</span>'}</div>
+          </div>
+        </div>`;
+    }
+
+    const commonHtml = common.length ?
+      common.map(c => `
+        <div class="common-food">
+          <span style="font-size:1.1rem">❤️</span>
+          <strong style="flex:1">${escapeHtml(c.name)}</strong>
+          <span class="tag tag--him">豪 ${c.aRating}分</span>
+          <span class="tag tag--her">力 ${c.bRating}分</span>
+        </div>`).join("")
+      : '<p class="faint" style="font-size:.86rem">还没有发现共同喜欢的食物，一起去解锁更多美味吧～</p>';
+
+    const globalCatHtml = Object.entries(allCatCount).map(([cat, n]) => {
+      const meta = CATEGORIES[cat] || { label: cat, icon: "✨" };
+      return `<tr><td style="padding:6px 0">${meta.icon} ${escapeHtml(meta.label)}</td><td style="text-align:right;padding-right:8px;font-family:var(--ff-display);font-weight:600">${n}</td><td style="width:40%"><div class="progress progress--sage" style="height:6px;margin:0"><span style="width:${(n / totalCount * 100).toFixed(0)}%"></span></div></td></tr>`;
+    }).join("");
+
+    grid.innerHTML = profileCardHTML(him, "him") + profileCardHTML(her, "her") + `
+      <div class="profile-card profile-card--both">
+        <div class="profile-card__head">
+          <div class="profile-card__avatar">❤</div>
+          <div>
+            <div class="profile-card__name">共同爱好</div>
+            <div class="profile-card__sum">吃得到一起，才能过到一起</div>
+          </div>
+        </div>
+        <div class="common-foods">${commonHtml}</div>
+      </div>
+      <div class="profile-card card--plain">
+        <div class="profile-card__head">
+          <div class="profile-card__avatar" style="background:linear-gradient(135deg,var(--taupe),var(--taupe-soft))">📊</div>
+          <div>
+            <div class="profile-card__name">全局统计</div>
+            <div class="profile-card__sum">共 ${totalCount} 条收录 · 平均 ${globalAvg.toFixed(1)} 分</div>
+          </div>
+        </div>
+        <table style="width:100%;font-size:.88rem;border-collapse:collapse;margin-top:6px">${globalCatHtml}</table>
+      </div>`;
+  }
+
+  /* ============================================================
+     列表渲染（按类别分区，一行一个）
+     ============================================================ */
+  function renderFoodList(list) {
+    const container = document.getElementById("foodContainer");
+    if (!container) return;
+
+    // 应用筛选
+    const filtered = list.filter(x => {
+      if (__filterOwner !== "all" && x.owner !== __filterOwner) return false;
+      if (__filterCat !== "all" && x.category !== __filterCat) return false;
+      return true;
+    });
+
+    if (!filtered.length) {
+      container.innerHTML = `<div class="empty-state">
+        <p style="font-size:2.4rem">🍽</p>
+        <h3 style="color:var(--ink);margin-bottom:4px">暂无匹配的美食</h3>
+        <p>换个筛选条件，或点击右上角「+ 新增美食」开始记录吧。</p>
+      </div>`;
+      return;
+    }
+
+    // 按类别分组（保持 CATEGORIES 顺序）
+    const groups = {};
+    filtered.forEach(x => {
+      if (!groups[x.category]) groups[x.category] = [];
+      groups[x.category].push(x);
+    });
+
+    let html = "";
+    const catOrder = Object.keys(CATEGORIES);
+    catOrder.forEach(cat => {
+      const items = groups[cat] || [];
+      if (__filterCat !== "all" && cat !== __filterCat) return;
+      if (!items.length) return;
+      const meta = CATEGORIES[cat];
+
+      const rowsHtml = items.map(x => {
+        const ownerInfo = OWNERS[x.owner] || { name: x.owner, tagClass: "tag--both" };
+        const tagsHtml = (Array.isArray(x.tags) ? x.tags : []).map(t =>
+          `<span class="tag" style="font-size:.72rem;padding:2px 8px">${escapeHtml(t)}</span>`
+        ).join("");
+
+        return `
+        <tr class="food-row" data-id="${escapeHtml(x.id)}">
+          <td style="width:28%">
+            <div class="food-name">
+              <span class="food-owner tag ${ownerInfo.tagClass}" style="font-size:.7rem;padding:2px 8px;flex-shrink:0">${escapeHtml(ownerInfo.name)}</span>
+              <span>${escapeHtml(x.name)}</span>
+            </div>
+            <div class="food-meta">${meta.icon} ${escapeHtml(meta.label.split(" ")[1] || meta.label)}</div>
+            <div class="food-tags">${tagsHtml}</div>
+          </td>
+          <td style="width:15%;text-align:center">${renderRating(x.rating)}</td>
+          <td style="width:42%">
+            ${x.reason ? `<div class="food-reason"><strong style="color:var(--sage-deep)">💡 理由：</strong>${escapeHtml(x.reason)}</div>` : ""}
+            ${x.review ? `<div class="food-review">${escapeHtml(x.review)}</div>` : ""}
+          </td>
+          <td style="width:15%">
+            <div class="row-actions">
+              <button class="icon-btn btn-edit" data-id="${escapeHtml(x.id)}" title="编辑" type="button">✎</button>
+              <button class="icon-btn icon-btn--danger btn-delete" data-id="${escapeHtml(x.id)}" title="删除" type="button">🗑</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join("");
+
+      html += `
+        <div class="category-section">
+          <div class="category-head">
+            <div class="category-icon">${meta.icon}</div>
+            <div>
+              <div class="category-title">${escapeHtml(meta.label)}</div>
+              <div class="category-count">${meta.desc} · 共 ${items.length} 项</div>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="food-table">
+              <thead>
+                <tr style="color:var(--muted);font-size:.78rem;font-family:var(--ff-accent);font-style:italic">
+                  <th style="text-align:left;padding:0 16px 10px;font-weight:400">美食 / 归属人 / 标签</th>
+                  <th style="text-align:center;padding:0 16px 10px;font-weight:400">评分</th>
+                  <th style="text-align:left;padding:0 16px 10px;font-weight:400">喜欢理由 · 详细评价</th>
+                  <th style="text-align:right;padding:0 16px 10px;font-weight:400">操作</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+        </div>`;
+    });
+
+    if (!html) {
+      html = `<div class="empty-state"><p style="font-size:2.4rem">🍽</p><h3 style="color:var(--ink);margin-bottom:4px">该类别下暂无记录</h3><p>换个筛选条件看看～</p></div>`;
+    }
+    container.innerHTML = html;
+
+    // 绑定编辑/删除
+    container.querySelectorAll(".btn-edit").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-id");
+        const item = __foods.find(x => x.id === id);
+        if (item) openFormModal(item);
+      });
+    });
+    container.querySelectorAll(".btn-delete").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-id");
+        const item = __foods.find(x => x.id === id);
+        if (!item) return;
+        if (confirm(`确定要删除「${item.name}」吗？此操作可通过重新导入之前的 JSON 恢复。`)) {
+          await FoodStore.removeOne(id);
+          refreshAll();
+          const msg = isCloudConfigured()
+            ? `🗑️ 已删除「${item.name}」并同步云端`
+            : `🗑️ 已删除「${item.name}」（本机模式：换设备时记得先导出 JSON）`;
+          showToast(msg, isCloudConfigured() ? {} : { kind: "warn", duration: 5000 });
+        }
+      });
+    });
+  }
+
+  /* ============================================================
+     统一刷新
+     ============================================================ */
+  function refreshAll(list) {
+    const current = list || FoodStore.load();
+    renderAnalysis(current);
+    renderFoodList(current);
+    renderStatusBadge();
+  }
+
+  /* ============================================================
+     新增 / 编辑表单弹窗
+     ============================================================ */
+  function openFormModal(editing) {
+    if (!window.LoveNest || !window.LoveNest.openModal) return;
+    const isEdit = !!editing;
+    const data = editing ? Object.assign({}, editing) : {
+      id: uid(), owner: "him", name: "", category: "meal", rating: 8,
+      reason: "", review: "", tags: []
+    };
+    const tagsArr = Array.isArray(data.tags) ? data.tags.slice() : [];
+
+    const ownerOptions = Object.entries(OWNERS).map(([k, v]) =>
+      `<option value="${k}" ${data.owner === k ? " selected" : ""}>${escapeHtml(v.name)}</option>`
+    ).join("");
+    const catOptions = Object.entries(CATEGORIES).map(([k, v]) =>
+      `<option value="${k}" ${data.category === k ? " selected" : ""}>${escapeHtml(v.label)}</option>`
+    ).join("");
+
+    const html = `
+      <div id="foodForm">
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="edit-field">
+            <label>归属人 *</label>
+            <select id="ff-owner">${ownerOptions}</select>
+          </div>
+          <div class="edit-field">
+            <label>食物名称 *</label>
+            <input id="ff-name" type="text" placeholder="如：番茄炒蛋 / 榴莲" value="${escapeHtml(data.name)}" />
+          </div>
+        </div>
+        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="edit-field">
+            <label>食物类型</label>
+            <select id="ff-category">${catOptions}</select>
+          </div>
+          <div class="edit-field">
+            <label>打分 <span id="ff-rating-label">(${data.rating} / 10)</span></label>
+            <div class="rating-slider">
+              <input id="ff-rating" type="range" min="1" max="10" step="1" value="${data.rating}" />
+              <div class="rating-preview" id="ff-rating-preview">${renderRating(data.rating)}</div>
+            </div>
+          </div>
+        </div>
+        <div class="edit-field">
+          <label>喜欢理由（简短）</label>
+          <input id="ff-reason" type="text" placeholder="如：鲜、高蛋白、下饭" value="${escapeHtml(data.reason || "")}" />
+        </div>
+        <div class="edit-field">
+          <label>详细评价（口感、体验、故事）</label>
+          <textarea id="ff-review" placeholder="番茄酸甜开胃，鸡蛋嫩滑……">${escapeHtml(data.review || "")}</textarea>
+        </div>
+        <div class="edit-field">
+          <label>口味标签（回车新增）</label>
+          <div class="tags-input-wrap" id="ff-tags-wrap">
+            ${tagsArr.map(t => `<span class="tag-pill" data-tag="${escapeHtml(t)}">${escapeHtml(t)}<button type="button" data-tag-x="${escapeHtml(t)}">✕</button></span>`).join("")}
+            <input type="text" id="ff-tag-input" placeholder="输入后回车，如：辣 / 鲜" />
+          </div>
+        </div>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line-soft);display:flex;gap:10px;justify-content:flex-end">
+          <button class="btn btn--ghost btn--small" type="button" id="ff-cancel">取消</button>
+          <button class="btn btn--primary btn--small" type="button" id="ff-save">${isEdit ? "保存修改" : "✓ 新增美食"}</button>
+        </div>
+      </div>`;
+    window.LoveNest.openModal(isEdit ? `编辑 · ${data.name}` : "新增美食", html);
+
+    // 表单内部逻辑
+    const ratingInput = document.getElementById("ff-rating");
+    const ratingLabel = document.getElementById("ff-rating-label");
+    const ratingPreview = document.getElementById("ff-rating-preview");
+    function updRating() {
+      const v = Number(ratingInput.value) || 5;
+      if (ratingLabel) ratingLabel.textContent = `(${v} / 10)`;
+      if (ratingPreview) ratingPreview.innerHTML = renderRating(v);
+    }
+    if (ratingInput) ratingInput.addEventListener("input", updRating);
+
+    // 标签输入
+    const tagsWrap = document.getElementById("ff-tags-wrap");
+    const tagInput = document.getElementById("ff-tag-input");
+    function currentTags() {
+      return Array.from(tagsWrap.querySelectorAll(".tag-pill")).map(el => el.getAttribute("data-tag")).filter(Boolean);
+    }
+    function renderTag(t) {
+      const pill = document.createElement("span");
+      pill.className = "tag-pill";
+      pill.setAttribute("data-tag", t);
+      pill.innerHTML = `${escapeHtml(t)}<button type="button" data-tag-x="${escapeHtml(t)}">✕</button>`;
+      pill.querySelector("button").addEventListener("click", () => pill.remove());
+      tagsWrap.insertBefore(pill, tagInput);
+    }
+    if (tagInput) {
+      tagInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === "," || e.key === "，") {
+          e.preventDefault();
+          const v = tagInput.value.trim();
+          if (v && !currentTags().includes(v)) {
+            renderTag(v);
+          }
+          tagInput.value = "";
+        } else if (e.key === "Backspace" && !tagInput.value) {
+          const pills = tagsWrap.querySelectorAll(".tag-pill");
+          if (pills.length) pills[pills.length - 1].remove();
+        }
+      });
+      tagInput.addEventListener("blur", () => {
+        const v = tagInput.value.trim();
+        if (v && !currentTags().includes(v)) {
+          renderTag(v);
+          tagInput.value = "";
+        }
+      });
+    }
+    // 已有标签的删除按钮（动态创建的已绑定，但此处编辑模式还要为 innerHTML 里的绑一次）
+    tagsWrap.querySelectorAll(".tag-pill button[data-tag-x]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const t = btn.getAttribute("data-tag-x");
+        const pill = tagsWrap.querySelector(`.tag-pill[data-tag="${t}"]`);
+        if (pill) pill.remove();
+      });
+    });
+
+    document.getElementById("ff-cancel").addEventListener("click", () => window.LoveNest.closeModal());
+    document.getElementById("ff-save").addEventListener("click", async () => {
+      const name = document.getElementById("ff-name").value.trim();
+      if (!name) { alert("请填写食物名称"); return; }
+      const row = {
+        id: data.id,
+        owner: document.getElementById("ff-owner").value,
+        name: name,
+        category: document.getElementById("ff-category").value,
+        rating: Number(document.getElementById("ff-rating").value) || 5,
+        reason: document.getElementById("ff-reason").value.trim(),
+        review: document.getElementById("ff-review").value.trim(),
+        tags: currentTags()
+      };
+      let list = FoodStore.load();
+      const idx = list.findIndex(x => x.id === row.id);
+      if (idx >= 0) list[idx] = row; else list.push(row);
+      const result = await FoodStore.save(list);
+      __foods = list;
+      refreshAll(list);
+      window.LoveNest.closeModal();
+      if (result.configured) showToast(`✅ 已保存「${name}」并同步云端`);
+      else showToast(`✅ 已保存「${name}」（本机模式：换设备时记得先导出 JSON）`, { kind: "warn", duration: 5000 });
+    });
+  }
+
+  /* ============================================================
+     筛选芯片
+     ============================================================ */
+  function wireFilters() {
+    document.querySelectorAll("#ownerFilter .chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll("#ownerFilter .chip").forEach(c => c.classList.remove("chip--active"));
+        chip.classList.add("chip--active");
+        __filterOwner = chip.getAttribute("data-owner");
+        renderFoodList(__foods);
+      });
+    });
+    document.querySelectorAll("#categoryFilter .chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll("#categoryFilter .chip").forEach(c => c.classList.remove("chip--active"));
+        chip.classList.add("chip--active");
+        __filterCat = chip.getAttribute("data-cat");
+        renderFoodList(__foods);
+      });
+    });
+  }
+
+  /* ============================================================
+     工具栏按钮
+     ============================================================ */
+  function wireToolbar() {
+    document.getElementById("btnAddFood").addEventListener("click", () => openFormModal(null));
+    document.getElementById("btnExport").addEventListener("click", () => {
+      const full = {
+        exported_at: new Date().toISOString(),
+        profile_tags: FALLBACK.profile_tags,
+        preferences: FoodStore.load()
+      };
+      FoodStore.export(full);
+      showToast("⬇️ 已导出 food-preferences.json");
+    });
+    document.getElementById("btnImport").addEventListener("click", () => {
+      document.getElementById("fileImport").click();
+    });
+    document.getElementById("fileImport").addEventListener("change", async (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      try {
+        await FoodStore.import(f);
+        refreshAll();
+        showToast("⬆️ 导入成功");
+      } catch (err) {
+        alert("导入失败：" + err.message);
+      } finally {
+        e.target.value = "";
+      }
+    });
+  }
+
+  /* ============================================================
+     Boot
+     ============================================================ */
+  (async function boot() {
+    await refreshFromDB(FALLBACK.preferences);
+    // 如果云端有数据，可能和种子不一致；至少保证不是空
+    if (!__foods.length) { __foods = FALLBACK.preferences.slice(); }
+    wireFilters();
+    wireToolbar();
+    refreshAll();
+  })();
+
+})();
+</script>
+</body>
+</html>

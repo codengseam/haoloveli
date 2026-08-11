@@ -174,7 +174,24 @@ create table if not exists public.monthly_goals (
   unique(couple_id, month, item_index)
 );
 
--- ---------- 8. 婚礼决策（整块 jsonb 存，灵活）----------
+-- ---------- 8. 美食偏好：家庭成员各自喜欢的食物 ----------
+create table if not exists public.food_preferences (
+  id text primary key,                                         -- 主键：f_xxx
+  couple_id uuid not null references public.couples(id) on delete cascade default '00000000-0000-0000-0000-000000000000',
+  owner text not null,                                          -- him=师豪, her=佳力, 或其他成员 id/name
+  name text not null,                                           -- 食物名称：番茄炒蛋 / 榴莲
+  category text not null default 'meal' check (category in ('meal','snack','fruit','veg','drink','other')),  -- 正餐/零食/水果/蔬菜/饮品/其他
+  rating int not null default 5 check (rating between 1 and 10),  -- 打分 1-10
+  reason text,                                                  -- 喜欢理由：如"高蛋白、鲜、下饭"
+  review text,                                                  -- 详细评价/口感描述
+  tags jsonb not null default '[]'::jsonb,                      -- 口味标签：["辣","鲜","高蛋白"]
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists idx_food_prefs_owner on public.food_preferences(couple_id, owner);
+create index if not exists idx_food_prefs_category on public.food_preferences(couple_id, category);
+
+-- ---------- 9. 婚礼决策（整块 jsonb 存，灵活）----------
 create table if not exists public.wedding_decisions (
   id uuid primary key default gen_random_uuid(),
   couple_id uuid not null references public.couples(id) on delete cascade default '00000000-0000-0000-0000-000000000000',
@@ -196,7 +213,7 @@ begin
     'couples','bank_records','family_members','holiday_checks',
     'milestone_items','lovemap_answers','lovemap_cards','lovemap_magic5h',
     'peace_signatures','conflict_reviews','bank_weekly_checks',
-    'monthly_goals','wedding_decisions'
+    'monthly_goals','wedding_decisions','food_preferences'
   ] loop
     execute format('drop trigger if exists handle_updated_at on public.%I;
                     create trigger handle_updated_at before update on public.%I
@@ -214,7 +231,7 @@ begin
     'couples','bank_records','family_members','holiday_checks',
     'milestone_items','lovemap_answers','lovemap_cards','lovemap_magic5h',
     'peace_signatures','conflict_reviews','bank_weekly_checks',
-    'monthly_goals','wedding_decisions'
+    'monthly_goals','wedding_decisions','food_preferences'
   ] loop
     execute format('alter table public.%I enable row level security;', t);
     execute format('drop policy if exists "anon allow all for couple" on public.%I;
@@ -254,7 +271,7 @@ begin
   foreach t in array array[
     'bank_records','family_members','holiday_checks','milestone_items',
     'lovemap_answers','lovemap_cards','lovemap_magic5h','peace_signatures',
-    'conflict_reviews','bank_weekly_checks','monthly_goals','wedding_decisions'
+    'conflict_reviews','bank_weekly_checks','monthly_goals','wedding_decisions','food_preferences'
   ] loop
     execute format(
       'update public.%I set couple_id = %L where couple_id = %L;',
@@ -354,6 +371,37 @@ on conflict (side) do nothing;
 insert into public.wedding_decisions (couple_id)
 values ('aaaa1111-bbbb-cccc-dddd-eeeeffff0001')
 on conflict do nothing;
+
+-- ---------- 11-g. 美食偏好种子（师豪 8 条 + 佳力 13 条）----------
+insert into public.food_preferences
+  (id, couple_id, owner, name, category, rating, reason, review, tags)
+values
+  -- 师豪的美食
+  ('f_shihao_1','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','番茄炒蛋','meal',9,'鲜、高蛋白、下饭神器','番茄酸甜开胃，鸡蛋嫩滑，拌饭一绝，家常味天花板','["鲜","高蛋白","下饭","家常"]'),
+  ('f_shihao_2','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','蒸蛋','meal',8,'嫩、鲜、高蛋白、清淡养胃','入口即化，口感嫩滑，配生抽香油，简单又好吃','["鲜","高蛋白","清淡","嫩"]'),
+  ('f_shihao_3','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','海带','veg',7,'鲜、健康、低卡','凉拌爽脆，炖汤入味，吃着有海洋的鲜味','["鲜","健康","低卡","爽脆"]'),
+  ('f_shihao_4','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','红烧牛肉','meal',10,'香、有味道、高蛋白、肉食满足','红烧入味、肥瘦相间、酱汁浓郁，配米饭绝了，肉食主义的最爱','["高蛋白","肉食","入味","香"]'),
+  ('f_shihao_5','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','烧烤','snack',9,'辣、香、有味道、夜宵灵魂','烤串焦香四溢，撒上辣椒孜然，啤酒伴侣，夜宵首选','["辣","香","夜宵","重口味"]'),
+  ('f_shihao_6','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','火锅','meal',10,'辣、鲜、肉食盛宴、热闹','牛油锅底够味，毛肚鸭肠牛肉涮起来，围坐一起的幸福感拉满','["辣","鲜","肉食","社交"]'),
+  ('f_shihao_7','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','串串','meal',9,'辣、有味道、选择多、接地气','签签牛肉、掌中宝、郡肝，一串一口，吃的就是巴适','["辣","重口味","接地气","肉食"]'),
+  ('f_shihao_8','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','him','豆腐','veg',8,'鲜、高蛋白、百变、嫩滑','麻婆豆腐够味、豆花嫩滑、豆腐汤鲜，怎么做都好吃','["鲜","高蛋白","嫩滑","百变"]'),
+  -- 佳力的美食
+  ('f_jiali_1','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','面','meal',9,'主食、辣、碳水快乐','重庆小面、牛肉面、肥肠面，早上一碗面，一天都满足','["主食","辣","碳水","重庆味"]'),
+  ('f_jiali_2','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','米粉','meal',8,'主食、顺滑、家乡味','彭水米粉粗细合适，臊子香，嗦一口就是回家的感觉','["主食","顺滑","家乡味","碳水"]'),
+  ('f_jiali_3','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','苕皮','snack',9,'辣、Q弹、烤着香','烤苕皮裹酸萝卜香菜，外焦里糯，咬一口满足感爆棚','["辣","Q弹","烧烤","糯"]'),
+  ('f_jiali_4','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','红苕粉','meal',8,'主食、辣、顺滑、彭水味','彭水酸辣粉，红薯粉劲道，酸辣开胃，家乡味道','["主食","辣","顺滑","家乡味"]'),
+  ('f_jiali_5','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','干锅鸡杂','meal',9,'辣、素菜多、下饭、重口味','鸡杂脆嫩，藕片土豆魔芋入味，干锅干香，下饭神器','["辣","下饭","素菜","脆嫩"]'),
+  ('f_jiali_6','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','榴莲','fruit',10,'甜、香、水果之王、独特','榴莲肉绵密香甜，入口即化，越吃越上头，独特的香气让人欲罢不能','["甜","绵密","香甜","独特"]'),
+  ('f_jiali_7','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','儿菜','veg',7,'素菜、清爽、家常','儿菜清炒或煮汤，清爽解腻，家常菜的温暖','["素菜","清爽","家常","解腻"]'),
+  ('f_jiali_8','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','渣海椒','other',8,'辣、下饭、彭水特色、发酵香','渣海椒回锅肉或炒鸡蛋，发酵的酸辣味，彭水人的下饭灵魂','["辣","下饭","发酵","彭水特色"]'),
+  ('f_jiali_9','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','火锅','meal',10,'辣、素菜多、一起吃更开心','火锅煮贡菜苕皮土豆毛肚，辣得过瘾，和喜欢的人一起吃更幸福','["辣","素菜","社交","重口味"]'),
+  ('f_jiali_10','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','串串','meal',9,'辣、选择多、素菜也香','签签贡菜、土豆、藕片、木耳，蘸干油碟，巴适得板','["辣","素菜","接地气","选择多"]'),
+  ('f_jiali_11','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','淀粉肠','snack',8,'香、脆、路边摊回忆','炸得金黄焦脆的淀粉肠，刷上辣椒面，童年回忆拉满','["香","脆","油炸","童年味"]'),
+  ('f_jiali_12','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','贡菜','veg',8,'脆、素菜、火锅必备','火锅烫几秒就好，嘎嘣脆的口感，一口一个停不下来','["脆","素菜","火锅","清爽"]'),
+  ('f_jiali_13','aaaa1111-bbbb-cccc-dddd-eeeeffff0001','her','土豆','veg',9,'素菜、百变、碳水快乐','土豆丝、土豆片、狼牙土豆、炸薯条，怎么做都爱吃','["素菜","碳水","百变","香脆"]')
+on conflict (id) do update set
+  name = excluded.name,
+  updated_at = now();
 
 /* =========================================================================
    🔧 补丁（PATCH）：如果之前已建过表，请单独执行下面这段

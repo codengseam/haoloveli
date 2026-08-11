@@ -1,26 +1,3 @@
----
-# 详细文档见https://modelscope.cn/docs/%E5%88%9B%E7%A9%BA%E9%97%B4%E5%8D%A1%E7%89%87
-domain: #领域：cv/nlp/audio/multi-modal/AutoML
-# - cv
-tags: #自定义标签
--
-datasets: #关联数据集
-  evaluation:
-  #- iic/ICDAR13_HCTR_Dataset
-  test:
-  #- iic/MTWI
-  train:
-  #- iic/SIBR
-models: #关联模型
-#- iic/ofa_ocr-recognition_general_base_zh
-
-## 启动文件(若SDK为Gradio/Streamlit，默认为app.py, 若为Static HTML, 默认为index.html)
-deployspec:
-  sdk: static
-  entry_file: index.html
-license: Apache License 2.0
----
-
 # haoloveli 💍
 
 > 豪❤力 · 谐音"好爱你"  
@@ -43,7 +20,6 @@ license: Apache License 2.0
   - 仓库地址：https://gitee.com/aicodeng/love
   - 需在 Gitee 仓库设置中开启 Pages 服务
 - GitHub Pages：可推送到 `origin` 远程后启用
-- 魔搭创空间：可打包本项目上传为静态站点
 
 ## 本地使用
 
@@ -105,19 +81,6 @@ git push -u origin master
 3. 等待几分钟后访问 `https://<你的用户名>.github.io/love-proposal`
 
 > 注意：GitHub Pages 对中文文件名的 URL 支持较好，本项目的图片路径已使用 URL 编码。
-
-## 部署到魔搭创空间（ModelScope）
-
-1. 登录 [魔搭创空间](https://www.modelscope.cn/studios)
-2. 新建一个创空间，选择**静态站点**模板
-3. 将本项目文件打包上传，或关联 Git 仓库
-4. 点击部署，等待上线
-
-### 魔搭部署要点
-
-- 确保 `index.html` 位于仓库根目录
-- `lihao.img/` 和 `lovebgm.mp3` 需要随代码一起上传
-- 静态站点模板通常不需要后端服务
 
 ## 重要日期
 

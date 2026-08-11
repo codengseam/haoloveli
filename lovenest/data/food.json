@@ -1,0 +1,39 @@
+{
+  "intro": "民以食为天，爱一个人就记下 TA 爱吃的每一样。把两个人的口味装进同一个小窝，买菜、做饭、下馆子都不纠结。",
+  "profile_tags": {
+    "him": {
+      "name": "师豪",
+      "summary": "肉食为主 · 鲜 & 有味道 & 辣 · 高蛋白爱好者",
+      "tags": ["鲜", "有味道", "辣", "高蛋白", "肉食"]
+    },
+    "her": {
+      "name": "佳力",
+      "summary": "素菜 & 主食 · 面食党 · 无辣不欢",
+      "tags": ["素菜", "主食", "面", "辣"]
+    }
+  },
+  "preferences": [
+    { "id": "f_shihao_1", "owner": "him", "name": "番茄炒蛋", "category": "meal",  "rating": 9,  "reason": "鲜、高蛋白、下饭神器", "review": "番茄酸甜开胃，鸡蛋嫩滑，拌饭一绝，家常味天花板", "tags": ["鲜","高蛋白","下饭","家常"] },
+    { "id": "f_shihao_2", "owner": "him", "name": "蒸蛋",     "category": "meal",  "rating": 8,  "reason": "嫩、鲜、高蛋白、清淡养胃", "review": "入口即化，口感嫩滑，配生抽香油，简单又好吃", "tags": ["鲜","高蛋白","清淡","嫩"] },
+    { "id": "f_shihao_3", "owner": "him", "name": "海带",     "category": "veg",   "rating": 7,  "reason": "鲜、健康、低卡", "review": "凉拌爽脆，炖汤入味，吃着有海洋的鲜味", "tags": ["鲜","健康","低卡","爽脆"] },
+    { "id": "f_shihao_4", "owner": "him", "name": "红烧牛肉", "category": "meal",  "rating": 10, "reason": "香、有味道、高蛋白、肉食满足", "review": "红烧入味、肥瘦相间、酱汁浓郁，配米饭绝了，肉食主义的最爱", "tags": ["高蛋白","肉食","入味","香"] },
+    { "id": "f_shihao_5", "owner": "him", "name": "烧烤",     "category": "snack", "rating": 9,  "reason": "辣、香、有味道、夜宵灵魂", "review": "烤串焦香四溢，撒上辣椒孜然，啤酒伴侣，夜宵首选", "tags": ["辣","香","夜宵","重口味"] },
+    { "id": "f_shihao_6", "owner": "him", "name": "火锅",     "category": "meal",  "rating": 10, "reason": "辣、鲜、肉食盛宴、热闹", "review": "牛油锅底够味，毛肚鸭肠牛肉涮起来，围坐一起的幸福感拉满", "tags": ["辣","鲜","肉食","社交"] },
+    { "id": "f_shihao_7", "owner": "him", "name": "串串",     "category": "meal",  "rating": 9,  "reason": "辣、有味道、选择多、接地气", "review": "签签牛肉、掌中宝、郡肝，一串一口，吃的就是巴适", "tags": ["辣","重口味","接地气","肉食"] },
+    { "id": "f_shihao_8", "owner": "him", "name": "豆腐",     "category": "veg",   "rating": 8,  "reason": "鲜、高蛋白、百变、嫩滑", "review": "麻婆豆腐够味、豆花嫩滑、豆腐汤鲜，怎么做都好吃", "tags": ["鲜","高蛋白","嫩滑","百变"] },
+
+    { "id": "f_jiali_1",  "owner": "her", "name": "面",       "category": "meal",  "rating": 9,  "reason": "主食、辣、碳水快乐", "review": "重庆小面、牛肉面、肥肠面，早上一碗面，一天都满足", "tags": ["主食","辣","碳水","重庆味"] },
+    { "id": "f_jiali_2",  "owner": "her", "name": "米粉",     "category": "meal",  "rating": 8,  "reason": "主食、顺滑、家乡味", "review": "彭水米粉粗细合适，臊子香，嗦一口就是回家的感觉", "tags": ["主食","顺滑","家乡味","碳水"] },
+    { "id": "f_jiali_3",  "owner": "her", "name": "苕皮",     "category": "snack", "rating": 9,  "reason": "辣、Q弹、烤着香", "review": "烤苕皮裹酸萝卜香菜，外焦里糯，咬一口满足感爆棚", "tags": ["辣","Q弹","烧烤","糯"] },
+    { "id": "f_jiali_4",  "owner": "her", "name": "红苕粉",   "category": "meal",  "rating": 8,  "reason": "主食、辣、顺滑、彭水味", "review": "彭水酸辣粉，红薯粉劲道，酸辣开胃，家乡味道", "tags": ["主食","辣","顺滑","家乡味"] },
+    { "id": "f_jiali_5",  "owner": "her", "name": "干锅鸡杂", "category": "meal",  "rating": 9,  "reason": "辣、素菜多、下饭、重口味", "review": "鸡杂脆嫩，藕片土豆魔芋入味，干锅干香，下饭神器", "tags": ["辣","下饭","素菜","脆嫩"] },
+    { "id": "f_jiali_6",  "owner": "her", "name": "榴莲",     "category": "fruit", "rating": 10, "reason": "甜、香、水果之王、独特", "review": "榴莲肉绵密香甜，入口即化，越吃越上头，独特的香气让人欲罢不能", "tags": ["甜","绵密","香甜","独特"] },
+    { "id": "f_jiali_7",  "owner": "her", "name": "儿菜",     "category": "veg",   "rating": 7,  "reason": "素菜、清爽、家常", "review": "儿菜清炒或煮汤，清爽解腻，家常菜的温暖", "tags": ["素菜","清爽","家常","解腻"] },
+    { "id": "f_jiali_8",  "owner": "her", "name": "渣海椒",   "category": "other", "rating": 8,  "reason": "辣、下饭、彭水特色、发酵香", "review": "渣海椒回锅肉或炒鸡蛋，发酵的酸辣味，彭水人的下饭灵魂", "tags": ["辣","下饭","发酵","彭水特色"] },
+    { "id": "f_jiali_9",  "owner": "her", "name": "火锅",     "category": "meal",  "rating": 10, "reason": "辣、素菜多、一起吃更开心", "review": "火锅煮贡菜苕皮土豆毛肚，辣得过瘾，和喜欢的人一起吃更幸福", "tags": ["辣","素菜","社交","重口味"] },
+    { "id": "f_jiali_10", "owner": "her", "name": "串串",     "category": "meal",  "rating": 9,  "reason": "辣、选择多、素菜也香", "review": "签签贡菜、土豆、藕片、木耳，蘸干油碟，巴适得板", "tags": ["辣","素菜","接地气","选择多"] },
+    { "id": "f_jiali_11", "owner": "her", "name": "淀粉肠",   "category": "snack", "rating": 8,  "reason": "香、脆、路边摊回忆", "review": "炸得金黄焦脆的淀粉肠，刷上辣椒面，童年回忆拉满", "tags": ["香","脆","油炸","童年味"] },
+    { "id": "f_jiali_12", "owner": "her", "name": "贡菜",     "category": "veg",   "rating": 8,  "reason": "脆、素菜、火锅必备", "review": "火锅烫几秒就好，嘎嘣脆的口感，一口一个停不下来", "tags": ["脆","素菜","火锅","清爽"] },
+    { "id": "f_jiali_13", "owner": "her", "name": "土豆",     "category": "veg",   "rating": 9,  "reason": "素菜、百变、碳水快乐", "review": "土豆丝、土豆片、狼牙土豆、炸薯条，怎么做都爱吃", "tags": ["素菜","碳水","百变","香脆"] }
+  ]
+}

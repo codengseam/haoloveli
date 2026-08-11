@@ -11,6 +11,7 @@
     { id: "dashboard",  href: "index.html",        label: "首页",        desc: "爱的仪表盘 · 相恋天数 · 今日金句" },
     { id: "love-map",   href: "love-map.html",     label: "爱情地图",     desc: "深度了解彼此的内心世界" },
     { id: "bank",       href: "bank.html",         label: "情感账户",     desc: "日常的存款与取款记录" },
+    { id: "food",       href: "food.html",         label: "美食偏好",     desc: "记录 ta 爱吃的每一样" },
     { id: "milestones", href: "milestones.html",   label: "人生里程碑",   desc: "阶段规划与婚礼筹备" },
     { id: "travel",     href: "travel.html",       label: "旅行相册",     desc: "已走过的风景 · 想去的远方" },
     { id: "family",     href: "family.html",       label: "家庭关系网",   desc: "父母档案与节日走动" },

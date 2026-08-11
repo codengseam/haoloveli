@@ -279,6 +279,7 @@
     ["bank_weekly_checks", "id"],
     ["monthly_goals", "id"],
     ["wedding_decisions", "id"],
+    ["food_preferences", "id"],
   ];
 
   let resolveReady = null;
@@ -316,7 +317,7 @@
     setInterval(() => {
       if (!ensureClient()) return;
       // 只刷新变更较多的表，避免无意义请求
-      ["bank_records", "milestone_items", "lovemap_answers", "conflict_reviews", "monthly_goals", "wedding_decisions"].forEach(t => {
+      ["bank_records", "milestone_items", "lovemap_answers", "conflict_reviews", "monthly_goals", "wedding_decisions", "food_preferences"].forEach(t => {
         const keyDef = COLD_TABLES.find(x => x[0] === t);
         refreshTableFromRemote(t, keyDef ? keyDef[1] : "id").then(() => {
           // 通知 watch 订阅者
