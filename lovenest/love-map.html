@@ -111,6 +111,21 @@
     </div>
   </section>
 
+  <!-- ============ 06 全部 100 题总览 · 历史/未来都能看 ============ -->
+  <section class="section section--tint" id="all-questions">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">06</span>
+        <h2 class="section__title">全部 100 题总览</h2>
+        <p class="section__desc">历史问题能回看、未来问题能提前聊——每题都能展开写下答案，自动云端同步。<span id="aq-progress" class="tag tag--both" style="margin-left:8px">已完成 0/100</span></p>
+      </div>
+      <!-- 顶栏：筛选 + 搜索 -->
+      <div id="aq-toolbar" class="reveal" style="max-width:860px;margin:0 auto 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center"></div>
+      <!-- 全部题网格 -->
+      <div id="aq-grid" class="grid grid--3" style="max-width:1100px;margin:0 auto"></div>
+    </div>
+  </section>
+
   <!-- ============ Crosslinks ============ -->
   <section class="section section--tint">
     <div class="container">
@@ -171,28 +186,28 @@
       {
         "id": "her-likes",
         "side": "her",
-        "title": "你的喜好",
+        "title": "佳力的喜好",
         "items": ["被看见、被认真倾听（不要急着给方案）", "仪式感与小惊喜", "旅行时拍下属于我们的画面", "被牵着手散步", "认真被对待的感觉"],
         "back_note": "提示：定期更新这张地图，人会变。"
       },
       {
         "id": "her-landmines",
         "side": "her",
-        "title": "你的雷区",
+        "title": "佳力的雷区",
         "items": ["高三压力大时被否定情绪（“这有什么”）", "被冷处理/沉默", "被当众纠正或贬低", "承诺了又落空", "被拿去和别人比较"],
         "back_note": "了解雷区，是为了不去踩，而非拿去攻击。"
       },
       {
         "id": "his-likes",
         "side": "him",
-        "title": "我的喜好",
+        "title": "师豪的喜好",
         "items": ["被肯定推进与主动性", "理性被看见而不被当作冷漠", "一起做规划与复盘", "安静的陪伴", "被需要的感觉"],
         "back_note": "我也需要被了解，不要总当“坚强的一方”。"
       },
       {
         "id": "his-landmines",
         "side": "him",
-        "title": "我的雷区",
+        "title": "师豪的雷区",
         "items": ["付出不被看见时的失落", "被一句“你都不…”全盘否定", "冲突中被翻旧账", "被催促立刻做决定", "我的家人被冒犯"],
         "back_note": "说出来，不是软弱，是邀请你懂我。"
       },
@@ -343,17 +358,17 @@
     }).join("");
   }
 
-  /* ✨ 把 DB love_notes 合并到 cards（按 card.id == note_key），同时空库时写种子 */
+  /* ✨ 把 DB love_notes 合并到 cards（note_key 格式 'card|{c.id}'），同时空库时写种子 */
   async function mergeCardsFromDB(cards) {
     await LoveNest.db.ready;
     const rows = await LoveNest.db.list('love_notes', { kind: 'card' });
     const out = JSON.parse(JSON.stringify(cards));
     if (!rows || rows.length === 0) {
-      // 空库：写种子
+      // 空库：写种子（note_key = 'card|{id}'，和 SQL PATCH 3 seeds 一致）
       for (const c of out) {
         try {
           await LoveNest.db.upsert('love_notes', {
-            note_key: c.id,
+            note_key: 'card|' + c.id,
             kind: 'card',
             side: c.side || 'both',
             title: c.title,
@@ -364,16 +379,19 @@
       }
       return out;
     }
-    // 合并：DB 优先级更高
+    // 合并：DB 优先级更高；兼容老 note_key = c.id（无 card| 前缀）和新 note_key = 'card|'+c.id
     const map = new Map();
-    rows.forEach(r => map.set(String(r.note_key), r));
+    rows.forEach(r => {
+      const k = String(r.note_key || '').replace(/^card\|/, '');  // 去前缀后统一按 id 查
+      map.set(k, r);
+    });
     out.forEach(c => {
       const r = map.get(String(c.id));
       if (!r) return;
       if (r.title) c.title = r.title;
       if (r.items_json) {
         try {
-          const arr = JSON.parse(r.items_json);
+          const arr = (typeof r.items_json === 'string') ? JSON.parse(r.items_json) : r.items_json;
           if (Array.isArray(arr)) c.items = arr;
         } catch (_) {}
       }
@@ -392,10 +410,10 @@
     el.innerHTML = cards.map(function (c, i) {
       var tagCls, tagLabel, backCls;
       if (c.side === "her") {
-        tagCls = "tag tag--her"; tagLabel = "你";
+        tagCls = "tag tag--her"; tagLabel = "佳力";
         backCls = "flip__face flip__back flip__back--rose";
       } else if (c.side === "him") {
-        tagCls = "tag tag--him"; tagLabel = "我";
+        tagCls = "tag tag--him"; tagLabel = "师豪";
         backCls = "flip__face flip__back";
       } else {
         tagCls = "tag tag--both"; tagLabel = "我们";
@@ -499,7 +517,7 @@
         btn.textContent = '保存中...';
         try {
           await LoveNest.db.upsert('love_notes', {
-            note_key: id,
+            note_key: 'card|' + id,
             kind: 'card',
             side: cardMeta.side || 'both',
             title: cardMeta.title || '',
@@ -518,10 +536,10 @@
     });
   }
 
-  /* ✨ 将 DB 的 relationship_answers 合并到内存 Map<qid, answerRow> */
+  /* ✨ 将 DB 的 lovemap_answers 合并到内存 Map<qid, answerRow> */
   async function loadAnswersMap() {
     await LoveNest.db.ready;
-    const rows = await LoveNest.db.list('relationship_answers');
+    const rows = await LoveNest.db.list('lovemap_answers');
     const map = new Map();
     (rows || []).forEach(r => map.set(String(r.question_number), r));
     return map;
@@ -604,7 +622,7 @@
         const prev = saveBtn.textContent;
         saveBtn.disabled = true; saveBtn.textContent = '保存中...';
         try {
-          await LoveNest.db.upsert('relationship_answers', {
+          await LoveNest.db.upsert('lovemap_answers', {
             question_number: qid,
             question_text: qText || '',
             him_answer: himText,
@@ -685,6 +703,159 @@
             btn.textContent = '展开作答 ↓';
           }
         });
+      });
+    }
+  }
+
+  /* ========== 06 全部 100 题总览：筛选 + 搜索 + 网格展开作答 ========== */
+  // 类别顺序 + 显示名
+  var ALL_CATEGORIES = [
+    { key: 'all',      label: '全部' },
+    { key: '冲突',     label: '冲突' },
+    { key: '未来',     label: '未来' },
+    { key: '价值观',   label: '价值观' },
+    { key: '金钱',     label: '金钱' },
+    { key: '家庭',     label: '家庭' },
+    { key: '生育',     label: '生育' },
+    { key: '职业',     label: '职业' },
+    { key: '性',       label: '亲密' }
+  ];
+  function categoryColor(cat) {
+    switch (cat) {
+      case '冲突':   return { tag: 'tag--her',  dot: '#d89797' };
+      case '未来':   return { tag: 'tag--sage', dot: '#8aaa9a' };
+      case '价值观': return { tag: 'tag--sage', dot: '#8aaa9a' };
+      case '金钱':   return { tag: 'tag--him',  dot: '#8a93a8' };
+      case '家庭':   return { tag: 'tag--her',  dot: '#d89797' };
+      case '生育':   return { tag: 'tag--both', dot: '#a08888' };
+      case '职业':   return { tag: 'tag--him',  dot: '#8a93a8' };
+      case '性':     return { tag: 'tag--both', dot: '#a08888' };
+      default:       return { tag: 'tag--both', dot: '#a08888' };
+    }
+  }
+  function questionStatus(row) {
+    // row = qMap.get(qNum) 或 undefined
+    // 返回：'done'(双方都填了+shared_done) / 'partial'(至少一方填了) / 'empty'(没填过)
+    if (!row) return 'empty';
+    if (row.shared_done) return 'done';
+    var hT = String(row.him_answer || '').trim();
+    var hR = String(row.her_answer || '').trim();
+    if (hT.length > 0 || hR.length > 0 || Number(row.him_star||0) > 0 || Number(row.her_star||0) > 0) return 'partial';
+    return 'empty';
+  }
+  function renderAllQuestions(data, qMap) {
+    qMap = qMap || (renderAllQuestions._lastMap || new Map());
+    renderAllQuestions._lastMap = qMap;
+    renderAllQuestions._lastData = data;
+    var toolbar = document.getElementById("aq-toolbar");
+    var grid = document.getElementById("aq-grid");
+    if (!toolbar || !grid) return;
+    var qs = data.weekly_questions || [];
+    // 状态缓存
+    var state = renderAllQuestions._state || {
+      filter: 'all',
+      search: ''
+    };
+    renderAllQuestions._state = state;
+
+    // 计算进度：shared_done 才算完成
+    var doneCount = 0;
+    qs.forEach(function(q) {
+      var num = /q(\d+)/.exec(String(q.id)) ? /q(\d+)/.exec(String(q.id))[1] : String(qs.indexOf(q) + 1);
+      if (questionStatus(qMap.get(num)) === 'done') doneCount += 1;
+    });
+    var progEl = document.getElementById('aq-progress');
+    if (progEl) progEl.textContent = '已完成 ' + doneCount + '/100';
+
+    // 顶栏
+    toolbar.innerHTML =
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center">'
+      + ALL_CATEGORIES.map(function(c) {
+          var active = state.filter === c.key;
+          return '<button type="button" class="btn btn--small aq-cat" data-cat="' + esc(c.key) + '" style="'
+            + (active ? 'background:var(--rose-deep);color:#fff;border-color:var(--rose-deep)' : 'background:#fff;color:var(--taupe);border:1px solid var(--line-soft)')
+            + '">' + esc(c.label) + '</button>';
+        }).join('')
+      + '</div>'
+      + '<input type="search" id="aq-search" placeholder="🔍 按题目文字搜索…" value="' + esc(state.search) + '"'
+      + ' style="padding:8px 12px;border-radius:10px;border:1px solid var(--line-soft);min-width:220px;font-family:inherit;font-size:14px;background:#fff" />';
+    toolbar.querySelectorAll('.aq-cat').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        state.filter = btn.getAttribute('data-cat') || 'all';
+        renderAllQuestions(data, qMap);
+        if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+      });
+    });
+    var searchInput = document.getElementById('aq-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        state.search = searchInput.value || '';
+        // 即时过滤（不重建卡片 DOM，只显示/隐藏）
+        applyGridFilter();
+      });
+    }
+
+    // 网格：一张题一张小卡
+    var html = '';
+    qs.forEach(function(q, idx) {
+      var num = /q(\d+)/.exec(String(q.id)) ? /q(\d+)/.exec(String(q.id))[1] : String(idx + 1);
+      var cat = q.category || '';
+      var st = questionStatus(qMap.get(num));
+      var col = categoryColor(cat);
+      var stLabel, stClass;
+      if (st === 'done')      { stLabel = '✅ 已聊完'; stClass = 'background:#e8f0ea;color:#506a5a;border:1px solid #c8d8cd'; }
+      else if (st === 'partial'){ stLabel = '✏️ 作答中'; stClass = 'background:#f6ebeb;color:#8a5a5a;border:1px solid #e0caca'; }
+      else                     { stLabel = '⚪ 未开始'; stClass = 'background:#f3f0ed;color:#8a7a70;border:1px solid #ded6cd'; }
+      html += '<article class="card card--plain reveal aq-card" data-delay="' + ((idx % 3) + 1) + '"'
+           + ' data-num="' + esc(num) + '" data-cat="' + esc(cat) + '" data-text="' + esc(q.text) + '" data-search="' + esc((q.text||'').toLowerCase()) + '">'
+           + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">'
+           +   '<span class="tag tag--both" style="margin:0">题 ' + esc(num) + '</span>'
+           +   '<span class="tag ' + col.tag + '" style="margin:0">' + esc(cat || '—') + '</span>'
+           +   '<span style="font-size:12px;padding:3px 10px;border-radius:999px;' + stClass + ';margin-left:auto">' + stLabel + '</span>'
+           + '</div>'
+           + '<p style="margin:0 0 12px;line-height:1.7">' + esc(q.text) + '</p>'
+           + '<button type="button" class="btn btn--ghost btn--small aq-toggle" data-num="' + esc(num) + '" data-text="' + esc(q.text).replace(/"/g, '&quot;') + '">展开作答 ↓</button>'
+           + '<div class="aq-body" id="aq-body-' + esc(num) + '" style="display:none;margin-top:10px"></div>'
+           + '</article>';
+    });
+    grid.innerHTML = html;
+
+    // 展开/收起
+    grid.querySelectorAll('.aq-toggle').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var num = btn.getAttribute('data-num');
+        var text = btn.getAttribute('data-text');
+        var body = document.getElementById('aq-body-' + num);
+        if (!body) return;
+        if (body.style.display === 'none') {
+          body.innerHTML = answerEditor(num, qMap.get(num), text);
+          wireAnswerEditor(body, qMap, text);
+          body.style.display = 'block';
+          btn.textContent = '收起 ↑';
+        } else {
+          body.style.display = 'none';
+          body.innerHTML = '';
+          btn.textContent = '展开作答 ↓';
+        }
+      });
+    });
+
+    // 首次应用筛选状态
+    applyGridFilter();
+
+    function applyGridFilter() {
+      var search = (state.search || '').toLowerCase().trim();
+      var cards = grid.querySelectorAll('.aq-card');
+      cards.forEach(function(c) {
+        var show = true;
+        if (state.filter !== 'all') {
+          if (String(c.getAttribute('data-cat')) !== state.filter) show = false;
+        }
+        if (show && search.length > 0) {
+          var hay = String(c.getAttribute('data-search') || '');
+          if (hay.indexOf(search) < 0) show = false;
+        }
+        c.style.display = show ? '' : 'none';
       });
     }
   }
@@ -809,7 +980,7 @@
       if (!cb || !ta) return;
       var part = parts[i] || {};
       try {
-        await LoveNest.db.upsert('magic_hours', {
+        await LoveNest.db.upsert('lovemap_magic5h', {
           week_iso: viewWeek,
           activity_index: Number(i),
           activity_name: part.part || ('#' + (i+1)),
@@ -817,7 +988,7 @@
           note: ta.value,
         }, ['couple_id','week_iso','activity_index']);
         // 重取当前周数据
-        renderFiveHours._thisWeekRows = await LoveNest.db.list('magic_hours', { week_iso: viewWeek });
+        renderFiveHours._thisWeekRows = await LoveNest.db.list('lovemap_magic5h', { week_iso: viewWeek });
         rows = (renderFiveHours._thisWeekRows || []).filter(function(r) { return r.week_iso === viewWeek; });
         rowMap = new Map();
         rows.forEach(function(r) { rowMap.set(Number(r.activity_index), r); });
@@ -861,7 +1032,7 @@
     data.cards = await mergeCardsFromDB(data.cards || []);
     var qMap = await loadAnswersMap();
     var weekIso = currentWeekISO();
-    var weekRows = await LoveNest.db.list('magic_hours', { week_iso: weekIso });
+    var weekRows = await LoveNest.db.list('lovemap_magic5h', { week_iso: weekIso });
     var weekMap = new Map();
     (weekRows || []).forEach(r => weekMap.set(String(r.week_iso) + '|' + String(r.activity_index), r));
     renderFiveHours._thisWeekRows = weekRows || [];
@@ -871,6 +1042,8 @@
     renderCards(data);
     renderWeekly(data, qMap);
     renderFiveHours(data, weekMap);
+    // ✨ 06 全部 100 题总览（历史/未来都能看）
+    renderAllQuestions(data, qMap);
     LoveNest.loadContentForPage();
     wireFlip();
     /* 动态注入的 .reveal 需要重新挂观察者，才会按滚动淡入 */
@@ -884,15 +1057,17 @@
       wireFlip();
       if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
     });
-    LoveNest.db.watch('relationship_answers', async () => {
+    LoveNest.db.watch('lovemap_answers', async () => {
       var newMap = await loadAnswersMap();
       // 只重渲染题区，其他不动
       renderWeekly(data, newMap);
-      if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+      // 如果总览区已渲染，也重渲
+      if (typeof renderAllQuestions === 'function') renderAllQuestions(data, newMap);
+      if (typeof LoveNest.initReveal === 'function') LoveNest.initReveal();
     });
-    LoveNest.db.watch('magic_hours', async () => {
+    LoveNest.db.watch('lovemap_magic5h', async () => {
       var vw = renderFiveHours._viewWeek || currentWeekISO();
-      var thisWeek = await LoveNest.db.list('magic_hours', { week_iso: vw });
+      var thisWeek = await LoveNest.db.list('lovemap_magic5h', { week_iso: vw });
       renderFiveHours._thisWeekRows = thisWeek || [];
       renderFiveHours(data, weekMap);
       if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();

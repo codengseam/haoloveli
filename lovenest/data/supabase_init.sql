@@ -535,6 +535,115 @@ values ('aaaa1111-bbbb-cccc-dddd-eeeeffff0001','site_title','豪❤力 · 爱的
 on conflict (couple_id, cfg_key) do nothing;
 
 /* =========================================================================
+   🔧 补丁 3（PATCH 3）：lovemap_answers 宽表化 + love_notes 表 + lovemap_magic5h 字段对齐
+   必执行！否则：
+   - 深度问题答案无法云端持久化（表结构对不上）
+   - 卡片内容无法多设备同步
+   - 每周5小时打卡 note/duration_min 字段缺失
+   ========================================================================= */
+
+-- ---------- P3-1. 重建 lovemap_answers 为宽表（匹配前端 answerEditor 的 him/her 两列结构）----------
+drop table if exists public.lovemap_answers cascade;
+create table if not exists public.lovemap_answers (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples(id) on delete cascade default 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',
+  question_number text not null,                                    -- '1'..'100'（纯数字字符串，和前端 qMap key 一致）
+  question_text text,                                                 -- 题目原文快照，防止题库改版后历史答案对不上
+  him_answer text,                                                    -- 师豪答案文本
+  her_answer text,                                                    -- 佳力答案文本
+  him_star int not null default 0 check (him_star between 0 and 5), -- 师豪打星 0~5
+  her_star int not null default 0 check (her_star between 0 and 5), -- 佳力打星 0~5
+  shared_done boolean not null default false,                        -- 双方都确认聊过了
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(couple_id, question_number)
+);
+create index if not exists idx_lovemap_answers_qnum on public.lovemap_answers(couple_id, question_number);
+
+-- ---------- P3-2. 新增 love_notes 通用键值表（cards 内容、停战签字、月度目标等共用）----------
+create table if not exists public.love_notes (
+  id uuid primary key default gen_random_uuid(),
+  couple_id uuid not null references public.couples(id) on delete cascade default 'aaaa1111-bbbb-cccc-dddd-eeeeffff0001',
+  note_key text not null,                                            -- 复合键：如 'card|her-likes' / 'peace|him' / 'dash-goals|2026-08'
+  kind text,                                                          -- 分类：card / peace-signature / dash-goals / 任意字符串
+  side text,                                                          -- him / her / both（可空）
+  title text,                                                         -- 卡片标题类（可空）
+  items_json jsonb,                                                   -- 卡片 items 数组（可空）
+  content text,                                                       -- 备注 / 文本内容 / back_note（可空）
+  extra jsonb not null default '{}'::jsonb,                          -- 扩展字段，灵活放其他任意数据
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique(couple_id, note_key)
+);
+create index if not exists idx_love_notes_kind on public.love_notes(couple_id, kind);
+
+-- ---------- P3-3. lovemap_magic5h 字段对齐：前端用 activity_index + note，SQL 只有 part + duration_min ----------
+-- 不删旧列，增量补齐，兼容旧种子
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_schema='public' and table_name='lovemap_magic5h' and column_name='activity_index') then
+    alter table public.lovemap_magic5h add column activity_index int;
+  end if;
+  if not exists (select 1 from information_schema.columns where table_schema='public' and table_name='lovemap_magic5h' and column_name='note') then
+    alter table public.lovemap_magic5h add column note text;
+  end if;
+end $$;
+-- 用 part 推断 activity_index（part 文本里有 #1~#5 或用位置推断），给旧行补默认值
+update public.lovemap_magic5h set activity_index = 0 where activity_index is null;
+
+-- ---------- P3-4. updated_at 触发器（3 张新/改表）----------
+do $$
+declare t text;
+begin
+  foreach t in array array['lovemap_answers','love_notes','lovemap_magic5h'] loop
+    execute format('drop trigger if exists handle_updated_at on public.%I;
+                    create trigger handle_updated_at before update on public.%I
+                    for each row execute function moddatetime(''updated_at'');', t, t);
+  end loop;
+end $$;
+
+-- ---------- P3-5. RLS ----------
+do $$
+declare t text;
+begin
+  foreach t in array array['lovemap_answers','love_notes'] loop
+    execute format('alter table public.%I enable row level security;', t);
+    execute format('drop policy if exists "anon allow all for couple" on public.%I;
+                    create policy "anon allow all for couple" on public.%I
+                    for all to anon using (true) with check (true);', t, t);
+  end loop;
+end $$;
+
+-- ---------- P3-6. 迁移旧 lovemap_cards 种子 → love_notes.kind='card'（双写，不破坏旧读）----------
+insert into public.love_notes (couple_id, note_key, kind, side, title, items_json, content)
+select
+  c.couple_id,
+  'card|' || c.id,
+  'card',
+  case c.id
+    when 'her-likes' then 'her'
+    when 'her-landmines' then 'her'
+    when 'his-likes' then 'him'
+    when 'his-landmines' then 'him'
+    when 'shared-dreams' then 'both'
+    when 'shared-values' then 'both'
+    else null
+  end,
+  case c.id
+    when 'her-likes' then '佳力的喜好'
+    when 'her-landmines' then '佳力的雷区'
+    when 'his-likes' then '师豪的喜好'
+    when 'his-landmines' then '师豪的雷区'
+    when 'shared-dreams' then '我们共同的梦想'
+    when 'shared-values' then '我们共同在意的事'
+    else null
+  end,
+  c.items_json,
+  c.back_note
+from public.lovemap_cards c
+on conflict (couple_id, note_key) do nothing;
+
+/* =========================================================================
    完成 ✅
    验证：
    select count(*) from public.bank_records;     → 应该是 8
@@ -544,4 +653,5 @@ on conflict (couple_id, cfg_key) do nothing;
    select count(*) from public.peace_signatures;  → 应该是 2
    select count(*) from public.site_accounts;     → 应该是 3（补丁2新增）
    select count(*) from public.site_config;       → 应该是 4（补丁2新增）
+   select count(*) from public.love_notes where kind='card';  → 应该是 6（补丁3新增）
    ========================================================================= */
