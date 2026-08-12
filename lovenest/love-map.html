@@ -584,7 +584,8 @@
   }
 
   /* 给某答案区绑定：星星打分 + 保存按钮 */
-  function wireAnswerEditor(container, qMap, qText) {
+  function wireAnswerEditor(container, qMap, qText, opts) {
+    opts = opts || {};
     const editors = container.querySelectorAll('.answer-editor');
     editors.forEach(function(ed) {
       const qid = ed.getAttribute('data-question');
@@ -632,7 +633,6 @@
             shared_done: !!shared_done,
           }, ['couple_id','question_number']);
           // 更新内存 map
-          const now = (qMap.get(qid) && qMap.get(qid).updated_at) || null;
           qMap.set(qid, {
             question_number: qid, question_text: qText || '',
             him_answer: himText, her_answer: herText,
@@ -641,6 +641,8 @@
           });
           saveBtn.textContent = '✅ 已同步';
           setTimeout(function() { saveBtn.disabled = false; saveBtn.textContent = prev; }, 2000);
+          // 保存成功后的回调（用于刷新列表 UI 等）
+          if (typeof opts.onSaved === 'function') opts.onSaved(qid);
         } catch (e) {
           console.warn('[answers] upsert 失败:', e);
           saveBtn.disabled = false;
@@ -648,6 +650,170 @@
           setTimeout(function() { saveBtn.textContent = prev; }, 2500);
         }
       });
+    });
+  }
+
+  /* ✨ 单道题详情弹窗（更大更清晰，类似家庭成员档案） */
+  function openQuestionDetail(qNum, qText, qCategory, row, qMap) {
+    if (!window.LoveNest || !window.LoveNest.openModal) return;
+    row = row || {};
+    const cat = qCategory || '';
+    const col = categoryColor(cat);
+    const st = questionStatus(row);
+    let stLabel, stClass;
+    if (st === 'done')       { stLabel = '✅ 已聊完'; stClass = 'background:#e8f0ea;color:#506a5a;border:1px solid #c8d8cd'; }
+    else if (st === 'partial'){ stLabel = '✏️ 作答中'; stClass = 'background:#f6ebeb;color:#8a5a5a;border:1px solid #e0caca'; }
+    else                      { stLabel = '⚪ 未开始'; stClass = 'background:#f3f0ed;color:#8a7a70;border:1px solid #ded6cd'; }
+
+    // 星星颜色：弹窗内的星星更醒目一些
+    const starActive = '#c97878';
+    function starBtns(side, current) {
+      return [1,2,3,4,5].map(function(n) {
+        const cls = side === 'him' ? 'dqa-him-star' : 'dqa-her-star';
+        const color = (current || 0) >= n ? starActive : '#ccc';
+        return '<button type="button" class="' + cls + '" data-n="' + n + '" style="border:0;background:transparent;font-size:26px;cursor:pointer;padding:0 4px;line-height:1;color:' + color + '" title="' + n + ' 星">★</button>';
+      }).join('');
+    }
+
+    const html =
+      // 顶部：题目信息条
+      '<div class="detail-header" style="text-align:left;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line-soft)">'
+      + '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">'
+      +   '<span class="tag tag--both" style="margin:0;font-size:14px;padding:4px 12px">第 ' + esc(qNum) + ' 题</span>'
+      +   (cat ? '<span class="tag ' + col.tag + '" style="margin:0;font-size:14px;padding:4px 12px">' + esc(cat) + '</span>' : '')
+      +   '<span style="font-size:13px;padding:4px 12px;border-radius:999px;' + stClass + ';margin-left:auto">' + stLabel + '</span>'
+      + '</div>'
+      + '<blockquote style="margin:0;padding:18px 22px;background:linear-gradient(135deg,#fbf7f2 0%,#f5efe8 100%);border-left:5px solid var(--sage);border-radius:12px;line-height:1.9;font-size:1.1rem;color:var(--ink);font-family:var(--ff-serif);font-weight:500;letter-spacing:.02em">'
+      +   esc(qText)
+      + '</blockquote>'
+      + '</div>'
+
+      // 作答区：顶部操作栏
+      + '<div class="detail-section" style="margin-bottom:20px">'
+      +   '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:14px">'
+      +     '<h4 style="margin:0;font-size:.9rem;color:var(--muted);font-weight:500;letter-spacing:.05em">✍️ 两人作答</h4>'
+      +     '<label style="display:flex;align-items:center;gap:10px;margin:0;font-size:14px;color:var(--taupe);cursor:pointer;padding:8px 14px;border:1px solid var(--line-soft);border-radius:10px;background:rgba(255,255,255,.7)">'
+      +       '<input type="checkbox" id="dqa-shared" ' + (row.shared_done ? 'checked' : '') + ' style="width:18px;height:18px;accent-color:var(--sage-deep)"> 双方都确认聊过了 · 标记完成 ✅'
+      +     '</label>'
+      +   '</div>'
+
+      // 双栏编辑
+      +   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">'
+      // 他
+      +   '<div style="padding:18px 20px;border-radius:16px;background:linear-gradient(180deg,#fbf5f2 0%,#fff 100%);border:1px solid #ecd7cb">'
+      +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      +       '<div style="display:flex;align-items:center;gap:10px">'
+      +         '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--terracotta),#a55d47);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600">豪</div>'
+      +         '<div>'
+      +           '<div style="font-weight:600;color:var(--ink);font-size:1rem">他 · 师豪</div>'
+      +           '<div style="font-size:12px;color:var(--muted)">男方视角 · 心路历程</div>'
+      +         '</div>'
+      +       '</div>'
+      +       '<div id="dqa-him-stars" style="display:flex;gap:2px">' + starBtns('him', Number(row.him_star || 0)) + '</div>'
+      +     '</div>'
+      +     '<textarea id="dqa-him" rows="9" placeholder="写下你的回答、当时的感受、背后的需要……不用完美，真实就好。" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line-soft);background:#fff;font-family:inherit;font-size:15px;line-height:1.85;resize:vertical;box-shadow:inset 0 1px 2px rgba(0,0,0,.03)">' + esc(row.him_answer || '') + '</textarea>'
+      +   '</div>'
+      // 她
+      +   '<div style="padding:18px 20px;border-radius:16px;background:linear-gradient(180deg,#fbf2f4 0%,#fff 100%);border:1px solid #ecd0d7">'
+      +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      +       '<div style="display:flex;align-items:center;gap:10px">'
+      +         '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--rose-deep));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600">力</div>'
+      +         '<div>'
+      +           '<div style="font-weight:600;color:var(--ink);font-size:1rem">她 · 佳力</div>'
+      +           '<div style="font-size:12px;color:var(--muted)">女方视角 · 心路历程</div>'
+      +         '</div>'
+      +       '</div>'
+      +       '<div id="dqa-her-stars" style="display:flex;gap:2px">' + starBtns('her', Number(row.her_star || 0)) + '</div>'
+      +     '</div>'
+      +     '<textarea id="dqa-her" rows="9" placeholder="写下你的回答、当时的感受、背后的需要……不用完美，真实就好。" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line-soft);background:#fff;font-family:inherit;font-size:15px;line-height:1.85;resize:vertical;box-shadow:inset 0 1px 2px rgba(0,0,0,.03)">' + esc(row.her_answer || '') + '</textarea>'
+      +   '</div>'
+      +   '</div>'
+      + '</div>'
+
+      // 底部按钮栏
+      + '<div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--line-soft);display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">'
+      +   '<button type="button" class="btn btn--ghost" id="dqa-close">关闭</button>'
+      +   '<button type="button" class="btn btn--primary" id="dqa-save" style="min-width:140px">💾 保存并同步</button>'
+      + '</div>';
+
+    window.LoveNest.openModal('第 ' + qNum + ' 题 · 详情与作答', html);
+
+    // —— 弹窗打开后：绑定星星 + 保存 + 关闭
+    const body = document.getElementById('sharedModalBody');
+    if (!body) return;
+
+    let himStarVal = Number(row.him_star || 0);
+    let herStarVal = Number(row.her_star || 0);
+    function paintStars(containerId, side, val) {
+      const host = body.querySelector('#' + containerId);
+      if (!host) return;
+      host.querySelectorAll('button').forEach(function(b) {
+        b.style.color = Number(b.getAttribute('data-n')) <= val ? starActive : '#ccc';
+      });
+    }
+    // 他的星星
+    body.querySelectorAll('#dqa-him-stars button').forEach(function(b) {
+      b.addEventListener('click', function() {
+        himStarVal = Number(b.getAttribute('data-n'));
+        paintStars('dqa-him-stars', 'him', himStarVal);
+      });
+    });
+    // 她的星星
+    body.querySelectorAll('#dqa-her-stars button').forEach(function(b) {
+      b.addEventListener('click', function() {
+        herStarVal = Number(b.getAttribute('data-n'));
+        paintStars('dqa-her-stars', 'her', herStarVal);
+      });
+    });
+    // 关闭按钮
+    const closeBtn = body.querySelector('#dqa-close');
+    if (closeBtn) closeBtn.addEventListener('click', function() {
+      window.LoveNest.closeModal();
+    });
+    // 保存按钮
+    const saveBtn = body.querySelector('#dqa-save');
+    if (saveBtn) saveBtn.addEventListener('click', async function() {
+      const himTa = body.querySelector('#dqa-him');
+      const herTa = body.querySelector('#dqa-her');
+      const sharedCb = body.querySelector('#dqa-shared');
+      const himText = himTa ? himTa.value : '';
+      const herText = herTa ? herTa.value : '';
+      const shared_done = sharedCb ? sharedCb.checked : false;
+      const prev = saveBtn.textContent;
+      saveBtn.disabled = true; saveBtn.textContent = '保存中...';
+      try {
+        await LoveNest.db.upsert('lovemap_answers', {
+          question_number: String(qNum),
+          question_text: qText || '',
+          him_answer: himText,
+          her_answer: herText,
+          him_star: Number(himStarVal) || 0,
+          her_star: Number(herStarVal) || 0,
+          shared_done: !!shared_done,
+        }, ['couple_id','question_number']);
+        // 更新内存 map（watch 会触发重渲，这里先手动更新一次避免视觉延迟）
+        qMap.set(String(qNum), {
+          question_number: String(qNum), question_text: qText || '',
+          him_answer: himText, her_answer: herText,
+          him_star: Number(himStarVal) || 0, her_star: Number(herStarVal) || 0,
+          shared_done: !!shared_done,
+        });
+        saveBtn.textContent = '✅ 已同步到云端';
+        setTimeout(function() {
+          saveBtn.disabled = false;
+          saveBtn.textContent = prev;
+          // 保存后刷新一下列表卡片（让进度标签立刻变绿）
+          const lastData = renderAllQuestions._lastData;
+          if (lastData && typeof renderAllQuestions === 'function') {
+            renderAllQuestions(lastData, qMap);
+          }
+        }, 1500);
+      } catch (e) {
+        console.warn('[detail-answers] upsert 失败:', e);
+        saveBtn.disabled = false;
+        saveBtn.textContent = '❌ 失败（已入离线队列）';
+        setTimeout(function() { saveBtn.textContent = prev; }, 2500);
+      }
     });
   }
 
@@ -677,31 +843,31 @@
         var j = (idx + k) % qs.length;
         var it = qs[j];
         var itNum = /q(\d+)/.exec(String(it.id)) ? /q(\d+)/.exec(String(it.id))[1] : String(j + 1);
+        var itCat = it.category || '';
+        var itSt = questionStatus(qMap.get(itNum));
+        var itCol = categoryColor(itCat);
+        var itStLabel, itStClass;
+        if (itSt === 'done')       { itStLabel = '✅ 已聊完'; itStClass = 'background:#e8f0ea;color:#506a5a;border:1px solid #c8d8cd'; }
+        else if (itSt === 'partial'){ itStLabel = '✏️ 作答中'; itStClass = 'background:#f6ebeb;color:#8a5a5a;border:1px solid #e0caca'; }
+        else                        { itStLabel = '⚪ 未开始'; itStClass = 'background:#f3f0ed;color:#8a7a70;border:1px solid #ded6cd'; }
         html += '<article class="card reveal" data-delay="' + k + '">'
-          + '<span class="kicker">第 ' + itNum + ' 题 · 下周</span>'
-          + '<p class="mt-1" style="margin-bottom:12px">' + esc(it.text) + '</p>'
-          + '<button type="button" class="btn btn--ghost btn--small qa-teaser-toggle" data-num="' + esc(itNum) + '" data-text="' + esc(it.text).replace(/"/g, '&quot;') + '">展开作答 ↓</button>'
-          + '<div class="qa-teaser-body" id="teaser-' + esc(itNum) + '" style="display:none"></div>'
+          + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">'
+          +   '<span class="kicker">第 ' + itNum + ' 题 · 下周</span>'
+          +   (itCat ? '<span class="tag ' + itCol.tag + '" style="margin:0;font-size:12px">' + esc(itCat) + '</span>' : '')
+          +   '<span style="font-size:12px;padding:2px 10px;border-radius:999px;' + itStClass + ';margin-left:auto">' + itStLabel + '</span>'
+          + '</div>'
+          + '<p class="mt-1" style="margin-bottom:14px;line-height:1.75">' + esc(it.text) + '</p>'
+          + '<button type="button" class="btn btn--ghost btn--small qa-teaser-detail" data-num="' + esc(itNum) + '" data-text="' + esc(it.text).replace(/"/g, '&quot;') + '" data-cat="' + esc(itCat).replace(/"/g, '&quot;') + '">🔍 查看详情与作答</button>'
           + '</article>';
       }
       tEl.innerHTML = html;
-      // 展开/收起
-      tEl.querySelectorAll('.qa-teaser-toggle').forEach(function(btn) {
+      // 打开详情弹窗
+      tEl.querySelectorAll('.qa-teaser-detail').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var num = btn.getAttribute('data-num');
           var text = btn.getAttribute('data-text');
-          var body = document.getElementById('teaser-' + num);
-          if (!body) return;
-          if (body.style.display === 'none') {
-            body.innerHTML = answerEditor(num, qMap.get(num), text);
-            wireAnswerEditor(body, qMap, text);
-            body.style.display = 'block';
-            btn.textContent = '收起 ↑';
-          } else {
-            body.style.display = 'none';
-            body.innerHTML = '';
-            btn.textContent = '展开作答 ↓';
-          }
+          var cat = btn.getAttribute('data-cat') || '';
+          openQuestionDetail(num, text, cat, qMap.get(num), qMap);
         });
       });
     }
@@ -795,7 +961,7 @@
       });
     }
 
-    // 网格：一张题一张小卡
+    // 网格：一张题一张小卡（点「查看详情」开大弹窗）
     var html = '';
     qs.forEach(function(q, idx) {
       var num = /q(\d+)/.exec(String(q.id)) ? /q(\d+)/.exec(String(q.id))[1] : String(idx + 1);
@@ -806,6 +972,17 @@
       if (st === 'done')      { stLabel = '✅ 已聊完'; stClass = 'background:#e8f0ea;color:#506a5a;border:1px solid #c8d8cd'; }
       else if (st === 'partial'){ stLabel = '✏️ 作答中'; stClass = 'background:#f6ebeb;color:#8a5a5a;border:1px solid #e0caca'; }
       else                     { stLabel = '⚪ 未开始'; stClass = 'background:#f3f0ed;color:#8a7a70;border:1px solid #ded6cd'; }
+      // 预览已有内容：取前 40 字做 hint，让卡片更有「点进去」的欲望
+      var row = qMap.get(num);
+      var filled = [];
+      if (row && String(row.him_answer || '').trim()) filled.push('他：' + String(row.him_answer).trim().slice(0, 28));
+      if (row && String(row.her_answer || '').trim()) filled.push('她：' + String(row.her_answer).trim().slice(0, 28));
+      var previewHtml = '';
+      if (filled.length) {
+        previewHtml = '<div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:linear-gradient(180deg,#faf6f1,#f5efe8);border:1px solid var(--line-soft);font-size:12.5px;color:var(--taupe);line-height:1.65">'
+          + filled.map(function(f){ return '<div style="margin:2px 0">' + esc(f) + (f.length >= 28 ? '…' : '') + '</div>'; }).join('')
+          + '</div>';
+      }
       html += '<article class="card card--plain reveal aq-card" data-delay="' + ((idx % 3) + 1) + '"'
            + ' data-num="' + esc(num) + '" data-cat="' + esc(cat) + '" data-text="' + esc(q.text) + '" data-search="' + esc((q.text||'').toLowerCase()) + '">'
            + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">'
@@ -813,30 +990,22 @@
            +   '<span class="tag ' + col.tag + '" style="margin:0">' + esc(cat || '—') + '</span>'
            +   '<span style="font-size:12px;padding:3px 10px;border-radius:999px;' + stClass + ';margin-left:auto">' + stLabel + '</span>'
            + '</div>'
-           + '<p style="margin:0 0 12px;line-height:1.7">' + esc(q.text) + '</p>'
-           + '<button type="button" class="btn btn--ghost btn--small aq-toggle" data-num="' + esc(num) + '" data-text="' + esc(q.text).replace(/"/g, '&quot;') + '">展开作答 ↓</button>'
-           + '<div class="aq-body" id="aq-body-' + esc(num) + '" style="display:none;margin-top:10px"></div>'
+           + '<p style="margin:0 0 12px;line-height:1.75">' + esc(q.text) + '</p>'
+           + previewHtml
+           + '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
+           +   '<button type="button" class="btn btn--primary btn--small aq-detail" style="flex:1;justify-content:center" data-num="' + esc(num) + '" data-text="' + esc(q.text).replace(/"/g, '&quot;') + '" data-cat="' + esc(cat).replace(/"/g, '&quot;') + '">🔍 查看详情与作答</button>'
+           + '</div>'
            + '</article>';
     });
     grid.innerHTML = html;
 
-    // 展开/收起
-    grid.querySelectorAll('.aq-toggle').forEach(function(btn) {
+    // 绑定：点按钮打开详情弹窗
+    grid.querySelectorAll('.aq-detail').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var num = btn.getAttribute('data-num');
         var text = btn.getAttribute('data-text');
-        var body = document.getElementById('aq-body-' + num);
-        if (!body) return;
-        if (body.style.display === 'none') {
-          body.innerHTML = answerEditor(num, qMap.get(num), text);
-          wireAnswerEditor(body, qMap, text);
-          body.style.display = 'block';
-          btn.textContent = '收起 ↑';
-        } else {
-          body.style.display = 'none';
-          body.innerHTML = '';
-          btn.textContent = '展开作答 ↓';
-        }
+        var cat = btn.getAttribute('data-cat') || '';
+        openQuestionDetail(num, text, cat, qMap.get(num), qMap);
       });
     });
 
