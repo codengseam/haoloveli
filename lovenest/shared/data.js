@@ -2195,4 +2195,112 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
   window.LoveNest = window.LoveNest || {};
   window.LoveNest.loadContentForPage = loadContentForPage;
   window.LoveNest.renderMd = renderMd;
+
+  /* ============================================================
+     💹 Finance KPI —— 首页 + finance.html 共用的统一计算函数
+     保证跨页面数字（储蓄率、家庭净值、三账户、里程碑分配）完全一致
+     ============================================================ */
+  const _CATEGORY_TO_ACCOUNT = {
+    housing:"spend", food:"spend", transport:"spend", shopping:"spend",
+    medical:"spend", leisure:"spend", other:"spend",
+    family:"save", education:"invest"
+  };
+  const _MILESTONE_PRIORITY = ["emergency","wedding","house","baby","fire"];
+  function _mergeFinRecords(fromDB, seeds) {
+    const arr = Array.isArray(seeds) ? seeds.map(r => ({ ...r, source: 'seed' })) : [];
+    const seen = new Set(); const merged = [];
+    [...(fromDB||[]), ...arr].forEach(r => {
+      const k = [r.date, r.type, r.category, r.who, r.amount, r.note].join('||');
+      if (seen.has(k)) return; seen.add(k); merged.push(r);
+    });
+    return merged.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  }
+  function _splitRecordsToThreeAccounts(allRecords) {
+    const out = { spend:0, save:0, invest:0 };
+    allRecords.forEach(r => {
+      const amt = Number(r.amount)||0;
+      if (r.type === 'expense') {
+        if (/储蓄|应急|首付|存款|存/.test(r.note||'')) { out.save += amt; return; }
+        if (/基金|定投|投资|买入|buy|stock|指数/.test(r.note||'')) { out.invest += amt; return; }
+        const acc = _CATEGORY_TO_ACCOUNT[r.category] || 'spend';
+        out[acc] += amt;
+      }
+    });
+    let cumIncome = 0, cumSpendExpense = 0;
+    allRecords.forEach(r => {
+      const a = Number(r.amount)||0;
+      if (r.type === 'income') cumIncome += a;
+      if (r.type === 'expense' && (_CATEGORY_TO_ACCOUNT[r.category] === 'spend'
+          && !(/储蓄|应急|首付|存款|存|基金|定投|投资|买入/.test(r.note||'')))) {
+        cumSpendExpense += a;
+      }
+    });
+    const pool = Math.max(0, cumIncome - cumSpendExpense - out.save - out.invest);
+    const saveTarget = Math.round(cumIncome * 0.20);
+    let s = out.save, i = out.invest;
+    if (s < saveTarget && pool > 0) { const add = Math.min(pool, saveTarget - s); s += add; }
+    const remainPool = Math.max(0, pool - (saveTarget > out.save ? saveTarget - out.save : 0));
+    if (remainPool > 0) i += remainPool;
+    return { spend: cumSpendExpense, save: s, invest: i, cumIncome, cumSpendExpense };
+  }
+  function _allocateMilestonesFromAccounts(saveAmt, investAmt, msList) {
+    let available = saveAmt + investAmt;
+    const sorted = [...(msList||[])].sort((a, b) => {
+      const ia = _MILESTONE_PRIORITY.indexOf(a.key);
+      const ib = _MILESTONE_PRIORITY.indexOf(b.key);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    });
+    const allocated = {};
+    sorted.forEach(m => {
+      const target = Number(m.target)||0;
+      if (available <= 0) { allocated[m.key] = 0; return; }
+      const give = Math.min(available, target);
+      allocated[m.key] = give;
+      available -= give;
+    });
+    return allocated;
+  }
+  /**
+   * 统一入口：加载 + 合并 + 计算家庭财务 KPI
+   * @returns { monthIncome, monthExpense, savingRate, netWorth,
+   *            threeAccAmts:{spend,save,invest}, msSavedMap:{[key]:saved} }
+   */
+  window.LoveNest.calcFinanceKPIs = async function calcFinanceKPIs(filterYM) {
+    const fin = await LoveNest.getJSON('data/finance.json', null);
+    const fallback = (fin && fin.seed_records) ? fin : {
+      life_milestones:[], three_accounts:[], seed_records:[]
+    };
+    let records = [];
+    if (LoveNest.db) {
+      await LoveNest.db.ready;
+      const fromDB = await LoveNest.db.list('finance_records', null, { order: [['date','desc'],['created_at','desc']] });
+      records = _mergeFinRecords(fromDB, fallback.seed_records);
+    } else {
+      records = _mergeFinRecords([], fallback.seed_records);
+    }
+    const ym = filterYM || LoveNest.todayISO().slice(0,7);
+    let monthIncome = 0, monthExpense = 0;
+    records.forEach(r => {
+      if (String(r.date).slice(0,7) !== ym) return;
+      const a = Number(r.amount)||0;
+      if (r.type === 'income')  monthIncome += a;
+      if (r.type === 'expense') monthExpense += a;
+    });
+    const savingRate = monthIncome > 0 ? Math.max(0, Math.min(100, Math.round((monthIncome - monthExpense)/monthIncome*100))) : 0;
+    const acc = _splitRecordsToThreeAccounts(records);
+    const threeAccAmts = { spend: Math.round(acc.spend), save: Math.round(acc.save), invest: Math.round(acc.invest) };
+    const msList = fallback.life_milestones || [];
+    const msSavedMap = _allocateMilestonesFromAccounts(acc.save, acc.invest, msList);
+    const netWorth = Object.values(msSavedMap).reduce((s, v) => s + v, 0);
+    return {
+      monthIncome, monthExpense, savingRate, netWorth,
+      cumIncome: acc.cumIncome, cumSpendExpense: acc.cumSpendExpense,
+      threeAccAmts, msSavedMap, records, milestones: msList,
+      threeAccounts: fallback.three_accounts || []
+    };
+  };
+  /* 给 finance.html 直接复用的纯函数（records 已在内存，避免重复查 DB）—— 必须在内部函数声明之后 */
+  window.LoveNest._finSplit = _splitRecordsToThreeAccounts;
+  window.LoveNest._finAllocateMilestones = _allocateMilestonesFromAccounts;
+  window.LoveNest._finCATEGORY_TO_ACCOUNT = _CATEGORY_TO_ACCOUNT;
 })();

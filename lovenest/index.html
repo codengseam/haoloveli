@@ -196,6 +196,7 @@
 <script src="../env-config.js"></script>
 <script src="shared/config.js"></script>
 <script src="shared/db.js"></script>
+<script src="shared/data.js"></script>
 <script src="shared/nav.js"></script>
 <script>
 (function () {
@@ -333,32 +334,13 @@
     const totalMs = span * 365.25 * 86400000;
     const lifePct = Math.max(0, Math.min(100, ((new Date() - loveStart) / totalMs) * 100));
 
-    /* 家庭储蓄率 / 家庭净值：从 finance_records + finance.json 组合计算，带 fallback */
+    /* 家庭储蓄率 / 家庭净值：调用 shared/data.js 里统一的 calcFinanceKPIs，保证和 finance.html 数字完全一致 */
     let savingRate = null, netWorth = null;
     try {
-      if (typeof LoveNest !== 'undefined' && LoveNest.db) {
-        await LoveNest.db.ready;
-        const fin = await LoveNest.getJSON('data/finance.json', null);
-        const recs = await LoveNest.db.list('finance_records', null, { order: [['date','desc']] });
-        const seeds = (fin && Array.isArray(fin.seed_records)) ? fin.seed_records : [];
-        const seen = new Set();
-        const all = [];
-        [...recs, ...seeds].forEach(r => {
-          const k = [r.date, r.type, r.category, r.who, r.amount, r.note].join('||');
-          if (seen.has(k)) return; seen.add(k); all.push(r);
-        });
-        const ym = LoveNest.todayISO().slice(0,7);
-        let mIn = 0, mOut = 0;
-        all.forEach(r => {
-          if (String(r.date).slice(0,7) !== ym) return;
-          const a = Number(r.amount)||0;
-          if (r.type === 'income')  mIn += a;
-          if (r.type === 'expense') mOut += a;
-        });
-        savingRate = mIn > 0 ? Math.max(0, Math.min(100, Math.round((mIn - mOut)/mIn*100))) : (mIn===mOut && mIn===0 ? '—' : 0);
-        netWorth = (fin && Array.isArray(fin.life_milestones))
-          ? fin.life_milestones.reduce((s, m) => s + (Number(m.saved)||0), 0)
-          : 0;
+      if (typeof LoveNest !== 'undefined' && LoveNest.calcFinanceKPIs) {
+        const k = await LoveNest.calcFinanceKPIs();
+        savingRate = (k.monthIncome === 0) ? '—' : k.savingRate;
+        netWorth = k.netWorth;
       }
     } catch (_) {}
 
@@ -630,31 +612,13 @@
     const totalMs = span * 365.25 * 86400000;
     const lifePct = Math.max(0, Math.min(100, ((new Date() - loveStart) / totalMs) * 100));
 
-    /* 家庭储蓄率 / 家庭净值：从 finance_records + finance.json 组合计算，带 fallback */
+    /* 家庭储蓄率 / 家庭净值：调用 shared/data.js 里统一的 calcFinanceKPIs，保证和 finance.html 数字完全一致 */
     let savingRate = '—', netWorth = '—';
     try {
-      if (typeof LoveNest !== 'undefined' && LoveNest.db) {
-        const fin = await LoveNest.getJSON('data/finance.json', null);
-        const recs = await LoveNest.db.list('finance_records', null, { order: [['date','desc']] });
-        const seeds = (fin && Array.isArray(fin.seed_records)) ? fin.seed_records : [];
-        const seen = new Set();
-        const all = [];
-        [...recs, ...seeds].forEach(r => {
-          const k = [r.date, r.type, r.category, r.who, r.amount, r.note].join('||');
-          if (seen.has(k)) return; seen.add(k); all.push(r);
-        });
-        const ym = LoveNest.todayISO().slice(0,7);
-        let mIn = 0, mOut = 0;
-        all.forEach(r => {
-          if (String(r.date).slice(0,7) !== ym) return;
-          const a = Number(r.amount)||0;
-          if (r.type === 'income')  mIn += a;
-          if (r.type === 'expense') mOut += a;
-        });
-        savingRate = mIn > 0 ? Math.max(0, Math.min(100, Math.round((mIn - mOut)/mIn*100))) + '%' : '—';
-        if (fin && Array.isArray(fin.life_milestones)) {
-          netWorth = '¥' + fin.life_milestones.reduce((s, m) => s + (Number(m.saved)||0), 0).toLocaleString('zh-CN');
-        }
+      if (typeof LoveNest !== 'undefined' && LoveNest.calcFinanceKPIs) {
+        const k = await LoveNest.calcFinanceKPIs();
+        savingRate = (k.monthIncome === 0) ? '—' : k.savingRate + '%';
+        netWorth = '¥' + Number(k.netWorth).toLocaleString('zh-CN');
       }
     } catch (_) {}
 
