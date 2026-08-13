@@ -241,7 +241,7 @@
           <span class="brand__mark">${BRAND.mark}</span>
           <span class="brand__name">${BRAND.name}<small>${BRAND.sub}</small></span>
         </a>
-        <nav class="topnav" aria-label="主导航">${navHtml}</nav>
+        <div class="topnav-wrap"><nav class="topnav" aria-label="主导航">${navHtml}</nav></div>
         <div class="topbar__auth">${desktopAuth}</div>
         <button class="nav-toggle" id="navToggle" aria-label="展开导航" aria-expanded="false">☰</button>
       </div>
@@ -323,6 +323,18 @@
         doLogout(e);
       });
     }
+
+    // 滚动式导航：让当前激活 Tab 自动滚动到可视区域中央
+    requestAnimationFrame(() => {
+      const topnav = document.querySelector(".topnav");
+      const active = topnav && topnav.querySelector("a.is-active");
+      if (topnav && active) {
+        const navRect = topnav.getBoundingClientRect();
+        const actRect = active.getBoundingClientRect();
+        const offset = actRect.left - navRect.left - (navRect.width / 2) + (actRect.width / 2);
+        topnav.scrollTo({ left: offset, behavior: "smooth" });
+      }
+    });
   }
 
   /* ---------- Scroll reveal (IntersectionObserver) ---------- */

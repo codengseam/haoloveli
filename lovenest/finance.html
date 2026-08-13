@@ -33,6 +33,7 @@
   .threeacc__row{margin-top:16px;display:flex;justify-content:space-between;align-items:baseline}
   .threeacc__amt{font-family:var(--ff-display);font-weight:600;font-size:1.3rem;color:var(--ink)}
   .threeacc__pct{font-size:.82rem;color:var(--faint)}
+  .threeacc__footnote{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-size:.76rem;color:var(--faint);font-style:italic}
 
   /* 基金估值温度条 */
   .fund-item{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px 24px;margin-bottom:14px;transition:all .3s var(--ease)}
@@ -51,6 +52,46 @@
   .temp-bar__fill--rose{background:linear-gradient(90deg,var(--rose-soft),var(--rose-deep))}
   .fund-item__meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;font-size:.84rem;color:var(--muted)}
   .fund-item__note{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-size:.84rem;color:var(--muted)}
+  /* 红绿灯大徽章 */
+  .fund-light{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:var(--r-pill);font-weight:600;font-size:.88rem}
+  .fund-light--sage{background:linear-gradient(135deg,var(--sage-tint),var(--sage-soft));color:var(--sage-deep);box-shadow:0 2px 8px rgba(123,143,116,.2)}
+  .fund-light--taupe{background:linear-gradient(135deg,#F5EFE5,var(--taupe-soft));color:#6B5F50;box-shadow:0 2px 8px rgba(138,122,100,.18)}
+  .fund-light--rose{background:linear-gradient(135deg,var(--rose-tint),var(--rose-soft));color:var(--rose-deep);box-shadow:0 2px 8px rgba(192,132,122,.22)}
+  /* 基金头行 */
+  .fund-head-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+  .fund-head-title{font-family:var(--ff-display);font-size:1.08rem;color:var(--ink)}
+  .fund-head-code{font-family:ui-monospace,Menlo,monospace;color:var(--faint);font-size:.82rem;margin-left:8px}
+  /* 决策条（定投建议+卖出触发） */
+  .fund-decision{margin-top:14px;padding:14px 16px;border-radius:var(--r-sm);background:var(--bg-soft);border:1px solid var(--line-soft)}
+  .fund-decision__row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .fund-decision__row:last-child{margin-bottom:0}
+  .fund-decision__label{font-size:.84rem;color:var(--muted)}
+  .fund-decision__val{font-family:var(--ff-display);font-weight:600;color:var(--ink)}
+  .fund-decision__val--sage{color:var(--sage-deep)}
+  .fund-decision__val--rose{color:var(--rose-deep)}
+  .sell-trigger{height:8px;background:var(--line-soft);border-radius:999px;overflow:hidden;flex:1;min-width:150px;position:relative}
+  .sell-trigger__fill{height:100%;background:linear-gradient(90deg,var(--sage),var(--terracotta),var(--rose-deep));border-radius:999px}
+  .sell-trigger__mark{position:absolute;top:-4px;width:2px;height:16px;background:var(--rose-deep);border-radius:2px}
+  /* 「📖 了解这只」信息卡 */
+  .fund-info-btn{padding:6px 14px;border-radius:var(--r-pill);border:1px dashed var(--sage-soft);background:var(--sage-tint);color:var(--sage-deep);font-size:.8rem;cursor:pointer;transition:all .2s var(--ease)}
+  .fund-info-btn:hover{border-color:var(--sage);background:#E2E8DC}
+  .fund-info{margin-top:14px;padding:18px 20px;border-radius:var(--r-md);background:#FAF6EE;border:1px solid var(--line-soft);display:none;font-size:.86rem;line-height:1.8}
+  .fund-info.is-open{display:block;animation:slideDown .3s var(--ease)}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .fund-info__row{margin-bottom:10px;display:grid;grid-template-columns:90px 1fr;gap:10px}
+  .fund-info__row:last-child{margin-bottom:0}
+  .fund-info__k{color:var(--faint);font-weight:500}
+  .fund-info__v{color:var(--text)}
+  .fund-risk-stars{color:var(--terracotta-deep);letter-spacing:2px}
+  /* 估值来源说明条 */
+  .fund-source{margin-top:16px;padding:10px 14px;border-radius:var(--r-sm);background:var(--bg-deep);font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .fund-source__ok{color:var(--sage-deep)}
+  .fund-source__warn{color:var(--terracotta-deep)}
+  /* API 状态闪烁点 */
+  .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .status-dot--ok{background:var(--sage);box-shadow:0 0 0 3px var(--sage-tint)}
+  .status-dot--warn{background:var(--terracotta);box-shadow:0 0 0 3px var(--terracotta-tint);animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
   /* 出售规则卡 */
   .sell-rules{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
@@ -68,6 +109,7 @@
   .fin-ms__row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:.88rem}
   .fin-ms__num{font-family:var(--ff-display);font-weight:600;color:var(--ink)}
   .fin-ms__note{font-size:.8rem;color:var(--muted);margin-top:8px}
+  .fin-ms__src{margin-left:10px;padding:2px 8px;border-radius:var(--r-pill);background:var(--sage-tint);color:var(--sage-deep);font-size:.72rem;font-weight:500;vertical-align:middle}
 
   /* 记账表格 */
   .fin-log-head{display:grid;grid-template-columns:90px 80px 1fr 100px 100px 80px;gap:10px;padding:10px 14px;background:var(--bg-deep);border-radius:var(--r-sm) var(--r-sm) 0 0;font-size:.82rem;color:var(--muted);font-weight:500}
@@ -96,36 +138,37 @@
   <section class="hero">
     <div class="hero__bg"></div>
     <div class="hero__inner">
-      <p class="kicker hero__kicker">Family Financial Intelligence</p>
-      <h1 class="hero__title">家庭财商</h1>
-      <p class="hero__sub">柴米油盐都离不开钱，经济是家庭的底气。不是为了暴富，而是花得明白、存得自觉、投得安心——让钱为家庭的幸福感服务，而不是反过来。</p>
+      <p class="kicker hero__kicker">Our Little Nest · 一起攒钱也一起攒爱</p>
+      <h1 class="hero__title">我们的小金库 · 一起攒出小幸福</h1>
+      <p class="hero__sub">每一笔收入都是两个人的并肩，每一笔支出都是我们生活的印记。钱不是目的，是让我们这个小窝更暖、更稳、更有盼头的底气。</p>
       <div class="hero__actions">
         <a href="#ledger" class="btn btn--primary">记一笔收支</a>
         <a href="#knowledge" class="btn btn--ghost">先补财商认知</a>
       </div>
+      <p style="margin-top:28px;font-size:.86rem;color:var(--muted);font-family:var(--ff-accent);font-style:italic">师豪 &amp; 佳力 · 2025.05.10 起，一起攒钱也一起攒爱 ❤</p>
     </div>
   </section>
 
-  <!-- 01 家庭财务仪表盘 -->
+  <!-- 01 咱家的底气卡 -->
   <section id="dashboard" class="section">
     <div class="container">
       <div class="section__head reveal">
         <span class="section__num">01</span>
-        <h2 class="section__title">家庭财务仪表盘</h2>
-        <p class="section__desc">看一张表就知道：我们现在处于什么位置、本月现金流、储蓄率、三账户余额。</p>
+        <h2 class="section__title">咱家的底气卡</h2>
+        <p class="section__desc">攒了多少、花了多少、这个月能不能存下旅行基金——一眼看清我们这个小窝的家底。</p>
       </div>
       <div class="reveal" id="networthRegion"></div>
       <div class="threeacc reveal" id="threeAccRegion" data-delay="1"></div>
     </div>
   </section>
 
-  <!-- 02 记账 -->
+  <!-- 02 柴米油盐的日常 -->
   <section id="ledger" class="section section--tint">
     <div class="container">
       <div class="section__head reveal">
         <span class="section__num">02</span>
-        <h2 class="section__title">记账 · 收支流水</h2>
-        <p class="section__desc">记账的真正目的，不是克扣每一杯奶茶钱，而是看清：你的钱从哪来、去了哪、最后留在了哪里。</p>
+        <h2 class="section__title">柴米油盐的日常</h2>
+        <p class="section__desc">不是为了克扣奶茶，是为了看清我们的钱从哪来、花在了什么开心的事上。每一笔，都是生活的小脚印。</p>
       </div>
       <!-- 记一笔表单 -->
       <div class="card reveal" style="margin-bottom:28px">
@@ -179,13 +222,13 @@
     </div>
   </section>
 
-  <!-- 03 基金观察 · 买卖决策 -->
+  <!-- 03 慢慢变富的小种子 -->
   <section id="funds" class="section">
     <div class="container">
       <div class="section__head reveal">
         <span class="section__num">03</span>
-        <h2 class="section__title">基金观察 · 估值温度与买卖</h2>
-        <p class="section__desc">低估买入、正常定投、高估卖出。别靠情绪做决策，让估值温度和规则帮你行动。</p>
+        <h2 class="section__title">慢慢变富的小种子</h2>
+        <p class="section__desc">给我们的小金鹅找一个合适的价格买入。不急不贪，慢慢来，一起种出十年后的小森林。</p>
       </div>
       <!-- 温度图例 -->
       <div class="reveal mb-3" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:.88rem">
@@ -198,18 +241,18 @@
       <div class="mt-4 reveal">
         <p class="kicker center" style="margin-bottom:12px">卖出的四条规则（满足任一就行动）</p>
         <div class="sell-rules" id="sellRulesRegion"></div>
-        <div class="callout mt-4">记住：会买的是徒弟，会卖的是师傅。到了规则触发点就行动，不犹豫、不后悔——这是投资里最贵的纪律。</div>
+        <div class="callout mt-4">记住：会买的是徒弟，会卖的是师傅。到了规则触发点就行动，不犹豫、不后悔——这是我们两个人一起守住的纪律。</div>
       </div>
     </div>
   </section>
 
-  <!-- 04 人生阶段 · 财务里程碑 -->
+  <!-- 04 我们的小目标进度条 -->
   <section id="milestones" class="section section--tint">
     <div class="container">
       <div class="section__head reveal">
         <span class="section__num">04</span>
-        <h2 class="section__title">人生阶段 · 财务里程碑</h2>
-        <p class="section__desc">婚礼只是其中一站。应急准备金、买房首付、养娃、养老——把每一个大目标拆成可执行的进度条。</p>
+        <h2 class="section__title">我们的小目标进度条</h2>
+        <p class="section__desc">婚礼、小窝首付、应急小金库、我们的 FIRE 数字——把大梦想拆成今天就能走的一小步。</p>
       </div>
       <div id="finMsRegion"></div>
       <div class="mt-4 reveal">
@@ -218,13 +261,13 @@
     </div>
   </section>
 
-  <!-- 05 财商知识库 -->
+  <!-- 05 一起补课：钱是怎么一回事 -->
   <section id="knowledge" class="section">
     <div class="container">
       <div class="section__head reveal">
         <span class="section__num">05</span>
-        <h2 class="section__title">财商知识库</h2>
-        <p class="section__desc">先补认知，再管账户。从拆除金钱羞耻感开始，到三账户制、指数基金、家庭配置、财务自由数字。</p>
+        <h2 class="section__title">一起补课：钱是怎么一回事</h2>
+        <p class="section__desc">两个人一起搞懂钱这件事，比一个人瞎忙有意思。先懂，再动，慢慢来，不踩坑。</p>
       </div>
       <div class="reveal mb-3">
         <div class="card card--inset" id="finKnowIntro" style="max-width:780px;margin:0 auto"></div>
@@ -239,7 +282,7 @@
       <div class="section__head reveal">
         <span class="section__num">06</span>
         <h2 class="section__title">继续探索</h2>
-        <p class="section__desc">钱是底气，爱是温度，合在一起才是幸福的家庭。</p>
+        <p class="section__desc">底气 + 温度 = 我们的小幸福。</p>
       </div>
       <div class="crosslinks reveal">
         <a class="crosslink" href="bank.html">
@@ -301,11 +344,61 @@
         { key:"bonus",   name:"其他收入", icon:"🎁" }
       ],
       fund_valuation_temp: [
-        { code:"510300", name:"沪深300ETF",  benchmark:"中证官方估值", temp:35, suggest:"正常持有", note:"30 以下多买，70 以上卖" },
-        { code:"159915", name:"创业板ETF",   benchmark:"中证官方估值", temp:72, suggest:"高估减仓", note:"温度 70+ 开始分批止盈" },
-        { code:"510500", name:"中证500ETF",  benchmark:"中证官方估值", temp:22, suggest:"低估多买", note:"中盘股估值偏低，可加量定投" },
-        { code:"513500", name:"标普500ETF",  benchmark:"multpl 席勒PE", temp:68, suggest:"正常持有", note:"美股长牛但估值偏高，小额定投" },
-        { code:"161725", name:"招商中证白酒", benchmark:"历史百分位",    temp:48, suggest:"正常持有", note:"行业基金不超 20% 仓位" }
+        {
+          code:"510300", name:"沪深300ETF", full_name:"华泰柏瑞沪深300交易型开放式指数证券投资基金",
+          api_index_code:"SH000300", benchmark:"蛋卷基金 · 沪深300 PE 近10年百分位", temp:35, suggest:"正常持有",
+          tracking_index:"沪深300指数（沪市+深市规模最大、流动性最好的300只A股，代表中国核心资产）",
+          top_sectors:"金融 32% · 消费 18% · 工业 14% · 信息技术 12% · 医药 8% · 其他 16%",
+          target_audience:"「懒人投资」首选 · 看好中国经济整体增长 · 能接受 3 年以上 30% 级别的波动",
+          risk_level:4, watch_news:"中国 GDP / 制造业PMI / 社融数据 · 美联储利率 · 人民币汇率 · 银行保险政策",
+          buy_signals:"估值温度 0-30（低估） · 市场恐慌情绪（大盘单日跌 >2%） · 每月工资到账日定投",
+          sell_signals:"估值温度 ≥70 分批卖 · 达到目标收益（如 +50%/+100%） · 指数编制规则/行业逻辑发生本质变化",
+          monthly_amount:3000, note:"30 以下多买，70 以上卖"
+        },
+        {
+          code:"159915", name:"创业板ETF", full_name:"易方达创业板交易型开放式指数证券投资基金",
+          api_index_code:"SZ399006", benchmark:"蛋卷基金 · 创业板指 PE 近10年百分位", temp:72, suggest:"高估减仓",
+          tracking_index:"创业板指（深交所创业板中市值最大、流动性最好的100只股票，高成长+高波动）",
+          top_sectors:"电力设备新能源 30% · 医药生物 22% · 电子 14% · 计算机 10% · 传媒 8% · 其他 16%",
+          target_audience:"能承受更大波动 · 看好硬科技/新能源/医药长赛道 · 投资期限 ≥5 年",
+          risk_level:5, watch_news:"新能源政策（补贴/装机量）· 医药集采政策 · 半导体国产替代进展 · 美联储加息对成长股的估值压缩",
+          buy_signals:"估值温度 0-25（极度低估） · 行业政策利好落地 · 龙头季报超预期",
+          sell_signals:"温度 ≥70 触发第一档 · 行业景气度见顶信号 · 基金规模暴涨超过 100% 要警惕",
+          monthly_amount:1500, note:"温度 70+ 开始分批止盈"
+        },
+        {
+          code:"510500", name:"中证500ETF", full_name:"南方中证500交易型开放式指数证券投资基金",
+          api_index_code:"SH000905", benchmark:"蛋卷基金 · 中证500 PE 近10年百分位", temp:22, suggest:"低估多买",
+          tracking_index:"中证500指数（剔除沪深300后，市值排名301-800的中盘股，代表中国经济中坚力量）",
+          top_sectors:"工业 20% · 信息技术 18% · 医药 14% · 原材料 12% · 可选消费 11% · 其他 25%",
+          target_audience:"寻找估值洼地 · 相信中盘股的均值回归 · 愿意承担中等波动",
+          risk_level:4, watch_news:"中小企业融资环境 · 专精特新政策 · 制造业订单 PMI · 原材料价格（铜/铝/化工）",
+          buy_signals:"估值温度 0-20（史上低估区） · 大盘股行情结束开始轮动中盘 · 宏观政策支持民企",
+          sell_signals:"温度 ≥75 才考虑止盈 · 中盘相对大盘溢价超过 30% 时减仓",
+          monthly_amount:2000, note:"中盘股估值偏低，可加量定投"
+        },
+        {
+          code:"513500", name:"标普500ETF", full_name:"博时标普500交易型开放式指数证券投资基金",
+          api_index_code:"SPX", benchmark:"multpl.com · 席勒PE 近50年百分位（蛋卷镜像）", temp:68, suggest:"正常持有",
+          tracking_index:"标普500指数（纽交所+纳斯达克最大的500家美国上市公司，全球最核心资产）",
+          top_sectors:"科技 28% · 金融 13% · 医疗 13% · 可选消费 11% · 工业 8% · 其他 27%",
+          target_audience:"资产全球配置 · 相信美股长牛 · 对冲人民币汇率风险 · 投资期限 ≥10 年",
+          risk_level:4, watch_news:"美联储利率决议/FOMC · 美国 CPI/PCE 通胀 · 非农就业 · 美国企业财报季",
+          buy_signals:"美国经济衰退期（失业率走高+降息周期开始）· 席勒PE < 25 · 大盘回调 >15%",
+          sell_signals:"席勒PE > 35 分批减仓 · 美联储连续加息后期 · 美股整体泡沫化信号（散户入场+杠杆高）",
+          monthly_amount:1500, note:"美股长牛但估值偏高，小额定投"
+        },
+        {
+          code:"161725", name:"招商中证白酒", full_name:"招商中证白酒指数分级证券投资基金",
+          api_index_code:"CSIH30239", benchmark:"历史百分位（蛋卷行业指数）", temp:48, suggest:"正常持有",
+          tracking_index:"中证白酒指数（A股白酒行业龙头：茅台/五粮液/泸州老窖/山西汾酒等）",
+          top_sectors:"白酒行业 100%（高端白酒 65% · 次高端 25% · 区域酒 10%）",
+          target_audience:"看好中国消费升级 · 愿意集中押注单一行业 · 能接受 40% 级别回撤 · 单行业仓位 ≤20%",
+          risk_level:5, watch_news:"白酒批价（飞天茅台/普五）· 社零消费数据 · 春节/中秋动销 · 消费税政策 · 白酒企业年报季报",
+          buy_signals:"估值温度 <30 · 批价稳定且渠道库存低 · 消费刺激政策出台",
+          sell_signals:"温度 ≥75 · 批价倒挂+渠道高库存 · 行业出现利空政策（如消费税改革）",
+          monthly_amount:800, note:"行业基金不超 20% 仓位"
+        }
       ],
       temp_threshold: {
         under_valued:{ max:30,  label:"低估 · 买入", color:"sage",  action:"多买 / 加量定投" },
@@ -387,8 +480,63 @@
     const ymOf = (d) => String(d||'').slice(0,7);
 
     /* ---------- 01 仪表盘渲染 ---------- */
+    // 分类映射：支出分类 → 三账户归属（直接从 shared/data.js 取统一值，没有再用本地兜底）
+    const CATEGORY_TO_ACCOUNT = (LoveNest._finCATEGORY_TO_ACCOUNT) || {
+      housing:"spend", food:"spend", transport:"spend", shopping:"spend",
+      medical:"spend", leisure:"spend", other:"spend",
+      family:"save", education:"invest"
+    };
+    // 里程碑优先级（从高到低）：应急金 → 婚礼 → 首付 → FIRE
+    const MILESTONE_PRIORITY = ["emergency","wedding","house","baby","fire"];
+    const _split = LoveNest._finSplit || function(allRecords){
+      // 本地兜底（与 shared/data.js 保持一致）
+      const out = { spend:0, save:0, invest:0 };
+      allRecords.forEach(r => {
+        const amt = Number(r.amount)||0;
+        if (r.type === 'expense') {
+          if (/储蓄|应急|首付|存款|存/.test(r.note||'')) { out.save += amt; return; }
+          if (/基金|定投|投资|买入|buy|stock|指数/.test(r.note||'')) { out.invest += amt; return; }
+          const acc = CATEGORY_TO_ACCOUNT[r.category] || 'spend';
+          out[acc] += amt;
+        }
+      });
+      let cumIncome = 0, cumSpendExpense = 0;
+      allRecords.forEach(r => {
+        const a = Number(r.amount)||0;
+        if (r.type === 'income') cumIncome += a;
+        if (r.type === 'expense' && (CATEGORY_TO_ACCOUNT[r.category] === 'spend'
+            && !(/储蓄|应急|首付|存款|存|基金|定投|投资|买入/.test(r.note||'')))) {
+          cumSpendExpense += a;
+        }
+      });
+      const pool = Math.max(0, cumIncome - cumSpendExpense - out.save - out.invest);
+      const saveTarget = Math.round(cumIncome * 0.20);
+      let s = out.save, i = out.invest;
+      if (s < saveTarget && pool > 0) { const add = Math.min(pool, saveTarget - s); s += add; }
+      const remainPool = Math.max(0, pool - (saveTarget > out.save ? saveTarget - out.save : 0));
+      if (remainPool > 0) i += remainPool;
+      return { spend: cumSpendExpense, save: s, invest: i, cumIncome, cumSpendExpense };
+    };
+    const _allocate = LoveNest._finAllocateMilestones || function(saveAmt, investAmt, msList){
+      let available = saveAmt + investAmt;
+      const sorted = [...msList].sort((a, b) => {
+        const ia = MILESTONE_PRIORITY.indexOf(a.key);
+        const ib = MILESTONE_PRIORITY.indexOf(b.key);
+        return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      });
+      const allocated = {};
+      sorted.forEach(m => {
+        const target = Number(m.target)||0;
+        if (available <= 0) { allocated[m.key] = 0; return; }
+        const give = Math.min(available, target);
+        allocated[m.key] = give;
+        available -= give;
+      });
+      return allocated;
+    };
+
     function calcKPIs(filterYM) {
-      // filter by YM (if set) for income/expense; net worth uses all records + milestones saved cumulated
+      // 1) 本月收入/支出/储蓄率（按月份过滤）
       const monthRecs = filterYM ? records.filter(r => ymOf(r.date) === filterYM) : records;
       let monthIncome = 0, monthExpense = 0;
       monthRecs.forEach(r => {
@@ -397,23 +545,22 @@
         if (r.type === 'expense') monthExpense += a;
       });
       const savingRate = monthIncome > 0 ? Math.max(0, Math.min(100, Math.round((monthIncome - monthExpense)/monthIncome*100))) : 0;
-      // 净值用 life_milestones 的已完成储蓄 + 流水粗略估算（简化：累计 save/invest 里程碑 + （累计收入-累计支出））
-      let cumIncome = 0, cumExpense = 0;
-      records.forEach(r => {
-        const a = Number(r.amount)||0;
-        if (r.type === 'income')  cumIncome += a;
-        if (r.type === 'expense') cumExpense += a;
-      });
-      const milestonesSaved = (data.life_milestones||[]).reduce((s, m) => s + (Number(m.saved)||0), 0);
-      const netWorth = milestonesSaved; // MVP 简化：用里程碑累计储蓄展示净值
-      // 三账户 MVP：用 50/20/30 参考比例 ×（累计收入-累计支出）做示意
-      const remaining = Math.max(0, cumIncome - cumExpense);
-      const threeAccAmts = {
-        spend:  Math.round(remaining * 0.50),
-        save:   Math.round(remaining * 0.20),
-        invest: Math.round(remaining * 0.30)
+
+      // 2) 三账户：从全量记账流水真实拆分（和 shared/data.js 同一算法，跨页一致）
+      const acc = _split(records);
+      const threeAccAmts = { spend: Math.round(acc.spend), save: Math.round(acc.save), invest: Math.round(acc.invest) };
+
+      // 3) 里程碑：基于三账户 save+invest 按优先级分配（同一算法）
+      const ms = data.life_milestones || FALLBACK.life_milestones;
+      const msSavedMap = _allocate(acc.save, acc.invest, ms);
+      const netWorth = Object.values(msSavedMap).reduce((s, v) => s + v, 0);
+
+      return {
+        monthIncome, monthExpense, savingRate,
+        netWorth, cumIncome: acc.cumIncome, cumSpendExpense: acc.cumSpendExpense,
+        threeAccAmts, msSavedMap,
+        realSaveForAcc: Math.round(acc.save), realInvestForAcc: Math.round(acc.invest)
       };
-      return { monthIncome, monthExpense, savingRate, netWorth, cumIncome, cumExpense, threeAccAmts };
     }
     function renderDashboard() {
       const nowYM = LoveNest.todayISO().slice(0,7);
@@ -423,7 +570,7 @@
           <div class="networth__main reveal">
             <p class="kicker" style="margin-bottom:8px">家庭净值 · Net Worth</p>
             <div class="networth__num">${fmtMoney(k.netWorth)}</div>
-            <div class="networth__label">累计里程碑储蓄合计（应急/婚礼/首付/FIRE）</div>
+            <div class="networth__label">按里程碑优先级自动分配（应急→婚礼→首付→FIRE）</div>
           </div>
           <div class="networth__kpi reveal" data-delay="1">
             <div class="networth__kpi-num" style="color:var(--sage-deep)">+${fmtMoney(k.monthIncome).replace('¥','¥')}</div>
@@ -442,11 +589,12 @@
       region.innerHTML = html;
       revealIn(region);
 
-      /* 三账户卡片 */
+      /* 三账户卡片：真实累计口径 */
       const accs = data.three_accounts || FALLBACK.three_accounts;
+      const kpi = k;
       const cards = accs.map(a => {
         const cls = a.color === 'sage' ? 'sage' : a.color === 'rose' ? 'rose' : 'terracotta';
-        const amt = k.threeAccAmts[a.key] || 0;
+        const amt = kpi.threeAccAmts[a.key] || 0;
         return `<div class="threeacc__card threeacc__card--${cls}">
           <div class="threeacc__icon">${esc(a.icon||'')}</div>
           <div class="threeacc__name">${esc(a.name||'')}</div>
@@ -455,6 +603,7 @@
             <div class="threeacc__amt">${fmtMoney(amt)}</div>
             <div class="threeacc__pct">参考比例 ${a.pct_ref||'—'}%</div>
           </div>
+          <div class="threeacc__footnote">* 根据记账流水真实累计</div>
         </div>`;
       }).join('');
       document.getElementById('threeAccRegion').innerHTML = cards;
@@ -577,29 +726,186 @@
       }).join('');
     }
 
-    /* ---------- 03 基金观察 + 卖出规则 ---------- */
+    /* ---------- 03 基金观察 + 真实估值 API + 红绿灯决策 + 基本情况卡 ---------- */
+    /* 蛋卷基金真实估值接口（经 CORS 代理绕 GitHub Pages 跨域）
+       返回结构示例（index_eva/dj）：data.items[].ts_code / pe / pe_percentile（百分位0-100）*/
+    const DANJUAN_API = "https://danjuanfunds.com/djapi/index_eva/dj";
+    const CORS_PROXIES = [
+      "https://api.allorigins.win/raw?url=",
+      "https://corsproxy.io/?"
+    ];
+    // 基金代码 → 蛋卷接口返回的 ts_code 映射（蛋卷API的ts_code格式如 "SH000300.SH" 等）
+    const INDEX_CODE_MAP = {
+      "510300":["SH000300.SH","SH000300","000300.SH"],
+      "159915":["SZ399006.SZ","SZ399006","399006.SZ"],
+      "510500":["SH000905.SH","SH000905","000905.SH"],
+      "513500":["SPX.GI","SPX","SPY"],
+      "161725":["CSIH30239.CSI","CSIH30239","30239.CSI","CSI931056.CSI"]
+    };
+    let _fundApiResult = null;  // {status:'ok'|'fallback', updatedAt, temps:{[code]:percentile|null}}
+    async function fetchRealFundTemps(funds) {
+      const out = { status:'fallback', updatedAt:null, temps:{} };
+      funds.forEach(f => out.temps[f.code] = null);
+      for (const proxy of CORS_PROXIES) {
+        try {
+          const url = proxy + encodeURIComponent(DANJUAN_API + "?r=" + Math.random());
+          const resp = await fetch(url, { cache:"no-store", headers: { "Accept":"application/json" } });
+          if (!resp.ok) continue;
+          const txt = await resp.text();
+          let json; try { json = typeof txt === "string" ? JSON.parse(txt) : txt; } catch(_) { continue; }
+          const items = (json && json.data && Array.isArray(json.data.items)) ? json.data.items : [];
+          let matched = 0;
+          funds.forEach(f => {
+            const aliases = INDEX_CODE_MAP[f.code] || [f.api_index_code, f.code];
+            const hit = items.find(it => aliases.includes(it.ts_code) || aliases.includes((it.index_code||"")+"."+(it.market||"")));
+            if (hit) {
+              // 蛋卷返回的 pe_percentile 可能是 0-1 的小数或 0-100 的百分数，统一转 0-100
+              let pe = Number(hit.pe_percentile);
+              if (isNaN(pe)) pe = Number(hit.pb_percentile);
+              if (!isNaN(pe)) {
+                if (pe > 0 && pe <= 1) pe = Math.round(pe * 100);
+                else pe = Math.round(pe);
+                out.temps[f.code] = Math.max(0, Math.min(100, pe));
+                matched++;
+              }
+            }
+          });
+          if (matched > 0) { out.status = 'ok'; out.updatedAt = new Date().toISOString(); break; }
+        } catch(_) { /* 这个代理失败，试下一个 */ }
+      }
+      _fundApiResult = out;
+      return out;
+    }
+    function riskStars(n) {
+      n = Math.max(1, Math.min(5, Number(n)||3));
+      const filled = "★".repeat(n);
+      const empty  = "☆".repeat(5-n);
+      return `<span class="fund-risk-stars">${filled}</span>${empty} <span style="color:var(--muted);margin-left:6px;font-size:.78rem">${['','低风险','中低风险','中风险','中高风险','高风险'][n]||''}</span>`;
+    }
+    function daysUntilNextInvest() {
+      const d = new Date();
+      const day = d.getDate();
+      let target;
+      if (day <= 1) target = 1;
+      else if (day <= 15) target = 15;
+      else { const nd = new Date(d.getFullYear(), d.getMonth()+1, 1); target = nd.getDate(); /* 下个月 1 号 */ return Math.ceil((nd - d)/86400000) + " 天（下月1号）"; }
+      return (target - day) + " 天（本月" + target + "号）";
+    }
+    function renderFundCard(f, apiTemp, forceFallback) {
+      const temp = (apiTemp != null && !forceFallback) ? apiTemp : Number(f.temp);
+      const usedReal = (apiTemp != null && !forceFallback);
+      const lv = tempLevel(temp);
+      const colorCls = lv.color;
+      const lightIcon = colorCls === 'sage' ? '🟢' : colorCls === 'rose' ? '🔴' : '🟡';
+      const lightLabel = colorCls === 'sage' ? '低估 · 买入' : colorCls === 'rose' ? '高估 · 卖出' : '正常 · 持有';
+      // 定投金额：温度<30 双倍，30-70 正常，>70 停投
+      const monthlyBase = Number(f.monthly_amount) || 1000;
+      let investAmt = monthlyBase; let investMode = '常规定投'; let investColor = '';
+      if (temp <= 30) { investAmt = monthlyBase * 2; investMode = '🔥 双倍定投'; investColor = 'sage'; }
+      else if (temp >= 70) { investAmt = 0; investMode = '⚠️ 暂停定投'; investColor = 'rose'; }
+      // 卖出触发进度条：第一档卖出门槛 = 75，第二档 = 85，第三档 = 95
+      const trigger1 = 75, trigger2 = 85, trigger3 = 95;
+      const pctToTrigger1 = Math.max(0, Math.min(100, Math.round(temp / trigger1 * 100)));
+      const toNextTrigger = temp < trigger1
+        ? `距离第一档卖出（${trigger1}）还差 ${trigger1 - temp}%`
+        : temp < trigger2
+          ? `距离第二档卖出（${trigger2}）还差 ${trigger2 - temp}% · 已触发第一档，建议卖出 1/3`
+          : temp < trigger3
+            ? `距离第三档清仓（${trigger3}）还差 ${trigger3 - temp}% · 已触发第二档，建议再卖 1/3`
+            : `已达清仓线 · 建议清仓或只留 10%`;
+      const triggerClass = temp < trigger1 ? '' : temp < trigger2 ? 'fund-decision__val--sage' : 'fund-decision__val--rose';
+      // 风险星级
+      const stars = riskStars(f.risk_level||3);
+      // 数据来源说明
+      const srcText = usedReal
+        ? `<span class="status-dot status-dot--ok"></span><span class="fund-source__ok">实时估值 · 数据来源：蛋卷基金（danjuanfunds.com）· 指数 PE 近 10 年历史百分位</span>`
+        : `<span class="status-dot status-dot--warn"></span><span class="fund-source__warn">暂用本地缓存数据（蛋卷基金 API 暂时不可用，稍后自动重试）· 估值基准：${esc(f.benchmark)}</span>`;
+      const srcTime = usedReal && _fundApiResult && _fundApiResult.updatedAt
+        ? ` · 更新时间 ${new Date(_fundApiResult.updatedAt).toLocaleString('zh-CN')}`
+        : '';
+      return `<div class="fund-item reveal">
+        <div class="fund-head-row">
+          <div>
+            <span class="fund-head-title">${esc(f.name)}</span><span class="fund-head-code">${esc(f.code)}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span class="fund-light fund-light--${colorCls}">${lightIcon} ${lightLabel}</span>
+            <button type="button" class="fund-info-btn" data-toggle-fund="${esc(f.code)}">📖 了解这只</button>
+          </div>
+        </div>
+        <div class="temp-bar"><div class="temp-bar__fill temp-bar__fill--${colorCls}" style="width:${Math.min(100,temp)}%"></div></div>
+        <div class="fund-item__meta">
+          <span>温度 <b style="color:var(--ink)">${temp}</b> · ${esc(lv.label)}</span>
+          <span>建议动作：<b style="color:var(--ink)">${esc(f.suggest)}</b></span>
+          <span>策略：${esc(lv.action)}</span>
+        </div>
+        <!-- 决策条：定投 + 卖出触发 -->
+        <div class="fund-decision">
+          <div class="fund-decision__row">
+            <span class="fund-decision__label">💰 本月定投建议</span>
+            <span class="fund-decision__val ${investColor}">${investMode} · ¥${investAmt.toLocaleString('zh-CN')}</span>
+          </div>
+          <div class="fund-decision__row">
+            <span class="fund-decision__label">📅 距下次定投日</span>
+            <span class="fund-decision__val">${daysUntilNextInvest()}</span>
+          </div>
+          <div class="fund-decision__row">
+            <span class="fund-decision__label">🚨 卖出触发</span>
+            <div class="sell-trigger">
+              <div class="sell-trigger__fill" style="width:${Math.min(100,pctToTrigger1)}%"></div>
+              <div class="sell-trigger__mark" style="left:${trigger1}%"></div>
+              <div class="sell-trigger__mark" style="left:${trigger2}%"></div>
+              <div class="sell-trigger__mark" style="left:${trigger3}%"></div>
+            </div>
+            <span class="fund-decision__val ${triggerClass}" style="margin-left:10px">${toNextTrigger}</span>
+          </div>
+        </div>
+        ${f.note ? `<div class="fund-item__note">📎 ${esc(f.note)}</div>` : ''}
+        <!-- 基本情况卡（默认折叠） -->
+        <div class="fund-info" data-fund-info="${esc(f.code)}">
+          <div class="fund-info__row"><div class="fund-info__k">基金全名</div><div class="fund-info__v">${esc(f.full_name||f.name)}</div></div>
+          <div class="fund-info__row"><div class="fund-info__k">跟踪指数</div><div class="fund-info__v">${esc(f.tracking_index||'—')}</div></div>
+          <div class="fund-info__row"><div class="fund-info__k">前十大重仓行业</div><div class="fund-info__v">${esc(f.top_sectors||'—')}</div></div>
+          <div class="fund-info__row"><div class="fund-info__k">适合人群</div><div class="fund-info__v">${esc(f.target_audience||'—')}</div></div>
+          <div class="fund-info__row"><div class="fund-info__k">风险等级</div><div class="fund-info__v">${stars}</div></div>
+          <div class="fund-info__row"><div class="fund-info__k">关注哪些新闻</div><div class="fund-info__v">${esc(f.watch_news||'—')}</div></div>
+          <div class="fund-info__row"><div class="fund-info__k">✓ 何时买入</div><div class="fund-info__v" style="color:var(--sage-deep)">${esc(f.buy_signals||'—')}</div></div>
+          <div class="fund-info__row"><div class="fund-info__k">✗ 何时卖出</div><div class="fund-info__v" style="color:var(--rose-deep)">${esc(f.sell_signals||'—')}</div></div>
+        </div>
+        <div class="fund-source">${srcText}${srcTime}</div>
+      </div>`;
+    }
+    function wireFundInfoToggles(scope) {
+      (scope||document).querySelectorAll('.fund-info-btn[data-toggle-fund]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const code = btn.getAttribute('data-toggle-fund');
+          const card = btn.closest('.fund-item');
+          if (!card) return;
+          const info = card.querySelector(`.fund-info[data-fund-info="${code}"]`);
+          if (!info) return;
+          info.classList.toggle('is-open');
+          btn.textContent = info.classList.contains('is-open') ? '收起详情' : '📖 了解这只';
+        });
+      });
+    }
     function renderFunds() {
       const funds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
       const region = document.getElementById('fundsRegion');
-      region.innerHTML = funds.map(f => {
-        const lv = tempLevel(f.temp);
-        const colorCls = lv.color;
-        return `<div class="fund-item reveal">
-          <div class="fund-item__head">
-            <div><span class="fund-item__title">${esc(f.name)}</span><span class="fund-item__code">${esc(f.code)}</span></div>
-            <span class="temp-tag temp-tag--${colorCls}">温度 ${f.temp} · ${esc(lv.label)}</span>
-          </div>
-          <div class="temp-bar"><div class="temp-bar__fill temp-bar__fill--${colorCls}" style="width:${Math.min(100,Number(f.temp))}%"></div></div>
-          <div class="fund-item__meta">
-            <span>建议动作：<b style="color:var(--ink)">${esc(f.suggest)}</b></span>
-            <span>策略：${esc(lv.action)}</span>
-            <span>估值基准：${esc(f.benchmark)}</span>
-          </div>
-          ${f.note ? `<div class="fund-item__note">📎 ${esc(f.note)}</div>` : ''}
-        </div>`;
-      }).join('');
+      // 1) 先用当前（JSON/FALLBACK）温度渲染
+      region.innerHTML = funds.map(f => renderFundCard(f, null, true)).join('');
       revealIn(region);
-
+      wireFundInfoToggles(region);
+      // 2) 异步拉真实估值，成功后局部 patch 温度条/建议/来源
+      fetchRealFundTemps(funds).then(apiResult => {
+        if (!region || !region.isConnected) return;
+        region.innerHTML = funds.map(f => {
+          const apiTemp = apiResult.temps[f.code];
+          return renderFundCard(f, apiTemp, false);
+        }).join('');
+        revealIn(region);
+        wireFundInfoToggles(region);
+      }).catch(_err => { /* 失败则保留 fallback 渲染，不会报错 */ });
+      // 卖出规则
       const rules = data.sell_rules || FALLBACK.sell_rules;
       document.getElementById('sellRulesRegion').innerHTML = rules.map(r =>
         `<div class="sell-rule"><h4>${esc(r.name)}</h4><p>${esc(r.desc)}</p></div>`
@@ -609,15 +915,21 @@
     /* ---------- 04 财务里程碑 ---------- */
     function renderMilestones() {
       const ms = data.life_milestones || FALLBACK.life_milestones;
+      // 从记账流水真实分配（调用统一计算逻辑）
+      const k = calcKPIs(null);
+      const savedMap = k.msSavedMap || {};
       const region = document.getElementById('finMsRegion');
       region.innerHTML = ms.map(m => {
         const tgt = Number(m.target)||0;
-        const sav = Number(m.saved)||0;
+        // 优先用记账流水真实分配的金额，JSON 里的 saved 仅作兜底
+        const calcSaved = (m.key && savedMap[m.key] != null) ? savedMap[m.key] : null;
+        const sav = calcSaved != null ? calcSaved : (Number(m.saved)||0);
         const pct = tgt>0 ? Math.max(0, Math.min(100, Math.round(sav/tgt*100))) : 0;
+        const fromRecords = calcSaved != null ? `<span class="fin-ms__src">* 自动从记账分配</span>` : '';
         return `<div class="fin-ms reveal">
           <div class="fin-ms__top">
             <div class="fin-ms__icon">${esc(m.icon||'💰')}</div>
-            <div class="fin-ms__name">${esc(m.name)}</div>
+            <div class="fin-ms__name">${esc(m.name)}${fromRecords}</div>
             <div class="fin-ms__deadline">📅 截止 ${esc(m.deadline||'—')}</div>
           </div>
           <div class="fin-ms__row">
