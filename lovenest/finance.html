@@ -35,34 +35,40 @@
   .threeacc__pct{font-size:.82rem;color:var(--faint)}
   .threeacc__footnote{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-size:.76rem;color:var(--faint);font-style:italic}
 
-  /* 基金自定义筛选 */
-  .fund-filter{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:20px 24px;margin-bottom:20px}
-  .fund-filter__head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-  .fund-filter__title{font-family:var(--ff-display);font-size:1rem;color:var(--ink)}
-  .fund-filter__actions{display:flex;gap:8px;flex-wrap:wrap}
-  .fund-filter__btn{padding:6px 14px;border-radius:var(--r-pill);border:1px solid var(--line-soft);background:var(--bg-soft);font-size:.8rem;cursor:pointer;transition:all .2s var(--ease);font-family:inherit;color:var(--text)}
-  .fund-filter__btn:hover{border-color:var(--sage-soft);background:var(--sage-tint);color:var(--sage-deep)}
-  .fund-filter__btn--primary{background:var(--sage-tint);border-color:var(--sage);color:var(--sage-deep);font-weight:500}
-  .fund-filter__cat-row{margin-bottom:12px}
-  .fund-filter__cat-label{font-size:.84rem;color:var(--muted);margin-bottom:8px;font-weight:500}
-  .fund-filter__chips{display:flex;flex-wrap:wrap;gap:8px}
-  .fund-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r-pill);border:1px solid var(--line-soft);background:var(--bg-card);font-size:.82rem;cursor:pointer;transition:all .2s var(--ease);user-select:none}
-  .fund-chip:hover{border-color:var(--sage-soft)}
-  .fund-chip.is-active{background:var(--sage-tint);border-color:var(--sage);color:var(--sage-deep);font-weight:500}
-  .fund-chip__cat{background:var(--bg-deep);border-color:var(--line-soft)}
-  .fund-chip__cat.is-active{background:var(--terracotta-tint);border-color:var(--terracotta);color:var(--terracotta-deep)}
-  .fund-chip__count{background:var(--line-soft);color:var(--muted);padding:1px 7px;border-radius:999px;font-size:.72rem;font-weight:500}
-  .fund-chip.is-active .fund-chip__count{background:var(--sage-soft);color:var(--sage-deep)}
-  .fund-chip__cat.is-active .fund-chip__count{background:var(--terracotta-soft);color:var(--terracotta-deep)}
-  .fund-filter__summary{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.84rem;color:var(--muted)}
-  .fund-filter__summary b{color:var(--sage-deep)}
-  .fund-filter__toggle{display:none;margin-top:12px;text-align:center}
-  .fund-filter__toggle-btn{padding:8px 20px;border-radius:var(--r-pill);border:1px dashed var(--sage-soft);background:var(--sage-tint);color:var(--sage-deep);font-size:.84rem;cursor:pointer;font-family:inherit;transition:all .2s var(--ease)}
-  .fund-filter__toggle-btn:hover{background:#E2E8DC;border-color:var(--sage)}
-  @media (max-width:680px){
-    .fund-filter.is-collapsed .fund-filter__cat-row,.fund-filter.is-collapsed .fund-filter__summary{display:none}
-    .fund-filter.is-collapsed .fund-filter__toggle{display:block}
-  }
+  /* 自定义跟踪基金 · 入口按钮 */
+  .funds-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .funds-tools__info{font-size:.84rem;color:var(--muted)}
+  .funds-tools__info b{color:var(--sage-deep)}
+  .funds-tools__cta{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--r-pill);border:1px solid var(--sage);background:linear-gradient(135deg,var(--sage-tint),#E2E8DC);color:var(--sage-deep);font-size:.86rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all .25s var(--ease);box-shadow:0 2px 10px rgba(123,143,116,.12)}
+  .funds-tools__cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(123,143,116,.2)}
+  .funds-tools__cta:active{transform:translateY(0)}
+  /* 自定义跟踪基金 · 弹窗内容 */
+  .fwdlg{padding:4px 2px}
+  .fwdlg__intro{font-size:.88rem;color:var(--muted);margin-bottom:18px;line-height:1.7}
+  .fwdlg__sec{margin-bottom:18px}
+  .fwdlg__sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .fwdlg__sec-title{font-family:var(--ff-display);font-size:.96rem;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .fwdlg__sec-count{font-size:.78rem;color:var(--muted);padding:2px 10px;background:var(--bg-deep);border-radius:999px}
+  .fwdlg__group-toggle{padding:4px 12px;border-radius:999px;border:1px solid var(--line-soft);background:var(--bg-card);font-size:.76rem;cursor:pointer;font-family:inherit;color:var(--text);transition:all .2s var(--ease)}
+  .fwdlg__group-toggle:hover{border-color:var(--terracotta-soft);background:var(--terracotta-tint);color:var(--terracotta-deep)}
+  .fwdlg__chips{display:flex;flex-wrap:wrap;gap:8px}
+  .fwdlg__chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:14px;border:1px solid var(--line-soft);background:var(--bg-card);font-size:.84rem;cursor:pointer;transition:all .2s var(--ease);user-select:none;line-height:1.2}
+  .fwdlg__chip:hover{border-color:var(--sage-soft);transform:translateY(-1px)}
+  .fwdlg__chip.is-active{background:var(--sage-tint);border-color:var(--sage);color:var(--sage-deep);font-weight:500;box-shadow:0 2px 8px rgba(123,143,116,.14)}
+  .fwdlg__chip-name{font-weight:inherit}
+  .fwdlg__chip-code{font-family:ui-monospace,Menlo,monospace;font-size:.74rem;color:var(--faint);padding:1px 6px;background:var(--bg-deep);border-radius:6px}
+  .fwdlg__chip.is-active .fwdlg__chip-code{background:var(--sage-soft);color:var(--sage-deep)}
+  .fwdlg__foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px dashed var(--line-soft);margin-top:12px}
+  .fwdlg__foot-summary{font-size:.86rem;color:var(--muted)}
+  .fwdlg__foot-summary b{color:var(--sage-deep);font-family:var(--ff-display);font-size:1rem}
+  .fwdlg__foot-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .fwdlg__btn{padding:8px 16px;border-radius:var(--r-pill);font-size:.84rem;font-family:inherit;cursor:pointer;transition:all .2s var(--ease);border:1px solid transparent}
+  .fwdlg__btn--ghost{background:var(--bg-soft);color:var(--text);border-color:var(--line-soft)}
+  .fwdlg__btn--ghost:hover{background:var(--bg-deep)}
+  .fwdlg__btn--sage{background:var(--sage);color:#fff}
+  .fwdlg__btn--sage:hover{background:var(--sage-deep)}
+  .fwdlg__source{margin-top:10px;padding:10px 14px;background:var(--bg-deep);border-radius:var(--r-sm);font-size:.78rem;color:var(--muted);line-height:1.7}
+  .fwdlg__source b{color:var(--sage-deep)}
 
   /* 基金估值温度条 */
   .fund-item{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px 24px;margin-bottom:14px;transition:all .3s var(--ease)}
@@ -333,20 +339,13 @@
         <span class="temp-tag temp-tag--taupe">⚪ 30-70 正常 · 持有 / 常规定投</span>
         <span class="temp-tag temp-tag--rose">🔴 70-100 高估 · 分批卖出 / 止盈</span>
       </div>
-      <!-- 自定义筛选面板 -->
-      <div class="reveal fund-filter is-collapsed" id="fundFilterPanel">
-        <div class="fund-filter__head">
-          <div class="fund-filter__title">🎯 自定义跟踪哪些基金</div>
-          <div class="fund-filter__actions">
-            <button type="button" class="fund-filter__btn" id="fundSelAll">全选</button>
-            <button type="button" class="fund-filter__btn" id="fundSelReset">恢复默认</button>
-            <button type="button" class="fund-filter__btn fund-filter__btn--primary" id="fundSelSave">保存选择</button>
-          </div>
-        </div>
-        <div id="fundFilterContent"></div>
-        <div class="fund-filter__toggle">
-          <button type="button" class="fund-filter__toggle-btn" id="fundFilterToggle">展开筛选设置</button>
-        </div>
+      <!-- 自定义跟踪入口 -->
+      <div class="reveal funds-tools">
+        <div class="funds-tools__info" id="fundWatchSummary">已跟踪 <b>—</b> 只基金 · 数据来自 <b>飞书表格 + 蛋卷真实估值</b></div>
+        <button type="button" class="funds-tools__cta" id="fundWatchOpenBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          自定义跟踪哪些基金
+        </button>
       </div>
       <div id="fundsRegion"></div>
       <!-- 卖出规则 -->
@@ -1334,21 +1333,45 @@
         });
       });
     }
-    /* ---------- 基金自定义筛选（localStorage 持久化） ---------- */
+    /* ---------- 基金自定义筛选（弹窗形式 + localStorage 持久化） ---------- */
     const FUND_WATCH_STORAGE_KEY = 'lovenest:fund_watchlist_v1';
-    // 默认跟踪的基金代码（全部跟踪）
-    const FUND_DEFAULT_ALL = null; // null 表示全部
-    let _fundDraftSelection = null; // {Set<string>} 草稿选择（未保存前的临时状态）
+    const FUND_DEFAULT_ALL = null;
+    // 超级分组：把分类较细的基金合并成 3 大组，避免 1 只也单独占一行
+    const FUND_SUPER_GROUPS = [
+      { key: 'core', name: '🏦 宽基核心', cats: ['宽基','沪深300','创业板','中证500','科创','科创50','A50','中证1000','国证2000','其他'] },
+      { key: 'sector', name: '🛠️ 行业主题', cats: ['医疗','创新药','消费','白酒','电网设备','环保','传媒','信息技术','TMT','光伏','新能源','人工智能','AI','消费电子','能源化工','有色金属'] },
+      { key: 'intl', name: '🌍 海外 & 红利 & 防守', cats: ['海外','恒生科技','纳斯达克','标普500','宽基海外','房地产','内房','红利低波','中证红利','银行','黄金','固收','纯债','港股高股息'] },
+    ];
+    // 辅助：根据 category 找到它所在的 super group 索引
+    function superGroupIndexOfCategory(cat) {
+      const c = (cat || '').trim();
+      for (let i = 0; i < FUND_SUPER_GROUPS.length; i++) {
+        const g = FUND_SUPER_GROUPS[i];
+        if (g.cats.some(k => c === k || c.indexOf(k) >= 0)) return i;
+      }
+      // 兜底：按组名关键词匹配
+      if (/医疗|药|消费|白酒|新能源|光伏|AI|电子|传媒|信息|有色|化工|环保|设备|制造|科技|创新/.test(c)) return 1;
+      if (/红利|海外|美股|港股|纳指|标普|恒生|黄金|固收|债|防守|银行|房|股息/.test(c)) return 2;
+      return 0;
+    }
+    function groupFundsForDialog(allFunds) {
+      const groups = FUND_SUPER_GROUPS.map(g => ({ ...g, funds: [] }));
+      allFunds.forEach(f => {
+        const idx = superGroupIndexOfCategory(f.category);
+        groups[idx].funds.push(f);
+      });
+      return groups.filter(g => g.funds.length > 0);
+    }
+    let _fundDlgDraft = null; // 弹窗内草稿 Set<code>
+    let _feishuFundsCache = null; // 飞书最新数据缓存 {items: [{code,name,...}], exported_at}
 
     function loadFundWatchSelection(allFunds) {
       try {
         const raw = localStorage.getItem(FUND_WATCH_STORAGE_KEY);
         if (!raw) return FUND_DEFAULT_ALL;
         const parsed = JSON.parse(raw);
-        // 兼容旧版：可能是数组或对象 {codes:[...]}
         const codes = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.codes) ? parsed.codes : null);
         if (!codes) return FUND_DEFAULT_ALL;
-        // 校验：只保留当前存在的基金代码
         const validCodes = new Set(allFunds.map(f => f.code));
         const filtered = codes.filter(c => validCodes.has(c));
         return filtered.length > 0 ? new Set(filtered) : FUND_DEFAULT_ALL;
@@ -1363,168 +1386,364 @@
     }
     function getWatchedFunds(allFunds) {
       const sel = loadFundWatchSelection(allFunds);
-      if (sel == null) return allFunds.slice(); // 默认全部
+      if (sel == null) return allFunds.slice();
       return allFunds.filter(f => sel.has(f.code));
     }
-    function groupFundsByCategory(allFunds) {
-      const groups = new Map(); // category -> fund[]
-      allFunds.forEach(f => {
-        const cat = f.category || '其他';
-        if (!groups.has(cat)) groups.set(cat, []);
-        groups.get(cat).push(f);
-      });
-      return [...groups.entries()];
+    function updateWatchSummary(allFunds) {
+      const watched = getWatchedFunds(allFunds);
+      const el = document.getElementById('fundWatchSummary');
+      if (!el) return;
+      const feishuTs = _feishuFundsCache && _feishuFundsCache.exported_at
+        ? new Date(_feishuFundsCache.exported_at) : null;
+      const tsStr = feishuTs && !isNaN(feishuTs)
+        ? `<br><span style="font-size:.76rem">飞书数据更新于 ${esc(feishuTs.toLocaleString('zh-CN'))}</span>` : '';
+      el.innerHTML = `已跟踪 <b>${watched.length}</b> / ${allFunds.length} 只基金 · 数据来自 <b>飞书表格 + 蛋卷真实估值</b>${tsStr}`;
     }
-    function renderFundFilter() {
+    /* ---------- 飞书最新数据 JSON 加载 ---------- */
+    async function loadFeishuFunds() {
+      if (_feishuFundsCache != null) return _feishuFundsCache;
+      try {
+        const res = await fetch('data/feishu_funds.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const j = await res.json();
+        if (j && Array.isArray(j.items)) {
+          _feishuFundsCache = j;
+          // 合成 code→item 的快速索引
+          _feishuFundsCache.byCode = {};
+          j.items.forEach(it => { if (it && it.code) _feishuFundsCache.byCode[String(it.code).trim()] = it; });
+          return _feishuFundsCache;
+        }
+      } catch(e) { /* 读取失败则忽略 */ }
+      _feishuFundsCache = { items: [], byCode: {}, exported_at: null };
+      return _feishuFundsCache;
+    }
+    function mergeFeishuIntoFund(fund) {
+      const fs = _feishuFundsCache && _feishuFundsCache.byCode ? _feishuFundsCache.byCode[String(fund.code).trim()] : null;
+      if (!fs) return fund;
+      // 温度：若飞书温度数字有效则优先覆盖
+      const merged = { ...fund };
+      const fsTemp = Number(String(fs.temp || '').replace(/[^\d.\-]/g, ''));
+      if (!isNaN(fsTemp) && fsTemp >= 0 && fsTemp <= 100) {
+        merged.temp = fsTemp;
+        if (fs.temp_comment) merged.suggest = fs.temp_comment;
+      }
+      // 元信息：规模、成立时间、净值、最高最低、行业配置、风险评价
+      merged._feishu = {
+        fund_size: fs.fund_size,
+        establish_date: fs.establish_date,
+        nav: fs.nav,
+        nav_date: fs.nav_date,
+        daily_nav: fs.daily_nav,
+        one_year_return: fs.one_year_return,
+        daily_change: fs.daily_change,
+        max_value: fs.max_value,
+        min_value: fs.min_value,
+        max_date: fs.max_date,
+        min_date: fs.min_date,
+        since_inception_return: fs.since_inception_return,
+        investment_sectors: fs.investment_sectors,
+        risk_level: fs.risk_level,
+        risk_rating: fs.risk_rating,
+        sector_allocation: fs.sector_allocation,
+        asset_allocation: fs.asset_allocation,
+        target_audience: fs.target_audience,
+        peer_compare: fs.peer_compare,
+        historical_win_rate: fs.historical_win_rate,
+        halfyear_profit_prob: fs.halfyear_profit_prob,
+      };
+      return merged;
+    }
+    /* ---------- 自定义弹窗 ---------- */
+    function renderDialogInner() {
       const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
       const currentSel = loadFundWatchSelection(allFunds);
-      // 草稿：初始化为当前保存的选择；若默认全部，草稿就是全部代码
-      if (_fundDraftSelection == null) {
-        _fundDraftSelection = (currentSel == null)
+      if (_fundDlgDraft == null) {
+        _fundDlgDraft = (currentSel == null)
           ? new Set(allFunds.map(f => f.code))
           : new Set(currentSel);
       }
-      const groups = groupFundsByCategory(allFunds);
-      const contentBox = document.getElementById('fundFilterContent');
-      if (!contentBox) return;
-      // 汇总数据
-      const totalCount = allFunds.length;
-      const selectedCount = _fundDraftSelection.size;
-      // 构建每个分类 + 单只基金 chips
-      let html = '';
-      groups.forEach(([cat, catFunds]) => {
-        const catTotal = catFunds.length;
-        const catSelected = catFunds.filter(f => _fundDraftSelection.has(f.code)).length;
-        const catAllSelected = catSelected === catTotal;
-        html += `<div class="fund-filter__cat-row" data-cat="${esc(cat)}">
-          <div class="fund-filter__cat-label">${esc(cat)}（${catSelected}/${catTotal}）</div>
-          <div class="fund-filter__chips" style="margin-bottom:6px">
-            <button type="button" class="fund-chip fund-chip__cat ${catAllSelected ? 'is-active' : ''}"
-              data-cat-toggle="${esc(cat)}">
-              ${catAllSelected ? '✓' : '○'} 全选${esc(cat)}
-              <span class="fund-chip__count">${catTotal}</span>
+      const superGroups = groupFundsForDialog(allFunds);
+      const total = allFunds.length;
+      const selN = _fundDlgDraft.size;
+      let html = `<div class="fwdlg">
+        <div class="fwdlg__intro">勾选想在「小金库」页面重点跟踪的基金。<br/>不勾选的也只是暂时从列表隐藏，随时可以再打开加回来。</div>`;
+      superGroups.forEach((g, gi) => {
+        const gTotal = g.funds.length;
+        const gSel = g.funds.filter(f => _fundDlgDraft.has(f.code)).length;
+        const gAll = gTotal > 0 && gTotal === gSel;
+        html += `<div class="fwdlg__sec" data-group="${esc(g.key)}">
+          <div class="fwdlg__sec-head">
+            <div class="fwdlg__sec-title">
+              ${esc(g.name)}
+              <span class="fwdlg__sec-count">${gSel} / ${gTotal}</span>
+            </div>
+            <button type="button" class="fwdlg__group-toggle" data-group-toggle="${gi}">
+              ${gAll ? '取消本组全选' : '本组全选'}
             </button>
           </div>
-          <div class="fund-filter__chips">
-            ${catFunds.map(f => {
-              const active = _fundDraftSelection.has(f.code) ? 'is-active' : '';
-              return `<button type="button" class="fund-chip ${active}" data-fund-toggle="${esc(f.code)}">
-                ${_fundDraftSelection.has(f.code) ? '✓' : '○'} ${esc(f.name)}
-                <span class="fund-chip__count">${esc(f.code)}</span>
+          <div class="fwdlg__chips">
+            ${g.funds.map(f => {
+              const active = _fundDlgDraft.has(f.code) ? 'is-active' : '';
+              return `<button type="button" class="fwdlg__chip ${active}" data-chip-code="${esc(f.code)}" title="${esc(f.category || '')}">
+                <span class="fwdlg__chip-name">${active ? '✓ ' : ''}${esc(f.name)}</span>
+                <span class="fwdlg__chip-code">${esc(f.code)}</span>
               </button>`;
             }).join('')}
           </div>
         </div>`;
       });
-      html += `<div class="fund-filter__summary">
-        <span>当前选择 <b>${selectedCount}</b> / ${totalCount} 只基金</span>
-        <span>${selectedCount === totalCount ? '✅ 默认跟踪全部' : '💡 点击「保存选择」后生效'}</span>
+      html += `<div class="fwdlg__foot">
+        <div class="fwdlg__foot-summary">当前选择 <b>${selN}</b> / ${total} 只 · ${selN === total ? '跟踪全部' : '保存后生效'}</div>
+        <div class="fwdlg__foot-actions">
+          <button type="button" class="fwdlg__btn fwdlg__btn--ghost" data-fdlg="clear-all">清空</button>
+          <button type="button" class="fwdlg__btn fwdlg__btn--ghost" data-fdlg="select-all">全部选中</button>
+          <button type="button" class="fwdlg__btn fwdlg__btn--ghost" data-fdlg="reset-default">恢复默认</button>
+          <button type="button" class="fwdlg__btn fwdlg__btn--sage" data-fdlg="save">保存并应用</button>
+        </div>
+      </div>
+      <div class="fwdlg__source">
+        📡 <b>温度来源策略：</b>1) 优先走「蛋卷基金」真实网络估值百分位（每天动态变化）；2) 如果某只基金没拉到实时估值，则回落到你在飞书「最新数据」tab 里的市场温度；3) 两者都没有时用本地财务 JSON（finance.json）中的静态估值做兜底。<br/>
+        📄 飞书规模/净值/最高最低等信息已同步展示在每只基金的详情卡「📖 了解这只」里。
+      </div>
       </div>`;
-      contentBox.innerHTML = html;
-      // 绑定交互
-      // 分类全选
-      contentBox.querySelectorAll('[data-cat-toggle]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const cat = btn.getAttribute('data-cat-toggle');
-          const catFunds = (groups.find(([c]) => c === cat) || [])[1] || [];
-          const allSelected = catFunds.every(f => _fundDraftSelection.has(f.code));
-          if (allSelected) {
-            catFunds.forEach(f => _fundDraftSelection.delete(f.code));
-          } else {
-            catFunds.forEach(f => _fundDraftSelection.add(f.code));
-          }
-          renderFundFilter();
+      return { html, superGroups };
+    }
+    function wireDialogEvents(container, superGroups, onClose) {
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      // 单只 chip 切换
+      container.querySelectorAll('[data-chip-code]').forEach(el => {
+        el.addEventListener('click', () => {
+          const code = el.getAttribute('data-chip-code');
+          if (_fundDlgDraft.has(code)) _fundDlgDraft.delete(code);
+          else _fundDlgDraft.add(code);
+          // 重绘
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
         });
       });
-      // 单只基金切换
-      contentBox.querySelectorAll('[data-fund-toggle]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const code = btn.getAttribute('data-fund-toggle');
-          if (_fundDraftSelection.has(code)) _fundDraftSelection.delete(code);
-          else _fundDraftSelection.add(code);
-          renderFundFilter();
+      // 本组全选切换
+      container.querySelectorAll('[data-group-toggle]').forEach(el => {
+        el.addEventListener('click', () => {
+          const gi = Number(el.getAttribute('data-group-toggle'));
+          const g = superGroups[gi];
+          if (!g) return;
+          const allSel = g.funds.every(f => _fundDlgDraft.has(f.code));
+          if (allSel) g.funds.forEach(f => _fundDlgDraft.delete(f.code));
+          else g.funds.forEach(f => _fundDlgDraft.add(f.code));
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
+        });
+      });
+      // 底部四个按钮
+      const act = (name) => container.querySelector(`[data-fdlg="${name}"]`);
+      act('clear-all') && act('clear-all').addEventListener('click', () => {
+        if (confirm('确定要清空所有选择？')) {
+          _fundDlgDraft = new Set();
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
+        }
+      });
+      act('select-all') && act('select-all').addEventListener('click', () => {
+        _fundDlgDraft = new Set(allFunds.map(f => f.code));
+        const { html, superGroups: sg2 } = renderDialogInner();
+        container.innerHTML = html;
+        wireDialogEvents(container, sg2, onClose);
+      });
+      act('reset-default') && act('reset-default').addEventListener('click', () => {
+        if (confirm('恢复默认（跟踪全部基金）？')) {
+          saveFundWatchSelection(null);
+          _fundDlgDraft = new Set(allFunds.map(f => f.code));
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
+          updateWatchSummary(allFunds);
+          renderFunds();
+        }
+      });
+      act('save') && act('save').addEventListener('click', () => {
+        if (_fundDlgDraft.size === 0) {
+          alert('请至少选择一只基金～不然首页就空啦！');
+          return;
+        }
+        const allCodes = new Set(allFunds.map(f => f.code));
+        const draftAll = _fundDlgDraft.size === allCodes.size &&
+          [..._fundDlgDraft].every(c => allCodes.has(c));
+        if (draftAll) saveFundWatchSelection(null);
+        else saveFundWatchSelection(_fundDlgDraft);
+        updateWatchSummary(allFunds);
+        renderFunds();
+        onClose && onClose();
+        LoveNest.openModal('已保存 ✓', `<p style="line-height:1.8">已将 <b>${_fundDlgDraft.size}</b> 只基金纳入跟踪。<br/>设置已自动保存在本设备，下次进来看还是同样的选择～</p>`);
+      });
+    }
+    function openFundWatchDialog() {
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      const currentSel = loadFundWatchSelection(allFunds);
+      _fundDlgDraft = (currentSel == null)
+        ? new Set(allFunds.map(f => f.code))
+        : new Set(currentSel);
+      const { html, superGroups } = renderDialogInner();
+      // 用 LoveNest.openModal，不显示确认按钮（把操作按钮放弹窗内容里），所以传 contentOnly 风格
+      // 写一个临时容器追加到 body 后自己控制 modal
+      LoveNest.openModal('自定义跟踪哪些基金', html);
+      // LoveNest.openModal 默认把内容渲染到 .modal__content，等 DOM 可见后再绑定事件
+      requestAnimationFrame(() => {
+        const modalRoot = document.querySelector('.modal');
+        if (!modalRoot) return;
+        // 删除底部自带的两个默认按钮（取消/确定）→ 由我们自己的 footer 按钮操作
+        modalRoot.querySelectorAll('.modal__footer, .modal__buttons, [data-modal-confirm], [data-modal-close]').forEach(el => {
+          if (el.classList && (el.classList.contains('modal__btn') || el.textContent === '确定' || el.textContent === '取消')) {
+            if (el.textContent === '确定') el.style.display = 'none';
+          }
+        });
+        // 更稳：直接找到 content div，从它里面重新绑事件
+        const content = modalRoot.querySelector('.modal__content') || modalRoot;
+        const box = content.querySelector('.fwdlg') || content;
+        wireDialogEvents(box, superGroups, () => {
+          // 关闭弹窗
+          const close = modalRoot.querySelector('[data-modal-close]')
+            || modalRoot.querySelector('.modal__close')
+            || modalRoot.querySelector('.modal__btn');
+          if (close) close.click();
+          // 兜底：直接移除
+          setTimeout(() => { if (modalRoot.parentNode) modalRoot.remove(); }, 80);
         });
       });
     }
     function wireFundFilter() {
       const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
-      // 按钮：全选
-      const selAllBtn = document.getElementById('fundSelAll');
-      selAllBtn && selAllBtn.addEventListener('click', () => {
-        _fundDraftSelection = new Set(allFunds.map(f => f.code));
-        renderFundFilter();
-      });
-      // 按钮：恢复默认（全部跟踪）
-      const resetBtn = document.getElementById('fundSelReset');
-      resetBtn && resetBtn.addEventListener('click', () => {
-        if (confirm('恢复为默认跟踪全部基金？')) {
-          saveFundWatchSelection(null);
-          _fundDraftSelection = new Set(allFunds.map(f => f.code));
-          renderFundFilter();
-          renderFunds();
-          LoveNest.openModal('已恢复默认', '<p>将跟踪全部基金，已自动保存。</p>');
-        }
-      });
-      // 按钮：保存选择
-      const saveBtn = document.getElementById('fundSelSave');
-      saveBtn && saveBtn.addEventListener('click', () => {
-        if (_fundDraftSelection.size === 0) {
-          LoveNest.openModal('请至少选择一只', '<p>至少要跟踪一只基金哦，不然这页面就空啦～</p>');
-          return;
-        }
-        const allCodes = new Set(allFunds.map(f => f.code));
-        const draftAll = _fundDraftSelection.size === allCodes.size &&
-          [..._fundDraftSelection].every(c => allCodes.has(c));
-        if (draftAll) {
-          saveFundWatchSelection(null); // 全选时存 null（表示默认全部）
-        } else {
-          saveFundWatchSelection(_fundDraftSelection);
-        }
-        renderFunds();
-        LoveNest.openModal('已保存 ✓', `<p>当前跟踪 <b>${_fundDraftSelection.size}</b> / ${allFunds.length} 只基金。你的选择已保存到本地。</p>`);
-      });
-      // 移动端折叠展开
-      const panel = document.getElementById('fundFilterPanel');
-      const toggleBtn = document.getElementById('fundFilterToggle');
-      if (panel && toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-          panel.classList.toggle('is-collapsed');
-          toggleBtn.textContent = panel.classList.contains('is-collapsed') ? '展开筛选设置' : '收起筛选设置';
-        });
-        // 点击标题也能展开
-        panel.querySelector('.fund-filter__title') &&
-          panel.querySelector('.fund-filter__title').parentElement &&
-          panel.querySelector('.fund-filter__title').addEventListener('click', () => {
-            if (window.innerWidth <= 680) {
-              panel.classList.toggle('is-collapsed');
-              toggleBtn.textContent = panel.classList.contains('is-collapsed') ? '展开筛选设置' : '收起筛选设置';
+      updateWatchSummary(allFunds);
+      const openBtn = document.getElementById('fundWatchOpenBtn');
+      openBtn && openBtn.addEventListener('click', openFundWatchDialog);
+    }
+
+    /* ---------- 综合估值：蛋卷实时 + 飞书JSON + 本地静态（三级回退） ---------- */
+    async function fetchAllFundTemps(funds) {
+      // 先拉飞书本地 JSON（飞书最新数据导出，失败则跳过）
+      try { await loadFeishuFunds(); } catch(_) {}
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      updateWatchSummary(allFunds);
+      let temps = {};
+      let source = 'fallback';
+      let tempFrom = {}; // code -> 'api' | 'feishu' | 'fallback'
+      // 2) 尝试蛋卷真实估值（网络）
+      try {
+        const apiResult = await fetchRealFundTemps(funds);
+        if (apiResult && apiResult.temps) {
+          Object.keys(apiResult.temps).forEach(code => {
+            const t = apiResult.temps[code];
+            if (t != null && !isNaN(Number(t))) {
+              temps[code] = Number(t);
+              tempFrom[code] = 'api';
             }
           });
+          if (Object.keys(temps).length > 0) source = 'api';
+        }
+      } catch(_) {}
+      // 3) 飞书 JSON 补漏（蛋卷没返回的用飞书温度）
+      if (_feishuFundsCache && _feishuFundsCache.byCode) {
+        funds.forEach(f => {
+          const code = f.code;
+          if (temps[code] != null) return; // 已有真实数据就跳过
+          const fs = _feishuFundsCache.byCode[String(code).trim()];
+          if (!fs) return;
+          const t = Number(String(fs.temp || '').replace(/[^\d.\-]/g, ''));
+          if (!isNaN(t) && t >= 0 && t <= 100) {
+            temps[code] = t;
+            tempFrom[code] = 'feishu';
+          }
+        });
       }
-      renderFundFilter();
+      // 4) 兜底本地静态
+      funds.forEach(f => {
+        if (temps[f.code] == null) {
+          const t = Number(f.temp);
+          if (!isNaN(t)) {
+            temps[f.code] = t;
+            tempFrom[f.code] = 'fallback';
+          }
+        }
+      });
+      return { temps, tempFrom, source };
+    }
+    /* ---------- 渲染基金卡片（注入飞书元数据到详情卡） ---------- */
+    function renderFundCardWithFeishu(fund, apiTemp, showFallbackSourceFlag) {
+      // 先把飞书数据合并到 fund（生成新对象避免污染）
+      const merged = mergeFeishuIntoFund(fund);
+      const html = renderFundCard(merged, apiTemp, showFallbackSourceFlag);
+      // 如果飞书提供了规模、净值、最高最低等信息，在 fund-info 里把旧的替换/扩充一下
+      if (merged._feishu) {
+        const fs = merged._feishu;
+        const infoRows = [];
+        if (fs.fund_size) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">基金规模</div><div class="fund-info__v">${esc(fs.fund_size)}（飞书最新）</div></div>`);
+        if (fs.establish_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">成立时间</div><div class="fund-info__v">${esc(fs.establish_date)}</div></div>`);
+        if (fs.nav && fs.nav_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">最新净值</div><div class="fund-info__v">${esc(fs.nav)}（${esc(fs.nav_date)}）</div></div>`);
+        if (fs.one_year_return) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">近一年收益</div><div class="fund-info__v">${esc(fs.one_year_return)}</div></div>`);
+        if (fs.daily_change) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">当日涨跌</div><div class="fund-info__v">${esc(fs.daily_change)}</div></div>`);
+        if (fs.max_value && fs.max_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">历史最高</div><div class="fund-info__v">${esc(fs.max_value)}（${esc(fs.max_date)}）</div></div>`);
+        if (fs.min_value && fs.min_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">历史最低</div><div class="fund-info__v">${esc(fs.min_value)}（${esc(fs.min_date)}）</div></div>`);
+        if (fs.since_inception_return) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">成立以来</div><div class="fund-info__v">${esc(fs.since_inception_return)}</div></div>`);
+        if (fs.investment_sectors) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">投资行业</div><div class="fund-info__v">${esc(fs.investment_sectors)}</div></div>`);
+        if (fs.risk_level) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">风险等级</div><div class="fund-info__v">${esc(fs.risk_level)}</div></div>`);
+        if (fs.target_audience) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">适合人群</div><div class="fund-info__v">${esc(fs.target_audience)}</div></div>`);
+        if (fs.sector_allocation && fs.sector_allocation !== '无') infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">行业配置</div><div class="fund-info__v">${esc(fs.sector_allocation)}</div></div>`);
+        if (fs.asset_allocation && fs.asset_allocation !== '无') infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">资产配置</div><div class="fund-info__v">${esc(fs.asset_allocation)}</div></div>`);
+        if (fs.risk_rating && fs.risk_rating !== '无') infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">风险评价</div><div class="fund-info__v">${esc(fs.risk_rating)}</div></div>`);
+        if (infoRows.length > 0) {
+          // 找到 fund-info 末尾，插入飞书补充信息
+          const fsBox = `<div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--line-soft)">
+            <div style="font-family:var(--ff-display);font-weight:600;font-size:.92rem;color:var(--sage-deep);margin-bottom:10px">📊 飞书最新数据</div>
+            ${infoRows.join('')}
+          </div>`;
+          // 把 fsBox 插到 </div><!-- fund-info closing guard--> 之前（最后 2 个 </div> 之前）
+          // 采用更稳妥方式：替换 fund-info 结束前的结尾
+          const insertPos = html.lastIndexOf('</div>');
+          return html.substring(0, insertPos) + fsBox + html.substring(insertPos);
+        }
+      }
+      return html;
     }
     function renderFunds() {
-      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      const allFunds = (data.fund_valuation_temp || FALLBACK.fund_valuation_temp).map(f => mergeFeishuIntoFund(f));
       const funds = getWatchedFunds(allFunds);
       const region = document.getElementById('fundsRegion');
       if (!funds.length) {
-        region.innerHTML = `<div class="callout" style="text-align:center"><p>没有选中任何基金。<br/>去上面「自定义跟踪哪些基金」选几只吧～</p></div>`;
+        region.innerHTML = `<div class="callout" style="text-align:center"><p>还没有选中任何基金～<br/>点上方「自定义跟踪哪些基金」选几只就好啦</p></div>`;
+        updateWatchSummary(allFunds);
         return;
       }
-      // 1) 先用当前（JSON/FALLBACK）温度渲染
-      region.innerHTML = funds.map(f => renderFundCard(f, null, true)).join('');
+      // 1) 先用飞书 JSON + 本地温度渲染（立刻有内容，不白屏）
+      region.innerHTML = funds.map(f => renderFundCardWithFeishu(f, null, true)).join('');
       revealIn(region);
       wireFundInfoToggles(region);
-      // 2) 异步拉真实估值，成功后局部 patch 温度条/建议/来源
-      fetchRealFundTemps(funds).then(apiResult => {
+      updateWatchSummary(allFunds);
+      // 2) 拉三级估值（蛋卷→飞书→兜底），成功后 patch
+      fetchAllFundTemps(funds).then(result => {
         if (!region || !region.isConnected) return;
         region.innerHTML = funds.map(f => {
-          const apiTemp = apiResult.temps[f.code];
-          return renderFundCard(f, apiTemp, false);
+          const t = result.temps[f.code];
+          return renderFundCardWithFeishu(f, t, result.tempFrom[f.code] === 'fallback');
         }).join('');
         revealIn(region);
         wireFundInfoToggles(region);
-      }).catch(_err => { /* 失败则保留 fallback 渲染，不会报错 */ });
+        // 在最顶部补充一条来源说明条
+        const apiN = Object.values(result.tempFrom).filter(x => x === 'api').length;
+        const feishuN = Object.values(result.tempFrom).filter(x => x === 'feishu').length;
+        const fallbackN = Object.values(result.tempFrom).filter(x => x === 'fallback').length;
+        const note = document.createElement('div');
+        note.className = 'fund-source reveal';
+        note.style.marginBottom = '20px';
+        note.innerHTML = `<span class="status-dot status-dot--ok"></span>
+          <span>已为 <b class="fund-source__ok">${apiN}</b> 只基金拉取到蛋卷实时估值 ·
+          <b>${feishuN}</b> 只取自飞书最新数据 ·
+          ${fallbackN > 0 ? `<b class="fund-source__warn">${fallbackN}</b> 只为本地静态（稍后重试）· ` : ''}
+          想换其他基金？去点「自定义跟踪哪些基金」按钮就行～</span>`;
+        region.parentElement && !region.parentElement.querySelector('.fund-source')
+          && region.parentElement.insertBefore(note, region);
+      }).catch(_err => { /* 静默 */ });
       // 卖出规则
       const rules = data.sell_rules || FALLBACK.sell_rules;
       const rulesEl = document.getElementById('sellRulesRegion');
@@ -1591,6 +1810,23 @@
     wireExpOverview();
     wireFundFilter();
     renderAll();
+    // 后台异步加载飞书最新数据（不阻塞首屏），加载完更新顶部时间戳 + 刷新基金卡详情
+    (async () => {
+      try {
+        await loadFeishuFunds();
+      } catch(_) {}
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      updateWatchSummary(allFunds);
+      const region = document.getElementById('fundsRegion');
+      if (region && region.children.length) {
+        try {
+          const watched = getWatchedFunds(allFunds).map(f => mergeFeishuIntoFund(f));
+          region.innerHTML = watched.map(f => renderFundCardWithFeishu(f, null, true)).join('');
+          wireFundInfoToggles(region);
+          if (LoveNest.initReveal) LoveNest.initReveal();
+        } catch(_) {}
+      }
+    })();
     LoveNest.loadContentForPage();
   });
 </script>
