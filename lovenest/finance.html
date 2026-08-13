@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>家庭财商 · 师豪 ❤ 佳力</title>
+<meta name="description" content="家庭财商模块：收支记账、三账户制、基金估值观察、财商知识库、财务里程碑。让每一分钱都花得明白、存得自觉、投得安心。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* Finance module extra styles — 与莫兰迪色系一致，仅增量 */
+  .networth{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:18px;align-items:center}
+  .networth__main{background:linear-gradient(135deg,var(--sage-tint),#F0E7D7);border:1px solid var(--sage-soft);border-radius:var(--r-lg);padding:28px 30px}
+  .networth__num{font-family:var(--ff-display);font-size:2.4rem;font-weight:600;color:var(--sage-deep);line-height:1.1}
+  .networth__label{margin-top:6px;color:var(--muted);font-size:.92rem}
+  .networth__kpi{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px}
+  .networth__kpi-num{font-family:var(--ff-display);font-size:1.5rem;color:var(--ink);font-weight:600}
+  .networth__kpi-label{margin-top:4px;color:var(--faint);font-size:.82rem}
+  @media (max-width:860px){.networth{grid-template-columns:1fr 1fr}.networth__main{grid-column:1 / -1}}
+  @media (max-width:520px){.networth{grid-template-columns:1fr}}
+
+  .threeacc{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+  @media (max-width:780px){.threeacc{grid-template-columns:1fr}}
+  .threeacc__card{border-radius:var(--r-md);padding:24px;border:1px solid var(--line-soft);background:var(--bg-card);position:relative;overflow:hidden}
+  .threeacc__card--sage{background:linear-gradient(180deg,var(--sage-tint),var(--bg-card));border-color:var(--sage-soft)}
+  .threeacc__card--rose{background:linear-gradient(180deg,var(--rose-tint),var(--bg-card));border-color:var(--rose-soft)}
+  .threeacc__card--terracotta{background:linear-gradient(180deg,var(--terracotta-tint),var(--bg-card));border-color:var(--terracotta-soft)}
+  .threeacc__icon{font-size:1.6rem}
+  .threeacc__name{font-family:var(--ff-display);font-size:1.2rem;margin-top:6px;color:var(--ink)}
+  .threeacc__desc{color:var(--muted);font-size:.88rem;margin-top:4px}
+  .threeacc__row{margin-top:16px;display:flex;justify-content:space-between;align-items:baseline}
+  .threeacc__amt{font-family:var(--ff-display);font-weight:600;font-size:1.3rem;color:var(--ink)}
+  .threeacc__pct{font-size:.82rem;color:var(--faint)}
+
+  /* 基金估值温度条 */
+  .fund-item{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px 24px;margin-bottom:14px;transition:all .3s var(--ease)}
+  .fund-item:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--sage-soft)}
+  .fund-item__head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+  .fund-item__title{font-family:var(--ff-display);font-size:1.08rem;color:var(--ink)}
+  .fund-item__code{font-family:ui-monospace,Menlo,monospace;color:var(--faint);font-size:.82rem;margin-left:8px}
+  .temp-tag{padding:4px 14px;border-radius:var(--r-pill);font-size:.82rem;font-weight:500}
+  .temp-tag--sage{background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft)}
+  .temp-tag--taupe{background:var(--bg-deep);color:var(--muted);border:1px solid var(--taupe-soft)}
+  .temp-tag--rose{background:var(--rose-tint);color:var(--rose-deep);border:1px solid var(--rose-soft)}
+  .temp-bar{height:10px;background:var(--line-soft);border-radius:999px;overflow:hidden;margin:12px 0}
+  .temp-bar__fill{height:100%;border-radius:999px;transition:width .6s var(--ease)}
+  .temp-bar__fill--sage{background:linear-gradient(90deg,var(--sage-soft),var(--sage-deep))}
+  .temp-bar__fill--taupe{background:linear-gradient(90deg,var(--taupe-soft),var(--taupe))}
+  .temp-bar__fill--rose{background:linear-gradient(90deg,var(--rose-soft),var(--rose-deep))}
+  .fund-item__meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;font-size:.84rem;color:var(--muted)}
+  .fund-item__note{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-size:.84rem;color:var(--muted)}
+
+  /* 出售规则卡 */
+  .sell-rules{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
+  @media (max-width:680px){.sell-rules{grid-template-columns:1fr}}
+  .sell-rule{background:var(--bg-soft);border-left:4px solid var(--terracotta);border-radius:var(--r-sm);padding:18px 20px}
+  .sell-rule h4{font-size:1rem;margin-bottom:6px;color:var(--ink)}
+  .sell-rule p{font-size:.88rem;color:var(--muted);line-height:1.75}
+
+  /* 财务里程碑 */
+  .fin-ms{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px;margin-bottom:14px}
+  .fin-ms__top{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+  .fin-ms__icon{font-size:1.5rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--bg-deep);border-radius:var(--r-sm)}
+  .fin-ms__name{font-family:var(--ff-display);font-size:1.1rem;color:var(--ink)}
+  .fin-ms__deadline{margin-left:auto;font-size:.82rem;color:var(--faint)}
+  .fin-ms__row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:.88rem}
+  .fin-ms__num{font-family:var(--ff-display);font-weight:600;color:var(--ink)}
+  .fin-ms__note{font-size:.8rem;color:var(--muted);margin-top:8px}
+
+  /* 记账表格 */
+  .fin-log-head{display:grid;grid-template-columns:90px 80px 1fr 100px 100px 80px;gap:10px;padding:10px 14px;background:var(--bg-deep);border-radius:var(--r-sm) var(--r-sm) 0 0;font-size:.82rem;color:var(--muted);font-weight:500}
+  .fin-log-row{display:grid;grid-template-columns:90px 80px 1fr 100px 100px 80px;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line-soft);align-items:center;font-size:.92rem}
+  .fin-log-row:last-child{border-bottom:none}
+  .fin-log__amt{font-family:var(--ff-display);font-weight:600}
+  .fin-log__amt--in{color:var(--sage-deep)}
+  .fin-log__amt--out{color:var(--rose-deep)}
+  .fin-log__empty{padding:36px;text-align:center;color:var(--faint)}
+  @media (max-width:780px){
+    .fin-log-head,.fin-log-row{grid-template-columns:72px 60px 1fr 72px 60px;grid-template-areas:"a c d e g";grid-auto-columns:0}
+    .fin-log-head>span:nth-child(2),.fin-log-row>div:nth-child(2){display:none}
+  }
+
+  .quick-cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:10px 0 18px}
+  .quick-cat{border:1px solid var(--line-soft);background:var(--bg-card);padding:10px;border-radius:var(--r-sm);cursor:pointer;transition:all .25s var(--ease);text-align:center;font-size:.86rem}
+  .quick-cat:hover{border-color:var(--sage-soft);transform:translateY(-1px)}
+  .quick-cat.is-active{background:var(--sage-tint);border-color:var(--sage);color:var(--sage-deep);font-weight:500}
+  .quick-cat__icon{font-size:1.1rem;margin-right:4px}
+</style>
+</head>
+<body data-page="finance">
+<main>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__inner">
+      <p class="kicker hero__kicker">Family Financial Intelligence</p>
+      <h1 class="hero__title">家庭财商</h1>
+      <p class="hero__sub">柴米油盐都离不开钱，经济是家庭的底气。不是为了暴富，而是花得明白、存得自觉、投得安心——让钱为家庭的幸福感服务，而不是反过来。</p>
+      <div class="hero__actions">
+        <a href="#ledger" class="btn btn--primary">记一笔收支</a>
+        <a href="#knowledge" class="btn btn--ghost">先补财商认知</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 家庭财务仪表盘 -->
+  <section id="dashboard" class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">01</span>
+        <h2 class="section__title">家庭财务仪表盘</h2>
+        <p class="section__desc">看一张表就知道：我们现在处于什么位置、本月现金流、储蓄率、三账户余额。</p>
+      </div>
+      <div class="reveal" id="networthRegion"></div>
+      <div class="threeacc reveal" id="threeAccRegion" data-delay="1"></div>
+    </div>
+  </section>
+
+  <!-- 02 记账 -->
+  <section id="ledger" class="section section--tint">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">02</span>
+        <h2 class="section__title">记账 · 收支流水</h2>
+        <p class="section__desc">记账的真正目的，不是克扣每一杯奶茶钱，而是看清：你的钱从哪来、去了哪、最后留在了哪里。</p>
+      </div>
+      <!-- 记一笔表单 -->
+      <div class="card reveal" style="margin-bottom:28px">
+        <div class="quick-add">
+          <div class="quick-add__field">
+            <label class="quick-add__label">类型</label>
+            <select id="f-type" aria-label="类型">
+              <option value="expense">支出</option>
+              <option value="income">收入</option>
+            </select>
+          </div>
+          <div class="quick-add__field">
+            <label class="quick-add__label">谁</label>
+            <select id="f-who" aria-label="谁"></select>
+          </div>
+          <div class="quick-add__field">
+            <label class="quick-add__label">日期</label>
+            <input type="date" id="f-date" aria-label="日期" />
+          </div>
+          <div class="quick-add__field">
+            <label class="quick-add__label">金额(元)</label>
+            <input type="number" id="f-amount" min="0" step="0.01" placeholder="0.00" aria-label="金额" />
+          </div>
+          <div class="quick-add__field quick-add__field--event">
+            <label class="quick-add__label">备注 / 说明</label>
+            <input type="text" id="f-note" placeholder="比如：买菜、工资、基金定投..." aria-label="备注" />
+          </div>
+          <button class="btn btn--primary quick-add__save" id="f-save" type="button">记一笔</button>
+        </div>
+        <!-- 分类快速选择（根据类型动态渲染） -->
+        <div class="mt-2">
+          <p class="faint" style="font-size:.82rem;margin-bottom:4px">快速选分类（可选）：</p>
+          <div class="quick-cats" id="f-cats"></div>
+        </div>
+        <div class="mt-3 flex gap-2 wrap aic">
+          <button class="btn btn--ghost btn--small" id="f-clear" type="button">清空我的记录</button>
+          <span class="faint" style="font-size:.8rem">仅清空你添加的记录，种子数据不受影响</span>
+        </div>
+      </div>
+      <!-- 流水表 -->
+      <div class="card reveal">
+        <div class="flex aic jcb mb-2 wrap gap-2">
+          <h3 style="font-size:1.08rem">本月收支流水</h3>
+          <select id="f-month" aria-label="月份筛选" style="padding:6px 12px;border-radius:var(--r-pill);border:1px solid var(--line-soft);background:var(--bg-soft);font-family:inherit;color:var(--text)"></select>
+        </div>
+        <div class="fin-log-head">
+          <span>日期</span><span>分类</span><span>备注</span><span>谁</span><span>金额</span><span>类型</span>
+        </div>
+        <div id="f-log"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 基金观察 · 买卖决策 -->
+  <section id="funds" class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">03</span>
+        <h2 class="section__title">基金观察 · 估值温度与买卖</h2>
+        <p class="section__desc">低估买入、正常定投、高估卖出。别靠情绪做决策，让估值温度和规则帮你行动。</p>
+      </div>
+      <!-- 温度图例 -->
+      <div class="reveal mb-3" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:.88rem">
+        <span class="temp-tag temp-tag--sage">🟢 0-30 低估 · 买入 / 加量定投</span>
+        <span class="temp-tag temp-tag--taupe">⚪ 30-70 正常 · 持有 / 常规定投</span>
+        <span class="temp-tag temp-tag--rose">🔴 70-100 高估 · 分批卖出 / 止盈</span>
+      </div>
+      <div id="fundsRegion"></div>
+      <!-- 卖出规则 -->
+      <div class="mt-4 reveal">
+        <p class="kicker center" style="margin-bottom:12px">卖出的四条规则（满足任一就行动）</p>
+        <div class="sell-rules" id="sellRulesRegion"></div>
+        <div class="callout mt-4">记住：会买的是徒弟，会卖的是师傅。到了规则触发点就行动，不犹豫、不后悔——这是投资里最贵的纪律。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 人生阶段 · 财务里程碑 -->
+  <section id="milestones" class="section section--tint">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">04</span>
+        <h2 class="section__title">人生阶段 · 财务里程碑</h2>
+        <p class="section__desc">婚礼只是其中一站。应急准备金、买房首付、养娃、养老——把每一个大目标拆成可执行的进度条。</p>
+      </div>
+      <div id="finMsRegion"></div>
+      <div class="mt-4 reveal">
+        <div class="callout callout--sage">4% 法则小公式：<b>你的 FIRE 数字 = 家庭年支出 × 25</b>。算清楚这个数，存钱和投资就都不再是瞎忙。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 财商知识库 -->
+  <section id="knowledge" class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">05</span>
+        <h2 class="section__title">财商知识库</h2>
+        <p class="section__desc">先补认知，再管账户。从拆除金钱羞耻感开始，到三账户制、指数基金、家庭配置、财务自由数字。</p>
+      </div>
+      <div class="reveal mb-3">
+        <div class="card card--inset" id="finKnowIntro" style="max-width:780px;margin:0 auto"></div>
+      </div>
+      <div class="grid grid--3" data-content-for="finance"></div>
+    </div>
+  </section>
+
+  <!-- 06 继续探索 -->
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">06</span>
+        <h2 class="section__title">继续探索</h2>
+        <p class="section__desc">钱是底气，爱是温度，合在一起才是幸福的家庭。</p>
+      </div>
+      <div class="crosslinks reveal">
+        <a class="crosslink" href="bank.html">
+          <span class="crosslink__icon">🏦</span>
+          <span class="crosslink__title">给情感账户也存一笔</span>
+          <span class="crosslink__desc">账本上的数字是底气，情感账户的余额是温度——两条线都要红。</span>
+          <span class="crosslink__arrow">→ 情感账户</span>
+        </a>
+        <a class="crosslink" href="milestones.html">
+          <span class="crosslink__icon">🪴</span>
+          <span class="crosslink__title">看人生整体规划</span>
+          <span class="crosslink__desc">财务里程碑和人生里程碑对齐，钱和人一起往前。</span>
+          <span class="crosslink__arrow">→ 里程碑</span>
+        </a>
+        <a class="crosslink" href="family.html">
+          <span class="crosslink__icon">🏠</span>
+          <span class="crosslink__title">聊家庭财务共识</span>
+          <span class="crosslink__desc">夫妻谈钱不伤感情——先有共识，再有账本。</span>
+          <span class="crosslink__arrow">→ 家庭关系</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" referrerpolicy="no-referrer"></script>
+<script src="../env-config.js"></script>
+<script src="shared/config.js"></script>
+<script src="shared/db.js"></script>
+<script src="shared/nav.js"></script>
+<script src="shared/data.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    /* ---------- Fallback data（与 data/finance.json 同步） ---------- */
+    const FALLBACK = {
+      intro: "家庭财商模块：记账、基金观察、财商知识库。不是为了暴富，而是让每一分钱都花得明白、存得自觉、投得安心。",
+      three_accounts: [
+        { key:"spend", name:"消费账户", icon:"🛒", desc:"活在当下 · 每月生活费，花完就等下个月", color:"rose", pct_ref:50 },
+        { key:"save",  name:"储蓄账户", icon:"🏦", desc:"托住风险 · 应急准备金 + 买房首付", color:"terracotta", pct_ref:20 },
+        { key:"invest",name:"投资账户", icon:"📈", desc:"拥抱未来 · 三到五年闲钱 · 指数基金定投", color:"sage", pct_ref:30 }
+      ],
+      expense_categories: [
+        { key:"housing",   name:"居住", icon:"🏠" },
+        { key:"food",      name:"餐饮", icon:"🍽"  },
+        { key:"transport", name:"交通", icon:"🚗" },
+        { key:"shopping",  name:"购物", icon:"🛍" },
+        { key:"medical",   name:"医疗", icon:"💊" },
+        { key:"leisure",   name:"休闲", icon:"🎬" },
+        { key:"family",    name:"家庭", icon:"👨‍👩‍👧" },
+        { key:"education", name:"学习", icon:"📚" },
+        { key:"other",     name:"其他", icon:"✨"  }
+      ],
+      income_categories: [
+        { key:"salary",  name:"工资收入", icon:"💼" },
+        { key:"side",    name:"副业收入", icon:"🚀" },
+        { key:"invest",  name:"投资收益", icon:"📈" },
+        { key:"bonus",   name:"其他收入", icon:"🎁" }
+      ],
+      fund_valuation_temp: [
+        { code:"510300", name:"沪深300ETF",  benchmark:"中证官方估值", temp:35, suggest:"正常持有", note:"30 以下多买，70 以上卖" },
+        { code:"159915", name:"创业板ETF",   benchmark:"中证官方估值", temp:72, suggest:"高估减仓", note:"温度 70+ 开始分批止盈" },
+        { code:"510500", name:"中证500ETF",  benchmark:"中证官方估值", temp:22, suggest:"低估多买", note:"中盘股估值偏低，可加量定投" },
+        { code:"513500", name:"标普500ETF",  benchmark:"multpl 席勒PE", temp:68, suggest:"正常持有", note:"美股长牛但估值偏高，小额定投" },
+        { code:"161725", name:"招商中证白酒", benchmark:"历史百分位",    temp:48, suggest:"正常持有", note:"行业基金不超 20% 仓位" }
+      ],
+      temp_threshold: {
+        under_valued:{ max:30,  label:"低估 · 买入", color:"sage",  action:"多买 / 加量定投" },
+        normal:      { max:70,  label:"正常 · 持有", color:"taupe", action:"正常定投，不追涨不杀跌" },
+        over_valued: { max:100, label:"高估 · 卖出", color:"rose",  action:"分批止盈，落袋为安" }
+      },
+      sell_rules: [
+        { name:"估值温度 75+",   desc:"指数温度超过 75 时，开始分批卖出 1/3；超过 85 再卖 1/3；超过 95 清仓或留 10%。" },
+        { name:"目标收益率",     desc:"自己设定的收益目标（如+50%、+100%），到了就止盈一部分，不要贪恋最后一颗铜板。" },
+        { name:"基本面变坏",     desc:"当初买入的理由消失了（如指数编制变了、行业逻辑变了），不管盈亏都卖。" },
+        { name:"需要用钱",       desc:"投资账户的钱本来就留了期限，真的要用到了就按计划卖，别心疼短期波动。" }
+      ],
+      life_milestones: [
+        { key:"wedding",   name:"婚礼筹备金", icon:"💒", target:80000,  saved:56000, deadline:"2027-05", note:"婚宴+婚庆+三金+旅游，与重庆备婚手册预算联动" },
+        { key:"house",     name:"买房首付",   icon:"🏡", target:300000, saved:45000, deadline:"2029-12", note:"重庆首套房首付，每月储蓄账户定投" },
+        { key:"emergency", name:"应急准备金", icon:"🛡", target:60000,  saved:24000, deadline:"2026-12", note:"6个月生活费，货币基金/活期存款，随时能用" },
+        { key:"fire",      name:"FIRE 数字",  icon:"🔥", target:1500000,saved:85000, deadline:"2040-12", note:"年支出 6 万 × 25 = 150 万（4%法则）" }
+      ],
+      knowledge_tags:{ finance_knowledge_intro:"先补认知，再管账户。以下是为家庭筛选过的核心财商内容——从金钱羞耻感拆除，到三账户制、基金投资、财务自由数字，读完这 20 篇，家庭理财就不会再瞎忙。" },
+      seed_records: [
+        { date:"2026-08-01", type:"income",  category:"salary",   who:"him",  amount:18000, note:"师豪 8 月工资" },
+        { date:"2026-08-05", type:"income",  category:"salary",   who:"her",  amount:8500,  note:"佳力 8 月工资" },
+        { date:"2026-08-02", type:"expense", category:"housing",  who:"both", amount:2800,  note:"8 月房租+物业费" },
+        { date:"2026-08-03", type:"expense", category:"food",     who:"both", amount:1200,  note:"本周买菜+外卖" },
+        { date:"2026-08-06", type:"expense", category:"shopping", who:"her",  amount:480,   note:"七夕礼物 + 换季衣服" },
+        { date:"2026-08-10", type:"income",  category:"side",     who:"him",  amount:3200,  note:"师豪 7 月副业收入" },
+        { date:"2026-08-12", type:"expense", category:"leisure",  who:"both", amount:360,   note:"七夕约会 + 电影" }
+      ],
+      who_options:[
+        { value:"him",  label:"师豪" },
+        { value:"her",  label:"佳力" },
+        { value:"both", label:"我们共同" }
+      ]
+    };
+
+    const data = await LoveNest.getJSON('data/finance.json', FALLBACK);
+
+    /* Supabase + localStorage 双写 · finance_records（收支流水）、fund_watchlist（基金观察） */
+    await LoveNest.db.ready;
+    let records = [];
+    let currentCategory = null;
+
+    async function reloadRecords() {
+      const fromDB = await LoveNest.db.list('finance_records', null, { order: [['date','desc'],['created_at','desc']] });
+      const seeds = Array.isArray(data.seed_records) ? data.seed_records.map(r => ({ ...r, source: 'seed' })) : [];
+      const seen = new Set();
+      const merged = [];
+      [...fromDB, ...seeds].forEach(r => {
+        const k = [r.date, r.type, r.category, r.who, r.amount, r.note].join('||');
+        if (seen.has(k)) return;
+        seen.add(k);
+        merged.push(r);
+      });
+      records = merged.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    }
+    await reloadRecords();
+    LoveNest.db.watch('finance_records', async () => { await reloadRecords(); renderAll(); });
+
+    /* ---------- Helpers ---------- */
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmtMoney = (n) => {
+      n = Number(n) || 0;
+      return (n >= 0 ? '' : '-') + '¥' + Math.abs(n).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    };
+    const whoLabel = (w) => ((data.who_options||[]).find(o => o.value===w)||{}).label || w || '';
+    const catMeta = (type, key) => {
+      const list = type === 'income' ? (data.income_categories||[]) : (data.expense_categories||[]);
+      return list.find(c => c.key === key) || { name: key, icon: '📌' };
+    };
+    const tempLevel = (t) => {
+      const th = data.temp_threshold || FALLBACK.temp_threshold;
+      if (t <= th.under_valued.max) return th.under_valued;
+      if (t <= th.normal.max)       return th.normal;
+      return th.over_valued;
+    };
+    const revealIn = (scope) => {
+      scope.querySelectorAll && scope.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    };
+    const ymOf = (d) => String(d||'').slice(0,7);
+
+    /* ---------- 01 仪表盘渲染 ---------- */
+    function calcKPIs(filterYM) {
+      // filter by YM (if set) for income/expense; net worth uses all records + milestones saved cumulated
+      const monthRecs = filterYM ? records.filter(r => ymOf(r.date) === filterYM) : records;
+      let monthIncome = 0, monthExpense = 0;
+      monthRecs.forEach(r => {
+        const a = Number(r.amount)||0;
+        if (r.type === 'income')  monthIncome += a;
+        if (r.type === 'expense') monthExpense += a;
+      });
+      const savingRate = monthIncome > 0 ? Math.max(0, Math.min(100, Math.round((monthIncome - monthExpense)/monthIncome*100))) : 0;
+      // 净值用 life_milestones 的已完成储蓄 + 流水粗略估算（简化：累计 save/invest 里程碑 + （累计收入-累计支出））
+      let cumIncome = 0, cumExpense = 0;
+      records.forEach(r => {
+        const a = Number(r.amount)||0;
+        if (r.type === 'income')  cumIncome += a;
+        if (r.type === 'expense') cumExpense += a;
+      });
+      const milestonesSaved = (data.life_milestones||[]).reduce((s, m) => s + (Number(m.saved)||0), 0);
+      const netWorth = milestonesSaved; // MVP 简化：用里程碑累计储蓄展示净值
+      // 三账户 MVP：用 50/20/30 参考比例 ×（累计收入-累计支出）做示意
+      const remaining = Math.max(0, cumIncome - cumExpense);
+      const threeAccAmts = {
+        spend:  Math.round(remaining * 0.50),
+        save:   Math.round(remaining * 0.20),
+        invest: Math.round(remaining * 0.30)
+      };
+      return { monthIncome, monthExpense, savingRate, netWorth, cumIncome, cumExpense, threeAccAmts };
+    }
+    function renderDashboard() {
+      const nowYM = LoveNest.todayISO().slice(0,7);
+      const k = calcKPIs(nowYM);
+      const html = `
+        <div class="networth">
+          <div class="networth__main reveal">
+            <p class="kicker" style="margin-bottom:8px">家庭净值 · Net Worth</p>
+            <div class="networth__num">${fmtMoney(k.netWorth)}</div>
+            <div class="networth__label">累计里程碑储蓄合计（应急/婚礼/首付/FIRE）</div>
+          </div>
+          <div class="networth__kpi reveal" data-delay="1">
+            <div class="networth__kpi-num" style="color:var(--sage-deep)">+${fmtMoney(k.monthIncome).replace('¥','¥')}</div>
+            <div class="networth__kpi-label">本月收入 · ${nowYM}</div>
+          </div>
+          <div class="networth__kpi reveal" data-delay="1">
+            <div class="networth__kpi-num" style="color:var(--rose-deep)">-${fmtMoney(k.monthExpense).replace('¥','¥')}</div>
+            <div class="networth__kpi-label">本月支出 · ${nowYM}</div>
+          </div>
+          <div class="networth__kpi reveal" data-delay="2">
+            <div class="networth__kpi-num" style="color:var(--terracotta-deep)">${k.savingRate}%</div>
+            <div class="networth__kpi-label">本月储蓄率（目标 ≥30%）</div>
+          </div>
+        </div>`;
+      const region = document.getElementById('networthRegion');
+      region.innerHTML = html;
+      revealIn(region);
+
+      /* 三账户卡片 */
+      const accs = data.three_accounts || FALLBACK.three_accounts;
+      const cards = accs.map(a => {
+        const cls = a.color === 'sage' ? 'sage' : a.color === 'rose' ? 'rose' : 'terracotta';
+        const amt = k.threeAccAmts[a.key] || 0;
+        return `<div class="threeacc__card threeacc__card--${cls}">
+          <div class="threeacc__icon">${esc(a.icon||'')}</div>
+          <div class="threeacc__name">${esc(a.name||'')}</div>
+          <div class="threeacc__desc">${esc(a.desc||'')}</div>
+          <div class="threeacc__row">
+            <div class="threeacc__amt">${fmtMoney(amt)}</div>
+            <div class="threeacc__pct">参考比例 ${a.pct_ref||'—'}%</div>
+          </div>
+        </div>`;
+      }).join('');
+      document.getElementById('threeAccRegion').innerHTML = cards;
+    }
+
+    /* ---------- 02 记账表单 + 流水 ---------- */
+    function wireForm() {
+      const typeSel = document.getElementById('f-type');
+      const whoSel  = document.getElementById('f-who');
+      const dateInp = document.getElementById('f-date');
+      const amtInp  = document.getElementById('f-amount');
+      const noteInp = document.getElementById('f-note');
+      const saveBtn = document.getElementById('f-save');
+      const clearBtn= document.getElementById('f-clear');
+      const catsBox = document.getElementById('f-cats');
+      const monthSel= document.getElementById('f-month');
+
+      whoSel.innerHTML = (data.who_options||[]).map(o => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join('');
+      dateInp.value = LoveNest.todayISO();
+
+      // 月份筛选
+      const yms = Array.from(new Set(records.map(r => ymOf(r.date)))).sort().reverse();
+      const curYM = LoveNest.todayISO().slice(0,7);
+      if (!yms.includes(curYM)) yms.unshift(curYM);
+      monthSel.innerHTML = yms.map(ym => `<option value="${esc(ym)}">${esc(ym)}</option>`).join('');
+      monthSel.value = curYM;
+      monthSel.addEventListener('change', renderAll);
+
+      // 渲染分类快选
+      function renderCats() {
+        const type = typeSel.value;
+        const list = type === 'income' ? (data.income_categories||[]) : (data.expense_categories||[]);
+        catsBox.innerHTML = list.map(c =>
+          `<button type="button" class="quick-cat" data-cat="${esc(c.key)}">
+            <span class="quick-cat__icon">${esc(c.icon||'')}</span>${esc(c.name)}
+          </button>`
+        ).join('');
+        catsBox.querySelectorAll('.quick-cat').forEach(btn => {
+          btn.addEventListener('click', () => {
+            catsBox.querySelectorAll('.quick-cat').forEach(b => b.classList.remove('is-active'));
+            btn.classList.add('is-active');
+            currentCategory = btn.getAttribute('data-cat');
+          });
+        });
+      }
+      typeSel.addEventListener('change', () => { currentCategory = null; renderCats(); });
+      renderCats();
+
+      saveBtn.addEventListener('click', async () => {
+        const amount = parseFloat(amtInp.value);
+        const date = dateInp.value;
+        const note = noteInp.value.trim();
+        const type = typeSel.value;
+        const who = whoSel.value;
+        if (!amount || amount <= 0) {
+          LoveNest.openModal('差一点点', '<p>请填一个大于 0 的金额。</p>');
+          amtInp.focus();
+          return;
+        }
+        if (!date) {
+          LoveNest.openModal('差一点点', '<p>请选择日期。</p>');
+          dateInp.focus();
+          return;
+        }
+        const category = currentCategory || (type === 'income' ? 'salary' : 'food');
+        const rec = { date, type, category, who, amount, note, source:'user' };
+        await LoveNest.db.insert('finance_records', rec);
+        await reloadRecords();
+        // 若新月份，刷新月份下拉
+        const ym = ymOf(date);
+        if (![...monthSel.options].some(o => o.value===ym)) {
+          const opt = document.createElement('option');
+          opt.value = ym; opt.textContent = ym;
+          monthSel.insertBefore(opt, monthSel.firstChild);
+        }
+        amtInp.value = ''; noteInp.value = '';
+        currentCategory = null;
+        catsBox.querySelectorAll('.quick-cat').forEach(b => b.classList.remove('is-active'));
+        amtInp.focus();
+        renderAll();
+      });
+
+      clearBtn.addEventListener('click', async () => {
+        const userRecords = records.filter(r => r.source==='user' || !r.source);
+        if (!userRecords.length) {
+          LoveNest.openModal('暂无我的记录', '<p>你还没添加任何个人收支记录，种子数据不受影响。</p>');
+          return;
+        }
+        if (confirm('确定清空你添加的所有收支记录吗？种子数据不受影响。')) {
+          for (const r of records) {
+            if (r.source==='seed') continue;
+            await LoveNest.db.remove('finance_records', { id: r.id });
+          }
+          await reloadRecords();
+          renderAll();
+        }
+      });
+    }
+    function renderLog() {
+      const monthSel = document.getElementById('f-month');
+      const ym = (monthSel && monthSel.value) || LoveNest.todayISO().slice(0,7);
+      const monthRecs = records.filter(r => ymOf(r.date) === ym);
+      const box = document.getElementById('f-log');
+      if (!monthRecs.length) {
+        box.innerHTML = `<div class="fin-log__empty">${esc(ym)} 暂无记录——去上面记一笔吧 ✿</div>`;
+        return;
+      }
+      box.innerHTML = monthRecs.map(r => {
+        const cm = catMeta(r.type, r.category);
+        const amtClass = r.type === 'income' ? 'fin-log__amt--in' : 'fin-log__amt--out';
+        const amtSign  = r.type === 'income' ? '+' : '-';
+        return `<div class="fin-log-row">
+          <div>${esc(r.date)}</div>
+          <div style="font-size:.84rem">${esc(cm.icon||'')} ${esc(cm.name)}</div>
+          <div style="color:var(--text)">${esc(r.note||'')}</div>
+          <div style="font-size:.84rem;color:var(--muted)">${esc(whoLabel(r.who))}</div>
+          <div class="fin-log__amt ${amtClass}">${amtSign}${fmtMoney(r.amount).replace('¥','¥')}</div>
+          <div style="font-size:.78rem;color:var(--faint)">${r.type==='income'?'收入':'支出'}</div>
+        </div>`;
+      }).join('');
+    }
+
+    /* ---------- 03 基金观察 + 卖出规则 ---------- */
+    function renderFunds() {
+      const funds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      const region = document.getElementById('fundsRegion');
+      region.innerHTML = funds.map(f => {
+        const lv = tempLevel(f.temp);
+        const colorCls = lv.color;
+        return `<div class="fund-item reveal">
+          <div class="fund-item__head">
+            <div><span class="fund-item__title">${esc(f.name)}</span><span class="fund-item__code">${esc(f.code)}</span></div>
+            <span class="temp-tag temp-tag--${colorCls}">温度 ${f.temp} · ${esc(lv.label)}</span>
+          </div>
+          <div class="temp-bar"><div class="temp-bar__fill temp-bar__fill--${colorCls}" style="width:${Math.min(100,Number(f.temp))}%"></div></div>
+          <div class="fund-item__meta">
+            <span>建议动作：<b style="color:var(--ink)">${esc(f.suggest)}</b></span>
+            <span>策略：${esc(lv.action)}</span>
+            <span>估值基准：${esc(f.benchmark)}</span>
+          </div>
+          ${f.note ? `<div class="fund-item__note">📎 ${esc(f.note)}</div>` : ''}
+        </div>`;
+      }).join('');
+      revealIn(region);
+
+      const rules = data.sell_rules || FALLBACK.sell_rules;
+      document.getElementById('sellRulesRegion').innerHTML = rules.map(r =>
+        `<div class="sell-rule"><h4>${esc(r.name)}</h4><p>${esc(r.desc)}</p></div>`
+      ).join('');
+    }
+
+    /* ---------- 04 财务里程碑 ---------- */
+    function renderMilestones() {
+      const ms = data.life_milestones || FALLBACK.life_milestones;
+      const region = document.getElementById('finMsRegion');
+      region.innerHTML = ms.map(m => {
+        const tgt = Number(m.target)||0;
+        const sav = Number(m.saved)||0;
+        const pct = tgt>0 ? Math.max(0, Math.min(100, Math.round(sav/tgt*100))) : 0;
+        return `<div class="fin-ms reveal">
+          <div class="fin-ms__top">
+            <div class="fin-ms__icon">${esc(m.icon||'💰')}</div>
+            <div class="fin-ms__name">${esc(m.name)}</div>
+            <div class="fin-ms__deadline">📅 截止 ${esc(m.deadline||'—')}</div>
+          </div>
+          <div class="fin-ms__row">
+            <span>已存 / 目标</span>
+            <span><span class="fin-ms__num">${fmtMoney(sav)}</span> / ${fmtMoney(tgt)}</span>
+          </div>
+          <div class="progress progress--sage"><span style="width:${pct}%"></span></div>
+          <div class="fin-ms__row" style="margin-top:6px">
+            <span style="color:var(--faint);font-size:.8rem">进度 ${pct}%</span>
+            <span style="color:var(--faint);font-size:.8rem">缺口 ${fmtMoney(Math.max(0,tgt-sav))}</span>
+          </div>
+          ${m.note ? `<div class="fin-ms__note">📝 ${esc(m.note)}</div>` : ''}
+        </div>`;
+      }).join('');
+      revealIn(region);
+    }
+
+    /* ---------- 05 知识库 intro ---------- */
+    function renderKnowledgeIntro() {
+      const txt = (data.knowledge_tags && data.knowledge_tags.finance_knowledge_intro) || FALLBACK.knowledge_tags.finance_knowledge_intro;
+      const box = document.getElementById('finKnowIntro');
+      if (box) box.innerHTML = `<p style="color:var(--muted);line-height:1.85">${esc(txt)}</p>`;
+    }
+
+    /* ---------- 总渲染 ---------- */
+    function renderAll() {
+      renderDashboard();
+      renderLog();
+      renderFunds();
+      renderMilestones();
+      renderKnowledgeIntro();
+      if (LoveNest.initReveal) LoveNest.initReveal();
+    }
+
+    wireForm();
+    renderAll();
+    LoveNest.loadContentForPage();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{
+  "intro": "家庭财商模块：记账、基金观察、财商知识库。不是为了暴富，而是让每一分钱都花得明白、存得自觉、投得安心——让柴米油盐不焦虑，让买房育儿有底气。",
+  "three_accounts": [
+    { "key": "spend", "name": "消费账户", "icon": "🛒", "desc": "活在当下 · 每月生活费，花完就等下个月，不挪用储蓄和投资", "color": "rose", "pct_ref": 50 },
+    { "key": "save",  "name": "储蓄账户", "icon": "🏦", "desc": "托住风险 · 应急准备金 + 买房首付 + 短期目标，本金绝不亏", "color": "terracotta", "pct_ref": 20 },
+    { "key": "invest","name": "投资账户", "icon": "📈", "desc": "拥抱未来 · 三到五年不用的闲钱，定投指数基金 + 长期持有", "color": "sage", "pct_ref": 30 }
+  ],
+  "expense_categories": [
+    { "key": "housing",   "name": "居住",   "icon": "🏠", "examples": "房租/房贷/物业/水电/网费/家具维修" },
+    { "key": "food",      "name": "餐饮",   "icon": "🍽",  "examples": "买菜/外卖/奶茶/下馆子/水果零食" },
+    { "key": "transport", "name": "交通",   "icon": "🚗", "examples": "地铁/打车/油费/保养/高铁机票" },
+    { "key": "shopping",  "name": "购物",   "icon": "🛍", "examples": "衣服/3C/日用/化妆品/家居" },
+    { "key": "medical",   "name": "医疗",   "icon": "💊", "examples": "挂号/药费/体检/保险/牙科" },
+    { "key": "leisure",   "name": "休闲",   "icon": "🎬", "examples": "电影/约会/旅游/会员/游戏" },
+    { "key": "family",    "name": "家庭",   "icon": "👨‍👩‍👧", "examples": "人情红包/父母/育儿/宠物/婚庆礼金" },
+    { "key": "education", "name": "学习",   "icon": "📚", "examples": "书籍/课程/考试/培训" },
+    { "key": "other",     "name": "其他",   "icon": "✨",  "examples": "意外支出/捐款/杂项" }
+  ],
+  "income_categories": [
+    { "key": "salary",    "name": "工资收入",  "icon": "💼", "examples": "月薪/年终奖/十三薪/加班费" },
+    { "key": "side",      "name": "副业收入",  "icon": "🚀", "examples": "兼职/接单/自媒体/稿费" },
+    { "key": "invest",    "name": "投资收益",  "icon": "📈", "examples": "分红/利息/基金股票盈利" },
+    { "key": "bonus",     "name": "其他收入",  "icon": "🎁", "examples": "红包/礼金/退款/二手转让" }
+  ],
+  "fund_valuation_temp": [
+    { "code": "510300", "name": "沪深300ETF",      "benchmark": "中证指数官方估值",  "temp": 35, "suggest": "正常持有", "note": "低估买入、正常定投、高估分批卖出。温度 0-30 低估，30-70 正常，70-100 高估。" },
+    { "code": "159915", "name": "创业板ETF",       "benchmark": "中证指数官方估值",  "temp": 72, "suggest": "高估减仓", "note": "温度 70+ 分批卖出，避免高位追涨。" },
+    { "code": "510500", "name": "中证500ETF",      "benchmark": "中证指数官方估值",  "temp": 22, "suggest": "低估多买", "note": "中盘股估值偏低，可加量定投。" },
+    { "code": "513500", "name": "标普500ETF",      "benchmark": " multpl 席勒PE",    "temp": 68, "suggest": "正常持有", "note": "美股长牛但席勒PE偏高，小额定投不减仓。" },
+    { "code": "161725", "name": "招商中证白酒",    "benchmark": "历史百分位",        "temp": 48, "suggest": "正常持有", "note": "行业基金不建议超 20% 仓位，注意风险。" }
+  ],
+  "temp_threshold": {
+    "under_valued": { "max": 30, "label": "低估 · 买入",  "color": "sage",  "action": "多买/加量定投" },
+    "normal":       { "max": 70, "label": "正常 · 持有",  "color": "taupe", "action": "正常定投，不追涨不杀跌" },
+    "over_valued":  { "max": 100,"label": "高估 · 卖出",  "color": "rose",  "action": "分批止盈，落袋为安" }
+  },
+  "sell_rules": [
+    { "name": "估值温度 75+",   "desc": "指数温度超过 75 时，开始分批卖出 1/3；超过 85 再卖 1/3；超过 95 清仓或留 10%。" },
+    { "name": "目标收益率",     "desc": "自己设定的收益目标（如+50%、+100%），到了就止盈一部分，不要贪恋最后一颗铜板。" },
+    { "name": "基本面变坏",     "desc": "当初买入的理由消失了（如指数编制变了、行业逻辑变了），不管盈亏都卖。" },
+    { "name": "需要用钱",       "desc": "投资账户的钱本来就留了期限，真的要用到了就按计划卖，别心疼短期波动。" }
+  ],
+  "life_milestones": [
+    { "key": "wedding",   "name": "婚礼筹备金",  "icon": "💒", "target": 80000,  "saved": 56000, "deadline": "2027-05", "note": "婚宴+婚庆+三金+旅游，和重庆备婚手册预算联动" },
+    { "key": "house",     "name": "买房首付",    "icon": "🏡", "target": 300000, "saved": 45000, "deadline": "2029-12", "note": "重庆首套房首付，每月储蓄账户定投" },
+    { "key": "baby",      "name": "养娃准备金",  "icon": "🍼", "target": 100000, "saved": 0,     "deadline": "2030-06", "note": "产检+生产+0-3岁开销，有计划再启动" },
+    { "key": "emergency", "name": "应急准备金",  "icon": "🛡", "target": 60000,  "saved": 24000, "deadline": "2026-12", "note": "6个月生活费，货币基金/活期存款，随时能用" },
+    { "key": "fire",      "name": "FIRE 数字",   "icon": "🔥", "target": 1500000,"saved": 85000, "deadline": "2040-12", "note": "年支出 6 万 × 25 = 150 万，投资账户长期目标（4%法则）" }
+  ],
+  "knowledge_tags": {
+    "finance_knowledge_intro": "先补认知，再管账户。以下是为家庭筛选过的核心财商内容——从金钱羞耻感的拆除，到三账户制、基金投资、财务自由数字，读完这 20 篇，家庭理财就不会再瞎忙。"
+  },
+  "seed_records": [
+    { "date": "2026-08-01", "type": "income",  "category": "salary", "who": "him", "amount": 18000, "note": "师豪 8 月工资" },
+    { "date": "2026-08-05", "type": "income",  "category": "salary", "who": "her", "amount": 8500,  "note": "佳力 8 月工资" },
+    { "date": "2026-08-02", "type": "expense", "category": "housing", "who": "both", "amount": 2800, "note": "8 月房租+物业费" },
+    { "date": "2026-08-03", "type": "expense", "category": "food",   "who": "both", "amount": 1200, "note": "本周买菜+外卖" },
+    { "date": "2026-08-06", "type": "expense", "category": "shopping","who": "her", "amount": 480,  "note": "七夕礼物 + 换季衣服" },
+    { "date": "2026-08-10", "type": "income",  "category": "side",   "who": "him", "amount": 3200, "note": "师豪 7 月副业收入" },
+    { "date": "2026-08-12", "type": "expense", "category": "leisure","who": "both", "amount": 360,  "note": "七夕约会 + 电影" },
+    { "date": "2026-07-30", "type": "transfer","category": "invest->invest", "who": "both", "amount": 3000, "note": "8 月第一笔指数基金定投（沪深300+中证500）" }
+  ],
+  "who_options": [
+    { "value": "him",  "label": "师豪" },
+    { "value": "her",  "label": "佳力" },
+    { "value": "both", "label": "我们共同" }
+  ]
+}

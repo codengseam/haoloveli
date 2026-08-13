@@ -24,7 +24,9 @@
     { "label": "相恋天数", "type": "love_days" },
     { "label": "距婚礼", "type": "wedding_countdown" },
     { "label": "情感账户存款", "type": "bank_balance" },
-    { "label": "已记录里程碑", "type": "milestone_count" }
+    { "label": "已记录里程碑", "type": "milestone_count" },
+    { "label": "家庭储蓄率", "type": "finance_saving_rate" },
+    { "label": "家庭净值", "type": "finance_net_worth" }
   ],
   "today_question": {
     "text": "你最近最大的压力源是什么？我能怎么帮你分担一点？",

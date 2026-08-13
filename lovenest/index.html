@@ -173,6 +173,12 @@
         <span class="crosslink__desc">记下今天 ta 为你做的一件小事。余额，是日积月累的。</span>
         <span class="crosslink__arrow">→ bank</span>
       </a>
+      <a class="crosslink" href="finance.html">
+        <span class="crosslink__icon">💰</span>
+        <span class="crosslink__title">算一笔今天的账单</span>
+        <span class="crosslink__desc">记两笔收支，算一算储蓄率，柴米油盐的底气就是这样来的。</span>
+        <span class="crosslink__arrow">→ finance</span>
+      </a>
       <a class="crosslink" href="milestones.html">
         <span class="crosslink__icon">🪴</span>
         <span class="crosslink__title">看看我们走到哪里</span>
@@ -235,6 +241,7 @@
   const MODULES = [
     { href: "love-map.html",   icon: "🗺", title: "爱情地图",   desc: "深度了解彼此的内心世界——喜好、雷区、梦想、本周一问。" },
     { href: "bank.html",       icon: "🏦", title: "情感账户",   desc: "记录日常的存款与取款，储蓄信任的余额。" },
+    { href: "finance.html",    icon: "💰", title: "家庭财商",   desc: "收支记账、基金观察、财商知识库——柴米油盐的底气。" },
     { href: "food.html",       icon: "🍽", title: "美食偏好",   desc: "记下 ta 爱吃的每一样，买菜做饭下馆子再也不纠结。" },
     { href: "travel.html",     icon: "🧳", title: "旅行相册",   desc: "已走过的风景（相册/地图/时间轴）+ 想去的远方规划。" },
     { href: "milestones.html", icon: "🪴", title: "人生里程碑", desc: "按阶段规划我们的人生，婚礼只是其中一个节点。" },
@@ -314,7 +321,7 @@
   }
 
   /* ---------- 统计行 ---------- */
-  function renderStats(statsDef, dates, bankBalance, milestoneCount) {
+  async function renderStats(statsDef, dates, bankBalance, milestoneCount) {
     const row = document.getElementById("statsRow");
     if (!row) return;
     const loveDays = LoveNest.daysSince(dates.love);
@@ -326,12 +333,43 @@
     const totalMs = span * 365.25 * 86400000;
     const lifePct = Math.max(0, Math.min(100, ((new Date() - loveStart) / totalMs) * 100));
 
+    /* 家庭储蓄率 / 家庭净值：从 finance_records + finance.json 组合计算，带 fallback */
+    let savingRate = null, netWorth = null;
+    try {
+      if (typeof LoveNest !== 'undefined' && LoveNest.db) {
+        await LoveNest.db.ready;
+        const fin = await LoveNest.getJSON('data/finance.json', null);
+        const recs = await LoveNest.db.list('finance_records', null, { order: [['date','desc']] });
+        const seeds = (fin && Array.isArray(fin.seed_records)) ? fin.seed_records : [];
+        const seen = new Set();
+        const all = [];
+        [...recs, ...seeds].forEach(r => {
+          const k = [r.date, r.type, r.category, r.who, r.amount, r.note].join('||');
+          if (seen.has(k)) return; seen.add(k); all.push(r);
+        });
+        const ym = LoveNest.todayISO().slice(0,7);
+        let mIn = 0, mOut = 0;
+        all.forEach(r => {
+          if (String(r.date).slice(0,7) !== ym) return;
+          const a = Number(r.amount)||0;
+          if (r.type === 'income')  mIn += a;
+          if (r.type === 'expense') mOut += a;
+        });
+        savingRate = mIn > 0 ? Math.max(0, Math.min(100, Math.round((mIn - mOut)/mIn*100))) : (mIn===mOut && mIn===0 ? '—' : 0);
+        netWorth = (fin && Array.isArray(fin.life_milestones))
+          ? fin.life_milestones.reduce((s, m) => s + (Number(m.saved)||0), 0)
+          : 0;
+      }
+    } catch (_) {}
+
     const cells = (statsDef || []).map(s => {
       let num = "—", label = s.label;
       if (s.type === "love_days") num = loveDays.toLocaleString();
       else if (s.type === "wedding_countdown") num = (daysToWedding > 0 ? daysToWedding : 0).toLocaleString();
       else if (s.type === "bank_balance") num = (bankBalance >= 0 ? "+" : "") + bankBalance;
       else if (s.type === "milestone_count") num = milestoneCount;
+      else if (s.type === "finance_saving_rate") num = (savingRate === null || savingRate === '—') ? '—' : savingRate + "%";
+      else if (s.type === "finance_net_worth")   num = (netWorth === null) ? '—' : '¥' + Number(netWorth).toLocaleString('zh-CN');
       return `<div class="stat"><div class="stat__num">${esc(num)}</div><div class="stat__label">${esc(label)}</div></div>`;
     });
     row.innerHTML = cells.join("");
@@ -531,7 +569,7 @@
     } catch (e) {}
 
     // ✨ 改造 stats：第 4 项 milestone_count 显示 "已完成/总计"
-    renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneDone, milestoneTotal);
+    await renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneDone, milestoneTotal);
 
     // 本月目标（带 DB 加载结果）
     const goalsByMonth = {};
@@ -558,7 +596,7 @@
         (raw || []).forEach(r => { const k = [r.date,r.type,r.who,r.event,r.weight].join('||'); merged.set(k,r); });
         merged.forEach(r => { newBal += (r.type === "deposit" ? (r.weight||1) : -(r.weight||1)); });
       } catch (_) {}
-      renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, newBal, milestoneDone, milestoneTotal);
+      await renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, newBal, milestoneDone, milestoneTotal);
     });
     // 2) milestone_items 变化 → 重算完成数 & 重渲 stats
     LoveNest.db.watch('milestone_items', async () => {
@@ -567,7 +605,7 @@
         milestoneTotal = raw.length;
         milestoneDone = raw.filter(r => !!r.done).length;
       } catch (_) {}
-      renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneDone, milestoneTotal);
+      await renderStatsWithMilestones(dash.stats || FALLBACK_DASH.stats, dates, bankBalance, milestoneDone, milestoneTotal);
     });
     // 3) love_notes 变化（本月目标）→ 重渲 goals
     LoveNest.db.watch('love_notes', async () => {
@@ -580,7 +618,7 @@
   }
 
   /* ---------- 统计行（含里程碑完成数/总数显示） ---------- */
-  function renderStatsWithMilestones(statsDef, dates, bankBalance, milestoneDone, milestoneTotal) {
+  async function renderStatsWithMilestones(statsDef, dates, bankBalance, milestoneDone, milestoneTotal) {
     const row = document.getElementById("statsRow");
     if (!row) return;
     const loveDays = LoveNest.daysSince(dates.love);
@@ -591,6 +629,34 @@
     const loveStart = new Date(dates.love + "T00:00:00");
     const totalMs = span * 365.25 * 86400000;
     const lifePct = Math.max(0, Math.min(100, ((new Date() - loveStart) / totalMs) * 100));
+
+    /* 家庭储蓄率 / 家庭净值：从 finance_records + finance.json 组合计算，带 fallback */
+    let savingRate = '—', netWorth = '—';
+    try {
+      if (typeof LoveNest !== 'undefined' && LoveNest.db) {
+        const fin = await LoveNest.getJSON('data/finance.json', null);
+        const recs = await LoveNest.db.list('finance_records', null, { order: [['date','desc']] });
+        const seeds = (fin && Array.isArray(fin.seed_records)) ? fin.seed_records : [];
+        const seen = new Set();
+        const all = [];
+        [...recs, ...seeds].forEach(r => {
+          const k = [r.date, r.type, r.category, r.who, r.amount, r.note].join('||');
+          if (seen.has(k)) return; seen.add(k); all.push(r);
+        });
+        const ym = LoveNest.todayISO().slice(0,7);
+        let mIn = 0, mOut = 0;
+        all.forEach(r => {
+          if (String(r.date).slice(0,7) !== ym) return;
+          const a = Number(r.amount)||0;
+          if (r.type === 'income')  mIn += a;
+          if (r.type === 'expense') mOut += a;
+        });
+        savingRate = mIn > 0 ? Math.max(0, Math.min(100, Math.round((mIn - mOut)/mIn*100))) + '%' : '—';
+        if (fin && Array.isArray(fin.life_milestones)) {
+          netWorth = '¥' + fin.life_milestones.reduce((s, m) => s + (Number(m.saved)||0), 0).toLocaleString('zh-CN');
+        }
+      }
+    } catch (_) {}
 
     const cells = (statsDef || []).map(s => {
       let num = "—", label = s.label, sub = "";
@@ -603,6 +669,14 @@
       else if (s.type === "milestone_count") {
         num = milestoneDone + ' / ' + milestoneTotal;
         sub = '<span class="faint" style="font-size:.72rem">已完成 / 里程碑总数</span>';
+      }
+      else if (s.type === "finance_saving_rate") {
+        num = savingRate;
+        sub = '<span class="faint" style="font-size:.72rem">（本月 · 目标 ≥30%）</span>';
+      }
+      else if (s.type === "finance_net_worth") {
+        num = netWorth;
+        sub = '<span class="faint" style="font-size:.72rem">（里程碑储蓄合计）</span>';
       }
       return `<div class="stat"><div class="stat__num">${esc(num)}</div><div class="stat__label">${esc(label)}${sub ? '<br/>'+sub : ''}</div></div>`;
     });

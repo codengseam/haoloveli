@@ -170,6 +170,296 @@
       "tags": ["dashboard", "love-map", "knowledge"],
       "pages": ["dashboard", "love-map"],
       "summary": "婚姻=合伙契约(理)+情感共同体(情)+家族联结(面)三角俱全才稳；爱情/责任/利益动态平衡；斯滕伯格激情/亲密/承诺三角与仪式感日常化。"
+    },
+    {
+      "id": "fin-money-shame",
+      "file": "docs/books/理财课专栏/觉醒与破局_金钱羞耻感与认知破局.md",
+      "title": "理财课 · 金钱羞耻感与认知破局",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance", "dashboard"],
+      "summary": "钱不是万恶之源，也不是万能解药——它是选择的自由、是拒绝的底气。先拆除对钱的羞耻感，才谈得上财商。"
+    },
+    {
+      "id": "fin-asset-liability",
+      "file": "docs/books/理财课专栏/觉醒与破局_资产与负债的真相.md",
+      "title": "理财课 · 资产与负债的真相",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "富爸爸的定义：资产是把钱放进口袋的东西，负债是从口袋拿钱的东西。你以为的资产，可能正在悄悄让你变穷。"
+    },
+    {
+      "id": "fin-compound",
+      "file": "docs/books/理财课专栏/觉醒与破局_复利的奇迹与陷阱.md",
+      "title": "理财课 · 复利的奇迹与陷阱",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "复利是世界第八大奇迹，但它需要时间、正收益率、不中断三个条件。别让手续费、频繁交易、人性的追涨杀跌摧毁复利的雪道。"
+    },
+    {
+      "id": "fin-cashflow",
+      "file": "docs/books/理财课专栏/守正与筑基_现金流比利润更重要.md",
+      "title": "理财课 · 现金流比利润更重要",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "家庭财务破产从来不是因为资产不够多，而是现金流断掉了。先把现金流转正，再谈投资收益率——这是家庭财务的生存法则。"
+    },
+    {
+      "id": "fin-bookkeeping",
+      "file": "docs/books/理财课专栏/守正与筑基_记账的真正目的.md",
+      "title": "理财课 · 记账的真正目的",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "记账不是为了克扣每一笔奶茶钱，而是看清：你的钱从哪来、去了哪、最后留在了哪里。知道了流向，才能做决策。"
+    },
+    {
+      "id": "fin-emergency",
+      "file": "docs/books/理财课专栏/守正与筑基_应急准备金.md",
+      "title": "理财课 · 应急准备金",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "3-6 个月生活费，放在随时能用的地方——这笔钱不追求收益，它是生活的安全气囊、是尊严的缓冲垫。"
+    },
+    {
+      "id": "fin-insurance",
+      "file": "docs/books/理财课专栏/守正与筑基_保险配置的底层逻辑.md",
+      "title": "理财课 · 保险配置的底层逻辑",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "保险是花钱转移极端风险，不是理财投资。先大人后小孩，先保障后理财，定期优于终身，消费型优于返还型——四句话讲透保险配置。"
+    },
+    {
+      "id": "fin-index-fund",
+      "file": "docs/books/理财课专栏/兵器与阵法_宽基指数基金.md",
+      "title": "理财课 · 宽基指数基金",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "约翰·博格的指数革命：买指数就是买整个国家的未来。沪深300、中证500、标普500、纳斯达克100——普通人最省力的上车方式。"
+    },
+    {
+      "id": "fin-value-invest",
+      "file": "docs/books/理财课专栏/心法与避坑_价值投资的本质.md",
+      "title": "理财课 · 价值投资的本质",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "格雷厄姆：价格是你付出的，价值是你得到的。买股票就是买公司的一部分，市场波动是朋友不是敌人，安全边际是保本的护栏。"
+    },
+    {
+      "id": "fin-fear-greed",
+      "file": "docs/books/理财课专栏/心法与避坑_追涨杀跌的人性陷阱.md",
+      "title": "理财课 · 追涨杀跌的人性陷阱",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "贪婪时冲进去、恐慌时割出来，是 90% 散户亏钱的根源。懂了恐惧和贪婪的心理机制，才能跳出这个永恒的轮回。"
+    },
+    {
+      "id": "fin-family-alloc",
+      "file": "docs/books/理财课专栏/践行与自由_家庭资产配置模板.md",
+      "title": "理财课 · 家庭资产配置模板",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "4321 / 标准普尔 / 全天候 / 杠铃策略——各家配置法的底层都是：保命钱、稳当钱、进攻钱，分账户别混着来。"
+    },
+    {
+      "id": "ffin-leverage-index-fund",
+      "file": "docs/books/财务自由课专栏/器篇普通人工具箱_指数基金杠杆.md",
+      "title": "财务自由课 · 指数基金杠杆",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "指数基金是普通人用时间做杠杆的最佳工具。定投 + 宽基 + 低估买入高估卖出，长期持有，用国运和复利把工资变资产。"
+    },
+    {
+      "id": "ffin-three-accounts",
+      "file": "docs/books/财务自由课专栏/器篇普通人工具箱_三账户制.md",
+      "title": "财务自由课 · 三账户制",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "消费账户活在当下、储蓄账户托住风险、投资账户拥抱未来。三账户隔离，守住边界——家庭财务的最基础、最强大框架。"
+    },
+    {
+      "id": "ffin-asset-alloc",
+      "file": "docs/books/财务自由课专栏/器篇普通人工具箱_资产配置.md",
+      "title": "财务自由课 · 资产配置",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "资产配置是免费的午餐。股、债、现金、黄金、房产，低相关性组合再平衡，既能涨又能扛，比单押一只产品稳得多。"
+    },
+    {
+      "id": "ffin-naval-wealth",
+      "file": "docs/books/财务自由课专栏/道篇财富哲学_纳瓦尔的财富观.md",
+      "title": "财务自由课 · 纳瓦尔的财富观",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance", "dashboard"],
+      "summary": "Naval 经典：追求财富不要追钱，要追专长 + 杠杆 + 责任感 + 判断力；用资产和代码媒体杠杆，把时间从收入中解耦。"
+    },
+    {
+      "id": "ffin-duanping-benfen",
+      "file": "docs/books/财务自由课专栏/道篇财富哲学_段永平的本分投资.md",
+      "title": "财务自由课 · 段永平的本分投资",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "段永平的投资就两个字：本分。买懂的公司、留足安全边际、不碰不懂的东西、不做波段、长期持有。慢就是快，少就是多。"
+    },
+    {
+      "id": "ffin-compound-reverse",
+      "file": "docs/books/财务自由课专栏/道篇底层逻辑_复利与反向复利.md",
+      "title": "财务自由课 · 复利与反向复利",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "复利向上缓慢但坚定，反向复利（手续费、通胀、错误决策）向下却悄无声息。守住不下牌桌，比短期内下多大的注更重要。"
+    },
+    {
+      "id": "ffin-4pct-rule",
+      "file": "docs/books/财务自由课专栏/行篇落地践行_4%法则.md",
+      "title": "财务自由课 · 4% 法则",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "FIRE 运动的核心公式：年支出 × 25 = 财务自由的数字。有了这个数字，存钱和投资就都有了清晰的靶心。"
+    },
+    {
+      "id": "ffin-financial-number",
+      "file": "docs/books/财务自由课专栏/行篇落地践行_财务自由的数字.md",
+      "title": "财务自由课 · 财务自由的数字",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "不是要像马云一样有钱，是要算清楚：你和你的家庭一年到底需要花多少？算清了，目标就具体了，不焦虑了。"
+    },
+    {
+      "id": "fnote-three-accounts",
+      "file": "docs/notes/三账户制-家庭财务分账户法.md",
+      "title": "三账户制 · 家庭财务分账户法",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "消费/储蓄/投资三账户隔离，守住边界。这是最简单、最强大的家庭财务操作系统，适合所有小白家庭上手。"
+    },
+    {
+      "id": "fnote-psych-account",
+      "file": "docs/notes/心理账户-为什么月光不是你意志差.md",
+      "title": "心理账户 · 为什么月光不是你意志差",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "行为经济学发现：同样是 100 块，工资舍不得花、年终奖乱花、意外之财挥霍一空。懂了心理账户，才能给自己设好栅栏。"
+    },
+    {
+      "id": "fnote-opportunity-cost",
+      "file": "docs/notes/机会成本-别在小算盘上亏大钱.md",
+      "title": "机会成本 · 别在小算盘上亏大钱",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "你省下来的每一笔钱，同时也是你为省钱花掉的时间和注意力。算清楚真正的代价，才知道什么时候该省、什么时候该花。"
+    },
+    {
+      "id": "fnote-sunk-cost",
+      "file": "docs/notes/沉没成本-放弃的勇气.md",
+      "title": "沉没成本 · 放弃的勇气",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "烂股票舍不得割、烂项目硬着头皮做、不合适的工作熬着不走——都是沉没成本在作祟。止损不是认输，是腾出手来抓下一把好牌。"
+    },
+    {
+      "id": "fnote-scarcity",
+      "file": "docs/notes/稀缺心态-为什么越穷越忙越存不下钱.md",
+      "title": "稀缺心态 · 为什么越穷越忙越存不下钱",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "《稀缺》的洞见：缺钱缺时间都会让认知带宽变窄，做出更差的决策。想办法先给自己留出一点余闲——这是跳出稀缺循环的第一步。"
+    },
+    {
+      "id": "fnote-family-fin-consensus",
+      "file": "docs/notes/家庭财务共识-夫妻谈钱不伤感情.md",
+      "title": "家庭财务共识 · 夫妻谈钱不伤感情",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance", "family", "peace"],
+      "summary": "钱是家庭吵架的第一大话题。先谈价值观、再谈分配方式、最后定规则。三账户制 + 每月财务对谈日，让谈钱变成合作而不是对抗。"
+    },
+    {
+      "id": "fnote-naval-core",
+      "file": "docs/notes/纳瓦尔宝典-核心摘录.md",
+      "title": "纳瓦尔宝典 · 核心摘录",
+      "author": "埃里克·乔根森（编）",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "如何不靠运气致富？专长、责任、杠杆、判断力四件套。没有被广泛培训的技能、可出售的产品、不用你也能跑的系统——从这三个维度找自己的路。"
+    },
+    {
+      "id": "fnote-unconscious-spend",
+      "file": "docs/notes/无意识消费-拿铁因子与隐形支出.md",
+      "title": "无意识消费 · 拿铁因子与隐形支出",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "大卫·巴赫的拿铁因子：每天一杯 30 块的拿铁，30 年就是 70 万。把无意识的小钱变成有意识的储蓄，是存钱的第一课。"
+    },
+    {
+      "id": "fnote-rich-mindset",
+      "file": "docs/notes/富人思维-认知升级的几个关键.md",
+      "title": "富人思维 · 认知升级的几个关键",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "穷人思维 vs 富人思维的本质区别：为钱工作 vs 让钱为你工作；买负债 vs 买资产；省时间 vs 省钱；学技能 vs 省钱学习。先改认知，再改账户。"
+    },
+    {
+      "id": "fnote-money-as-game",
+      "file": "docs/notes/赚钱是游戏-把致富从苦役变成玩法.md",
+      "title": "赚钱是游戏 · 把致富从苦役变成玩法",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge"],
+      "pages": ["finance"],
+      "summary": "博多·舍费尔的洞见：赚钱是游戏。带着压力和羞耻感玩，只会越玩越累；带着好奇心和规则感玩，才能玩出乐趣、玩出结果。"
     }
   ]
 }
