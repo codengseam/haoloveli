@@ -129,6 +129,48 @@
   .quick-cat:hover{border-color:var(--sage-soft);transform:translateY(-1px)}
   .quick-cat.is-active{background:var(--sage-tint);border-color:var(--sage);color:var(--sage-deep);font-weight:500}
   .quick-cat__icon{font-size:1.1rem;margin-right:4px}
+
+  /* 支出分析模块 */
+  .exp-overview{margin-top:6px}
+  .exp-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .exp-tab{padding:8px 18px;border-radius:var(--r-pill);border:1px solid var(--line-soft);background:var(--bg-card);cursor:pointer;font-size:.88rem;color:var(--muted);transition:all .2s var(--ease)}
+  .exp-tab:hover{border-color:var(--sage-soft);color:var(--ink)}
+  .exp-tab.is-active{background:var(--sage-tint);border-color:var(--sage);color:var(--sage-deep);font-weight:500}
+  .exp-period-select{padding:8px 14px;border-radius:var(--r-pill);border:1px solid var(--line-soft);background:var(--bg-soft);font-family:inherit;color:var(--text);font-size:.88rem}
+  .exp-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:18px;margin-bottom:18px}
+  @media (max-width:860px){.exp-grid{grid-template-columns:1fr}}
+  .exp-who-card{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px}
+  .exp-who-card h4{font-family:var(--ff-display);font-size:1.08rem;margin-bottom:14px;color:var(--ink)}
+  .exp-who-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line-soft)}
+  .exp-who-row:last-child{border-bottom:none}
+  .exp-who-left{display:flex;align-items:center;gap:10px}
+  .exp-who-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;color:#fff}
+  .exp-who-avatar--him{background:linear-gradient(135deg,var(--sage),var(--sage-deep))}
+  .exp-who-avatar--her{background:linear-gradient(135deg,#E8B4B8,var(--rose-deep))}
+  .exp-who-avatar--both{background:linear-gradient(135deg,var(--terracotta),#D4956A)}
+  .exp-who-name{font-weight:500;color:var(--ink)}
+  .exp-who-amt{font-family:var(--ff-display);font-weight:600;font-size:1.1rem;color:var(--rose-deep)}
+  .exp-who-bar{height:6px;background:var(--line-soft);border-radius:999px;margin-top:8px;overflow:hidden}
+  .exp-who-bar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sage),var(--terracotta))}
+  .exp-chart-card{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px}
+  .exp-chart-card h4{font-family:var(--ff-display);font-size:1.08rem;margin-bottom:14px;color:var(--ink)}
+  .exp-chart-wrap{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:center}
+  @media (max-width:560px){.exp-chart-wrap{grid-template-columns:1fr;gap:16px}}
+  .exp-pie{width:200px;height:200px;margin:0 auto;position:relative}
+  .exp-pie-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+  .exp-pie-center-num{font-family:var(--ff-display);font-size:1.3rem;font-weight:600;color:var(--ink)}
+  .exp-pie-center-label{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .exp-legend{display:flex;flex-direction:column;gap:10px}
+  .exp-legend-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 8px;border-radius:var(--r-sm);transition:background .2s}
+  .exp-legend-row:hover{background:var(--bg-soft)}
+  .exp-legend-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .exp-legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+  .exp-legend-name{font-size:.88rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .exp-legend-icon{margin-right:2px;font-size:.9rem}
+  .exp-legend-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+  .exp-legend-amt{font-family:var(--ff-display);font-weight:600;font-size:.92rem;color:var(--ink)}
+  .exp-legend-pct{font-size:.78rem;color:var(--muted);min-width:44px;text-align:right}
+  .exp-empty{padding:24px;text-align:center;color:var(--faint);font-size:.9rem}
 </style>
 </head>
 <body data-page="finance">
@@ -218,6 +260,32 @@
           <span>日期</span><span>分类</span><span>备注</span><span>谁</span><span>金额</span><span>类型</span>
         </div>
         <div id="f-log"></div>
+      </div>
+
+      <!-- 支出总览分析 -->
+      <div class="card reveal exp-overview" id="expOverview">
+        <div class="flex aic jcb mb-3 wrap gap-2">
+          <h3 style="font-size:1.08rem">📊 支出总览分析</h3>
+          <div class="flex aic gap-2 wrap">
+            <div class="exp-tabs" id="expTabs">
+              <button type="button" class="exp-tab is-active" data-exp-view="month">按月</button>
+              <button type="button" class="exp-tab" data-exp-view="year">按年</button>
+            </div>
+            <select id="expPeriodSel" class="exp-period-select" aria-label="期间选择"></select>
+          </div>
+        </div>
+        <div class="exp-grid">
+          <!-- 分人统计 -->
+          <div class="exp-who-card">
+            <h4>👥 按人支出</h4>
+            <div id="expWhoBox"></div>
+          </div>
+          <!-- 分类饼图 -->
+          <div class="exp-chart-card">
+            <h4>🥧 按类型支出</h4>
+            <div id="expChartBox"></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -726,6 +794,196 @@
       }).join('');
     }
 
+    /* ---------- 02+ 支出总览分析（年月切换 + 分人 + 分类饼图） ---------- */
+    // 视图状态
+    let expView = 'month'; // 'month' | 'year'
+    let expCurPeriod = LoveNest.todayISO().slice(0,7); // 按月: YYYY-MM，按年: YYYY
+
+    // 饼图配色（温柔系，匹配全站色调）
+    const PIE_COLORS = [
+      '#7FA990', '#E8B4B8', '#D4956A', '#A8B8A0', '#C9A87C',
+      '#8FB3B5', '#B89FA1', '#9FB4C9', '#C4A882', '#95A5A6',
+      '#B5A88F', '#A59FB0'
+    ];
+
+    function wireExpOverview() {
+      // Tab 切换
+      document.querySelectorAll('#expTabs .exp-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('#expTabs .exp-tab').forEach(t => t.classList.remove('is-active'));
+          tab.classList.add('is-active');
+          expView = tab.getAttribute('data-exp-view') || 'month';
+          // 切换视图时重置默认期间
+          if (expView === 'year') {
+            expCurPeriod = LoveNest.todayISO().slice(0,4);
+          } else {
+            expCurPeriod = LoveNest.todayISO().slice(0,7);
+          }
+          renderExpPeriodSel();
+          renderExpOverview();
+        });
+      });
+      // 期间选择
+      const sel = document.getElementById('expPeriodSel');
+      sel && sel.addEventListener('change', () => {
+        expCurPeriod = sel.value;
+        renderExpOverview();
+      });
+    }
+
+    function renderExpPeriodSel() {
+      const sel = document.getElementById('expPeriodSel');
+      if (!sel) return;
+      if (expView === 'month') {
+        const yms = Array.from(new Set(records.map(r => ymOf(r.date)))).sort().reverse();
+        const curYM = LoveNest.todayISO().slice(0,7);
+        if (!yms.includes(curYM)) yms.unshift(curYM);
+        sel.innerHTML = yms.map(ym => `<option value="${esc(ym)}">${esc(ym)}</option>`).join('');
+        if (!yms.includes(expCurPeriod)) expCurPeriod = curYM;
+      } else {
+        const yrs = Array.from(new Set(records.map(r => r.date.slice(0,4)))).sort().reverse();
+        const curY = LoveNest.todayISO().slice(0,4);
+        if (!yrs.includes(curY)) yrs.unshift(curY);
+        sel.innerHTML = yrs.map(y => `<option value="${esc(y)}">${esc(y)} 年</option>`).join('');
+        if (!yrs.includes(expCurPeriod)) expCurPeriod = curY;
+      }
+      sel.value = expCurPeriod;
+    }
+
+    function filterExpRecsByPeriod() {
+      // 只取支出类型的记录，并按期间过滤
+      return records.filter(r => {
+        if (r.type !== 'expense') return false;
+        if (expView === 'month') return ymOf(r.date) === expCurPeriod;
+        return r.date.slice(0,4) === expCurPeriod;
+      });
+    }
+
+    // 分人统计并渲染
+    function renderExpWho(expRecs) {
+      const box = document.getElementById('expWhoBox');
+      if (!box) return;
+      if (!expRecs.length) {
+        box.innerHTML = `<div class="exp-empty">${esc(expCurPeriod)} 暂无支出记录</div>`;
+        return;
+      }
+      // 按 who 聚合
+      const whoMap = {};
+      expRecs.forEach(r => {
+        const w = r.who || 'both';
+        whoMap[w] = (whoMap[w] || 0) + (Number(r.amount) || 0);
+      });
+      const total = Object.values(whoMap).reduce((s, v) => s + v, 0);
+
+      // 固定展示顺序：师豪 → 佳力 → 共同
+      const displayOrder = [
+        { key: 'shihao', label: '师豪', cls: 'him', avatar: '豪' },
+        { key: 'jiali',  label: '佳力', cls: 'her', avatar: '佳' },
+        { key: 'both',   label: '共同支出', cls: 'both', avatar: '共' }
+      ];
+      const rows = displayOrder.map(o => {
+        const amt = Math.round(whoMap[o.key] || 0);
+        const pct = total > 0 ? Math.round(amt / total * 100) : 0;
+        return `
+          <div class="exp-who-row">
+            <div class="exp-who-left">
+              <div class="exp-who-avatar exp-who-avatar--${o.cls}">${o.avatar}</div>
+              <div>
+                <div class="exp-who-name">${esc(o.label)}</div>
+                <div style="font-size:.78rem;color:var(--muted);margin-top:2px">占比 ${pct}%</div>
+              </div>
+            </div>
+            <div style="min-width:0;text-align:right">
+              <div class="exp-who-amt">${fmtMoney(amt)}</div>
+              <div class="exp-who-bar"><span style="width:${pct}%"></span></div>
+            </div>
+          </div>`;
+      }).join('');
+      box.innerHTML = rows;
+    }
+
+    // 按分类统计并渲染饼图（纯 SVG，不依赖外部库）
+    function renderExpChart(expRecs) {
+      const box = document.getElementById('expChartBox');
+      if (!box) return;
+      if (!expRecs.length) {
+        box.innerHTML = `<div class="exp-empty">${esc(expCurPeriod)} 暂无支出记录</div>`;
+        return;
+      }
+      // 按 category 聚合
+      const catMap = {};
+      expRecs.forEach(r => {
+        const c = r.category || 'other';
+        catMap[c] = (catMap[c] || 0) + (Number(r.amount) || 0);
+      });
+      const total = Object.values(catMap).reduce((s, v) => s + v, 0);
+      // 按金额从大到小排序
+      const sorted = Object.entries(catMap)
+        .map(([key, amt]) => {
+          const meta = catMeta('expense', key);
+          return { key, amt, name: meta.name || key, icon: meta.icon || '📌' };
+        })
+        .sort((a, b) => b.amt - a.amt);
+
+      // 生成饼图 SVG：用 conic-gradient 很麻烦，改用 SVG path + 扇形
+      // 简单方案：用 SVG <circle> stroke-dasharray 画环形饼图（donut chart）
+      const R = 80;
+      const C = 2 * Math.PI * R; // 周长
+      let dashOffset = 0;
+      const segments = sorted.map((item, idx) => {
+        const frac = total > 0 ? item.amt / total : 0;
+        const dashLen = frac * C;
+        const color = PIE_COLORS[idx % PIE_COLORS.length];
+        const seg = `<circle cx="100" cy="100" r="${R}" fill="none" stroke="${color}" stroke-width="36"
+          stroke-dasharray="${dashLen.toFixed(2)} ${C.toFixed(2)}"
+          stroke-dashoffset="${(-dashOffset).toFixed(2)}"
+          transform="rotate(-90 100 100)" style="transition:stroke-dasharray .4s"/>`;
+        dashOffset += dashLen;
+        item._color = color;
+        item._frac = frac;
+        return seg;
+      }).join('');
+
+      const pieSvg = `
+        <svg viewBox="0 0 200 200" width="200" height="200" aria-label="支出饼图">
+          <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--line-soft)" stroke-width="36"/>
+          ${segments}
+        </svg>`;
+
+      const legend = sorted.map(item => {
+        const pct = (item._frac * 100).toFixed(1);
+        return `
+          <div class="exp-legend-row">
+            <div class="exp-legend-left">
+              <span class="exp-legend-dot" style="background:${item._color}"></span>
+              <span class="exp-legend-name"><span class="exp-legend-icon">${esc(item.icon)}</span>${esc(item.name)}</span>
+            </div>
+            <div class="exp-legend-right">
+              <span class="exp-legend-amt">${fmtMoney(Math.round(item.amt))}</span>
+              <span class="exp-legend-pct">${pct}%</span>
+            </div>
+          </div>`;
+      }).join('');
+
+      box.innerHTML = `
+        <div class="exp-chart-wrap">
+          <div class="exp-pie">
+            ${pieSvg}
+            <div class="exp-pie-center">
+              <div class="exp-pie-center-num">${fmtMoney(Math.round(total))}</div>
+              <div class="exp-pie-center-label">总支出</div>
+            </div>
+          </div>
+          <div class="exp-legend">${legend}</div>
+        </div>`;
+    }
+
+    function renderExpOverview() {
+      const expRecs = filterExpRecsByPeriod();
+      renderExpWho(expRecs);
+      renderExpChart(expRecs);
+    }
+
     /* ---------- 03 基金观察 + 真实估值 API + 红绿灯决策 + 基本情况卡 ---------- */
     /* 蛋卷基金真实估值接口（经 CORS 代理绕 GitHub Pages 跨域）
        返回结构示例（index_eva/dj）：data.items[].ts_code / pe / pe_percentile（百分位0-100）*/
@@ -958,6 +1216,8 @@
     function renderAll() {
       renderDashboard();
       renderLog();
+      renderExpPeriodSel();
+      renderExpOverview();
       renderFunds();
       renderMilestones();
       renderKnowledgeIntro();
@@ -965,6 +1225,7 @@
     }
 
     wireForm();
+    wireExpOverview();
     renderAll();
     LoveNest.loadContentForPage();
   });

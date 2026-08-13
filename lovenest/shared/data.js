@@ -1867,11 +1867,57 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
         </button>`
       : "";
 
-    // 底部 AI 总结区（从正文最后一个 <blockquote> 里抓"一句话记住"作为 AI Summary）
-    const qBlock = temp.querySelector("blockquote:last-of-type");
-    const aiSummary = (qBlock && /一句话记住|精华总结|AI.*总结/.test(qBlock.textContent))
-      ? qBlock.outerHTML
-      : '<blockquote class="quote"><p><strong>🤖 AI · 精华一句话：</strong> 点击章节导航快速跳读。知识不变成行动就是噪音——挑一条今天就做。</p></blockquote>';
+    // 底部 AI 总结区（从正文提取"一句话记住"作为 AI Summary，去除重复标题）
+    // 先移除正文中已经存在的 AI 精华总结章节（h2 + blockquote），避免在正文和底部重复显示
+    const allH2s = temp.querySelectorAll("h2");
+    let extractedSummaryHtml = null;
+    allH2s.forEach(h2 => {
+      if (/AI.*精华|精华总结|一句话记住/.test(h2.textContent)) {
+        // 找到这个 h2 后面紧跟的 blockquote 或内容
+        let nextEl = h2.nextElementSibling;
+        const contentFrag = document.createDocumentFragment();
+        while (nextEl) {
+          const nextTag = nextEl.tagName;
+          // 遇到下一个 h2 或 hr 就停止
+          if (nextTag === "H2" || nextTag === "HR") break;
+          const clone = nextEl.cloneNode(true);
+          // 如果是 blockquote，且里面包含标题文字，清理掉
+          if (nextTag === "BLOCKQUOTE") {
+            const innerStrong = clone.querySelector("strong, b");
+            if (innerStrong && /AI.*精华|精华总结|一句话记住/.test(innerStrong.textContent)) {
+              innerStrong.remove();
+            }
+            // 清理开头的多余冒号/空格
+            clone.innerHTML = clone.innerHTML.replace(/^[\s:：]+/, "");
+          }
+          contentFrag.appendChild(clone);
+          nextEl = nextEl.nextElementSibling;
+        }
+        // 把提取到的内容转成 HTML 字符串
+        const tmpDiv = document.createElement("div");
+        tmpDiv.appendChild(contentFrag);
+        extractedSummaryHtml = tmpDiv.innerHTML.trim();
+        // 从正文中移除这个 h2 及其内容
+        h2.remove();
+        let rmEl = h2.nextElementSibling;
+        while (rmEl) {
+          const rmTag = rmEl.tagName;
+          if (rmTag === "H2" || rmTag === "HR") break;
+          const toRm = rmEl;
+          rmEl = rmEl.nextElementSibling;
+          toRm.remove();
+        }
+      }
+    });
+
+    // 处理底部总结区的内容：用提取到的，或用默认的（且默认内容不重复显示"AI精华"字样）
+    let aiSummaryContent;
+    if (extractedSummaryHtml) {
+      aiSummaryContent = extractedSummaryHtml;
+    } else {
+      // 默认内容：不显示"AI精华一句话"在文字里，直接给精华建议
+      aiSummaryContent = '<blockquote class="quote"><p>点击章节导航快速跳读。知识不变成行动就是噪音——挑一条今天就开始行动。小步快跑，好过完美的拖延。</p></blockquote>';
+    }
 
     // 绑定所有交互（等 DOM 插入 modal 后）
     setTimeout(() => {
@@ -1880,7 +1926,7 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
 
     return navHtml + temp.innerHTML +
       '<hr class="readhr"/>' +
-      '<div class="aisum"><span class="aisum__label">🤖 AI 精华总结 · 立刻可行动</span>' + aiSummary + "</div>" +
+      '<div class="aisum"><span class="aisum__label">🤖 AI 精华总结 · 立刻可行动</span>' + aiSummaryContent + "</div>" +
       '<p class="muted center" style="margin-top:24px;font-size:.8rem">—— 以上内容由心理学经典著作精华整理，结合师豪 &amp; 佳力的实际情况定制。 ——</p>';
   }
 
