@@ -35,6 +35,41 @@
   .threeacc__pct{font-size:.82rem;color:var(--faint)}
   .threeacc__footnote{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-soft);font-size:.76rem;color:var(--faint);font-style:italic}
 
+  /* 自定义跟踪基金 · 入口按钮 */
+  .funds-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .funds-tools__info{font-size:.84rem;color:var(--muted)}
+  .funds-tools__info b{color:var(--sage-deep)}
+  .funds-tools__cta{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--r-pill);border:1px solid var(--sage);background:linear-gradient(135deg,var(--sage-tint),#E2E8DC);color:var(--sage-deep);font-size:.86rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all .25s var(--ease);box-shadow:0 2px 10px rgba(123,143,116,.12)}
+  .funds-tools__cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(123,143,116,.2)}
+  .funds-tools__cta:active{transform:translateY(0)}
+  /* 自定义跟踪基金 · 弹窗内容 */
+  .fwdlg{padding:4px 2px}
+  .fwdlg__intro{font-size:.88rem;color:var(--muted);margin-bottom:18px;line-height:1.7}
+  .fwdlg__sec{margin-bottom:18px}
+  .fwdlg__sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .fwdlg__sec-title{font-family:var(--ff-display);font-size:.96rem;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .fwdlg__sec-count{font-size:.78rem;color:var(--muted);padding:2px 10px;background:var(--bg-deep);border-radius:999px}
+  .fwdlg__group-toggle{padding:4px 12px;border-radius:999px;border:1px solid var(--line-soft);background:var(--bg-card);font-size:.76rem;cursor:pointer;font-family:inherit;color:var(--text);transition:all .2s var(--ease)}
+  .fwdlg__group-toggle:hover{border-color:var(--terracotta-soft);background:var(--terracotta-tint);color:var(--terracotta-deep)}
+  .fwdlg__chips{display:flex;flex-wrap:wrap;gap:8px}
+  .fwdlg__chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:14px;border:1px solid var(--line-soft);background:var(--bg-card);font-size:.84rem;cursor:pointer;transition:all .2s var(--ease);user-select:none;line-height:1.2}
+  .fwdlg__chip:hover{border-color:var(--sage-soft);transform:translateY(-1px)}
+  .fwdlg__chip.is-active{background:var(--sage-tint);border-color:var(--sage);color:var(--sage-deep);font-weight:500;box-shadow:0 2px 8px rgba(123,143,116,.14)}
+  .fwdlg__chip-name{font-weight:inherit}
+  .fwdlg__chip-code{font-family:ui-monospace,Menlo,monospace;font-size:.74rem;color:var(--faint);padding:1px 6px;background:var(--bg-deep);border-radius:6px}
+  .fwdlg__chip.is-active .fwdlg__chip-code{background:var(--sage-soft);color:var(--sage-deep)}
+  .fwdlg__foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px dashed var(--line-soft);margin-top:12px}
+  .fwdlg__foot-summary{font-size:.86rem;color:var(--muted)}
+  .fwdlg__foot-summary b{color:var(--sage-deep);font-family:var(--ff-display);font-size:1rem}
+  .fwdlg__foot-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .fwdlg__btn{padding:8px 16px;border-radius:var(--r-pill);font-size:.84rem;font-family:inherit;cursor:pointer;transition:all .2s var(--ease);border:1px solid transparent}
+  .fwdlg__btn--ghost{background:var(--bg-soft);color:var(--text);border-color:var(--line-soft)}
+  .fwdlg__btn--ghost:hover{background:var(--bg-deep)}
+  .fwdlg__btn--sage{background:var(--sage);color:#fff}
+  .fwdlg__btn--sage:hover{background:var(--sage-deep)}
+  .fwdlg__source{margin-top:10px;padding:10px 14px;background:var(--bg-deep);border-radius:var(--r-sm);font-size:.78rem;color:var(--muted);line-height:1.7}
+  .fwdlg__source b{color:var(--sage-deep)}
+
   /* 基金估值温度条 */
   .fund-item{background:var(--bg-card);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:22px 24px;margin-bottom:14px;transition:all .3s var(--ease)}
   .fund-item:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--sage-soft)}
@@ -304,6 +339,14 @@
         <span class="temp-tag temp-tag--taupe">⚪ 30-70 正常 · 持有 / 常规定投</span>
         <span class="temp-tag temp-tag--rose">🔴 70-100 高估 · 分批卖出 / 止盈</span>
       </div>
+      <!-- 自定义跟踪入口 -->
+      <div class="reveal funds-tools">
+        <div class="funds-tools__info" id="fundWatchSummary">已跟踪 <b>—</b> 只基金 · 数据来自 <b>飞书表格 + 蛋卷真实估值</b></div>
+        <button type="button" class="funds-tools__cta" id="fundWatchOpenBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          自定义跟踪哪些基金
+        </button>
+      </div>
       <div id="fundsRegion"></div>
       <!-- 卖出规则 -->
       <div class="mt-4 reveal">
@@ -413,59 +456,191 @@
       ],
       fund_valuation_temp: [
         {
-          code:"510300", name:"沪深300ETF", full_name:"华泰柏瑞沪深300交易型开放式指数证券投资基金",
+          code:"510300", category:"宽基", name:"沪深300ETF", full_name:"华泰柏瑞沪深300交易型开放式指数证券投资基金",
           api_index_code:"SH000300", benchmark:"蛋卷基金 · 沪深300 PE 近10年百分位", temp:35, suggest:"正常持有",
           tracking_index:"沪深300指数（沪市+深市规模最大、流动性最好的300只A股，代表中国核心资产）",
           top_sectors:"金融 32% · 消费 18% · 工业 14% · 信息技术 12% · 医药 8% · 其他 16%",
           target_audience:"「懒人投资」首选 · 看好中国经济整体增长 · 能接受 3 年以上 30% 级别的波动",
-          risk_level:4, watch_news:"中国 GDP / 制造业PMI / 社融数据 · 美联储利率 · 人民币汇率 · 银行保险政策",
+          risk_level:3, watch_news:"中国 GDP / 制造业PMI / 社融数据 · 美联储利率 · 人民币汇率 · 银行保险政策",
           buy_signals:"估值温度 0-30（低估） · 市场恐慌情绪（大盘单日跌 >2%） · 每月工资到账日定投",
           sell_signals:"估值温度 ≥70 分批卖 · 达到目标收益（如 +50%/+100%） · 指数编制规则/行业逻辑发生本质变化",
           monthly_amount:3000, note:"30 以下多买，70 以上卖"
         },
         {
-          code:"159915", name:"创业板ETF", full_name:"易方达创业板交易型开放式指数证券投资基金",
+          code:"159915", category:"宽基", name:"创业板ETF", full_name:"易方达创业板交易型开放式指数证券投资基金",
           api_index_code:"SZ399006", benchmark:"蛋卷基金 · 创业板指 PE 近10年百分位", temp:72, suggest:"高估减仓",
           tracking_index:"创业板指（深交所创业板中市值最大、流动性最好的100只股票，高成长+高波动）",
           top_sectors:"电力设备新能源 30% · 医药生物 22% · 电子 14% · 计算机 10% · 传媒 8% · 其他 16%",
           target_audience:"能承受更大波动 · 看好硬科技/新能源/医药长赛道 · 投资期限 ≥5 年",
-          risk_level:5, watch_news:"新能源政策（补贴/装机量）· 医药集采政策 · 半导体国产替代进展 · 美联储加息对成长股的估值压缩",
+          risk_level:4, watch_news:"新能源政策（补贴/装机量）· 医药集采政策 · 半导体国产替代进展 · 美联储加息对成长股的估值压缩",
           buy_signals:"估值温度 0-25（极度低估） · 行业政策利好落地 · 龙头季报超预期",
           sell_signals:"温度 ≥70 触发第一档 · 行业景气度见顶信号 · 基金规模暴涨超过 100% 要警惕",
           monthly_amount:1500, note:"温度 70+ 开始分批止盈"
         },
         {
-          code:"510500", name:"中证500ETF", full_name:"南方中证500交易型开放式指数证券投资基金",
+          code:"510500", category:"宽基", name:"中证500ETF", full_name:"南方中证500交易型开放式指数证券投资基金",
           api_index_code:"SH000905", benchmark:"蛋卷基金 · 中证500 PE 近10年百分位", temp:22, suggest:"低估多买",
           tracking_index:"中证500指数（剔除沪深300后，市值排名301-800的中盘股，代表中国经济中坚力量）",
           top_sectors:"工业 20% · 信息技术 18% · 医药 14% · 原材料 12% · 可选消费 11% · 其他 25%",
           target_audience:"寻找估值洼地 · 相信中盘股的均值回归 · 愿意承担中等波动",
-          risk_level:4, watch_news:"中小企业融资环境 · 专精特新政策 · 制造业订单 PMI · 原材料价格（铜/铝/化工）",
+          risk_level:3, watch_news:"中小企业融资环境 · 专精特新政策 · 制造业订单 PMI · 原材料价格（铜/铝/化工）",
           buy_signals:"估值温度 0-20（史上低估区） · 大盘股行情结束开始轮动中盘 · 宏观政策支持民企",
           sell_signals:"温度 ≥75 才考虑止盈 · 中盘相对大盘溢价超过 30% 时减仓",
           monthly_amount:2000, note:"中盘股估值偏低，可加量定投"
         },
         {
-          code:"513500", name:"标普500ETF", full_name:"博时标普500交易型开放式指数证券投资基金",
+          code:"513500", category:"海外", name:"标普500ETF", full_name:"博时标普500交易型开放式指数证券投资基金",
           api_index_code:"SPX", benchmark:"multpl.com · 席勒PE 近50年百分位（蛋卷镜像）", temp:68, suggest:"正常持有",
           tracking_index:"标普500指数（纽交所+纳斯达克最大的500家美国上市公司，全球最核心资产）",
           top_sectors:"科技 28% · 金融 13% · 医疗 13% · 可选消费 11% · 工业 8% · 其他 27%",
           target_audience:"资产全球配置 · 相信美股长牛 · 对冲人民币汇率风险 · 投资期限 ≥10 年",
-          risk_level:4, watch_news:"美联储利率决议/FOMC · 美国 CPI/PCE 通胀 · 非农就业 · 美国企业财报季",
+          risk_level:3, watch_news:"美联储利率决议/FOMC · 美国 CPI/PCE 通胀 · 非农就业 · 美国企业财报季",
           buy_signals:"美国经济衰退期（失业率走高+降息周期开始）· 席勒PE < 25 · 大盘回调 >15%",
           sell_signals:"席勒PE > 35 分批减仓 · 美联储连续加息后期 · 美股整体泡沫化信号（散户入场+杠杆高）",
           monthly_amount:1500, note:"美股长牛但估值偏高，小额定投"
         },
         {
-          code:"161725", name:"招商中证白酒", full_name:"招商中证白酒指数分级证券投资基金",
+          code:"161725", category:"白酒", name:"招商中证白酒", full_name:"招商中证白酒指数分级证券投资基金",
           api_index_code:"CSIH30239", benchmark:"历史百分位（蛋卷行业指数）", temp:48, suggest:"正常持有",
           tracking_index:"中证白酒指数（A股白酒行业龙头：茅台/五粮液/泸州老窖/山西汾酒等）",
           top_sectors:"白酒行业 100%（高端白酒 65% · 次高端 25% · 区域酒 10%）",
           target_audience:"看好中国消费升级 · 愿意集中押注单一行业 · 能接受 40% 级别回撤 · 单行业仓位 ≤20%",
-          risk_level:5, watch_news:"白酒批价（飞天茅台/普五）· 社零消费数据 · 春节/中秋动销 · 消费税政策 · 白酒企业年报季报",
+          risk_level:4, watch_news:"白酒批价（飞天茅台/普五）· 社零消费数据 · 春节/中秋动销 · 消费税政策 · 白酒企业年报季报",
           buy_signals:"估值温度 <30 · 批价稳定且渠道库存低 · 消费刺激政策出台",
           sell_signals:"温度 ≥75 · 批价倒挂+渠道高库存 · 行业出现利空政策（如消费税改革）",
           monthly_amount:800, note:"行业基金不超 20% 仓位"
+        },
+        {
+          code:"014602", category:"医疗", name:"嘉实中证医疗", full_name:"嘉实中证医疗指数发起式证券投资基金A",
+          api_index_code:"CSI931070", benchmark:"蛋卷基金 · 医疗指数 PE 百分位", temp:28, suggest:"低估多买",
+          tracking_index:"中证医疗指数（医疗器械+医疗服务+创新药+CXO全产业链）",
+          top_sectors:"医疗器械 32% · 医疗服务 22% · 创新药 18% · CXO 15% · 体外诊断 8% · 其他 5%",
+          target_audience:"看好医疗长期逻辑：人口老龄化+消费升级，能接受行业政策波动，持有期≥5年",
+          risk_level:4, watch_news:"医保集采政策 · 创新药审批 · 医疗器械国产替代 · CXO海外订单 · 人口老龄化数据",
+          buy_signals:"估值温度 ≤30 · 集采政策边际缓和 · 龙头公司业绩超预期",
+          sell_signals:"估值温度 ≥75 · 行业出现重大政策利空 · 持有收益达+80%止盈部分",
+          monthly_amount:1000, note:"医疗行业经历集采调整后估值偏低，长期看好人口老龄化逻辑"
+        },
+        {
+          code:"011612", category:"科创", name:"华夏科创50ETF联接", full_name:"华夏科创50交易型开放式指数证券投资基金联接基金A",
+          api_index_code:"SH000688", benchmark:"蛋卷基金 · 科创50 PE 百分位", temp:45, suggest:"正常持有",
+          tracking_index:"科创50指数（科创板50只硬科技龙头，半导体/电子/电力设备/新能源/生物医药）",
+          top_sectors:"半导体 35% · 电子 20% · 电力设备 15% · 新能源 12% · 生物医药 10% · 计算机 8%",
+          target_audience:"看好硬科技国产替代：芯片/半导体/新能源/生物医药，仓位≤20%，能接受40%级别回撤",
+          risk_level:4, watch_news:"半导体国产替代进展 · 芯片法案 · AI算力需求 · 新能源技术突破 · 科创板减持规则",
+          buy_signals:"估值温度 ≤30 · 半导体/芯片行业景气度反转 · 重大科技政策利好",
+          sell_signals:"估值温度 ≥75 分批减仓 · 行业景气度见顶 · 收益达+100%止盈一半",
+          monthly_amount:1200, note:"科创板50只龙头，硬科技代表，波动大适合长期定投"
+        },
+        {
+          code:"021759", category:"创新药", name:"中欧中证港股通创新药", full_name:"中欧中证港股通创新药指数发起式证券投资基金A",
+          api_index_code:"CSI932435", benchmark:"历史百分位", temp:32, suggest:"正常持有",
+          tracking_index:"中证港股通创新药指数（港股创新药+生物科技+CXO）",
+          top_sectors:"创新药 40% · 生物科技 25% · CXO 20% · 医疗服务 8% · 医药流通 7%",
+          target_audience:"看好创新药长赛道：港股折价明显，政策底已现，适合左侧布局",
+          risk_level:4, watch_news:"创新药医保谈判 · FDA审批进展 · 港股通资金流向 · Biotech融资环境 · License-out交易",
+          buy_signals:"估值温度 ≤30 · 创新药出海利好 · 医保谈判好于预期",
+          sell_signals:"估值温度 ≥75 · 融资环境恶化 · 持有收益达+60%分批止盈",
+          monthly_amount:800, note:"港股创新药估值洼地，看好中国创新药出海+国产替代逻辑"
+        },
+        {
+          code:"501050", category:"银行", name:"华夏上证50AH优选", full_name:"华夏上证50AH优选指数(LOF)A",
+          api_index_code:"SH000016", benchmark:"蛋卷基金 · 上证50 PE 百分位", temp:25, suggest:"低估多买",
+          tracking_index:"上证50AH优选指数（AH股上市50只龙头，重仓银行+保险+消费）",
+          top_sectors:"银行 35% · 非银金融 20% · 食品饮料 15% · 医药 10% · 其他 20%",
+          target_audience:"保守型投资者：追求稳定分红+低波动，银行估值打底，适合作为压舱石",
+          risk_level:3, watch_news:"LPR利率调降 · 银行拨备率 · 息差走势 · 地产政策放松 · 险资投资新规 · 外资持仓变化",
+          buy_signals:"估值温度 ≤30 · 降准降息周期 · 银行股息率>5%时",
+          sell_signals:"估值温度 ≥70 · 银行息差大幅收窄 · 持有收益达+50%减仓",
+          monthly_amount:1000, note:"重仓银行+保险+消费龙头，估值历史低位，高股息防御属性强"
+        },
+        {
+          code:"008975", category:"消费", name:"富国中证消费50ETF联接", full_name:"富国中证消费50交易型开放式指数证券投资基金联接基金A",
+          api_index_code:"CSI931139", benchmark:"蛋卷基金 · 消费50 PE 百分位", temp:52, suggest:"正常持有",
+          tracking_index:"中证消费50指数（白酒+家电+食品+医药消费，A股必选消费龙头）",
+          top_sectors:"白酒 35% · 家电 20% · 食品 15% · 医药 12% · 汽车 10% · 其他 8%",
+          target_audience:"长期主义投资者：消费是永恒赛道，穿越经济周期，仓位≤25%",
+          risk_level:3, watch_news:"社零消费数据 · CPI · 促消费政策 · 白酒批价 · 家电以旧换新 · 品牌618/双11战报",
+          buy_signals:"估值温度 ≤35 · 消费刺激政策出台 · 大盘回调超20%",
+          sell_signals:"估值温度 ≥75 · 消费数据持续走弱 · 持有收益达+80%止盈部分",
+          monthly_amount:1000, note:"必选消费龙头：白酒+家电+食品+医药消费，长牛赛道"
+        },
+        {
+          code:"020988", category:"恒生科技", name:"南方恒生科技ETF联接", full_name:"南方恒生科技交易型开放式指数证券投资基金发起式联接(QDII)A",
+          api_index_code:"HSTECH", benchmark:"恒生科技指数 PE 历史百分位", temp:38, suggest:"正常持有",
+          tracking_index:"恒生科技指数（港股科技龙头：腾讯/美团/阿里/小米/快手）",
+          top_sectors:"互联网平台 40% · 电子科技 25% · 新能源汽车 15% · 生物医药 10% · 其他 10%",
+          target_audience:"看好中国互联网龙头：腾讯/阿里/美团等估值回归合理，政策底部确立，全球配置",
+          risk_level:4, watch_news:"中美关系 · 港股通资金流向 · 互联网平台监管政策 · 美联储加息 · 人民币汇率 · 科技公司财报",
+          buy_signals:"估值温度 ≤30 · 平台经济政策边际改善 · 从高点回撤>50%时分批",
+          sell_signals:"估值温度 ≥75 · 重大监管政策收紧 · 持有收益达+60%分批止盈",
+          monthly_amount:800, note:"港股科技龙头：腾讯/美团/阿里/小米/快手，估值大幅回调后吸引力增强"
+        },
+        {
+          code:"018043", category:"纳斯达克", name:"天弘纳斯达克100指数", full_name:"天弘纳斯达克100指数型发起式证券投资基金(QDII)A",
+          api_index_code:"NDX", benchmark:"纳斯达克100 PE 历史百分位", temp:75, suggest:"高估减仓",
+          tracking_index:"纳斯达克100指数（NDX.O，科技七巨头：AAPL/MSFT/GOOGL/AMZN/NVDA/META/TSLA）",
+          top_sectors:"科技硬件 30% · 软件服务 28% · 互联网零售 15% · 半导体 12% · 媒体 8% · 其他 7%",
+          target_audience:"全球科技配置：看好AI+云+半导体长趋势，美股科技波动大，仓位≤15%，持有期≥10年",
+          risk_level:4, watch_news:"美联储利率 · AI资本开支 · NVDA/AAPL/MSFT财报 · 美国科技反垄断 · 美元指数",
+          buy_signals:"估值温度 ≤35 · 美联储开始降息 · 从高点回撤>25%",
+          sell_signals:"估值温度 ≥75 减仓1/3，≥85 再减 · 美联储加息尾声+泡沫信号 · 收益达+100%止盈一半",
+          monthly_amount:1000, note:"纳斯达克100科技七巨头，全球科技核心"
+        },
+        {
+          code:"017641", category:"标普500", name:"摩根标普500指数", full_name:"摩根标普500指数型证券投资基金(QDII)A",
+          api_index_code:"SPX", benchmark:"multpl 席勒PE 近50年百分位", temp:68, suggest:"正常持有",
+          tracking_index:"S&P 500 Index（SPX.GI，美国最大500家公司）",
+          top_sectors:"信息技术 28% · 医疗 13% · 金融 13% · 可选消费 11% · 工业 8% · 其他 27%",
+          target_audience:"全球配置稳健投资者：美股长牛赛道，与纳指100形成价值+成长互补",
+          risk_level:3, watch_news:"美联储 FOMC · CPI通胀 · 非农就业 · 美国企业财报季 · 美元指数 · 美债收益率",
+          buy_signals:"席勒PE < 25 且指数回调>15% · 美国经济衰退末期+降息周期开始 · 美元走强窗口",
+          sell_signals:"席勒PE > 35 或温度>80 分批减 · A股出现更优低估机会可切换部分",
+          monthly_amount:800, note:"美国最大500家公司，全球核心资产压舱石，标普500双保险配置"
+        },
+        {
+          code:"025856", category:"电网设备", name:"华夏中证电网设备主题ETF联接", full_name:"华夏中证电网设备主题交易型开放式指数证券投资基金发起式联接A",
+          api_index_code:"CSI932348", benchmark:"中证电网设备指数 PE 百分位", temp:42, suggest:"正常持有",
+          tracking_index:"中证电网设备主题指数（932348.CSI，新型电力系统+特高压+智能电网）",
+          top_sectors:"电网设备 40% · 输变电设备 25% · 配电自动化 15% · 新能源配套 12% · 其他 8%",
+          target_audience:"关注新型电力系统：特高压/智能电网/储能配套，政策驱动强，适合中期布局",
+          risk_level:3, watch_news:"国家电网投资计划 · 特高压线路核准 · AI算力供电需求 · 电力现货市场改革 · 新能源并网政策",
+          buy_signals:"估值温度 ≤30 · 特高压新项目集中核准 · 电网投资超预期",
+          sell_signals:"估值温度 ≥75 · 电网投资增速放缓 · 订单交付不及预期",
+          monthly_amount:800, note:"新型电力系统+特高压+智能电网+AI算力供电，电网投资大年确定性强"
+        },
+        {
+          code:"005561", category:"中证红利", name:"创金中证红利低波动", full_name:"创金合信中证红利低波动指数发起式证券投资基金A",
+          api_index_code:"SH000922", benchmark:"中证红利指数 PE 百分位", temp:20, suggest:"低估多买",
+          tracking_index:"中证红利低波动指数（高股息+低波动双因子策略）",
+          top_sectors:"银行 30% · 煤炭 18% · 钢铁 10% · 交运 10% · 公用事业 12% · 其他 20%",
+          target_audience:"稳健+价值投资者：高股息策略，追求跑赢通胀+稳定现金流，养老账户打底首选",
+          risk_level:2, watch_news:"上市公司分红政策 · 利率走势（低利率利好股息）· 煤价/钢价 · 公用事业调价 · 高股息风格轮动",
+          buy_signals:"估值温度 ≤25（当前是极佳买入点）· 10年国债收益率下行 · 市场避险情绪升温",
+          sell_signals:"估值温度 ≥70 · 红利风格持续跑输成长>1年 · 股息率低于3%时考虑减仓",
+          monthly_amount:1500, note:"高股息+低波动双因子策略，穿越牛熊神器，适合打底仓+养老钱"
+        },
+        {
+          code:"159525", category:"红利低波", name:"富国中证红利低波动ETF", full_name:"富国中证红利低波动交易型开放式指数证券投资基金",
+          api_index_code:"SH000922", benchmark:"中证红利低波动指数 PE 百分位", temp:22, suggest:"低估多买",
+          tracking_index:"中证红利低波动指数（H30269.CSI，场内ETF版）",
+          top_sectors:"银行 32% · 煤炭 16% · 公用事业 14% · 钢铁 8% · 交运 10% · 地产 6% · 其他 14%",
+          target_audience:"场内交易者：偏好ETF灵活交易+实时申赎，稳健型配置",
+          risk_level:2, watch_news:"利率环境 · 高股息政策 · 场内折溢价 · 煤炭价格 · 公用事业改革",
+          buy_signals:"估值温度 ≤25 · 市场下跌时优先配置防御 · 红利风格占优初期",
+          sell_signals:"估值温度 ≥70 · 利率大幅上行周期 · 成长风格明确占优时部分切换",
+          monthly_amount:1200, note:"场内ETF版红利低波，交易灵活，和场外005561形成场内外双配置"
+        },
+        {
+          code:"501302", category:"房地产", name:"南方恒指ETF联接", full_name:"南方恒生交易型开放式指数证券投资基金联接基金A",
+          api_index_code:"HSI", benchmark:"恒生指数 PE 历史百分位", temp:35, suggest:"正常持有",
+          tracking_index:"恒生指数（HSI.HI，重仓内房股+港资地产+金融+科技）",
+          top_sectors:"金融 28% · 地产 15% · 科技 25% · 消费 12% · 公用事业 8% · 其他 12%",
+          target_audience:"看好地产困境反转：地产政策底部确立，内房股估值极低，风险承受力强，仓位≤15%",
+          risk_level:4, watch_news:"地产限购政策放松 · LPR下调 · 城中村改造 · 房企融资支持 · 内房债务重组进展 · 港股通资金流向",
+          buy_signals:"估值温度 ≤30 · 重大地产刺激政策出台 · 优质民企债务问题缓解",
+          sell_signals:"估值温度 ≥70 · 持有收益达+60%分批止盈 · 政策兑现后获利了结",
+          monthly_amount:800, note:"恒生指数含大量内房股+港资地产，地产政策底部+估值极低，困境反转逻辑"
         }
       ],
       temp_threshold: {
@@ -998,7 +1173,19 @@
       "159915":["SZ399006.SZ","SZ399006","399006.SZ"],
       "510500":["SH000905.SH","SH000905","000905.SH"],
       "513500":["SPX.GI","SPX","SPY"],
-      "161725":["CSIH30239.CSI","CSIH30239","30239.CSI","CSI931056.CSI"]
+      "161725":["CSIH30239.CSI","CSIH30239","30239.CSI","CSI931056.CSI"],
+      "014602":["CSI931070.CSI","CSI931070","931070.CSI"],
+      "011612":["SH000688.SH","SH000688","000688.SH","000688"],
+      "021759":["CSI932435.CSI","CSI932435","932435.CSI"],
+      "501050":["SH000016.SH","SH000016","000016.SH"],
+      "008975":["CSI931139.CSI","CSI931139","931139.CSI"],
+      "020988":["HSTECH.HI","HSTECH","930756.CSI"],
+      "018043":["NDX.O","NDX","QQQ",".NDX"],
+      "017641":["SPX.GI","SPX","SPY","SPX"],
+      "025856":["CSI932348.CSI","CSI932348","932348.CSI"],
+      "005561":["SH000922.SH","SH000922","000922.SH","H30269.CSI"],
+      "159525":["SH000922.SH","SH000922","000922.SH","H30269.CSI"],
+      "501302":["HSI.HI","HSI","^HSI"]
     };
     let _fundApiResult = null;  // {status:'ok'|'fallback', updatedAt, temps:{[code]:percentile|null}}
     async function fetchRealFundTemps(funds) {
@@ -1146,28 +1333,467 @@
         });
       });
     }
+    /* ---------- 基金自定义筛选（弹窗形式 + localStorage 持久化） ---------- */
+    const FUND_WATCH_STORAGE_KEY = 'lovenest:fund_watchlist_v1';
+    const FUND_DEFAULT_ALL = null;
+    // 超级分组：把分类较细的基金合并成 3 大组，避免 1 只也单独占一行
+    const FUND_SUPER_GROUPS = [
+      { key: 'core', name: '🏦 宽基核心', cats: ['宽基','沪深300','创业板','中证500','科创','科创50','A50','中证1000','国证2000','其他'] },
+      { key: 'sector', name: '🛠️ 行业主题', cats: ['医疗','创新药','消费','白酒','电网设备','环保','传媒','信息技术','TMT','光伏','新能源','人工智能','AI','消费电子','能源化工','有色金属'] },
+      { key: 'intl', name: '🌍 海外 & 红利 & 防守', cats: ['海外','恒生科技','纳斯达克','标普500','宽基海外','房地产','内房','红利低波','中证红利','银行','黄金','固收','纯债','港股高股息'] },
+    ];
+    // 辅助：根据 category 找到它所在的 super group 索引
+    function superGroupIndexOfCategory(cat) {
+      const c = (cat || '').trim();
+      for (let i = 0; i < FUND_SUPER_GROUPS.length; i++) {
+        const g = FUND_SUPER_GROUPS[i];
+        if (g.cats.some(k => c === k || c.indexOf(k) >= 0)) return i;
+      }
+      // 兜底：按组名关键词匹配
+      if (/医疗|药|消费|白酒|新能源|光伏|AI|电子|传媒|信息|有色|化工|环保|设备|制造|科技|创新/.test(c)) return 1;
+      if (/红利|海外|美股|港股|纳指|标普|恒生|黄金|固收|债|防守|银行|房|股息/.test(c)) return 2;
+      return 0;
+    }
+    function groupFundsForDialog(allFunds) {
+      const groups = FUND_SUPER_GROUPS.map(g => ({ ...g, funds: [] }));
+      allFunds.forEach(f => {
+        const idx = superGroupIndexOfCategory(f.category);
+        groups[idx].funds.push(f);
+      });
+      return groups.filter(g => g.funds.length > 0);
+    }
+    let _fundDlgDraft = null; // 弹窗内草稿 Set<code>
+    let _feishuFundsCache = null; // 飞书最新数据缓存 {items: [{code,name,...}], exported_at}
+
+    function loadFundWatchSelection(allFunds) {
+      try {
+        const raw = localStorage.getItem(FUND_WATCH_STORAGE_KEY);
+        if (!raw) return FUND_DEFAULT_ALL;
+        const parsed = JSON.parse(raw);
+        const codes = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.codes) ? parsed.codes : null);
+        if (!codes) return FUND_DEFAULT_ALL;
+        const validCodes = new Set(allFunds.map(f => f.code));
+        const filtered = codes.filter(c => validCodes.has(c));
+        return filtered.length > 0 ? new Set(filtered) : FUND_DEFAULT_ALL;
+      } catch(_) { return FUND_DEFAULT_ALL; }
+    }
+    function saveFundWatchSelection(codes) {
+      if (codes == null) {
+        localStorage.removeItem(FUND_WATCH_STORAGE_KEY);
+      } else {
+        localStorage.setItem(FUND_WATCH_STORAGE_KEY, JSON.stringify({ codes: [...codes], savedAt: new Date().toISOString() }));
+      }
+    }
+    function getWatchedFunds(allFunds) {
+      const sel = loadFundWatchSelection(allFunds);
+      if (sel == null) return allFunds.slice();
+      return allFunds.filter(f => sel.has(f.code));
+    }
+    function updateWatchSummary(allFunds) {
+      const watched = getWatchedFunds(allFunds);
+      const el = document.getElementById('fundWatchSummary');
+      if (!el) return;
+      const feishuTs = _feishuFundsCache && _feishuFundsCache.exported_at
+        ? new Date(_feishuFundsCache.exported_at) : null;
+      const tsStr = feishuTs && !isNaN(feishuTs)
+        ? `<br><span style="font-size:.76rem">飞书数据更新于 ${esc(feishuTs.toLocaleString('zh-CN'))}</span>` : '';
+      el.innerHTML = `已跟踪 <b>${watched.length}</b> / ${allFunds.length} 只基金 · 数据来自 <b>飞书表格 + 蛋卷真实估值</b>${tsStr}`;
+    }
+    /* ---------- 飞书最新数据：先代理 API，后本地导出 JSON ---------- */
+    function _getFeishuProxyCfg() {
+      // 读 config：要么是 Supabase Edge，要么是相对路径 /api
+      var cfg = window.LOVENEST_SUPABASE_CONFIG || {};
+      var base = (typeof cfg.FEISHU_PROXY_BASE === 'string') ? cfg.FEISHU_PROXY_BASE : '';
+      var path = (typeof cfg.FEISHU_PROXY_PATH === 'string') ? cfg.FEISHU_PROXY_PATH : '/feishu-';
+      var token = cfg.DEFAULT_SPREADSHEET_TOKEN || 'K6YDwZGP8im24Ek5WnecdJH5nrd';
+      var sheet = cfg.DEFAULT_SHEET_ID || '4e7337';
+      // base 为空时，使用相对路径 /api（配合 Nginx 反代到 Flask 代理）
+      var prefix = base ? (base.replace(/\/$/, '') + path) : ('/api' + path);
+      return {
+        endpoint: prefix + 'funds' +
+          '?spreadsheet_token=' + encodeURIComponent(token) +
+          '&sheet_id=' + encodeURIComponent(sheet),
+        base: base,
+      };
+    }
+    async function loadFeishuFunds() {
+      if (_feishuFundsCache != null) return _feishuFundsCache;
+      var cfg = _getFeishuProxyCfg();
+      // 第一优先：飞书代理（Flask / Supabase Edge）
+      if (cfg.endpoint) {
+        try {
+          var res = await fetch(cfg.endpoint, { cache: 'no-cache' });
+          if (res.ok) {
+            var j = await res.json();
+            if (j && j.ok && Array.isArray(j.items)) {
+              _feishuFundsCache = j;
+              _feishuFundsCache.byCode = {};
+              j.items.forEach(function(it){
+                if (it && it.code) _feishuFundsCache.byCode[String(it.code).trim()] = it;
+              });
+              _feishuFundsCache._from = cfg.base ? 'supabase-edge' : 'flask-proxy';
+              return _feishuFundsCache;
+            }
+          }
+        } catch(e) { /* 代理失败降级到本地 JSON */ }
+      }
+      // 第二优先：本地同步脚本导出的 data/feishu_funds.json
+      try {
+        const res = await fetch('data/feishu_funds.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const j = await res.json();
+        if (j && Array.isArray(j.items)) {
+          _feishuFundsCache = j;
+          _feishuFundsCache.byCode = {};
+          j.items.forEach(it => { if (it && it.code) _feishuFundsCache.byCode[String(it.code).trim()] = it; });
+          _feishuFundsCache._from = 'local-json';
+          return _feishuFundsCache;
+        }
+      } catch(e) { /* 读取失败则忽略 */ }
+      _feishuFundsCache = { items: [], byCode: {}, exported_at: null, _from: 'none' };
+      return _feishuFundsCache;
+    }
+    function mergeFeishuIntoFund(fund) {
+      const fs = _feishuFundsCache && _feishuFundsCache.byCode ? _feishuFundsCache.byCode[String(fund.code).trim()] : null;
+      if (!fs) return fund;
+      // 温度：若飞书温度数字有效则优先覆盖
+      const merged = { ...fund };
+      const fsTemp = Number(String(fs.temp || '').replace(/[^\d.\-]/g, ''));
+      if (!isNaN(fsTemp) && fsTemp >= 0 && fsTemp <= 100) {
+        merged.temp = fsTemp;
+        if (fs.temp_comment) merged.suggest = fs.temp_comment;
+      }
+      // 元信息：规模、成立时间、净值、最高最低、行业配置、风险评价
+      merged._feishu = {
+        fund_size: fs.fund_size,
+        establish_date: fs.establish_date,
+        nav: fs.nav,
+        nav_date: fs.nav_date,
+        daily_nav: fs.daily_nav,
+        one_year_return: fs.one_year_return,
+        daily_change: fs.daily_change,
+        max_value: fs.max_value,
+        min_value: fs.min_value,
+        max_date: fs.max_date,
+        min_date: fs.min_date,
+        since_inception_return: fs.since_inception_return,
+        investment_sectors: fs.investment_sectors,
+        risk_level: fs.risk_level,
+        risk_rating: fs.risk_rating,
+        sector_allocation: fs.sector_allocation,
+        asset_allocation: fs.asset_allocation,
+        target_audience: fs.target_audience,
+        peer_compare: fs.peer_compare,
+        historical_win_rate: fs.historical_win_rate,
+        halfyear_profit_prob: fs.halfyear_profit_prob,
+      };
+      return merged;
+    }
+    /* ---------- 自定义弹窗 ---------- */
+    function renderDialogInner() {
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      const currentSel = loadFundWatchSelection(allFunds);
+      if (_fundDlgDraft == null) {
+        _fundDlgDraft = (currentSel == null)
+          ? new Set(allFunds.map(f => f.code))
+          : new Set(currentSel);
+      }
+      const superGroups = groupFundsForDialog(allFunds);
+      const total = allFunds.length;
+      const selN = _fundDlgDraft.size;
+      let html = `<div class="fwdlg">
+        <div class="fwdlg__intro">勾选想在「小金库」页面重点跟踪的基金。<br/>不勾选的也只是暂时从列表隐藏，随时可以再打开加回来。</div>`;
+      superGroups.forEach((g, gi) => {
+        const gTotal = g.funds.length;
+        const gSel = g.funds.filter(f => _fundDlgDraft.has(f.code)).length;
+        const gAll = gTotal > 0 && gTotal === gSel;
+        html += `<div class="fwdlg__sec" data-group="${esc(g.key)}">
+          <div class="fwdlg__sec-head">
+            <div class="fwdlg__sec-title">
+              ${esc(g.name)}
+              <span class="fwdlg__sec-count">${gSel} / ${gTotal}</span>
+            </div>
+            <button type="button" class="fwdlg__group-toggle" data-group-toggle="${gi}">
+              ${gAll ? '取消本组全选' : '本组全选'}
+            </button>
+          </div>
+          <div class="fwdlg__chips">
+            ${g.funds.map(f => {
+              const active = _fundDlgDraft.has(f.code) ? 'is-active' : '';
+              return `<button type="button" class="fwdlg__chip ${active}" data-chip-code="${esc(f.code)}" title="${esc(f.category || '')}">
+                <span class="fwdlg__chip-name">${active ? '✓ ' : ''}${esc(f.name)}</span>
+                <span class="fwdlg__chip-code">${esc(f.code)}</span>
+              </button>`;
+            }).join('')}
+          </div>
+        </div>`;
+      });
+      html += `<div class="fwdlg__foot">
+        <div class="fwdlg__foot-summary">当前选择 <b>${selN}</b> / ${total} 只 · ${selN === total ? '跟踪全部' : '保存后生效'}</div>
+        <div class="fwdlg__foot-actions">
+          <button type="button" class="fwdlg__btn fwdlg__btn--ghost" data-fdlg="clear-all">清空</button>
+          <button type="button" class="fwdlg__btn fwdlg__btn--ghost" data-fdlg="select-all">全部选中</button>
+          <button type="button" class="fwdlg__btn fwdlg__btn--ghost" data-fdlg="reset-default">恢复默认</button>
+          <button type="button" class="fwdlg__btn fwdlg__btn--sage" data-fdlg="save">保存并应用</button>
+        </div>
+      </div>
+      <div class="fwdlg__source">
+        📡 <b>温度来源策略：</b>1) 优先走「蛋卷基金」真实网络估值百分位（每天动态变化）；2) 如果某只基金没拉到实时估值，则回落到你在飞书「最新数据」tab 里的市场温度；3) 两者都没有时用本地财务 JSON（finance.json）中的静态估值做兜底。<br/>
+        📄 飞书规模/净值/最高最低等信息已同步展示在每只基金的详情卡「📖 了解这只」里。
+      </div>
+      </div>`;
+      return { html, superGroups };
+    }
+    function wireDialogEvents(container, superGroups, onClose) {
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      // 单只 chip 切换
+      container.querySelectorAll('[data-chip-code]').forEach(el => {
+        el.addEventListener('click', () => {
+          const code = el.getAttribute('data-chip-code');
+          if (_fundDlgDraft.has(code)) _fundDlgDraft.delete(code);
+          else _fundDlgDraft.add(code);
+          // 重绘
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
+        });
+      });
+      // 本组全选切换
+      container.querySelectorAll('[data-group-toggle]').forEach(el => {
+        el.addEventListener('click', () => {
+          const gi = Number(el.getAttribute('data-group-toggle'));
+          const g = superGroups[gi];
+          if (!g) return;
+          const allSel = g.funds.every(f => _fundDlgDraft.has(f.code));
+          if (allSel) g.funds.forEach(f => _fundDlgDraft.delete(f.code));
+          else g.funds.forEach(f => _fundDlgDraft.add(f.code));
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
+        });
+      });
+      // 底部四个按钮
+      const act = (name) => container.querySelector(`[data-fdlg="${name}"]`);
+      act('clear-all') && act('clear-all').addEventListener('click', () => {
+        if (confirm('确定要清空所有选择？')) {
+          _fundDlgDraft = new Set();
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
+        }
+      });
+      act('select-all') && act('select-all').addEventListener('click', () => {
+        _fundDlgDraft = new Set(allFunds.map(f => f.code));
+        const { html, superGroups: sg2 } = renderDialogInner();
+        container.innerHTML = html;
+        wireDialogEvents(container, sg2, onClose);
+      });
+      act('reset-default') && act('reset-default').addEventListener('click', () => {
+        if (confirm('恢复默认（跟踪全部基金）？')) {
+          saveFundWatchSelection(null);
+          _fundDlgDraft = new Set(allFunds.map(f => f.code));
+          const { html, superGroups: sg2 } = renderDialogInner();
+          container.innerHTML = html;
+          wireDialogEvents(container, sg2, onClose);
+          updateWatchSummary(allFunds);
+          renderFunds();
+        }
+      });
+      act('save') && act('save').addEventListener('click', () => {
+        if (_fundDlgDraft.size === 0) {
+          alert('请至少选择一只基金～不然首页就空啦！');
+          return;
+        }
+        const allCodes = new Set(allFunds.map(f => f.code));
+        const draftAll = _fundDlgDraft.size === allCodes.size &&
+          [..._fundDlgDraft].every(c => allCodes.has(c));
+        if (draftAll) saveFundWatchSelection(null);
+        else saveFundWatchSelection(_fundDlgDraft);
+        updateWatchSummary(allFunds);
+        renderFunds();
+        onClose && onClose();
+        LoveNest.openModal('已保存 ✓', `<p style="line-height:1.8">已将 <b>${_fundDlgDraft.size}</b> 只基金纳入跟踪。<br/>设置已自动保存在本设备，下次进来看还是同样的选择～</p>`);
+      });
+    }
+    function openFundWatchDialog() {
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      const currentSel = loadFundWatchSelection(allFunds);
+      _fundDlgDraft = (currentSel == null)
+        ? new Set(allFunds.map(f => f.code))
+        : new Set(currentSel);
+      const { html, superGroups } = renderDialogInner();
+      // 用 LoveNest.openModal，不显示确认按钮（把操作按钮放弹窗内容里），所以传 contentOnly 风格
+      // 写一个临时容器追加到 body 后自己控制 modal
+      LoveNest.openModal('自定义跟踪哪些基金', html);
+      // LoveNest.openModal 默认把内容渲染到 .modal__content，等 DOM 可见后再绑定事件
+      requestAnimationFrame(() => {
+        const modalRoot = document.querySelector('.modal');
+        if (!modalRoot) return;
+        // 删除底部自带的两个默认按钮（取消/确定）→ 由我们自己的 footer 按钮操作
+        modalRoot.querySelectorAll('.modal__footer, .modal__buttons, [data-modal-confirm], [data-modal-close]').forEach(el => {
+          if (el.classList && (el.classList.contains('modal__btn') || el.textContent === '确定' || el.textContent === '取消')) {
+            if (el.textContent === '确定') el.style.display = 'none';
+          }
+        });
+        // 更稳：直接找到 content div，从它里面重新绑事件
+        const content = modalRoot.querySelector('.modal__content') || modalRoot;
+        const box = content.querySelector('.fwdlg') || content;
+        wireDialogEvents(box, superGroups, () => {
+          // 关闭弹窗
+          const close = modalRoot.querySelector('[data-modal-close]')
+            || modalRoot.querySelector('.modal__close')
+            || modalRoot.querySelector('.modal__btn');
+          if (close) close.click();
+          // 兜底：直接移除
+          setTimeout(() => { if (modalRoot.parentNode) modalRoot.remove(); }, 80);
+        });
+      });
+    }
+    function wireFundFilter() {
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      updateWatchSummary(allFunds);
+      const openBtn = document.getElementById('fundWatchOpenBtn');
+      openBtn && openBtn.addEventListener('click', openFundWatchDialog);
+    }
+
+    /* ---------- 综合估值：蛋卷实时 + 飞书JSON + 本地静态（三级回退） ---------- */
+    async function fetchAllFundTemps(funds) {
+      // 先拉飞书本地 JSON（飞书最新数据导出，失败则跳过）
+      try { await loadFeishuFunds(); } catch(_) {}
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      updateWatchSummary(allFunds);
+      let temps = {};
+      let source = 'fallback';
+      let tempFrom = {}; // code -> 'api' | 'feishu' | 'fallback'
+      // 2) 尝试蛋卷真实估值（网络）
+      try {
+        const apiResult = await fetchRealFundTemps(funds);
+        if (apiResult && apiResult.temps) {
+          Object.keys(apiResult.temps).forEach(code => {
+            const t = apiResult.temps[code];
+            if (t != null && !isNaN(Number(t))) {
+              temps[code] = Number(t);
+              tempFrom[code] = 'api';
+            }
+          });
+          if (Object.keys(temps).length > 0) source = 'api';
+        }
+      } catch(_) {}
+      // 3) 飞书 JSON 补漏（蛋卷没返回的用飞书温度）
+      if (_feishuFundsCache && _feishuFundsCache.byCode) {
+        funds.forEach(f => {
+          const code = f.code;
+          if (temps[code] != null) return; // 已有真实数据就跳过
+          const fs = _feishuFundsCache.byCode[String(code).trim()];
+          if (!fs) return;
+          const t = Number(String(fs.temp || '').replace(/[^\d.\-]/g, ''));
+          if (!isNaN(t) && t >= 0 && t <= 100) {
+            temps[code] = t;
+            tempFrom[code] = 'feishu';
+          }
+        });
+      }
+      // 4) 兜底本地静态
+      funds.forEach(f => {
+        if (temps[f.code] == null) {
+          const t = Number(f.temp);
+          if (!isNaN(t)) {
+            temps[f.code] = t;
+            tempFrom[f.code] = 'fallback';
+          }
+        }
+      });
+      return { temps, tempFrom, source };
+    }
+    /* ---------- 渲染基金卡片（注入飞书元数据到详情卡） ---------- */
+    function renderFundCardWithFeishu(fund, apiTemp, showFallbackSourceFlag) {
+      // 先把飞书数据合并到 fund（生成新对象避免污染）
+      const merged = mergeFeishuIntoFund(fund);
+      const html = renderFundCard(merged, apiTemp, showFallbackSourceFlag);
+      // 如果飞书提供了规模、净值、最高最低等信息，在 fund-info 里把旧的替换/扩充一下
+      if (merged._feishu) {
+        const fs = merged._feishu;
+        const infoRows = [];
+        if (fs.fund_size) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">基金规模</div><div class="fund-info__v">${esc(fs.fund_size)}（飞书最新）</div></div>`);
+        if (fs.establish_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">成立时间</div><div class="fund-info__v">${esc(fs.establish_date)}</div></div>`);
+        if (fs.nav && fs.nav_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">最新净值</div><div class="fund-info__v">${esc(fs.nav)}（${esc(fs.nav_date)}）</div></div>`);
+        if (fs.one_year_return) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">近一年收益</div><div class="fund-info__v">${esc(fs.one_year_return)}</div></div>`);
+        if (fs.daily_change) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">当日涨跌</div><div class="fund-info__v">${esc(fs.daily_change)}</div></div>`);
+        if (fs.max_value && fs.max_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">历史最高</div><div class="fund-info__v">${esc(fs.max_value)}（${esc(fs.max_date)}）</div></div>`);
+        if (fs.min_value && fs.min_date) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">历史最低</div><div class="fund-info__v">${esc(fs.min_value)}（${esc(fs.min_date)}）</div></div>`);
+        if (fs.since_inception_return) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">成立以来</div><div class="fund-info__v">${esc(fs.since_inception_return)}</div></div>`);
+        if (fs.investment_sectors) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">投资行业</div><div class="fund-info__v">${esc(fs.investment_sectors)}</div></div>`);
+        if (fs.risk_level) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">风险等级</div><div class="fund-info__v">${esc(fs.risk_level)}</div></div>`);
+        if (fs.target_audience) infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">适合人群</div><div class="fund-info__v">${esc(fs.target_audience)}</div></div>`);
+        if (fs.sector_allocation && fs.sector_allocation !== '无') infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">行业配置</div><div class="fund-info__v">${esc(fs.sector_allocation)}</div></div>`);
+        if (fs.asset_allocation && fs.asset_allocation !== '无') infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">资产配置</div><div class="fund-info__v">${esc(fs.asset_allocation)}</div></div>`);
+        if (fs.risk_rating && fs.risk_rating !== '无') infoRows.push(`<div class="fund-info__row"><div class="fund-info__k">风险评价</div><div class="fund-info__v">${esc(fs.risk_rating)}</div></div>`);
+        if (infoRows.length > 0) {
+          // 找到 fund-info 末尾，插入飞书补充信息
+          const fsBox = `<div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--line-soft)">
+            <div style="font-family:var(--ff-display);font-weight:600;font-size:.92rem;color:var(--sage-deep);margin-bottom:10px">📊 飞书最新数据</div>
+            ${infoRows.join('')}
+          </div>`;
+          // 把 fsBox 插到 </div><!-- fund-info closing guard--> 之前（最后 2 个 </div> 之前）
+          // 采用更稳妥方式：替换 fund-info 结束前的结尾
+          const insertPos = html.lastIndexOf('</div>');
+          return html.substring(0, insertPos) + fsBox + html.substring(insertPos);
+        }
+      }
+      return html;
+    }
     function renderFunds() {
-      const funds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      const allFunds = (data.fund_valuation_temp || FALLBACK.fund_valuation_temp).map(f => mergeFeishuIntoFund(f));
+      const funds = getWatchedFunds(allFunds);
       const region = document.getElementById('fundsRegion');
-      // 1) 先用当前（JSON/FALLBACK）温度渲染
-      region.innerHTML = funds.map(f => renderFundCard(f, null, true)).join('');
+      if (!funds.length) {
+        region.innerHTML = `<div class="callout" style="text-align:center"><p>还没有选中任何基金～<br/>点上方「自定义跟踪哪些基金」选几只就好啦</p></div>`;
+        updateWatchSummary(allFunds);
+        return;
+      }
+      // 1) 先用飞书 JSON + 本地温度渲染（立刻有内容，不白屏）
+      region.innerHTML = funds.map(f => renderFundCardWithFeishu(f, null, true)).join('');
       revealIn(region);
       wireFundInfoToggles(region);
-      // 2) 异步拉真实估值，成功后局部 patch 温度条/建议/来源
-      fetchRealFundTemps(funds).then(apiResult => {
+      updateWatchSummary(allFunds);
+      // 2) 拉三级估值（蛋卷→飞书→兜底），成功后 patch
+      fetchAllFundTemps(funds).then(result => {
         if (!region || !region.isConnected) return;
         region.innerHTML = funds.map(f => {
-          const apiTemp = apiResult.temps[f.code];
-          return renderFundCard(f, apiTemp, false);
+          const t = result.temps[f.code];
+          return renderFundCardWithFeishu(f, t, result.tempFrom[f.code] === 'fallback');
         }).join('');
         revealIn(region);
         wireFundInfoToggles(region);
-      }).catch(_err => { /* 失败则保留 fallback 渲染，不会报错 */ });
+        // 在最顶部补充一条来源说明条
+        const apiN = Object.values(result.tempFrom).filter(x => x === 'api').length;
+        const feishuN = Object.values(result.tempFrom).filter(x => x === 'feishu').length;
+        const fallbackN = Object.values(result.tempFrom).filter(x => x === 'fallback').length;
+        const from = (_feishuFundsCache && _feishuFundsCache._from) || 'none';
+        const fromLabel = {
+          'supabase-edge': '🌩️ Supabase Edge（实时拉飞书）',
+          'flask-proxy':   '🪄 私有代理（实时拉飞书）',
+          'local-json':    '📦 本地同步脚本导出',
+          'none':          '— 飞书最新数据未加载',
+        }[from] || from;
+        const note = document.createElement('div');
+        note.className = 'fund-source reveal';
+        note.style.marginBottom = '20px';
+        note.innerHTML = `<span class="status-dot status-dot--ok"></span>
+          <span>已为 <b class="fund-source__ok">${apiN}</b> 只基金拉取到蛋卷实时估值 ·
+          <b>${feishuN}</b> 只取自飞书最新数据 ·
+          ${fallbackN > 0 ? `<b class="fund-source__warn">${fallbackN}</b> 只为本地静态（稍后重试）· ` : ''}
+          飞书元数据来源：<b>${esc(fromLabel)}</b>。
+          想换其他基金？去点「自定义跟踪哪些基金」按钮就行～</span>`;
+        region.parentElement && !region.parentElement.querySelector('.fund-source')
+          && region.parentElement.insertBefore(note, region);
+      }).catch(_err => { /* 静默 */ });
       // 卖出规则
       const rules = data.sell_rules || FALLBACK.sell_rules;
-      document.getElementById('sellRulesRegion').innerHTML = rules.map(r =>
+      const rulesEl = document.getElementById('sellRulesRegion');
+      rulesEl && (rulesEl.innerHTML = rules.map(r =>
         `<div class="sell-rule"><h4>${esc(r.name)}</h4><p>${esc(r.desc)}</p></div>`
-      ).join('');
+      ).join(''));
     }
 
     /* ---------- 04 财务里程碑 ---------- */
@@ -1226,7 +1852,25 @@
 
     wireForm();
     wireExpOverview();
+    wireFundFilter();
     renderAll();
+    // 后台异步加载飞书最新数据（不阻塞首屏），加载完更新顶部时间戳 + 刷新基金卡详情
+    (async () => {
+      try {
+        await loadFeishuFunds();
+      } catch(_) {}
+      const allFunds = data.fund_valuation_temp || FALLBACK.fund_valuation_temp;
+      updateWatchSummary(allFunds);
+      const region = document.getElementById('fundsRegion');
+      if (region && region.children.length) {
+        try {
+          const watched = getWatchedFunds(allFunds).map(f => mergeFeishuIntoFund(f));
+          region.innerHTML = watched.map(f => renderFundCardWithFeishu(f, null, true)).join('');
+          wireFundInfoToggles(region);
+          if (LoveNest.initReveal) LoveNest.initReveal();
+        } catch(_) {}
+      }
+    })();
     LoveNest.loadContentForPage();
   });
 </script>

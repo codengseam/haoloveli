@@ -1,0 +1,28 @@
+# =========================================================================
+# 飞书基金数据代理服务 Dockerfile
+# 启动后监听 8787，提供 GET /api/feishu/funds
+# 需注入 LARK_APP_ID / LARK_APP_SECRET（可用 docker-compose 的 env_file 或 .env）
+# =========================================================================
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# 先只拷贝 requirements，利用 Docker 层缓存
+COPY server/requirements.txt ./server/requirements.txt
+RUN pip install --no-cache-dir -r server/requirements.txt \
+    && rm -rf /root/.cache/pip
+
+# 再拷贝代理源码
+COPY server/proxy_fund_feishu.py ./server/proxy_fund_feishu.py
+
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8787
+
+# 用 gunicorn 跑（比 flask 自带 server 稳），fallback 到 flask dev server
+RUN pip install --no-cache-dir gunicorn 2>/dev/null || true
+CMD sh -c 'if command -v gunicorn >/dev/null 2>&1; then \
+      exec gunicorn --bind 0.0.0.0:${PORT:-8787} --workers 2 --threads 4 --timeout 30 \
+        --chdir /app "server.proxy_fund_feishu:create_app()"; \
+    else \
+      exec python3 /app/server/proxy_fund_feishu.py; \
+    fi'
