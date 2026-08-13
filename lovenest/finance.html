@@ -1399,22 +1399,58 @@
         ? `<br><span style="font-size:.76rem">飞书数据更新于 ${esc(feishuTs.toLocaleString('zh-CN'))}</span>` : '';
       el.innerHTML = `已跟踪 <b>${watched.length}</b> / ${allFunds.length} 只基金 · 数据来自 <b>飞书表格 + 蛋卷真实估值</b>${tsStr}`;
     }
-    /* ---------- 飞书最新数据 JSON 加载 ---------- */
+    /* ---------- 飞书最新数据：先代理 API，后本地导出 JSON ---------- */
+    function _getFeishuProxyCfg() {
+      // 读 config：要么是 Supabase Edge，要么是相对路径 /api
+      var cfg = window.LOVENEST_SUPABASE_CONFIG || {};
+      var base = (typeof cfg.FEISHU_PROXY_BASE === 'string') ? cfg.FEISHU_PROXY_BASE : '';
+      var path = (typeof cfg.FEISHU_PROXY_PATH === 'string') ? cfg.FEISHU_PROXY_PATH : '/feishu-';
+      var token = cfg.DEFAULT_SPREADSHEET_TOKEN || 'K6YDwZGP8im24Ek5WnecdJH5nrd';
+      var sheet = cfg.DEFAULT_SHEET_ID || '4e7337';
+      // base 为空时，使用相对路径 /api（配合 Nginx 反代到 Flask 代理）
+      var prefix = base ? (base.replace(/\/$/, '') + path) : ('/api' + path);
+      return {
+        endpoint: prefix + 'funds' +
+          '?spreadsheet_token=' + encodeURIComponent(token) +
+          '&sheet_id=' + encodeURIComponent(sheet),
+        base: base,
+      };
+    }
     async function loadFeishuFunds() {
       if (_feishuFundsCache != null) return _feishuFundsCache;
+      var cfg = _getFeishuProxyCfg();
+      // 第一优先：飞书代理（Flask / Supabase Edge）
+      if (cfg.endpoint) {
+        try {
+          var res = await fetch(cfg.endpoint, { cache: 'no-cache' });
+          if (res.ok) {
+            var j = await res.json();
+            if (j && j.ok && Array.isArray(j.items)) {
+              _feishuFundsCache = j;
+              _feishuFundsCache.byCode = {};
+              j.items.forEach(function(it){
+                if (it && it.code) _feishuFundsCache.byCode[String(it.code).trim()] = it;
+              });
+              _feishuFundsCache._from = cfg.base ? 'supabase-edge' : 'flask-proxy';
+              return _feishuFundsCache;
+            }
+          }
+        } catch(e) { /* 代理失败降级到本地 JSON */ }
+      }
+      // 第二优先：本地同步脚本导出的 data/feishu_funds.json
       try {
         const res = await fetch('data/feishu_funds.json', { cache: 'no-cache' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const j = await res.json();
         if (j && Array.isArray(j.items)) {
           _feishuFundsCache = j;
-          // 合成 code→item 的快速索引
           _feishuFundsCache.byCode = {};
           j.items.forEach(it => { if (it && it.code) _feishuFundsCache.byCode[String(it.code).trim()] = it; });
+          _feishuFundsCache._from = 'local-json';
           return _feishuFundsCache;
         }
       } catch(e) { /* 读取失败则忽略 */ }
-      _feishuFundsCache = { items: [], byCode: {}, exported_at: null };
+      _feishuFundsCache = { items: [], byCode: {}, exported_at: null, _from: 'none' };
       return _feishuFundsCache;
     }
     function mergeFeishuIntoFund(fund) {
@@ -1733,6 +1769,13 @@
         const apiN = Object.values(result.tempFrom).filter(x => x === 'api').length;
         const feishuN = Object.values(result.tempFrom).filter(x => x === 'feishu').length;
         const fallbackN = Object.values(result.tempFrom).filter(x => x === 'fallback').length;
+        const from = (_feishuFundsCache && _feishuFundsCache._from) || 'none';
+        const fromLabel = {
+          'supabase-edge': '🌩️ Supabase Edge（实时拉飞书）',
+          'flask-proxy':   '🪄 私有代理（实时拉飞书）',
+          'local-json':    '📦 本地同步脚本导出',
+          'none':          '— 飞书最新数据未加载',
+        }[from] || from;
         const note = document.createElement('div');
         note.className = 'fund-source reveal';
         note.style.marginBottom = '20px';
@@ -1740,6 +1783,7 @@
           <span>已为 <b class="fund-source__ok">${apiN}</b> 只基金拉取到蛋卷实时估值 ·
           <b>${feishuN}</b> 只取自飞书最新数据 ·
           ${fallbackN > 0 ? `<b class="fund-source__warn">${fallbackN}</b> 只为本地静态（稍后重试）· ` : ''}
+          飞书元数据来源：<b>${esc(fromLabel)}</b>。
           想换其他基金？去点「自定义跟踪哪些基金」按钮就行～</span>`;
         region.parentElement && !region.parentElement.querySelector('.fund-source')
           && region.parentElement.insertBefore(note, region);

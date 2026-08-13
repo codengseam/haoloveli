@@ -21,9 +21,49 @@ services:
     # 容器挂掉自动重启（除非手动 stop）
     restart: unless-stopped
 
+    depends_on:
+      - feishu_proxy
+
+    links:
+      - feishu_proxy
+
     # 健康检查沿用 Dockerfile 中的 HEALTHCHECK
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:7860/ || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  feishu_proxy:
+    # 飞书基金数据代理服务（Flask）
+    # - 前端 FEISHU_PROXY_BASE 留空时，会走 /api/feishu/funds（Nginx 反代到这里）
+    # - LARK_APP_ID / LARK_APP_SECRET 从 .env 读；未设置时容器会启动但接口返回 503，前端自动降级
+    build:
+      context: .
+      dockerfile: server/Dockerfile.proxy
+    image: love-nest-feishu-proxy:latest
+
+    container_name: love-nest-feishu-proxy
+    expose:
+      - "8787"
+    ports:
+      - "8787:8787"   # 开发调试用：http://localhost:8787/health
+
+    restart: unless-stopped
+
+    environment:
+      - PORT=8787
+      - BIND=0.0.0.0
+      - LARK_APP_ID=${LARK_APP_ID:-}
+      - LARK_APP_SECRET=${LARK_APP_SECRET:-}
+      - DEFAULT_SPREADSHEET_TOKEN=${DEFAULT_SPREADSHEET_TOKEN:-K6YDwZGP8im24Ek5WnecdJH5nrd}
+      - DEFAULT_SHEET_ID=${DEFAULT_SHEET_ID:-4e7337}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      - CACHE_TTL_SEC=${CACHE_TTL_SEC:-600}
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8787/health || exit 1"]
       interval: 30s
       timeout: 3s
       retries: 3
