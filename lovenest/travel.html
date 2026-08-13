@@ -1185,8 +1185,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     return `<div class="trans-ai-badge ${cls}"><span class="ico">${ico}</span><b>AI 推荐：${mode}</b><span class="faint" style="margin-left:8px;font-style:italic;font-size:.72rem">${reason}</span></div>`;
   }
 
-  function renderGuideAccordion(guides) {
-    if (!guides) return `<div class="card card--inset center"><p class="faint italic">攻略内容为空</p></div>`;
+  function renderGuideAccordion(place) {
+    if (!place || !place.guides) return `<div class="card card--inset center"><p class="faint italic">攻略内容为空</p></div>`;
+    const guides = place.guides;
+    const sourceLinks = place.source_links || place.sourceLinks || [];
     const g = Array.isArray(guides) ? guides[0] : guides;
     if (!g) return `<div class="card card--inset center"><p class="faint italic">攻略内容为空</p></div>`;
 
@@ -1376,7 +1378,31 @@ document.addEventListener("DOMContentLoaded", async function () {
       </details>
     `;
 
-    return `<div class="guides-accordion">${mvHtml}${itHtml}${pitHtml}${foodHtml}${budHtml}${phoHtml}</div>`;
+    const slHtml = sourceLinks.length ? `
+      <details open style="border:2px solid var(--sage-soft);border-radius:var(--r-sm);margin-bottom:10px;overflow:hidden">
+        <summary style="padding:12px 16px;background:linear-gradient(90deg,var(--sage-tint),#fff);cursor:pointer;font-family:var(--ff-display);font-weight:600;display:flex;align-items:center;gap:10px;color:var(--sage-deep)">
+          📚 信息来源 · 真实网页链接（${sourceLinks.length}）
+          <span style="font-weight:400;font-size:.78rem;color:var(--muted);margin-left:auto">每条内容均来自真实网页，可点击标题跳转原帖核实</span>
+        </summary>
+        <div style="padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">
+          ${sourceLinks.map((s,si) => `
+            <div style="background:var(--white);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:14px 16px;box-shadow:0 1px 0 rgba(0,0,0,.02)">
+              <div style="font-size:.76rem;color:var(--muted);margin-bottom:4px">来源 ${si+1} · <b style="color:var(--terracotta-deep)">${esc(s.platform||'')}</b></div>
+              <a href="${esc(s.url||'#')}" target="_blank" rel="noopener noreferrer"
+                 style="display:block;color:var(--ink);font-weight:600;font-size:.92rem;line-height:1.45;text-decoration:none;border-bottom:1px dashed var(--sage);padding-bottom:6px;margin-bottom:8px">
+                📄 ${esc(s.title||'')}
+              </a>
+              <div style="font-size:.78rem;font-weight:600;color:var(--sage-deep);margin-bottom:4px">🔑 网页核心观点提取：</div>
+              <ul style="margin:0;padding-left:16px;line-height:1.65;color:var(--text);font-size:.82rem">
+                ${(s.core_points||[]).map(cp => `<li style="margin-bottom:3px">${esc(cp)}</li>`).join('') || '<li>（无）</li>'}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      </details>
+    ` : '';
+
+    return `<div class="guides-accordion">${mvHtml}${itHtml}${pitHtml}${foodHtml}${budHtml}${phoHtml}${slHtml}</div>`;
   }
 
   function openManualSearchModal(placeId, placeName) {
@@ -1527,7 +1553,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
 
           if (guidesToUse) {
-            aiWrap.innerHTML = `<div class="ai-badge-big" style="margin-bottom:14px"><span class="ico">📚</span><div class="body"><div class="main">从知识库加载完成</div><div class="reason">「${esc(place.name)}」已有攻略数据，跳过搜索</div></div></div>` + renderGuideAccordion(guidesToUse);
+            aiWrap.innerHTML = `<div class="ai-badge-big" style="margin-bottom:14px"><span class="ico">📚</span><div class="body"><div class="main">从知识库加载完成</div><div class="reason">「${esc(place.name)}」已有攻略数据，跳过搜索</div></div></div>` + renderGuideAccordion(place);
             saveWishlistData();
           } else {
             aiWrap.innerHTML = '';
@@ -2931,7 +2957,7 @@ document.addEventListener("DOMContentLoaded", async function () {
               </div>
               <div class="source-summary-wrap" id="srcSum-${esc(p.id)}" style="display:none;margin-bottom:14px"></div>
               <div class="ai-guide-area" id="aiArea-${esc(p.id)}">
-                ${(p.guides && Object.keys(p.guides).length) ? renderGuideAccordion(p.guides) : `
+                ${(p.guides && Object.keys(p.guides).length) ? renderGuideAccordion(p) : `
                   <div class="card card--inset" style="padding:16px 18px;background:var(--bg-soft);border-style:dashed">
                     <p class="faint" style="font-size:.88rem;line-height:1.75;font-style:italic">
                       👆 点击上方「AI 一键生成攻略」<br/>
