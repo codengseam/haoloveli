@@ -294,10 +294,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     return phases;
   }
 
-  /* ---------- Render phases + timeline ---------- */
-  function renderPhases(phases) {
+  /* ---------- Render phases + timeline ----------
+     instant = true 时直接以完成态渲染（不重播 reveal 进场动画），
+     用于 watch 触发的局部刷新，避免整块内容"一闪一闪"抖动。 */
+  function renderPhases(phases, instant) {
     const region = document.getElementById("phases-region");
     if (!region) return;
+    const revealCls = instant ? "reveal in" : "reveal";
 
     const html = phases.map(function (phase) {
       const itemsHtml = (phase.items || []).map(function (item, idx) {
@@ -325,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       }).join("");
 
       return '' +
-        '<div class="phase reveal">' +
+        '<div class="phase ' + revealCls + '">' +
           '<div class="phase__head">' +
             '<span class="phase__year">' + esc(phase.year) + '</span>' +
             '<span class="phase__label">' + esc(phase.label) + '</span>' +
@@ -336,7 +339,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }).join("");
 
     region.innerHTML = html +
-      '<div class="callout reveal">婚礼只是其中一个节点，权重与其他人生目标平等——别让它吞掉整个未来。</div>';
+      '<div class="callout ' + revealCls + '">婚礼只是其中一个节点，权重与其他人生目标平等——别让它吞掉整个未来。</div>';
 
     // 绑定 checkbox 点击 → upsert DB
     region.querySelectorAll('.tl-done[type="checkbox"]').forEach(cb => {
@@ -434,11 +437,22 @@ document.addEventListener("DOMContentLoaded", async function () {
   renderPhases(phases);
   renderWeddingPrep(data.wedding_prep);
 
+  // 记录当前已渲染数据的指纹：watch 触发但数据没变时跳过重渲染，
+  // 避免整块 innerHTML 重建 + reveal 动画重播造成的闪烁抖动
+  let phasesSignature = JSON.stringify(phases);
+
   // ✨ watch：其他设备改了这台自动刷新
   LoveNest.db.watch('milestone_items', async () => {
-    phases = await mergeMilestonesFromDB(JSON.parse(JSON.stringify(FALLBACK.phases || [])));
-    renderPhases(phases);
-    if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
+    try {
+      const next = await mergeMilestonesFromDB(JSON.parse(JSON.stringify(FALLBACK.phases || [])));
+      const sig = JSON.stringify(next);
+      if (sig === phasesSignature) return; // 数据无变化：跳过重渲染
+      phasesSignature = sig;
+      phases = next;
+      renderPhases(phases, true); // 即时更新：不重播 reveal 动画
+    } catch (e) {
+      console.warn('[milestones] watch 刷新失败:', e);
+    }
   });
 
   // wire scroll-reveal for newly injected elements

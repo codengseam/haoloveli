@@ -247,21 +247,47 @@
     }
   }
 
-  /* ---------- 从云端拉表全量，与本地缓存合并 ---------- */
-  async function refreshTableFromRemote(table, keyField) {
+  /* ---------- 深比较：两行/两行数组是否语义相等（与键顺序无关） ---------- */
+  function rowsEqual(a, b) {
+    if (a === b) return true;
+    if (!a || !b || typeof a !== "object" || typeof b !== "object") return false;
+    const ka = Object.keys(a).sort();
+    const kb = Object.keys(b).sort();
+    if (ka.length !== kb.length || ka.some((k, i) => k !== kb[i])) return false;
+    return ka.every(k => JSON.stringify(a[k]) === JSON.stringify(b[k]));
+  }
+  function rowsArrayEqual(a, b) {
+    if (a === b) return true;
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (!rowsEqual(a[i], b[i])) return false;
+    return true;
+  }
+
+  /* ---------- 从云端拉表全量，与本地缓存合并（返回 {rows, changed}）----------
+     changed = 数据是否真的变化。只有变化才回写缓存、才通知订阅者：
+     旧实现无条件 emitWatch，而 emitWatch 又会调 list()，形成
+     list → refresh → emitWatch → list → … 无限反馈循环，
+     页面被反复重渲染，表现为"一闪一闪的抖动"。 */
+  async function refreshTableInternal(table, keyField) {
     const client = ensureClient();
     const cached = cacheRead(table) || [];
-    if (!client) return cached;
+    if (!client) return { rows: cached, changed: false };
     try {
       const { data, error } = await client.from(table).select("*").eq("couple_id", CFG.COUPLE_ID);
       if (error) throw error;
       const merged = mergeRowsByKey(cached, data || [], keyField || "id");
-      cacheWrite(table, merged);
-      return merged;
+      const changed = !rowsArrayEqual(merged, cached);
+      if (changed) cacheWrite(table, merged);
+      return { rows: merged, changed };
     } catch (e) {
       console.warn("[LoveNest DB] refreshTableFromRemote 失败 " + table + ":", e.message || e);
-      return cached;
+      return { rows: cached, changed: false };
     }
+  }
+  /* 对外保持原签名（deployment.html / migration 工具按 rows 使用） */
+  async function refreshTableFromRemote(table, keyField) {
+    const r = await refreshTableInternal(table, keyField);
+    return r.rows;
   }
 
   /* ---------- 对外 API ---------- */
@@ -320,9 +346,9 @@
       // 只刷新变更较多的表，避免无意义请求
       ["bank_records", "milestone_items", "lovemap_answers", "lovemap_cards", "lovemap_magic5h", "love_notes", "conflict_reviews", "monthly_goals", "wedding_decisions", "food_preferences"].forEach(t => {
         const keyDef = COLD_TABLES.find(x => x[0] === t);
-        refreshTableFromRemote(t, keyDef ? keyDef[1] : "id").then(() => {
-          // 通知 watch 订阅者
-          emitWatch(t);
+        refreshTableInternal(t, keyDef ? keyDef[1] : "id").then(r => {
+          // 数据真的变了才通知 watch 订阅者，避免无意义的重渲染
+          if (r.changed) emitWatch(t);
         }).catch(() => {});
       });
     }, CFG.REFRESH_INTERVAL_MS || 120000);
@@ -340,8 +366,12 @@
       // 缓存空 → 等云端一次
       rows = await refreshTableFromRemote(table, keyDef ? keyDef[1] : "id");
     } else if (client) {
-      // 缓存有值 → 后台异步刷新
-      refreshTableFromRemote(table, keyDef ? keyDef[1] : "id").then(() => emitWatch(table)).catch(() => {});
+      // 缓存有值 → 后台异步刷新；仅当数据真正变化才通知订阅者
+      // （旧实现无条件 emitWatch，而 emitWatch 又会调 list()，
+      //   形成 list→refresh→emitWatch→list… 无限循环，页面反复重渲染闪烁）
+      refreshTableInternal(table, keyDef ? keyDef[1] : "id").then(r => {
+        if (r.changed) emitWatch(table);
+      }).catch(() => {});
     }
     // filters: { field: val } 精确匹配
     if (filters && typeof filters === "object") {
@@ -392,9 +422,12 @@
           if (data) {
             const c = cacheRead(table) || [];
             const idx = c.findIndex(x => String(x[kf]) === String(data[kf]));
-            if (idx >= 0) c[idx] = data; else c.push(data);
-            cacheWrite(table, c);
-            emitWatch(table);
+            const before = idx >= 0 ? c[idx] : null;
+            if (!rowsEqual(before, data)) {
+              if (idx >= 0) c[idx] = data; else c.push(data);
+              cacheWrite(table, c);
+              emitWatch(table);
+            }
           }
         } catch (e) {
           console.warn("[LoveNest DB] insert 写入云端失败，已加入离线队列:", e.message || e);
@@ -429,9 +462,12 @@
           if (data) {
             cache = cacheRead(table) || [];
             const i2 = cache.findIndex(x => String(x[kf]) === String(data[kf]));
-            if (i2 >= 0) cache[i2] = data; else cache.push(data);
-            cacheWrite(table, cache);
-            emitWatch(table);
+            const before = i2 >= 0 ? cache[i2] : null;
+            if (!rowsEqual(before, data)) {
+              if (i2 >= 0) cache[i2] = data; else cache.push(data);
+              cacheWrite(table, cache);
+              emitWatch(table);
+            }
           }
         } catch (e) {
           console.warn("[LoveNest DB] upsert 写入云端失败，已加入离线队列:", e.message || e);
@@ -503,20 +539,28 @@
 
   /* ---------- watch（简单轮询式 + 写操作内触发 emit，够用）---------- */
   const watchers = new Map();  // table → Set<fn>
+  const emitTimers = new Map(); // table → 防抖 timer id
   function watch(table, onChange) {
     if (!watchers.has(table)) watchers.set(table, new Set());
     watchers.get(table).add(onChange);
     return () => { watchers.get(table)?.delete(onChange); };
   }
   function emitWatch(table) {
-    const set = watchers.get(table);
-    if (!set || !set.size) return;
-    // 给它最新 rows
-    list(table).then(rows => {
-      set.forEach(fn => {
-        try { fn(rows); } catch (e) { console.warn(e); }
+    if (!watchers.has(table) || !watchers.get(table).size) return;
+    // 250ms 防抖：合并短时间内的密集触发（如首次访问批量 seed、连续 upsert），
+    // 避免订阅页面在极短时间内被反复重渲染造成闪烁抖动
+    if (emitTimers.has(table)) clearTimeout(emitTimers.get(table));
+    emitTimers.set(table, setTimeout(() => {
+      emitTimers.delete(table);
+      // 给它最新 rows
+      list(table).then(rows => {
+        const live = watchers.get(table);
+        if (!live || !live.size) return;
+        live.forEach(fn => {
+          try { fn(rows); } catch (e) { console.warn(e); }
+        });
       });
-    });
+    }, 250));
   }
 
   /* ---------- 挂载到 LoveNest ---------- */
