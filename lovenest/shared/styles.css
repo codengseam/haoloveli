@@ -38,6 +38,15 @@
   --line:#D7CFC0;            /* hairline */
   --line-soft:#E2DCCE;
 
+  /* 文档阅读弹窗（modal doc）专用中性色 */
+  --ink-2:#4B4640;           /* 正文墨色 */
+  --brand-ink:#3A3631;       /* 标题/表头深墨 */
+  --brand-rose:#B85C6B;      /* 玫红强调（引文卡/h3侧线） */
+  --brand-rose-tint:#F2DDE1; /* 玫红浅底 */
+  --sand-1:#F8F4EC;          /* 表头/行内码浅沙底 */
+  --sand-2:#D7CFC0;          /* 表格线 */
+  --sand-3:#CBBFAE;          /* 虚线/分隔线 */
+
   --white:#FCFAF5;
   --shadow-sm:0 1px 2px rgba(58,54,49,.04);
   --shadow:0 4px 18px rgba(58,54,49,.06);

@@ -460,6 +460,36 @@
       "tags": ["finance", "knowledge"],
       "pages": ["finance"],
       "summary": "博多·舍费尔的洞见：赚钱是游戏。带着压力和羞耻感玩，只会越玩越累；带着好奇心和规则感玩，才能玩出乐趣、玩出结果。"
+    },
+    {
+      "id": "nest-wealth-formula",
+      "file": "docs/books/爱巢财商专栏/财富哲学_一个公式四个齿轮.md",
+      "title": "🌱 财富哲学 · 一个公式，四个齿轮",
+      "author": "编委会",
+      "type": "book",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "财富 = 专长 × 杠杆 × 复利 × 健康：用注意力投资专长，用杠杆放大专长，用复利等待时间，最终用健康去享受这一切。"
+    },
+    {
+      "id": "nest-pension-tax",
+      "file": "docs/books/爱巢财商专栏/家庭实操_个人养老金税优小算盘.md",
+      "title": "🧮 个人养老金 · 税优小算盘",
+      "author": "编委会",
+      "type": "planning",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "边际税率 ≥20% → 顶格买，12月31日前存满1.2万。打开个税APP五步查出应纳税所得额，对着144,000这条线做决定。"
+    },
+    {
+      "id": "nest-japan-career",
+      "file": "docs/books/爱巢财商专栏/职业规划_以日为鉴的方向盘.md",
+      "title": "🧭 以日为鉴 · 职业的方向盘",
+      "author": "编委会",
+      "type": "note",
+      "tags": ["finance", "knowledge", "jingdu"],
+      "pages": ["finance"],
+      "summary": "日本失去三十年的职业分化给咱家的启示：技术积累是抗周期资产，下一步一起往壁垒更深的方向深耕。"
     }
   ]
 }
