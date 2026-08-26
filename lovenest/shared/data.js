@@ -2240,6 +2240,7 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
   /* 公开 */
   window.LoveNest = window.LoveNest || {};
   window.LoveNest.loadContentForPage = loadContentForPage;
+  window.LoveNest.openDoc = openDoc;
   window.LoveNest.renderMd = renderMd;
 
   /* ============================================================
