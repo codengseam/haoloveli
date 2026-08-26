@@ -14,6 +14,75 @@
   .flip__back--neutral{background:var(--bg-soft);border-color:var(--line-soft)}
   .flip__back--rose .flip__list li::before{color:var(--rose-deep)}
   .flip__back--neutral .flip__list li::before{color:var(--taupe)}
+
+  /* ===== 04 每周 5 小时 · 复利（周打卡，移动优先）===== */
+  .fh-wrap{max-width:720px;margin:0 auto}
+  .fh-nav{display:flex;align-items:center;justify-content:center;gap:16px}
+  .fh-nav__btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--white);color:var(--muted);font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .25s var(--ease);flex-shrink:0}
+  .fh-nav__btn:hover{border-color:var(--sage);color:var(--sage-deep);background:var(--sage-tint);transform:translateY(-1px)}
+  .fh-nav__btn:active{transform:scale(.92)}
+  .fh-nav__label{text-align:center;min-width:172px}
+  .fh-nav__week{font-family:var(--ff-display);font-size:1.12rem;font-weight:600;color:var(--ink);letter-spacing:.02em}
+  .fh-nav__range{font-size:.78rem;color:var(--faint);letter-spacing:.08em;margin-top:1px}
+  .fh-badge{display:inline-block;vertical-align:2px;margin-left:8px;font-size:.68rem;font-family:var(--ff-body);font-weight:500;letter-spacing:.1em;padding:2px 10px;border-radius:var(--r-pill);background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage-soft)}
+  .fh-progress{display:flex;align-items:center;justify-content:center;gap:10px 16px;flex-wrap:wrap;margin:18px 0 26px}
+  .fh-progress__dots{display:flex;gap:7px}
+  .fh-dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--taupe-soft);transition:all .35s var(--ease)}
+  .fh-dot.on{background:var(--sage-deep);border-color:var(--sage-deep);transform:scale(1.2)}
+  .fh-progress__text{font-size:.84rem;color:var(--muted)}
+  .fh-today{padding:6px 16px;border-radius:var(--r-pill);font-size:.8rem;border:1px solid var(--rose-soft);color:var(--rose-deep);background:transparent;transition:all .25s var(--ease)}
+  .fh-today:hover{background:var(--rose-tint)}
+  .fh-list{display:flex;flex-direction:column;gap:14px}
+  .fh-item{display:flex;gap:16px;align-items:flex-start;background:var(--white);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:20px;box-shadow:var(--shadow-sm);transition:border-color .35s var(--ease),background .35s var(--ease),box-shadow .35s var(--ease);animation:fhIn .5s var(--ease) both}
+  .fh-wrap:not(.in) .fh-item{animation-play-state:paused}
+  @keyframes fhIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .fh-item:hover{border-color:var(--sage-soft);box-shadow:var(--shadow)}
+  .fh-item.done{background:linear-gradient(180deg,var(--white),var(--sage-tint));border-color:var(--sage-soft)}
+  .fh-check{width:46px;height:46px;border-radius:50%;flex-shrink:0;border:1.5px dashed var(--taupe-soft);background:transparent;color:var(--taupe);font-family:var(--ff-display);font-size:1.05rem;font-weight:600;display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease)}
+  .fh-check:hover{border-color:var(--sage-deep);color:var(--sage-deep);transform:scale(1.06)}
+  .fh-check:active{transform:scale(.9)}
+  .fh-check__tick{display:none;font-size:1.1rem;line-height:1}
+  .fh-item.done .fh-check{border:0;background:var(--sage-deep);color:var(--white);animation:fhPop .4s var(--ease)}
+  .fh-item.done .fh-check:hover{background:var(--sage)}
+  .fh-item.done .fh-check__num{display:none}
+  .fh-item.done .fh-check__tick{display:inline}
+  @keyframes fhPop{0%{transform:scale(.8)}55%{transform:scale(1.14)}100%{transform:scale(1)}}
+  .fh-body{flex:1;min-width:0}
+  .fh-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .fh-title{font-family:var(--ff-display);font-size:1.08rem;font-weight:600;color:var(--ink);margin:0}
+  .fh-item.done .fh-title{color:var(--sage-deep)}
+  .fh-time{font-size:.72rem;letter-spacing:.04em;color:var(--muted);background:var(--bg-soft);border:1px solid var(--line-soft);border-radius:var(--r-pill);padding:2px 11px;white-space:nowrap}
+  .fh-item.done .fh-time{background:var(--sage-tint);border-color:var(--sage-soft);color:var(--sage-deep)}
+  .fh-desc{margin:7px 0 0;font-size:.9rem;line-height:1.75;color:var(--muted)}
+  .fh-note-toggle{margin-top:12px;background:none;border:0;padding:2px 0;font-size:.8rem;color:var(--sage-deep);letter-spacing:.03em;border-bottom:1px dashed transparent;transition:border-color .25s}
+  .fh-note-toggle:hover{border-bottom-color:var(--sage-soft)}
+  .fh-note-preview{margin:10px 0 0;padding:8px 14px;background:var(--bg-soft);border-left:3px solid var(--sage-soft);border-radius:0 10px 10px 0;font-size:.82rem;color:var(--muted);line-height:1.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+  .fh-note-editor{display:none;margin-top:10px}
+  .fh-note-editor.open{display:block}
+  .fh-note-ta{width:100%;min-height:76px;padding:10px 14px;border:1px solid var(--line-soft);border-radius:10px;background:var(--white);font-family:inherit;font-size:.86rem;line-height:1.7;color:var(--text);resize:vertical;transition:border-color .25s}
+  .fh-note-ta:focus{outline:none;border-color:var(--sage)}
+  .fh-note-meta{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+  .fh-note-status{font-size:.72rem;color:var(--sage-deep)}
+  .fh-note-savedat{font-size:.72rem;color:var(--faint)}
+  @media (max-width:640px){
+    .fh-item{padding:16px;gap:12px}
+    .fh-check{width:40px;height:40px;font-size:.95rem}
+    .fh-nav__btn{width:42px;height:42px}
+    .fh-nav{gap:12px}
+    .fh-title{font-size:1.02rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .fh-item,.fh-item.done .fh-check{animation:none}
+  }
+
+  /* 作答区双栏在窄屏折叠为单栏 */
+  .qa-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .qa-cols--mt{margin-top:8px}
+  @media (max-width:720px){.qa-cols{grid-template-columns:1fr}}
+  /* 触屏设备输入字号 ≥16px，避免 iOS 聚焦时页面缩放 */
+  @media (hover:none) and (pointer:coarse){
+    textarea,input[type="search"],input[type="text"]{font-size:16px !important}
+  }
 </style>
 </head>
 <body data-page="love-map">
@@ -90,9 +159,13 @@
       <div class="section__head reveal">
         <span class="section__num">04</span>
         <h2 class="section__title">每周 5 小时 · 复利</h2>
-        <p class="section__desc">幸福伴侣每周只需约 5 小时刻意连接——小而稳定的复利，远胜偶尔的大动作。</p>
+        <p class="section__desc">幸福伴侣每周只需约 5 小时刻意连接——小而稳定的复利，远胜偶尔的大动作。点亮圆圈完成打卡，笔记自动同步。</p>
       </div>
-      <div class="grid grid--3" id="fivehours-grid"></div>
+      <div class="fh-wrap reveal" id="fivehours-wrap">
+        <div class="fh-nav" id="fh-nav"></div>
+        <div class="fh-progress" id="fh-progress"></div>
+        <div class="fh-list" id="fivehours-grid"></div>
+      </div>
       <div class="callout reveal" style="max-width:720px;margin:28px auto 0">
         一天 10 分钟，10 年就是 <strong>600 多小时</strong>——别人看不见的余额。
       </div>
@@ -556,7 +629,7 @@
       +   '</label>'
       +   '<button type="button" class="btn btn--primary btn--small qa-save" style="margin-left:auto">💾 保存答案</button>'
       + '</div>'
-      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">'
+      + '<div class="qa-cols qa-cols--mt">'
       +   '<div>'
       +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
       +       '<span class="tag tag--him" style="margin:0">他 · 师豪</span>'
@@ -698,7 +771,7 @@
       +   '</div>'
 
       // 双栏编辑
-      +   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">'
+      +   '<div class="qa-cols">'
       // 他
       +   '<div style="padding:18px 20px;border-radius:16px;background:linear-gradient(180deg,#fbf5f2 0%,#fff 100%);border:1px solid #ecd7cb">'
       +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
@@ -1029,160 +1102,257 @@
     }
   }
 
-  /* ✨ 工具：获取/加减 ISO 周号（如 2026-W06）*/
-  function currentWeekISO(d) {
-    d = d || new Date();
-    var target = new Date(d.valueOf());
-    var dayNr = (d.getDay() + 6) % 7;  // 周一 = 0
-    target.setDate(target.getDate() - dayNr + 3);
-    var firstThursday = target.valueOf();
-    target.setMonth(0, 1);
-    if (target.getDay() !== 4) {
-      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-    }
-    var week = 1 + Math.ceil((firstThursday - target) / 604800000);
-    var year = target.getFullYear();
-    return year + '-W' + (week < 10 ? '0' + week : '' + week);
+  /* ✨ 工具：ISO 周号与周一日期互转（基于日期运算，正确处理跨年与 53 周年份）*/
+  function weekMonday(d) {
+    d = new Date(d);
+    var dayNr = (d.getDay() + 6) % 7;               // 周一 = 0
+    d.setDate(d.getDate() - dayNr);
+    d.setHours(0, 0, 0, 0);
+    return d;
   }
+  function mondayToWeekISO(monday) {
+    var thursday = new Date(monday.getTime() + 3 * 86400000);            // 周四决定归属年份
+    var week1Monday = weekMonday(new Date(thursday.getFullYear(), 0, 4)); // 1/4 恒在第 1 周
+    var week = 1 + Math.round((thursday - week1Monday) / 604800000);
+    return thursday.getFullYear() + '-W' + (week < 10 ? '0' + week : '' + week);
+  }
+  function weekISOToMonday(iso) {
+    var m = /^(\d{4})-W(\d{2})$/.exec(String(iso || ''));
+    if (!m) return weekMonday(new Date());
+    var week1Monday = weekMonday(new Date(Number(m[1]), 0, 4));
+    return new Date(week1Monday.getTime() + (Number(m[2]) - 1) * 604800000);
+  }
+  function currentWeekISO(d) { return mondayToWeekISO(weekMonday(d || new Date())); }
   function addWeekISO(iso, delta) {
-    var m = /^(\d{4})-W(\d{2})$/.exec(iso);
-    if (!m) return currentWeekISO();
-    var year = Number(m[1]);
-    var week = Number(m[2]) + Number(delta || 0);
-    // 简单的上下界：week 1~53
-    if (week < 1) { year -= 1; week = 52; }
-    if (week > 53) { year += 1; week = 1; }
-    return year + '-W' + (week < 10 ? '0' + week : '' + week);
+    return mondayToWeekISO(new Date(weekISOToMonday(iso).getTime() + (Number(delta) || 0) * 604800000));
+  }
+  /* 行内容签名：用于识别「本机保存的回声」，避免 watch 触发无谓的全量重渲染 */
+  function fhRowsSig(rows) {
+    return (rows || []).slice().sort(function (a, b) { return Number(a.activity_index) - Number(b.activity_index); })
+      .map(function (r) { return [r.activity_index, r.checked ? 1 : 0, r.note || ''].join('|'); }).join(';');
   }
 
-  /* 04 每周 5 小时 → 5 张 plain 卡（含周切换 + 打卡 checkbox + 备注）*/
-  function renderFiveHours(data, weekMap) {
-    weekMap = weekMap || new Map();  // key = activity_index, value = row
-    var el = document.getElementById("fivehours-grid");
-    if (!el) return;
+  /* 04 每周 5 小时 · 复利：周导航 + 仪式清单（圆圈打卡 + 笔记自动保存，无原生复选框）*/
+  function fhPartMeta(p) {
+    var bits = String(p.part || '').split('·');
+    var name = (bits[0] || '').trim();
+    var time = bits.length > 1 ? bits.slice(1).join('·').trim().replace(/^~\s*/, '约 ') : '';
+    return { name: name, time: time };
+  }
+  function fhMinutes(text) {
+    var s = String(text || '');
+    var h = /(\d+)\s*小时/.exec(s), m = /(\d+)\s*分/.exec(s);
+    return (h ? Number(h[1]) * 60 : 0) + (m ? Number(m[1]) : 0);
+  }
+  function fhDuration(min) {
+    if (!min) return '0 分钟';
+    var h = Math.floor(min / 60), r = min % 60;
+    if (h && r) return h + ' 小时 ' + r + ' 分';
+    return h ? h + ' 小时' : r + ' 分钟';
+  }
+
+  function renderFiveHours(data) {
+    var navEl = document.getElementById('fh-nav');
+    var progEl = document.getElementById('fh-progress');
+    var el = document.getElementById('fivehours-grid');
+    if (!navEl || !progEl || !el) return;
     var parts = data.magic_five_hours || [];
-    // 顶栏：上一周 / 当前周 / 下一周
-    var head = document.getElementById("fivehours-head") || (function(){
-      var wrap = document.createElement('div');
-      wrap.id = 'fivehours-head';
-      wrap.className = 'reveal';
-      wrap.style.cssText = 'max-width:720px;margin:0 auto 20px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap';
-      el.parentNode.insertBefore(wrap, el);
-      return wrap;
-    })();
-    head.innerHTML = ''
-      + '<button type="button" class="btn btn--ghost btn--small" id="fh-prev">← 上一周</button>'
-      + '<div style="font-size:15px;font-weight:500;color:var(--taupe)">周：<span id="fh-week" style="color:var(--text);font-weight:700"></span> '
-      +   '<span class="tag tag--both" style="margin-left:6px">已完成 <span id="fh-count">0</span>/5</span></div>'
-      + '<button type="button" class="btn btn--ghost btn--small" id="fh-next">下一周 →</button>'
-      + '<button type="button" class="btn btn--primary btn--small" id="fh-today" style="margin-left:8px">回到本周</button>';
+    renderFiveHours._dataMem = data;
 
     var currentWeek = currentWeekISO();
-    var viewWeek = renderFiveHours._viewWeek || currentWeekISO();
-    document.getElementById('fh-week').textContent = viewWeek + (viewWeek === currentWeek ? '  · 本周' : '');
+    var viewWeek = renderFiveHours._viewWeek || currentWeek;
+    var monday = weekISOToMonday(viewWeek);
+    var sunday = new Date(monday.getTime() + 6 * 86400000);
+    var rangeText = (monday.getMonth() + 1) + '/' + monday.getDate() + ' – ' + (sunday.getMonth() + 1) + '/' + sunday.getDate();
+    var weekNum = Number((/-W(\d+)$/.exec(viewWeek) || [])[1] || 0);
+    var isThisWeek = viewWeek === currentWeek;
 
-    // 拿 DB 里这个 viewWeek 的 5 条
-    var rows = (renderFiveHours._thisWeekRows || []).filter(function(r) { return r.week_iso === viewWeek; });
+    /* 周导航：← [年 · 第 N 周 + 日期区间] → */
+    navEl.innerHTML =
+        '<button type="button" class="fh-nav__btn" id="fh-prev" aria-label="上一周">←</button>'
+      + '<div class="fh-nav__label">'
+      +   '<div class="fh-nav__week">' + esc(viewWeek.slice(0, 4)) + ' 年 · 第 ' + weekNum + ' 周' + (isThisWeek ? '<span class="fh-badge">本周</span>' : '') + '</div>'
+      +   '<div class="fh-nav__range">' + rangeText + '</div>'
+      + '</div>'
+      + '<button type="button" class="fh-nav__btn" id="fh-next" aria-label="下一周">→</button>';
+
+    /* 进度：圆点 + 文案（非本周时附带「回到本周」）*/
+    progEl.innerHTML =
+        '<span class="fh-progress__dots">' + parts.map(function (_, i) {
+          return '<span class="fh-dot" data-i="' + i + '"></span>';
+        }).join('') + '</span>'
+      + '<span class="fh-progress__text" id="fh-progtext"></span>'
+      + (isThisWeek ? '' : '<button type="button" class="fh-today" id="fh-today">↺ 回到本周</button>');
+
+    /* 当前周数据 */
+    var rows = (renderFiveHours._rows || []).filter(function (r) { return r.week_iso === viewWeek; });
     var rowMap = new Map();
-    rows.forEach(function(r) { rowMap.set(Number(r.activity_index), r); });
+    rows.forEach(function (r) { rowMap.set(Number(r.activity_index), r); });
 
-    function countDone() {
-      var c = 0;
-      for (var i = 0; i < parts.length; i++) if ((rowMap.get(i) || {}).checked) c++;
-      return c;
-    }
-
-    el.innerHTML = parts.map(function (p, i) {
+    /* 仪式清单：单列卡片，序号圆圈即打卡按钮 */
+    el.innerHTML = parts.length ? parts.map(function (p, i) {
       var row = rowMap.get(i) || {};
-      return '<article class="card card--plain reveal" data-delay="' + ((i % 3) + 1) + '">'
-        + '<div style="display:flex;gap:12px;align-items:flex-start">'
-        +   '<label style="display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;flex-shrink:0" title="标记本周完成">'
-        +     '<input type="checkbox" class="fh-check" data-i="' + i + '"' + (row.checked ? ' checked' : '') + ' style="width:20px;height:20px;accent-color:var(--sage-deep);margin-top:2px">'
-        +     '<span class="tag tag--sage" style="margin:0">#' + (i+1) + '</span>'
-        +   '</label>'
-        +   '<div style="flex:1;min-width:0">'
-        +     '<h3 style="margin:0 0 4px">' + esc(p.part) + '</h3>'
-        +     '<p style="margin:0">' + esc(p.desc) + '</p>'
-        +     '<textarea rows="3" class="fh-note" data-i="' + i + '" placeholder="本周备注：实际发生了什么、亮点、下次改进……" '
-        +       'style="width:100%;margin-top:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-soft);background:rgba(255,255,255,.8);font-family:inherit;line-height:1.7;resize:vertical;font-size:13px">' + esc(row.note || '') + '</textarea>'
-        +     '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">'
-        +       '<span class="faint" style="font-size:12px" id="fh-msg-' + i + '">' + (row.updated_at ? ('上次保存：' + String(row.updated_at).slice(0, 16).replace('T',' ')) : '尚未记录') + '</span>'
-        +       '<button type="button" class="btn btn--ghost btn--small fh-save" data-i="' + i + '">💾 保存</button>'
+      var meta = fhPartMeta(p);
+      var note = row.note || '';
+      var done = !!row.checked;
+      return '<article class="fh-item' + (done ? ' done' : '') + '" data-i="' + i + '" style="animation-delay:' + (i * 0.07).toFixed(2) + 's">'
+        + '<button type="button" class="fh-check" data-i="' + i + '" aria-pressed="' + done + '" aria-label="打卡 · ' + esc(meta.name).replace(/"/g, '&quot;') + '">'
+        +   '<span class="fh-check__num">' + (i + 1) + '</span>'
+        +   '<span class="fh-check__tick">✓</span>'
+        + '</button>'
+        + '<div class="fh-body">'
+        +   '<div class="fh-head">'
+        +     '<h3 class="fh-title">' + esc(meta.name || p.part || '') + '</h3>'
+        +     (meta.time ? '<span class="fh-time">' + esc(meta.time) + '</span>' : '')
+        +   '</div>'
+        +   '<p class="fh-desc">' + esc(p.desc) + '</p>'
+        +   '<div class="fh-note">'
+        +     '<button type="button" class="fh-note-toggle" data-i="' + i + '">' + (note ? '✎ 编辑笔记' : '✎ 记一笔') + '</button>'
+        +     (note ? '<p class="fh-note-preview" data-i="' + i + '" title="点击展开编辑">' + esc(note) + '</p>' : '')
+        +     '<div class="fh-note-editor" id="fh-editor-' + i + '">'
+        +       '<textarea rows="3" class="fh-note-ta" data-i="' + i + '" aria-label="本周笔记" placeholder="这周实际发生了什么？亮点、感受、下次想怎么做……">' + esc(note) + '</textarea>'
+        +       '<div class="fh-note-meta">'
+        +         '<span class="fh-note-status" id="fh-status-' + i + '"></span>'
+        +         '<span class="fh-note-savedat">' + (row.updated_at ? '上次 ' + String(row.updated_at).slice(0, 10) : '') + '</span>'
+        +       '</div>'
         +     '</div>'
         +   '</div>'
         + '</div>'
         + '</article>';
-    }).join("");
+    }).join('') : '<p class="muted center">暂无数据。</p>';
 
-    var cntEl = document.getElementById('fh-count');
-    if (cntEl) cntEl.textContent = countDone();
+    /* 进度渲染/更新（只动圆点与文案，不重建清单，不打断正在编辑的笔记）*/
+    function updateProgress() {
+      var doneCount = 0, doneMin = 0, targetMin = 0;
+      parts.forEach(function (p, i) {
+        targetMin += fhMinutes(p.part);
+        if ((rowMap.get(i) || {}).checked) { doneCount += 1; doneMin += fhMinutes(p.part); }
+      });
+      progEl.querySelectorAll('.fh-dot').forEach(function (d) {
+        d.classList.toggle('on', !!((rowMap.get(Number(d.getAttribute('data-i'))) || {}).checked));
+      });
+      var txt = document.getElementById('fh-progtext');
+      if (txt) txt.textContent = '已完成 ' + doneCount + '/' + parts.length
+        + (doneCount ? ' · 已存入 ' + fhDuration(doneMin) : (targetMin ? ' · 每周约 ' + fhDuration(targetMin) : ''));
+    }
+    updateProgress();
 
-    // 按钮：上/下周/回到本周
-    document.getElementById('fh-prev').addEventListener('click', function() {
-      renderFiveHours._viewWeek = addWeekISO(viewWeek, -1);
-      var dataMem = renderFiveHours._dataMem || data;
-      var wkMem = renderFiveHours._weekMem || weekMap;
-      renderFiveHours(dataMem, wkMem);
-    });
-    document.getElementById('fh-next').addEventListener('click', function() {
-      renderFiveHours._viewWeek = addWeekISO(viewWeek, 1);
-      var dataMem = renderFiveHours._dataMem || data;
-      var wkMem = renderFiveHours._weekMem || weekMap;
-      renderFiveHours(dataMem, wkMem);
-    });
-    document.getElementById('fh-today').addEventListener('click', function() {
-      renderFiveHours._viewWeek = currentWeekISO();
-      var dataMem = renderFiveHours._dataMem || data;
-      var wkMem = renderFiveHours._weekMem || weekMap;
-      renderFiveHours(dataMem, wkMem);
-    });
-
-    // 保持引用以便后续周切换 / watch 回调重渲
-    renderFiveHours._dataMem = data;
-    renderFiveHours._weekMem = weekMap;
-
-    // 存单个 activity 的函数
+    /* 保存单个仪式（打卡状态 + 笔记一起 upsert）*/
+    var noteTimers = {}, dirty = {}, inFlight = {}, pending = {};
+    function setStatus(i, text) {
+      var s = document.getElementById('fh-status-' + i);
+      if (s) s.textContent = text || '';
+    }
     async function saveActivity(i) {
-      var cb = el.querySelector('.fh-check[data-i="' + i + '"]');
-      var ta = el.querySelector('.fh-note[data-i="' + i + '"]');
-      var msg = document.getElementById('fh-msg-' + i);
-      if (!cb || !ta) return;
-      var part = parts[i] || {};
+      if (inFlight[i]) { pending[i] = true; return; }
+      var ta = el.querySelector('.fh-note-ta[data-i="' + i + '"]');
+      var row = rowMap.get(i) || {};
+      var payload = {
+        week_iso: viewWeek,
+        activity_index: Number(i),
+        activity_name: (parts[i] || {}).part || ('#' + (i + 1)),
+        checked: !!row.checked,
+        note: ta ? ta.value : (row.note || ''),
+      };
+      inFlight[i] = true;
+      setStatus(i, '保存中…');
       try {
-        await LoveNest.db.upsert('lovemap_magic5h', {
-          week_iso: viewWeek,
-          activity_index: Number(i),
-          activity_name: part.part || ('#' + (i+1)),
-          checked: !!cb.checked,
-          note: ta.value,
-        }, ['couple_id','week_iso','activity_index']);
-        // 重取当前周数据
-        renderFiveHours._thisWeekRows = await LoveNest.db.list('lovemap_magic5h', { week_iso: viewWeek });
-        rows = (renderFiveHours._thisWeekRows || []).filter(function(r) { return r.week_iso === viewWeek; });
-        rowMap = new Map();
-        rows.forEach(function(r) { rowMap.set(Number(r.activity_index), r); });
-        if (cntEl) cntEl.textContent = countDone();
-        if (msg) msg.textContent = '✅ 已保存 ' + new Date().toTimeString().slice(0, 5);
+        await LoveNest.db.upsert('lovemap_magic5h', payload, ['couple_id', 'week_iso', 'activity_index']);
+        var merged = Object.assign({}, row, payload, { updated_at: new Date().toISOString() });
+        rowMap.set(i, merged);
+        renderFiveHours._rows = (renderFiveHours._rows || []).filter(function (r) {
+          return !(r.week_iso === viewWeek && Number(r.activity_index) === i);
+        }).concat([merged]);
+        dirty[i] = false;
+        setStatus(i, '✓ 已保存');
+        setTimeout(function () { setStatus(i, ''); }, 2000);
       } catch (e) {
         console.warn('[magic_hours] upsert 失败:', e);
-        if (msg) msg.textContent = '❌ 保存失败（已入离线队列）';
+        setStatus(i, '⏳ 已加入离线队列，联网后自动同步');
+      } finally {
+        inFlight[i] = false;
+        if (pending[i]) { pending[i] = false; setTimeout(function () { saveActivity(i); }, 150); }
       }
     }
 
-    // 绑定 checkbox 变化 + 备注 blur + 手动保存
-    el.querySelectorAll('.fh-check').forEach(function(cb) {
-      cb.addEventListener('change', function() {
-        var i = Number(cb.getAttribute('data-i'));
-        if (cntEl) cntEl.textContent = countDone();
-        saveActivity(i);
-      });
-    });
-    el.querySelectorAll('.fh-save').forEach(function(btn) {
-      btn.addEventListener('click', function() {
+    /* 圆圈打卡：乐观更新 UI + 后台保存 */
+    el.querySelectorAll('.fh-check').forEach(function (btn) {
+      btn.addEventListener('click', function () {
         var i = Number(btn.getAttribute('data-i'));
+        var row = rowMap.get(i) || {};
+        var now = !row.checked;
+        rowMap.set(i, Object.assign({}, row, { checked: now }));
+        var item = btn.closest('.fh-item');
+        if (item) item.classList.toggle('done', now);
+        btn.setAttribute('aria-pressed', String(now));
+        updateProgress();
         saveActivity(i);
       });
     });
+
+    /* 笔记：展开/收起 + 防抖自动保存 + 失焦即存 */
+    function openEditor(i, open) {
+      var editor = document.getElementById('fh-editor-' + i);
+      var preview = el.querySelector('.fh-note-preview[data-i="' + i + '"]');
+      var tbtn = el.querySelector('.fh-note-toggle[data-i="' + i + '"]');
+      var ta = el.querySelector('.fh-note-ta[data-i="' + i + '"]');
+      if (!editor) return;
+      editor.classList.toggle('open', open);
+      if (open) {
+        if (preview) preview.style.display = 'none';
+        if (tbtn) tbtn.textContent = '收起';
+        if (ta) ta.focus();
+      } else {
+        var val = ta ? ta.value.trim() : '';
+        if (preview) {
+          if (val) { preview.textContent = val; preview.style.display = ''; }
+          else { preview.style.display = 'none'; }
+        }
+        if (tbtn) tbtn.textContent = val ? '✎ 编辑笔记' : '✎ 记一笔';
+      }
+    }
+    el.querySelectorAll('.fh-note-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var i = Number(btn.getAttribute('data-i'));
+        var editor = document.getElementById('fh-editor-' + i);
+        var willOpen = editor ? !editor.classList.contains('open') : true;
+        if (!willOpen && dirty[i]) saveActivity(i);   // 收起前先保存
+        openEditor(i, willOpen);
+      });
+    });
+    el.querySelectorAll('.fh-note-preview').forEach(function (pv) {
+      pv.addEventListener('click', function () {
+        openEditor(Number(pv.getAttribute('data-i')), true);
+      });
+    });
+    el.querySelectorAll('.fh-note-ta').forEach(function (ta) {
+      var i = Number(ta.getAttribute('data-i'));
+      ta.addEventListener('input', function () {
+        dirty[i] = true;
+        clearTimeout(noteTimers[i]);
+        noteTimers[i] = setTimeout(function () { saveActivity(i); }, 900);
+      });
+      ta.addEventListener('blur', function () {
+        clearTimeout(noteTimers[i]);
+        if (dirty[i]) saveActivity(i);
+      });
+    });
+
+    /* 周切换：先渲染目标周框架（立即可见，修复切换后空白），再取该周数据刷新 */
+    async function goWeek(target) {
+      renderFiveHours._viewWeek = target;
+      renderFiveHours(renderFiveHours._dataMem || data);
+      try {
+        renderFiveHours._rows = (await LoveNest.db.list('lovemap_magic5h', { week_iso: target })) || [];
+      } catch (e) { /* 取数失败时保留当前渲染 */ }
+      renderFiveHours(renderFiveHours._dataMem || data);
+    }
+    var prevBtn = document.getElementById('fh-prev');
+    var nextBtn = document.getElementById('fh-next');
+    var todayBtn = document.getElementById('fh-today');
+    if (prevBtn) prevBtn.addEventListener('click', function () { goWeek(addWeekISO(viewWeek, -1)); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { goWeek(addWeekISO(viewWeek, 1)); });
+    if (todayBtn) todayBtn.addEventListener('click', function () { goWeek(currentWeek); });
   }
 
   /* 触摸翻转：桌面 hover 由 CSS 处理，此处补点击切换 */
@@ -1201,16 +1371,13 @@
     data.cards = await mergeCardsFromDB(data.cards || []);
     var qMap = await loadAnswersMap();
     var weekIso = currentWeekISO();
-    var weekRows = await LoveNest.db.list('lovemap_magic5h', { week_iso: weekIso });
-    var weekMap = new Map();
-    (weekRows || []).forEach(r => weekMap.set(String(r.week_iso) + '|' + String(r.activity_index), r));
-    renderFiveHours._thisWeekRows = weekRows || [];
+    renderFiveHours._rows = (await LoveNest.db.list('lovemap_magic5h', { week_iso: weekIso })) || [];
     renderFiveHours._viewWeek = weekIso;
 
     renderHouse(data);
     renderCards(data);
     renderWeekly(data, qMap);
-    renderFiveHours(data, weekMap);
+    renderFiveHours(data);
     // ✨ 06 全部 100 题总览（历史/未来都能看）
     renderAllQuestions(data, qMap);
     LoveNest.loadContentForPage();
@@ -1236,9 +1403,11 @@
     });
     LoveNest.db.watch('lovemap_magic5h', async () => {
       var vw = renderFiveHours._viewWeek || currentWeekISO();
-      var thisWeek = await LoveNest.db.list('lovemap_magic5h', { week_iso: vw });
-      renderFiveHours._thisWeekRows = thisWeek || [];
-      renderFiveHours(data, weekMap);
+      var fresh = (await LoveNest.db.list('lovemap_magic5h', { week_iso: vw })) || [];
+      // 本机保存的回声（内容一致）不重渲染，避免正在编辑的笔记被收起
+      if (fhRowsSig(fresh) === fhRowsSig(renderFiveHours._rows || [])) return;
+      renderFiveHours._rows = fresh;
+      renderFiveHours(renderFiveHours._dataMem || data);
       if (typeof LoveNest.initReveal === "function") LoveNest.initReveal();
     });
   });
