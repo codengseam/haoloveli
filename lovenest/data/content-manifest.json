@@ -29,6 +29,7 @@
       "type": "book",
       "tags": ["love-map", "bank", "peace", "knowledge", "jingdu"],
       "pages": ["love-map", "bank", "peace"],
+      "module": "language",
       "summary": "肯定言词/精心时刻/接受礼物/服务行动/身体接触——爱语不通不是不爱，是用错了语言。"
     },
     {
@@ -39,6 +40,7 @@
       "type": "book",
       "tags": ["bank", "peace", "knowledge", "jingdu"],
       "pages": ["bank", "peace"],
+      "module": "principle",
       "summary": "信任是账户余额，六种存款决定关系的底子，取款永远比存款更贵。"
     },
     {
@@ -67,8 +69,9 @@
       "title": "《爱的博弈》— 信任的科学",
       "author": "约翰·戈特曼 / 娜恩·西尔弗",
       "type": "book",
-      "tags": ["peace", "love-map", "knowledge", "jingdu"],
-      "pages": ["peace", "love-map"],
+      "tags": ["peace", "love-map", "bank", "knowledge", "jingdu"],
+      "pages": ["peace", "love-map", "bank"],
+      "module": "principle",
       "summary": "用博弈论和数据模型拆解“信任”，告诉伴侣背叛从来不是一瞬，而是千万次滑动门被关上的累积。"
     },
     {
@@ -119,6 +122,7 @@
       "type": "note",
       "tags": ["love-map", "bank", "knowledge"],
       "pages": ["love-map", "bank"],
+      "module": "habit",
       "summary": "幸福伴侣每周只需约 5 小时的刻意连接：晨别、重聚、欣赏、约会、复盘——小而稳定的复利。"
     },
     {

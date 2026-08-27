@@ -115,9 +115,12 @@
       <div class="section__head reveal">
         <span class="section__num">05</span>
         <h2 class="section__title">灵感与知识库</h2>
-        <p class="section__desc">关于情感账户与婚姻经营的延伸阅读。</p>
+        <p class="section__desc">两个人一起学「怎么爱」，比一个人瞎猜有效。先懂，再存，慢慢来，不透支。</p>
       </div>
-      <div class="grid grid--3" data-content-for="bank"></div>
+      <div class="reveal mb-3">
+        <div class="card card--inset" id="bkKnowIntro" style="max-width:820px;margin:0 auto"></div>
+      </div>
+      <div id="bkKnowRegion"></div>
     </div>
   </section>
 
@@ -176,6 +179,9 @@
         { name: "真诚道歉 (Apologize)", desc: "不附带“如果你觉得”的道歉，才是真正的存款。" }
       ],
       ratio_note: "戈特曼的数据：幸福伴侣的正向与负向互动比约为 5:1。这不是说不能吵架，而是平时存得够多，吵架才不至于透支。",
+      knowledge_tags: {
+        bank_knowledge_intro: "先懂原理，再做存款。下面这些内容不是孤立的清单，而是一条学习路径——先在「读懂账户」里看清信任的机制，再到「存对语言」里找到对的存款方式，最后在「养成习惯」里把小确幸变成日常。不必一次读完，每周一篇，按路径慢慢走。"
+      },
       seed_records: [
         { date: "2025-05-10", type: "deposit", who: "both", event: "在缙云山第一次见面后，正式成为恋人。", weight: 5 },
         { date: "2025-07-15", type: "deposit", who: "her", event: "高三期末改卷最累的那周，给我留了手写小纸条。", weight: 3 },
@@ -385,12 +391,84 @@
       });
     }
 
+    /* ---------- 05 知识库 intro ---------- */
+    function renderKnowledgeIntro() {
+      const txt = (data.knowledge_tags && data.knowledge_tags.bank_knowledge_intro) || FALLBACK.knowledge_tags.bank_knowledge_intro;
+      const box = document.getElementById('bkKnowIntro');
+      if (box) box.innerHTML = '<p style="color:var(--muted);line-height:1.85">' + escapeHtml(txt) + '</p>';
+    }
+
+    /* ---------- 05 知识库：按模块分组的知识卡片 ---------- */
+    // 学习路径的三个模块：顺序即建议的阅读顺序（module 字段登记在 data/content-manifest.json）
+    const KNOW_MODULES = [
+      { key: "principle", color: "sage",       name: "读懂账户", desc: "柯维的六种存款、戈特曼的信任科学——信任是余额，日常是流水。看清机制，才谈得上经营。" },
+      { key: "language",  color: "terracotta", name: "存对语言", desc: "查普曼的五种爱语——同一个动作，用对语言是存款，用错语言是取款。存得准，比存得多更重要。" },
+      { key: "habit",     color: "rose",       name: "养成习惯", desc: "戈特曼的每周 5 小时——把大道理拆成小习惯，让存款像呼吸一样自然，复利才会发生。" }
+    ];
+    const KNOW_ARROW_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>';
+
+    async function renderKnowledge() {
+      const region = document.getElementById('bkKnowRegion');
+      if (!region) return;
+      const manifest = await LoveNest.getJSON('data/content-manifest.json', { items: [] });
+      const items = (manifest.items || []).filter(it => (it.pages || []).includes('bank'));
+      if (!items.length) {
+        region.innerHTML = '<p class="muted center">知识库内容准备中——后续在 docs/ 添加 md 并登记 manifest 即会出现。</p>';
+        return;
+      }
+      // 按模块分组；未登记 module 的新条目落入「延伸阅读」，不至于消失
+      const groups = KNOW_MODULES.map(m => ({ ...m, items: [] }));
+      const byKey = {}; groups.forEach(g => byKey[g.key] = g);
+      const extra = { key: 'more', color: 'taupe', name: '延伸阅读', desc: '新收录、还没归入学习路径的内容。', items: [] };
+      items.forEach(it => {
+        const g = byKey[it.module];
+        (g ? g.items : extra.items).push(it);
+      });
+      const allGroups = groups.filter(g => g.items.length);
+      if (extra.items.length) allGroups.push(extra);
+      const pad = n => String(n).padStart(2, '0');
+
+      region.innerHTML = `
+        <nav class="kn-path reveal" aria-label="情感账户学习路径">
+          ${allGroups.map((g, i) => `
+            <a class="kn-path__step" href="#kn-${escapeHtml(g.key)}"><b>${pad(i + 1)}</b>${escapeHtml(g.name)}<small>${g.items.length} 篇</small></a>
+            ${i < allGroups.length - 1 ? '<span class="kn-path__sep">→</span>' : ''}`).join('')}
+        </nav>
+        ${allGroups.map((g, i) => `
+        <section class="kn-mod kn-mod--${escapeHtml(g.color)} reveal" id="kn-${escapeHtml(g.key)}">
+          <header class="kn-mod__head">
+            <span class="kn-mod__num">${pad(i + 1)}</span>
+            <div class="kn-mod__meta">
+              <h3 class="kn-mod__title">${escapeHtml(g.name)}</h3>
+              <p class="kn-mod__desc">${escapeHtml(g.desc)}</p>
+            </div>
+            <span class="kn-mod__count">${g.items.length} 篇</span>
+          </header>
+          <div class="kn-grid">
+            ${g.items.map((it, j) => `
+            <article class="kn-card">
+              <span class="kn-card__idx">${pad(i + 1)} · ${pad(j + 1)}</span>
+              <h4 class="kn-card__title">${escapeHtml(it.title || '未命名文档')}</h4>
+              ${it.summary ? `<p class="kn-card__sum">${escapeHtml(it.summary)}</p>` : ''}
+              <button type="button" class="kn-card__btn" data-md="${escapeHtml(it.id)}">阅读全文 ${KNOW_ARROW_SVG}</button>
+            </article>`).join('')}
+          </div>
+        </section>`).join('')}`;
+      revealIn(region);
+      region.querySelectorAll('[data-md]').forEach(btn =>
+        btn.addEventListener('click', () => {
+          if (LoveNest.openDoc) LoveNest.openDoc(btn.getAttribute('data-md'), manifest);
+        })
+      );
+    }
+
     /* ---------- 初始化 ---------- */
     renderDeposits();
     renderBalance();
     renderLog();
     wireForm();
-    LoveNest.loadContentForPage();
+    renderKnowledgeIntro();
+    renderKnowledge();
   });
 </script>
 </body>
