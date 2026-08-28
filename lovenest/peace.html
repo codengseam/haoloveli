@@ -195,11 +195,12 @@
       <div class="section__head reveal">
         <span class="section__num">07</span>
         <h2 class="section__title">深入阅读</h2>
-        <p class="section__desc">支撑这份协议的两本核心书与两篇笔记。读完会理解：规则不是束缚，是给爱装上护栏。</p>
+        <p class="section__desc">支撑这份协议的书与笔记，是一条完整的学习路径。读完会理解：规则不是束缚，是给爱装上护栏。</p>
       </div>
-      <div class="grid grid--3 reveal" data-delay="1" data-content-for="peace">
-        <!-- knowledge cards rendered by data.js -->
+      <div class="reveal mb-3">
+        <div class="card card--inset" id="peKnowIntro" style="max-width:820px;margin:0 auto"></div>
       </div>
+      <div id="peKnowRegion"></div>
     </div>
   </section>
 
@@ -505,6 +506,82 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>`).join('');
   }
 
+  /* ---------- 07 深入阅读：按模块分组的学习路径（与财商「一起补课」同款设计） ---------- */
+  // 学习路径的四个模块：顺序即建议的阅读顺序（按 content-manifest 的条目 id 分组）
+  const KNOW_MODULES = [
+    { key: "conflict",   color: "rose",       name: "沟通与修复", ids: ["nvc-nonviolent-communication", "nvc-four-steps", "four-horsemen"],
+      desc: "停战协议的核心工具：NVC 四步把指责翻译成需要，四骑士识别让冲突在失控前刹车。" },
+    { key: "account",    color: "terracotta", name: "信任的账户", ids: ["covey-emotional-bank-account", "chapman-five-love-languages", "gottman-trust-blueprint"],
+      desc: "修复就是存款：存对语言、攒下信任——冲突来临时，账户里才有余额可花。" },
+    { key: "science",    color: "sage",       name: "关系科学", ids: ["gottman-seven-principles", "miller-intimate-relationships", "levine-attached"],
+      desc: "冲突不毁关系，失控才毁——看清科学与依恋的真相，吵得明白，和得彻底。" },
+    { key: "philosophy", color: "taupe",      name: "爱的哲学", ids: ["fromm-art-of-loving", "exupery-little-prince", "frankl-meaning-of-life"],
+      desc: "爱是能力、是驯养、是选择——吵架之后，回到「我们为什么在一起」。" }
+  ];
+  const KNOW_ARROW_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>';
+
+  async function renderKnowledge(){
+    const intro = document.getElementById('peKnowIntro');
+    if (intro) {
+      intro.innerHTML = '<p style="color:var(--muted);line-height:1.85;margin:0">先懂原理，再立协议。下面这些内容不是孤立的清单，而是一条学习路径——先在「沟通与修复」里握紧冲突的工具，再到「信任的账户」里攒下修复的余额，然后去「关系科学」里看清冲突的真相，最后在「爱的哲学」里回到为什么在一起。不必一次读完，每周一篇，按路径慢慢走。</p>';
+    }
+    const region = document.getElementById('peKnowRegion');
+    if (!region) return;
+    const manifest = await LoveNest.getJSON('data/content-manifest.json', { items: [] });
+    const items = (manifest.items || []).filter(it => (it.pages || []).includes('peace'));
+    if (!items.length) {
+      region.innerHTML = '<p class="muted center">知识库内容准备中——后续在 docs/ 添加 md 并登记 manifest 即会出现。</p>';
+      return;
+    }
+    // 按模块分组；未登记进任何模块的新条目落入「延伸阅读」，不至于消失
+    const byId = {};
+    items.forEach(it => { byId[it.id] = it; });
+    const seen = {};
+    const groups = KNOW_MODULES.map(m => {
+      const its = (m.ids || []).filter(id => byId[id]).map(id => { seen[id] = true; return byId[id]; });
+      return { key: m.key, color: m.color, name: m.name, desc: m.desc, items: its };
+    });
+    const extra = { key: 'more', color: 'taupe', name: '延伸阅读', desc: '新收录、还没归入学习路径的内容。', items: [] };
+    items.forEach(it => { if (!seen[it.id]) extra.items.push(it); });
+    const allGroups = groups.filter(g => g.items.length);
+    if (extra.items.length) allGroups.push(extra);
+    const pad = n => String(n).padStart(2, '0');
+
+    region.innerHTML = `
+      <nav class="kn-path reveal" aria-label="停战协议学习路径">
+        ${allGroups.map((g, i) => `
+          <a class="kn-path__step" href="#kn-${esc(g.key)}"><b>${pad(i + 1)}</b>${esc(g.name)}<small>${g.items.length} 篇</small></a>
+          ${i < allGroups.length - 1 ? '<span class="kn-path__sep">→</span>' : ''}`).join('')}
+      </nav>
+      ${allGroups.map((g, i) => `
+      <section class="kn-mod kn-mod--${esc(g.color)} reveal" id="kn-${esc(g.key)}">
+        <header class="kn-mod__head">
+          <span class="kn-mod__num">${pad(i + 1)}</span>
+          <div class="kn-mod__meta">
+            <h3 class="kn-mod__title">${esc(g.name)}</h3>
+            <p class="kn-mod__desc">${esc(g.desc)}</p>
+          </div>
+          <span class="kn-mod__count">${g.items.length} 篇</span>
+        </header>
+        <div class="kn-grid">
+          ${g.items.map((it, j) => `
+          <article class="kn-card">
+            <span class="kn-card__idx">${pad(i + 1)} · ${pad(j + 1)}</span>
+            <h4 class="kn-card__title">${esc(it.title || '未命名文档')}</h4>
+            ${it.summary ? `<p class="kn-card__sum">${esc(it.summary)}</p>` : ''}
+            <button type="button" class="kn-card__btn" data-md="${esc(it.id)}">阅读全文 ${KNOW_ARROW_SVG}</button>
+          </article>`).join('')}
+        </div>
+      </section>`).join('')}`;
+
+    region.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    region.querySelectorAll('[data-md]').forEach(btn =>
+      btn.addEventListener('click', () => {
+        if (LoveNest.openDoc) LoveNest.openDoc(btn.getAttribute('data-md'), manifest);
+      })
+    );
+  }
+
   /* ---------- render newlywed磨合 intro + tips ---------- */
   function renderNewlywed(nw){
     const root = document.getElementById('runin-region');
@@ -785,8 +862,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ✨ 冲突复盘本 */
   await renderConflictReviews(true);
 
-  /* knowledge cards (NVC note + four-horsemen note + Gottman book + Fromm book) */
-  LoveNest.loadContentForPage();
+  /* ✨ 07 深入阅读：模块化学习路径 */
+  renderKnowledge();
 
   /* ✨ watch：签字 / 复盘 / love_notes 变化自动刷新 */
   LoveNest.db.watch('love_notes', async () => {
