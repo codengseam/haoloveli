@@ -1876,55 +1876,21 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
       anchors.push({ id, title, tag: m ? m[1] : "", text: m ? (m[2] || m[1]) : title });
     });
 
-    // 章节条目（内联卡片 + 侧边抽屉复用同一份结构）
+    // 章节条目（静态目录用）
     const liHtml = anchors.map((a, i) =>
       `<li><a href="#${a.id}" data-jump="${a.id}"><i>${pad(i + 1)}</i>${a.tag ? `<em>${a.tag}</em>` : ""}<span>${a.text}</span></a></li>`
     ).join("");
-    const inlineListHtml = anchors.length ? `<ul class="readnav__list">${liHtml}</ul>` : "";
-    const drawerListHtml = anchors.length ? `<ul class="readnav-drawer__list">${liHtml}</ul>` : "";
 
-    // 章节导航：外层 wrap（滚动感知）+ 内联卡片（可折叠）
+    // 章节目录：固定在正文之前的静态卡片——不悬浮、不折叠、无抽屉/悬浮球
     const navHtml = anchors.length
-      ? `<div class="readnav-wrap" data-readnav-wrap>
-          <nav class="readnav is-open" data-readnav>
-            <div class="readnav__head" data-readnav-toggle>
-              <span class="readnav__label">
-                <span class="ico">📖</span>
-                <b>目录</b>
-                <span class="readnav__count">${anchors.length} 节</span>
-              </span>
-              <div class="readnav__tools">
-                <button type="button" class="readnav__tool-btn" data-action="immersed" title="沉浸式阅读" aria-label="沉浸式阅读">
-                  ☾
-                </button>
-                <button type="button" class="readnav__tool-btn" data-action="drawer" title="侧边目录" aria-label="打开侧边目录">
-                  ☰
-                </button>
-              </div>
-              <span class="readnav__chev" aria-hidden="true">▾</span>
-            </div>
-            <div class="readnav__progress" aria-hidden="true"><span data-readnav-progress></span></div>
-            <div class="readnav__body">${inlineListHtml}</div>
-          </nav>
-        </div>
-
-        <!-- 侧边抽屉（桌面端） -->
-        <div class="readnav-drawer-mask" data-drawer-mask></div>
-        <aside class="readnav-drawer" data-readnav-drawer aria-hidden="true">
-          <div class="readnav-drawer__head">
-            <span class="readnav-drawer__title">📖 目录 <small>${anchors.length} 节</small></span>
-            <button type="button" class="readnav-drawer__close" data-drawer-close aria-label="关闭">✕</button>
+      ? `<nav class="readtoc" aria-label="章节目录">
+          <div class="readtoc__head">
+            <span class="readtoc__ico">📖</span>
+            <b>目录</b>
+            <span class="readtoc__count">${anchors.length} 节</span>
           </div>
-          <div class="readnav-drawer__body">${drawerListHtml}</div>
-        </aside>
-
-        <!-- 移动端底部悬浮目录按钮（番茄小说式） -->
-        <button type="button" class="readnav-fab" data-readnav-fab aria-label="目录">
-          <span class="readnav-fab__ico">☰</span>
-          <span data-fab-label>目录</span>
-          <span class="readnav-fab__progress"><span data-fab-progress></span></span>
-          <span class="faint" style="font-size:.78rem;font-style:italic" data-fab-pct>0%</span>
-        </button>`
+          <ul class="readtoc__list">${liHtml}</ul>
+        </nav>`
       : "";
 
     let aiSummaryContent;
@@ -1949,8 +1915,12 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
       '<p class="muted center" style="margin-top:24px;font-size:.8rem">—— 以上内容整理自原书与笔记精华，结合师豪 &amp; 佳力的实际情况定制。 ——</p>';
   }
 
-  /* 阅读交互初始化：折叠、滚动感知、章节高亮、侧边抽屉、FAB、沉浸式 */
+  /* 阅读交互初始化：静态目录的点击跳转 + 当前章节高亮（无悬浮、无折叠） */
+  let teardownReading = null;
   function initReadingInteractions(anchors) {
+    // 打开新文档前，先解绑上一篇文档的滚动监听
+    if (teardownReading) { teardownReading(); teardownReading = null; }
+
     // --- 通用：智能识别真正的滚动容器（有 overflow: auto/scroll 且内容溢出的那个） ---
     function findScrollRoot() {
       const candidates = [
@@ -1972,124 +1942,18 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
     const scrollRoot = findScrollRoot();
     if (!scrollRoot) return;
 
-    // 保持原有引用供其他交互模块使用
-    const panel = document.querySelector(".modal__panel");
-    const body = document.querySelector(".modal__body") || scrollRoot;
-
-    const wrap = document.querySelector("[data-readnav-wrap]");
-    const readnav = document.querySelector("[data-readnav]");
-    const drawer = document.querySelector("[data-readnav-drawer]");
-    const drawerMask = document.querySelector("[data-drawer-mask]");
-    const drawerClose = document.querySelector("[data-drawer-close]");
-    const fab = document.querySelector("[data-readnav-fab]");
-    const fabPctEl = document.querySelector("[data-fab-pct]");
-    const fabProgressEl = document.querySelector("[data-fab-progress]");
-    const progressEl = document.querySelector("[data-readnav-progress]");
-
-    // --- 1) 折叠/展开内联导航 ---
-    const toggleEl = document.querySelector("[data-readnav-toggle]");
-    if (toggleEl && readnav) {
-      // tools 区的按钮点击不要触发折叠
-      toggleEl.querySelectorAll(".readnav__tool-btn").forEach(btn => {
-        btn.addEventListener("click", e => e.stopPropagation());
-      });
-      toggleEl.addEventListener("click", () => {
-        readnav.classList.toggle("is-open");
-      });
-    }
-
-    // --- 2) 侧边抽屉开关（仅桌面端） ---
-    function openDrawer() {
-      if (drawer) {
-        drawer.classList.add("is-open");
-        drawer.setAttribute("aria-hidden", "false");
-      }
-      if (drawerMask) drawerMask.classList.add("is-open");
-    }
-    function closeDrawer() {
-      if (drawer) {
-        drawer.classList.remove("is-open");
-        drawer.setAttribute("aria-hidden", "true");
-      }
-      if (drawerMask) drawerMask.classList.remove("is-open");
-    }
-    const drawerBtn = document.querySelector('[data-action="drawer"]');
-    if (drawerBtn) drawerBtn.addEventListener("click", openDrawer);
-    if (drawerClose) drawerClose.addEventListener("click", closeDrawer);
-    if (drawerMask) drawerMask.addEventListener("click", closeDrawer);
-    // ESC 关闭抽屉
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && drawer && drawer.classList.contains("is-open")) closeDrawer();
-    });
-
-    // --- 3) FAB 弹层（移动端）：点击 FAB 展开/收起内联列表（通过 toggle readnav.is-open 实现，额外显示 wrap） ---
-    if (fab && readnav && wrap) {
-      fab.addEventListener("click", () => {
-        if (!readnav.classList.contains("is-open")) {
-          readnav.classList.add("is-open");
-          wrap.classList.remove("is-hidden");
-          // 滚动到顶部让用户看到目录
-          if (scrollRoot.scrollTo) {
-            try { scrollRoot.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) {}
-          }
-        } else {
-          // 打开侧边抽屉（移动端也可作为替代），或者直接滚动到 wrap
-          readnav.classList.toggle("is-open");
-          if (readnav.classList.contains("is-open")) {
-            wrap.classList.remove("is-hidden");
-          }
-        }
-      });
-    }
-
-    // --- 4) 沉浸式阅读模式 ---
-    const immerseBtn = document.querySelector('[data-action="immersed"]');
-    if (immerseBtn && body) {
-      function toggleImmersed() {
-        body.classList.toggle("is-immersed");
-        if (panel) panel.classList.toggle("is-immersed");
-        const on = body.classList.contains("is-immersed");
-        immerseBtn.classList.toggle("active", on);
-        immerseBtn.textContent = on ? "☀" : "☾";
-        immerseBtn.title = on ? "退出沉浸式" : "沉浸式阅读";
-      }
-      immerseBtn.addEventListener("click", toggleImmersed);
-      // 双击 body 也可以切换
-      let lastTap = 0;
-      body.addEventListener("click", e => {
-        if (e.target.closest("button, a, [data-readnav-toggle], .readnav-fab")) return;
-        const now = Date.now();
-        if (now - lastTap < 300) toggleImmersed();
-        lastTap = now;
-      });
-    }
-
-    // --- 5) 章节跳转：先折叠目录（瞬时），再按稳定布局计算目标并平滑滚动 ---
+    // --- 1) 章节跳转：平滑滚动到目标章节，顶部留一点呼吸空间 ---
     function scrollToAnchor(id) {
       const tgt = document.getElementById(id);
       if (!tgt) return;
-      // 展开态的目录折叠会带来 ~300px 布局位移：先禁用过渡瞬时折叠，保证目标计算准确
-      const navBody = readnav ? readnav.querySelector(".readnav__body") : null;
-      let restoreTrans = null;
-      if (readnav && navBody && readnav.classList.contains("is-open")) {
-        navBody.style.transition = "none";
-        readnav.classList.remove("is-open");
-        restoreTrans = () => { navBody.style.transition = ""; };
-      }
-      closeDrawer();
-      // 真正的滚动容器是 .modal__body（overflow:auto）；panel 是 overflow:hidden，滚它无效
-      const scroller = (body && body !== document.documentElement) ? body : scrollRoot;
-      if (scroller && scroller.scrollTo) {
-        const scRect = scroller.getBoundingClientRect();
+      if (scrollRoot.scrollTo) {
+        const scRect = scrollRoot.getBoundingClientRect();
         const tgtRect = tgt.getBoundingClientRect();
-        // 顶部预留 sticky 目录（折叠态约 44px）+ 呼吸空间
-        const top = tgtRect.top - scRect.top + scroller.scrollTop - 60;
-        scroller.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        const top = tgtRect.top - scRect.top + scrollRoot.scrollTop - 24;
+        scrollRoot.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
       } else if (tgt.scrollIntoView) {
         tgt.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      // 滚动启动后恢复目录的折叠过渡
-      if (restoreTrans) setTimeout(restoreTrans, 80);
     }
     document.querySelectorAll("[data-jump]").forEach(a => {
       a.addEventListener("click", e => {
@@ -2098,84 +1962,40 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
       });
     });
 
-    // --- 6) 滚动方向感知：向下滚动隐藏 wrap，向上滚动显示；同时计算进度 & 当前章节高亮 ---
-    let lastScrollTop = 0;
-    let ticking = false;
+    // --- 2) 滚动时高亮当前章节（已读章节打勾淡化） ---
     const h2Els = anchors.map(a => document.getElementById(a.id)).filter(Boolean);
+    let ticking = false;
 
     function onScroll() {
-      const st = scrollRoot.scrollTop || 0;
-      const delta = st - lastScrollTop;
-      const threshold = 8; // 滚动多少像素才触发隐藏/显示
-
-      // 6-a) 滚动方向感知
-      if (wrap) {
-        // 总是在顶部附近显示
-        if (st < 40) {
-          wrap.classList.remove("is-hidden");
-        } else if (delta > threshold) {
-          // 向下滚 → 隐藏
-          wrap.classList.add("is-hidden");
-        } else if (delta < -threshold) {
-          // 向上滚 → 显示
-          wrap.classList.remove("is-hidden");
-        }
-      }
-
-      // 6-b) 计算阅读进度
-      const scrollH = (scrollRoot.scrollHeight || 1) - (scrollRoot.clientHeight || 1);
-      const pct = scrollH > 0 ? Math.max(0, Math.min(100, (st / scrollH) * 100)) : 0;
-      const pctStr = Math.round(pct) + "%";
-      if (progressEl) progressEl.style.width = pctStr;
-      if (fabPctEl) fabPctEl.textContent = pctStr;
-      if (fabProgressEl) fabProgressEl.style.height = pctStr;
-      const fabLabel = document.querySelector("[data-fab-label]");
-      if (fabLabel && anchors.length > 0) {
-        // 根据进度找当前章节
-        let curIdx = 0;
-        for (let i = 0; i < h2Els.length; i++) {
-          const rect = h2Els[i].getBoundingClientRect();
-          const rootRect = (panel || document.documentElement).getBoundingClientRect();
-          if (rect.top - rootRect.top <= 60) curIdx = i;
-        }
-        fabLabel.textContent = anchors[curIdx] ? anchors[curIdx].title.slice(0, 8) + (anchors[curIdx].title.length > 8 ? "…" : "") : "目录";
-      }
-
-      // 6-c) 当前章节高亮
       if (h2Els.length > 0) {
         let activeId = h2Els[0] ? h2Els[0].id : "";
-        const viewTop = (panel ? panel.getBoundingClientRect().top : 0) + 80;
+        // 以滚动容器顶部为基准：章节标题滚到容器顶部 80px 线以上即视为「当前章节」
+        const viewTop = (scrollRoot.getBoundingClientRect ? scrollRoot.getBoundingClientRect().top : 0) + 80;
         for (let i = 0; i < h2Els.length; i++) {
           const rect = h2Els[i].getBoundingClientRect();
           if (rect.top <= viewTop) activeId = h2Els[i].id;
         }
-        document.querySelectorAll(".readnav__list a, .readnav-drawer__list a").forEach(a => {
-          const id = a.getAttribute("data-jump");
-          const curIdx = anchors.findIndex(x => x.id === id);
-          const actIdx = anchors.findIndex(x => x.id === activeId);
-          a.classList.toggle("is-active", id === activeId);
-          a.classList.toggle("is-read", curIdx < actIdx);
+        const actIdx = anchors.findIndex(x => x.id === activeId);
+        document.querySelectorAll(".readtoc__list a").forEach(a => {
+          const curIdx = anchors.findIndex(x => x.id === a.getAttribute("data-jump"));
+          a.classList.toggle("is-active", curIdx === actIdx);
+          a.classList.toggle("is-read", curIdx >= 0 && curIdx < actIdx);
         });
       }
-
-      // 6-d) FAB 可见性：滚动超过一定距离后显示
-      if (fab) {
-        if (st > 120) fab.classList.add("is-visible");
-        else fab.classList.remove("is-visible");
-      }
-
-      lastScrollTop = st;
       ticking = false;
     }
 
-    scrollRoot.addEventListener("scroll", () => {
+    function onScrollRaf() {
       if (!ticking) {
         requestAnimationFrame(onScroll);
         ticking = true;
       }
-    }, { passive: true });
+    }
 
-    // 初始触发一次，设置进度和高亮
+    scrollRoot.addEventListener("scroll", onScrollRaf, { passive: true });
+    teardownReading = () => scrollRoot.removeEventListener("scroll", onScrollRaf);
+
+    // 初始触发一次，设置高亮
     onScroll();
   }
 
