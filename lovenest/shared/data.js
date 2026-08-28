@@ -1800,28 +1800,88 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
 
   /* 给渲染出的 HTML 套一层阅读 UI：章节导航 + 折叠 + 滚动方向感知 + 底部 AI 总结区 */
   function wrapWithReadingUi(html) {
-    // 从生成的 html 里提取 h2 做快速导航
-    const anchors = [];
+    const _esc = s => String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const pad = n => String(n).padStart(2, "0");
+
     const temp = document.createElement("div");
     temp.innerHTML = html;
+
+    /* ---------- 底部 AI 总结区 ----------
+       从正文提取两类章节（提取后从正文移除，避免重复展示）：
+       · 精华：书稿「【点睛】章节精华」/ 笔记「🤖 AI精简总结」「关键提醒」等
+       · 行动：书稿「【行动】精读行动卡」/ 笔记「明日行动」「行动建议」等
+       注意：必须先提取再收集导航锚点，否则目录里会出现指向已删除章节的死链接 */
+    const ESSENCE_RE = /AI.*精华|精华总结|一句话记住|点睛|AI精简总结|关键提醒/;
+    const ACTION_RE = /【行动】|精读行动卡|行动卡|行动建议|明日行动|行动清单/;
+    let essenceHtml = "";
+    const actionTexts = [];
+
+    // 收集 h2 到下一个 h2/hr 之间的内容（先克隆收集，再统一移除，避免 remove 后丢失兄弟指针）
+    const grabSection = h2 => {
+      const frag = document.createElement("div");
+      let el = h2.nextElementSibling;
+      while (el) {
+        if (el.tagName === "H2" || el.tagName === "HR") break;
+        frag.appendChild(el.cloneNode(true));
+        el = el.nextElementSibling;
+      }
+      return frag;
+    };
+    const removeSection = h2 => {
+      const doomed = [h2];
+      let el = h2.nextElementSibling;
+      while (el) {
+        if (el.tagName === "H2" || el.tagName === "HR") break;
+        doomed.push(el);
+        el = el.nextElementSibling;
+      }
+      doomed.forEach(n => n.remove());
+    };
+
+    temp.querySelectorAll("h2").forEach(h2 => {
+      const t = h2.textContent;
+      if (!essenceHtml && ESSENCE_RE.test(t)) {
+        const frag = grabSection(h2);
+        const lis = frag.querySelectorAll("li");
+        if (lis.length > 6) {
+          lis.forEach((li, i) => { if (i >= 6) li.remove(); });
+          const more = document.createElement("li");
+          more.className = "aisum__more";
+          more.textContent = `其余 ${lis.length - 6} 条精华，见正文对应章节`;
+          frag.appendChild(more);
+        }
+        essenceHtml = frag.innerHTML.trim();
+        removeSection(h2);
+      } else if (ACTION_RE.test(t)) {
+        grabSection(h2).querySelectorAll("li").forEach(li => {
+          let s = li.textContent.replace(/^\s*\[[ xX]\]\s*/, "").replace(/\s+/g, " ").trim();
+          if (!s) return;
+          s = s.split(/——|：/)[0].trim();
+          if (s.length > 64) s = s.slice(0, 64) + "…";
+          actionTexts.push(s);
+        });
+        removeSection(h2);
+      }
+    });
+
+    // 从提取后的正文里收集 h2 做快速导航；【小标】前缀拆成 tag，导航里显示更轻
+    const anchors = [];
     temp.querySelectorAll("h2").forEach((h, i) => {
       const id = "sec-" + i;
       h.id = id;
       const title = h.textContent.trim();
-      anchors.push({ id, title });
+      const m = title.match(/^【(.+?)】\s*(.*)$/);
+      anchors.push({ id, title, tag: m ? m[1] : "", text: m ? (m[2] || m[1]) : title });
     });
 
-    // 章节列表 HTML（可复用：内联卡片 + 侧边抽屉 + FAB弹层）
-    const inlineListHtml = anchors.length
-      ? '<ul class="readnav__list">' +
-        anchors.map(a => `<li><a href="#${a.id}" data-jump="${a.id}">${a.title}</a></li>`).join("") +
-        '</ul>'
-      : "";
-    const drawerListHtml = anchors.length
-      ? '<ul class="readnav-drawer__list">' +
-        anchors.map(a => `<li><a href="#${a.id}" data-jump="${a.id}">${a.title}</a></li>`).join("") +
-        '</ul>'
-      : "";
+    // 章节条目（内联卡片 + 侧边抽屉复用同一份结构）
+    const liHtml = anchors.map((a, i) =>
+      `<li><a href="#${a.id}" data-jump="${a.id}"><i>${pad(i + 1)}</i>${a.tag ? `<em>${a.tag}</em>` : ""}<span>${a.text}</span></a></li>`
+    ).join("");
+    const inlineListHtml = anchors.length ? `<ul class="readnav__list">${liHtml}</ul>` : "";
+    const drawerListHtml = anchors.length ? `<ul class="readnav-drawer__list">${liHtml}</ul>` : "";
 
     // 章节导航：外层 wrap（滚动感知）+ 内联卡片（可折叠）
     const navHtml = anchors.length
@@ -1830,8 +1890,8 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
             <div class="readnav__head" data-readnav-toggle>
               <span class="readnav__label">
                 <span class="ico">📖</span>
-                章节导航
-                <span class="faint" style="font-weight:400;font-size:.78rem;font-style:italic">· ${anchors.length} 节</span>
+                <b>目录</b>
+                <span class="readnav__count">${anchors.length} 节</span>
               </span>
               <div class="readnav__tools">
                 <button type="button" class="readnav__tool-btn" data-action="immersed" title="沉浸式阅读" aria-label="沉浸式阅读">
@@ -1852,7 +1912,7 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
         <div class="readnav-drawer-mask" data-drawer-mask></div>
         <aside class="readnav-drawer" data-readnav-drawer aria-hidden="true">
           <div class="readnav-drawer__head">
-            <span class="readnav-drawer__title">📖 目录 (${anchors.length})</span>
+            <span class="readnav-drawer__title">📖 目录 <small>${anchors.length} 节</small></span>
             <button type="button" class="readnav-drawer__close" data-drawer-close aria-label="关闭">✕</button>
           </div>
           <div class="readnav-drawer__body">${drawerListHtml}</div>
@@ -1867,56 +1927,15 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
         </button>`
       : "";
 
-    // 底部 AI 总结区（从正文提取"一句话记住"作为 AI Summary，去除重复标题）
-    // 先移除正文中已经存在的 AI 精华总结章节（h2 + blockquote），避免在正文和底部重复显示
-    const allH2s = temp.querySelectorAll("h2");
-    let extractedSummaryHtml = null;
-    allH2s.forEach(h2 => {
-      if (/AI.*精华|精华总结|一句话记住/.test(h2.textContent)) {
-        // 找到这个 h2 后面紧跟的 blockquote 或内容
-        let nextEl = h2.nextElementSibling;
-        const contentFrag = document.createDocumentFragment();
-        while (nextEl) {
-          const nextTag = nextEl.tagName;
-          // 遇到下一个 h2 或 hr 就停止
-          if (nextTag === "H2" || nextTag === "HR") break;
-          const clone = nextEl.cloneNode(true);
-          // 如果是 blockquote，且里面包含标题文字，清理掉
-          if (nextTag === "BLOCKQUOTE") {
-            const innerStrong = clone.querySelector("strong, b");
-            if (innerStrong && /AI.*精华|精华总结|一句话记住/.test(innerStrong.textContent)) {
-              innerStrong.remove();
-            }
-            // 清理开头的多余冒号/空格
-            clone.innerHTML = clone.innerHTML.replace(/^[\s:：]+/, "");
-          }
-          contentFrag.appendChild(clone);
-          nextEl = nextEl.nextElementSibling;
-        }
-        // 把提取到的内容转成 HTML 字符串
-        const tmpDiv = document.createElement("div");
-        tmpDiv.appendChild(contentFrag);
-        extractedSummaryHtml = tmpDiv.innerHTML.trim();
-        // 从正文中移除这个 h2 及其内容
-        h2.remove();
-        let rmEl = h2.nextElementSibling;
-        while (rmEl) {
-          const rmTag = rmEl.tagName;
-          if (rmTag === "H2" || rmTag === "HR") break;
-          const toRm = rmEl;
-          rmEl = rmEl.nextElementSibling;
-          toRm.remove();
-        }
-      }
-    });
-
-    // 处理底部总结区的内容：用提取到的，或用默认的（且默认内容不重复显示"AI精华"字样）
     let aiSummaryContent;
-    if (extractedSummaryHtml) {
-      aiSummaryContent = extractedSummaryHtml;
+    if (essenceHtml || actionTexts.length) {
+      aiSummaryContent =
+        (essenceHtml ? `<div class="aisum__sec">${essenceHtml}</div>` : "") +
+        (actionTexts.length
+          ? `<div class="aisum__acts"><div class="aisum__acts-title">✅ 挑一件，今天就做</div><ol>${actionTexts.slice(0, 4).map(s => `<li>${_esc(s)}</li>`).join("")}</ol></div>`
+          : "");
     } else {
-      // 默认内容：不显示"AI精华一句话"在文字里，直接给精华建议
-      aiSummaryContent = '<blockquote class="quote"><p>点击章节导航快速跳读。知识不变成行动就是噪音——挑一条今天就开始行动。小步快跑，好过完美的拖延。</p></blockquote>';
+      aiSummaryContent = '<blockquote class="quote"><p>知识不变成行动就是噪音——回到上方目录挑一节重读，挑一条今天就开始。小步快跑，好过完美的拖延。</p></blockquote>';
     }
 
     // 绑定所有交互（等 DOM 插入 modal 后）
@@ -1926,8 +1945,8 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
 
     return navHtml + temp.innerHTML +
       '<hr class="readhr"/>' +
-      '<div class="aisum"><span class="aisum__label">🤖 AI 精华总结 · 立刻可行动</span>' + aiSummaryContent + "</div>" +
-      '<p class="muted center" style="margin-top:24px;font-size:.8rem">—— 以上内容由心理学经典著作精华整理，结合师豪 &amp; 佳力的实际情况定制。 ——</p>';
+      '<div class="aisum"><div class="aisum__label">🤖 AI 精华总结<span>· 立刻可行动</span></div>' + aiSummaryContent + "</div>" +
+      '<p class="muted center" style="margin-top:24px;font-size:.8rem">—— 以上内容整理自原书与笔记精华，结合师豪 &amp; 佳力的实际情况定制。 ——</p>';
   }
 
   /* 阅读交互初始化：折叠、滚动感知、章节高亮、侧边抽屉、FAB、沉浸式 */
@@ -2045,22 +2064,32 @@ NVC 是一种肌肉——越练越强。一开始用会觉得别扭、刻意，�
       });
     }
 
-    // --- 5) 章节跳转：平滑滚动 + 跳转后折叠列表 + 关闭抽屉 ---
+    // --- 5) 章节跳转：先折叠目录（瞬时），再按稳定布局计算目标并平滑滚动 ---
     function scrollToAnchor(id) {
       const tgt = document.getElementById(id);
       if (!tgt) return;
-      // 优先用 scrollRoot（modal panel）滚动，其次 tgt 自身
-      if (panel) {
-        const panelRect = panel.getBoundingClientRect();
+      // 展开态的目录折叠会带来 ~300px 布局位移：先禁用过渡瞬时折叠，保证目标计算准确
+      const navBody = readnav ? readnav.querySelector(".readnav__body") : null;
+      let restoreTrans = null;
+      if (readnav && navBody && readnav.classList.contains("is-open")) {
+        navBody.style.transition = "none";
+        readnav.classList.remove("is-open");
+        restoreTrans = () => { navBody.style.transition = ""; };
+      }
+      closeDrawer();
+      // 真正的滚动容器是 .modal__body（overflow:auto）；panel 是 overflow:hidden，滚它无效
+      const scroller = (body && body !== document.documentElement) ? body : scrollRoot;
+      if (scroller && scroller.scrollTo) {
+        const scRect = scroller.getBoundingClientRect();
         const tgtRect = tgt.getBoundingClientRect();
-        const top = tgtRect.top - panelRect.top + panel.scrollTop - 20;
-        panel.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        // 顶部预留 sticky 目录（折叠态约 44px）+ 呼吸空间
+        const top = tgtRect.top - scRect.top + scroller.scrollTop - 60;
+        scroller.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
       } else if (tgt.scrollIntoView) {
         tgt.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      // 跳转后折叠内联 & 关闭抽屉，避免遮挡
-      if (readnav) readnav.classList.remove("is-open");
-      closeDrawer();
+      // 滚动启动后恢复目录的折叠过渡
+      if (restoreTrans) setTimeout(restoreTrans, 80);
     }
     document.querySelectorAll("[data-jump]").forEach(a => {
       a.addEventListener("click", e => {
