@@ -9,6 +9,262 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="shared/styles.css" />
+<style>
+  /* ========== 💝 存款方式库 ========== */
+  .gesture-toolbar{
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    margin-bottom:22px;
+  }
+  .gesture-toolbar .faint{align-self:center;font-size:.8rem}
+  .gesture-card{
+    position:relative;display:flex;flex-direction:column;gap:8px;
+  }
+  .gesture-card__head{display:flex;align-items:center;gap:10px}
+  .gesture-card__icon{
+    width:42px;height:42px;border-radius:50%;flex-shrink:0;
+    display:grid;place-items:center;font-size:1.3rem;
+    background:var(--sage-tint);border:1px solid var(--sage-soft);
+  }
+  .gesture-card__head h3{margin:0;font-size:1.02rem;flex:1;min-width:0}
+  .gesture-card__tag{font-size:.68rem;padding:2px 8px;border-radius:var(--r-pill);flex-shrink:0}
+  .gesture-card__tag--custom{background:var(--rose-tint);color:var(--rose-deep)}
+  .gesture-card__tag--builtin{background:var(--sage-tint);color:var(--sage-deep)}
+  .gesture-card p{margin:0;font-size:.88rem;line-height:1.7;color:var(--muted)}
+  .gesture-card__del{
+    position:absolute;top:12px;right:12px;
+    background:none;border:none;cursor:pointer;color:var(--faint);
+    font-size:.95rem;padding:4px;line-height:1;border-radius:6px;
+    transition:all .2s var(--ease);
+  }
+  .gesture-card__del:hover{color:var(--rose-deep);background:var(--rose-tint)}
+
+  /* ========== 🎡 惊喜转盘（复刻美食转盘样式） ========== */
+  .wheel-section{
+    background:linear-gradient(135deg,var(--bg-cream),var(--bg-deep));
+    position:relative;overflow:hidden;
+  }
+  .wheel-section::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(circle at 15% 20%,rgba(176,106,62,.1),transparent 50%),
+      radial-gradient(circle at 85% 80%,rgba(184,92,107,.1),transparent 50%);
+    pointer-events:none;
+  }
+  .wheel-container{
+    max-width:520px;margin:0 auto;padding:0 16px;
+    display:flex;flex-direction:column;align-items:center;gap:24px;
+    position:relative;
+  }
+  .wheel-canvas-wrap{
+    position:relative;width:100%;aspect-ratio:1 / 1;
+    max-width:420px;margin:0 auto;
+    filter:drop-shadow(0 8px 24px rgba(58,54,49,.12));
+  }
+  .wheel-canvas{
+    width:100%;height:100%;
+    transition:transform 4s cubic-bezier(.17,.67,.16,1);
+    transform-origin:center center;
+  }
+  .wheel-pointer{
+    position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+    width:44px;height:56px;z-index:5;
+    filter:drop-shadow(0 4px 6px rgba(58,54,49,.2));
+  }
+  .wheel-pointer::before{
+    content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:0;height:0;
+    border-left:22px solid transparent;
+    border-right:22px solid transparent;
+    border-top:44px solid var(--rose-deep);
+  }
+  .wheel-pointer::after{
+    content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+    width:16px;height:16px;border-radius:50%;
+    background:var(--rose);border:3px solid var(--white);
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .wheel-center{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:64px;height:64px;border-radius:50%;
+    background:linear-gradient(135deg,var(--white),var(--bg-card));
+    border:4px solid var(--sage);
+    display:grid;place-items:center;font-size:1.6rem;
+    box-shadow:0 4px 14px rgba(58,54,49,.15),inset 0 1px 3px rgba(255,255,255,.8);
+    z-index:3;
+  }
+  .wheel-controls{
+    display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%;
+  }
+  .wheel-btn{
+    flex:1;min-width:140px;min-height:52px;padding:12px 20px;
+    border-radius:var(--r-pill);font-size:1rem;font-weight:600;
+    font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    border:2px solid transparent;transition:all .25s var(--ease);cursor:pointer;
+  }
+  .wheel-btn--spin{
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));
+    color:var(--white);
+    box-shadow:0 6px 16px rgba(94,110,83,.28);
+  }
+  .wheel-btn--spin:hover:not(:disabled){
+    transform:translateY(-2px);
+    box-shadow:0 8px 22px rgba(94,110,83,.35);
+  }
+  .wheel-btn--spin:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .wheel-btn--spin.is-spinning{animation:bk-pulse-btn 1s infinite}
+  @keyframes bk-pulse-btn{
+    0%,100%{box-shadow:0 6px 16px rgba(94,110,83,.28)}
+    50%{box-shadow:0 6px 24px rgba(94,110,83,.5)}
+  }
+  .wheel-btn--config{
+    background:var(--bg-card);color:var(--ink);
+    border-color:var(--line);
+  }
+  .wheel-btn--config:hover{
+    border-color:var(--sage);color:var(--sage-deep);background:var(--sage-tint);
+    transform:translateY(-1px);
+  }
+  .wheel-hint{
+    text-align:center;color:var(--muted);font-size:.88rem;
+    padding:8px 16px;background:var(--bg-card);border-radius:var(--r-pill);
+    border:1px dashed var(--line-soft);
+  }
+  .wheel-hint b{color:var(--sage-deep)}
+
+  /* ========== 转盘配置面板 ========== */
+  .opts-panel{display:flex;flex-direction:column;gap:18px}
+  .opts-mode-switch{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;
+    background:var(--bg-deep);padding:6px;border-radius:var(--r-md);
+  }
+  .opts-mode-btn{
+    padding:10px 14px;border-radius:var(--r-sm);
+    background:transparent;border:none;cursor:pointer;
+    font-family:inherit;font-size:.92rem;font-weight:500;color:var(--muted);
+    transition:all .25s var(--ease);min-height:40px;
+  }
+  .opts-mode-btn.is-active{
+    background:var(--white);color:var(--ink);
+    box-shadow:var(--shadow-sm);
+  }
+  .opts-mode-btn .ico{margin-right:6px}
+  .opts-section-title{
+    font-family:var(--ff-display);font-size:1rem;color:var(--ink);font-weight:600;
+    display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  }
+  .opts-section-title::before{
+    content:"";width:3px;height:18px;border-radius:2px;background:var(--sage);
+  }
+  .opts-desc{font-size:.84rem;color:var(--muted);margin-bottom:12px;line-height:1.6}
+  .count-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .count-chip{
+    padding:8px 16px;border-radius:var(--r-pill);
+    background:var(--bg-deep);border:1px solid var(--line-soft);
+    font-family:inherit;font-size:.88rem;color:var(--muted);font-weight:500;
+    cursor:pointer;transition:all .2s var(--ease);
+  }
+  .count-chip:hover{border-color:var(--sage-soft);color:var(--sage-deep)}
+  .count-chip.is-active{background:var(--sage);color:var(--white);border-color:var(--sage)}
+  .custom-checklist{
+    max-height:46vh;overflow:auto;
+    display:flex;flex-direction:column;gap:6px;
+    padding-right:4px;
+  }
+  .check-group-title{
+    font-family:var(--ff-accent);font-style:italic;
+    font-size:.82rem;color:var(--sage-deep);letter-spacing:.08em;
+    padding:12px 4px 6px;position:sticky;top:0;background:var(--bg-cream);
+    border-bottom:1px dashed var(--line-soft);margin-top:6px;
+  }
+  .check-group-title:first-child{margin-top:0}
+  .check-item-row{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;
+    border-radius:var(--r-sm);cursor:pointer;transition:background .2s;
+  }
+  .check-item-row:hover{background:var(--bg-deep)}
+  .check-item-row input{accent-color:var(--sage);width:18px;height:18px;flex-shrink:0}
+  .check-item-row__text{flex:1;min-width:0}
+  .check-item-row__name{font-size:.92rem;color:var(--ink);font-weight:500}
+  .check-item-row__meta{font-size:.76rem;color:var(--faint);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap}
+  .opts-footer{
+    display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;
+    padding-top:16px;border-top:1px solid var(--line-soft);
+  }
+  .opts-footer .btn--block{flex:1}
+
+  /* ========== 转盘结果弹窗 ========== */
+  .wheel-result{text-align:center;padding:8px 4px}
+  .wheel-result__emoji{
+    font-size:5rem;margin-bottom:12px;
+    animation:bk-bounce-in .6s cubic-bezier(.68,-0.55,.27,1.55);
+  }
+  @keyframes bk-bounce-in{
+    0%{transform:scale(0);opacity:0}
+    60%{transform:scale(1.15)}
+    100%{transform:scale(1);opacity:1}
+  }
+  .wheel-result__tag{
+    display:inline-block;padding:4px 14px;border-radius:var(--r-pill);
+    font-size:.8rem;font-family:var(--ff-accent);font-style:italic;
+    background:var(--rose-tint);color:var(--rose-deep);margin-bottom:14px;
+  }
+  .wheel-result__name{
+    font-family:var(--ff-display);font-size:2rem;font-weight:600;
+    color:var(--ink);margin-bottom:8px;line-height:1.2;
+  }
+  .wheel-result__info{
+    font-size:.88rem;color:var(--muted);max-width:360px;margin:0 auto 20px;
+    line-height:1.7;padding:12px 16px;background:var(--bg-soft);border-radius:var(--r-sm);
+  }
+  .who-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+  .who-chip{
+    padding:9px 18px;border-radius:var(--r-pill);
+    background:var(--bg-deep);border:1px solid var(--line-soft);
+    font-family:inherit;font-size:.9rem;font-weight:500;color:var(--muted);
+    cursor:pointer;transition:all .2s var(--ease);
+  }
+  .who-chip:hover{border-color:var(--sage-soft);color:var(--sage-deep)}
+  .who-chip.is-active{background:var(--sage);color:var(--white);border-color:var(--sage)}
+  .who-chip--rose.is-active{background:var(--rose-deep);color:var(--white);border-color:var(--rose-deep)}
+  .wheel-result__actions{
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  }
+  .wheel-result__actions .btn{min-width:130px}
+
+  /* ========== 新增方式弹窗：emoji 选择 ========== */
+  .emoji-pick{display:flex;gap:8px;flex-wrap:wrap}
+  .emoji-pick label{
+    width:44px;height:44px;border-radius:var(--r-sm);
+    border:1px solid var(--line-soft);background:var(--bg-deep);
+    display:grid;place-items:center;font-size:1.3rem;cursor:pointer;
+    transition:all .2s var(--ease);
+  }
+  .emoji-pick label:hover{border-color:var(--sage-soft);transform:translateY(-1px)}
+  .emoji-pick input{display:none}
+  .emoji-pick label:has(input:checked){
+    border-color:var(--sage);background:var(--sage-tint);
+    box-shadow:0 0 0 2px var(--sage-soft);
+  }
+
+  @media (max-width:768px){
+    .wheel-canvas-wrap{max-width:340px}
+    .wheel-center{width:54px;height:54px;font-size:1.3rem}
+    .wheel-pointer{width:36px;height:48px;top:-10px}
+    .wheel-pointer::before{
+      border-left:18px solid transparent;border-right:18px solid transparent;border-top:38px solid var(--rose-deep);
+    }
+    .wheel-btn{min-width:120px;min-height:48px;font-size:.94rem;padding:10px 16px}
+  }
+  @media (max-width:420px){
+    .wheel-canvas-wrap{max-width:300px}
+    .wheel-center{width:48px;height:48px;font-size:1.1rem}
+  }
+
+  /* 记一笔表单：新增「存款方式」一列后，桌面端改为 7 列网格 */
+  @media(min-width:820px){
+    .quick-add{grid-template-columns:auto auto auto auto auto minmax(160px,1fr) auto;gap:10px 12px}
+  }
+</style>
 </head>
 <body data-page="bank">
 <main>
@@ -21,8 +277,8 @@
       <h1 class="hero__title">情感账户</h1>
       <p class="hero__sub">情感账户 (Emotional Bank Account) 来自史蒂芬·柯维：每一次被看见、被兑现、被善待，都是一次存款；每一次失信、忽视、伤害，都是一次取款。取款远大于存款——所以日常的小确幸，才是关系的真正底气。</p>
       <div class="hero__actions">
-        <a href="#add" class="btn btn--primary">记一笔存款</a>
-        <a href="#deposits" class="btn btn--ghost">六种存款</a>
+        <a href="#wheel" class="btn btn--primary">🎡 转一个惊喜</a>
+        <a href="#add" class="btn btn--ghost">记一笔存款</a>
       </div>
     </div>
   </section>
@@ -54,11 +310,62 @@
     </div>
   </section>
 
-  <!-- 03 记一笔 -->
-  <section id="add" class="section">
+  <!-- 03 存款方式库 -->
+  <section id="gestures" class="section">
     <div class="container">
       <div class="section__head reveal">
         <span class="section__num">03</span>
+        <h2 class="section__title">存款方式库 · 我们的加分明细</h2>
+        <p class="section__desc">把「怎么对 TA 好」变成一份可执行的清单：内置经典 + 你们自己的私房招式，随时增删。</p>
+      </div>
+      <div class="gesture-toolbar reveal">
+        <button class="btn btn--primary" id="bk-add-gesture" type="button">＋ 新增方式</button>
+        <button class="btn btn--ghost" id="bk-restore-gestures" type="button">↺ 恢复内置方式</button>
+        <span class="faint" id="bk-gesture-count"></span>
+      </div>
+      <div class="grid grid--3" id="gesture-grid"></div>
+      <div class="mt-4 reveal">
+        <div class="callout">方式不必惊天动地——日拱一卒的小动作，才是账户里最厚的复利。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 🎡 惊喜转盘 -->
+  <section class="section wheel-section" id="wheel">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">04</span>
+        <h2 class="section__title">🎡 惊喜转盘 · 给 TA 一个小意外</h2>
+        <p class="section__desc">不知道今天怎么对 TA 好？转一圈，交给缘分！转中的方式可以直接记一笔存款——可以是女方对男方，也可以是男方对女方。</p>
+      </div>
+      <div class="reveal">
+        <div class="wheel-container">
+          <div class="wheel-canvas-wrap">
+            <div class="wheel-pointer"></div>
+            <canvas class="wheel-canvas" id="wheelCanvas" width="600" height="600"></canvas>
+            <div class="wheel-center">❤</div>
+          </div>
+          <div class="wheel-hint" id="wheelHint">
+            当前转盘共 <b id="wheelCount">0</b> 种方式 · 全部来自你们的「存款方式库」
+          </div>
+          <div class="wheel-controls">
+            <button class="wheel-btn wheel-btn--config" id="btnWheelConfig" type="button">
+              ⚙️ 自定义选项
+            </button>
+            <button class="wheel-btn wheel-btn--spin" id="btnWheelSpin" type="button">
+              🎲 开始转！
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 记一笔 -->
+  <section id="add" class="section">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__num">05</span>
         <h2 class="section__title">记一笔 · 存款或取款</h2>
         <p class="section__desc">今天发生了什么？哪怕只是一杯水、一句晚安，都值得被记下。</p>
       </div>
@@ -69,8 +376,8 @@
             <select id="bk-type" aria-label="类型"></select>
           </div>
           <div class="quick-add__field">
-            <label for="bk-who" class="quick-add__label">谁</label>
-            <select id="bk-who" aria-label="谁"></select>
+            <label for="bk-who" class="quick-add__label">谁付出</label>
+            <select id="bk-who" aria-label="谁付出"></select>
           </div>
           <div class="quick-add__field">
             <label for="bk-date" class="quick-add__label">日期</label>
@@ -80,12 +387,17 @@
             <label for="bk-weight" class="quick-add__label">金额</label>
             <select id="bk-weight" aria-label="金额"></select>
           </div>
+          <div class="quick-add__field">
+            <label for="bk-gesture" class="quick-add__label">存款方式</label>
+            <select id="bk-gesture" aria-label="存款方式"><option value="">✍️ 自由记录</option></select>
+          </div>
           <div class="quick-add__field quick-add__field--event">
             <label for="bk-event" class="quick-add__label">今天发生了什么</label>
             <input type="text" id="bk-event" placeholder="哪怕只是一个微笑、一杯水……" aria-label="事件" />
           </div>
           <button class="btn btn--primary quick-add__save" id="bk-save" type="button">存入</button>
         </div>
+        <p class="faint mt-2" style="font-size:.78rem;line-height:1.7">💡 存款时「谁付出」= 做这件事的一方：选「师豪」即 师豪 → 佳力 存了一笔，选「佳力」即 佳力 → 师豪。从「存款方式」选一种，事件栏会自动带出建议文案，可再自由修改。</p>
         <div class="mt-3 flex gap-2 wrap aic">
           <button class="btn btn--ghost btn--small" id="bk-clear" type="button">清空我的记录</button>
           <span class="faint" style="font-size:.8rem">仅清空你添加的记录，种子记录不受影响</span>
@@ -94,11 +406,11 @@
     </div>
   </section>
 
-  <!-- 04 感恩与取款 · 时间轴 -->
+  <!-- 06 感恩与取款 · 时间轴 -->
   <section id="log" class="section section--tint">
     <div class="container">
       <div class="section__head reveal">
-        <span class="section__num">04</span>
+        <span class="section__num">06</span>
         <h2 class="section__title">感恩与取款 · 时间轴</h2>
         <p class="section__desc">最近的存款与取款，按时间倒序排列——最近的在上。</p>
       </div>
@@ -109,11 +421,11 @@
     </div>
   </section>
 
-  <!-- 05 灵感与知识库 -->
+  <!-- 07 灵感与知识库 -->
   <section id="knowledge" class="section">
     <div class="container">
       <div class="section__head reveal">
-        <span class="section__num">05</span>
+        <span class="section__num">07</span>
         <h2 class="section__title">灵感与知识库</h2>
         <p class="section__desc">两个人一起学「怎么爱」，比一个人瞎猜有效。先懂，再存，慢慢来，不透支。</p>
       </div>
@@ -124,11 +436,11 @@
     </div>
   </section>
 
-  <!-- 06 继续探索 (Crosslinks) -->
+  <!-- 08 继续探索 (Crosslinks) -->
   <section class="section section--tint">
     <div class="container">
       <div class="section__head reveal">
-        <span class="section__num">06</span>
+        <span class="section__num">08</span>
         <h2 class="section__title">继续探索</h2>
         <p class="section__desc">把存款，存到对的地方。</p>
       </div>
@@ -238,6 +550,15 @@
       const o = (data.who_options || []).find(o => o.value === who);
       return o ? o.label : (who || '');
     }
+    /* 存款显示方向（谁 → 谁），取款保持「谁」 */
+    function whoDisplay(r) {
+      if (r.type === 'deposit') {
+        if (r.who === 'him') return '师豪 → 佳力';
+        if (r.who === 'her') return '佳力 → 师豪';
+        if (r.who === 'both') return '我们共同';
+      }
+      return whoLabel(r.who);
+    }
     function mergeRecords() { return records; }  // 已经在 reloadRecords 里排序合并了
     function revealIn(scope) {
       scope.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
@@ -315,17 +636,20 @@
               '<span class="bank-item__type">' + escapeHtml(t.label) + '</span>' +
             '</div>' +
             '<div class="bank-item__event">' + escapeHtml(r.event) + '</div>' +
-            '<div class="bank-item__who">' + escapeHtml(whoLabel(r.who)) + ' · 金额 ' + (Number(r.weight) || 1) + '</div>' +
+            '<div class="bank-item__who">' + escapeHtml(whoDisplay(r)) + ' · 金额 ' + (Number(r.weight) || 1) + '</div>' +
           '</div>' +
         '</div>';
       }).join('');
     }
 
     /* ---------- 表单 ---------- */
+    let __lastAutoEvent = "";  // 记录上次由「存款方式」自动填充的文案，避免覆盖手写内容
+
     function wireForm() {
       const typeSel = document.getElementById('bk-type');
       const whoSel = document.getElementById('bk-who');
       const weightSel = document.getElementById('bk-weight');
+      const gestureSel = document.getElementById('bk-gesture');
       const dateInput = document.getElementById('bk-date');
       const eventInput = document.getElementById('bk-event');
       const saveBtn = document.getElementById('bk-save');
@@ -341,7 +665,25 @@
       weightSel.innerHTML = (data.weight_options || []).map(w =>
         '<option value="' + w + '">' + w + '</option>'
       ).join('');
+      renderGestureSelect();
       dateInput.value = LoveNest.todayISO();
+
+      // 选择存款方式 → 事件栏自动带出建议文案（不覆盖手写内容）
+      if (gestureSel) {
+        gestureSel.addEventListener('change', () => {
+          const g = __gestures.find(x => x.id === gestureSel.value);
+          const cur = eventInput.value;
+          if (!g) {
+            if (cur === __lastAutoEvent) { eventInput.value = ""; __lastAutoEvent = ""; }
+            return;
+          }
+          if (!cur || cur === __lastAutoEvent) {
+            __lastAutoEvent = `${g.icon} ${g.name}`;
+            eventInput.value = __lastAutoEvent;
+          }
+          eventInput.focus();
+        });
+      }
 
       saveBtn.addEventListener('click', async () => {
         const event = eventInput.value.trim();
@@ -389,6 +731,513 @@
           renderLog();
         }
       });
+    }
+
+    /* ============================================================
+       💝 存款方式库：内置经典 + 自定义（持久化到 love_notes，零 SQL 迁移）
+       ============================================================ */
+    const GESTURE_NOTE_KEY = "bank-gestures";
+    const GESTURE_ICONS = ["🤗","💌","🍲","🎁","🚶","🌟","💆","👂","🧹","🌙","📸","🎬","☕","🌸","🎵","💐"];
+    const BUILTIN_GESTURES = [
+      { id: "g_hug",    icon: "🤗", name: "一个突然的拥抱",       desc: "从背后抱住 TA，什么都不说，就抱十秒钟。" },
+      { id: "g_note",   icon: "💌", name: "手写小纸条",           desc: "写在便利贴上，塞进 TA 的包、口袋或书里。" },
+      { id: "g_cook",   icon: "🍲", name: "做一顿 TA 爱吃的菜",   desc: "照着美食档案做一顿，比说一百句都管用。" },
+      { id: "g_treat",  icon: "🎁", name: "带回 TA 念叨过的小东西", desc: "下班顺路带回来一句：「我记得你说过想吃」。" },
+      { id: "g_walk",   icon: "🚶", name: "饭后牵手散步",         desc: "手机放家里，绕小区走一圈，聊聊今天。" },
+      { id: "g_praise", icon: "🌟", name: "当众认真夸 TA 一次",   desc: "在家人朋友面前，具体地说出 TA 的好。" },
+      { id: "g_massage",icon: "💆", name: "十分钟肩颈按摩",       desc: "不玩手机，专心给 TA 按十分钟。" },
+      { id: "g_listen", icon: "👂", name: "只听不评判的十五分钟", desc: "TA 说，你听。不给建议，只说「我在」。" },
+      { id: "g_chore",  icon: "🧹", name: "默默做完 TA 讨厌的家务", desc: "不等分工、不邀功，直接做掉。" },
+      { id: "g_goodnight", icon: "🌙", name: "认真的晚安",         desc: "放下手机，看着 TA 说一声晚安。" },
+      { id: "g_photo",  icon: "📸", name: "拍一张 TA 好看的照片", desc: "不经意拍下来发给 TA：「你真好看」。" },
+      { id: "g_date",   icon: "🎬", name: "说走就走的小约会",     desc: "奶茶、电影、夜宵摊，临时起意最动人。" }
+    ];
+    let __gestures = [];
+
+    function gestureUid() { return "g_" + Math.random().toString(36).slice(2, 10); }
+
+    async function loadGestures() {
+      try {
+        const rows = await LoveNest.db.list('love_notes', { note_key: GESTURE_NOTE_KEY });
+        const row = (rows || [])[0];
+        let items = null;
+        if (row) {
+          if (Array.isArray(row.items_json)) items = row.items_json;
+          else if (typeof row.content === "string") {
+            try { const p = JSON.parse(row.content); if (Array.isArray(p)) items = p; } catch (e) {}
+          }
+        }
+        __gestures = items
+          ? items.filter(g => g && g.name).map(g => ({
+              id: g.id || gestureUid(), icon: g.icon || "💖",
+              name: String(g.name), desc: String(g.desc || ""), custom: !!g.custom
+            }))
+          : BUILTIN_GESTURES.slice();
+      } catch (e) {
+        console.warn('[bank] loadGestures:', e);
+        __gestures = BUILTIN_GESTURES.slice();
+      }
+    }
+
+    async function saveGestures() {
+      await LoveNest.db.upsert('love_notes', {
+        note_key: GESTURE_NOTE_KEY,
+        kind: 'bank-gestures',
+        items_json: __gestures.map(({ id, icon, name, desc, custom }) => ({ id, icon, name, desc, custom }))
+      }, ['couple_id', 'note_key']);
+    }
+
+    function renderGestures() {
+      const grid = document.getElementById('gesture-grid');
+      const countEl = document.getElementById('bk-gesture-count');
+      if (!grid) return;
+      if (countEl) {
+        const customN = __gestures.filter(g => g.custom).length;
+        countEl.textContent = `共 ${__gestures.length} 种 · 自定义 ${customN} 种`;
+      }
+      if (!__gestures.length) {
+        grid.innerHTML = '<p class="muted center" style="grid-column:1/-1">方式库空空的——点上方「＋ 新增方式」，或「↺ 恢复内置方式」找回顾问推荐。</p>';
+        return;
+      }
+      grid.innerHTML = __gestures.map((g, i) =>
+        '<article class="card card--sage gesture-card reveal" data-delay="' + ((i % 3) + 1) + '">' +
+          '<div class="gesture-card__head">' +
+            '<span class="gesture-card__icon">' + escapeHtml(g.icon) + '</span>' +
+            '<h3>' + escapeHtml(g.name) + '</h3>' +
+            '<span class="gesture-card__tag ' + (g.custom ? 'gesture-card__tag--custom' : 'gesture-card__tag--builtin') + '">' + (g.custom ? '自定义' : '经典') + '</span>' +
+          '</div>' +
+          '<p>' + escapeHtml(g.desc || '（还没有描述——知道怎么做就够了）') + '</p>' +
+          '<button class="gesture-card__del" type="button" data-del-gesture="' + escapeHtml(g.id) + '" title="删除该方式" aria-label="删除该方式">🗑</button>' +
+        '</article>'
+      ).join('');
+      revealIn(grid);
+      grid.querySelectorAll('[data-del-gesture]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-del-gesture');
+          const g = __gestures.find(x => x.id === id);
+          if (!g) return;
+          if (!confirm(`确定删除方式「${g.name}」吗？`)) return;
+          __gestures = __gestures.filter(x => x.id !== id);
+          try { await saveGestures(); } catch (e) { console.warn('[bank] saveGestures:', e); }
+          renderGestures();
+          refreshWheel();
+          renderGestureSelect();
+          showToast(`🗑 已删除「${escapeHtml(g.name)}」`);
+        });
+      });
+    }
+
+    function openAddGestureModal() {
+      if (!window.LoveNest || !window.LoveNest.openModal) return;
+      const html = `
+        <div id="gestureForm">
+          <div class="edit-field" style="margin-bottom:14px">
+            <label style="display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:500">图标</label>
+            <div class="emoji-pick">
+              ${GESTURE_ICONS.map((ic, i) => `
+                <label title="${ic}">
+                  <input type="radio" name="gf-icon" value="${ic}"${i === 0 ? " checked" : ""} />
+                  <span>${ic}</span>
+                </label>`).join("")}
+            </div>
+          </div>
+          <div class="edit-field" style="margin-bottom:12px">
+            <label style="display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px;font-weight:500">方式名称 *</label>
+            <input id="gf-name" type="text" maxlength="16" placeholder="如：帮 TA 吹头发 / 陪 TA 视频云逛街" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink)" />
+          </div>
+          <div class="edit-field" style="margin-bottom:20px">
+            <label style="display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px;font-weight:500">怎么做（描述）</label>
+            <textarea id="gf-desc" maxlength="120" placeholder="写清楚具体动作，转到它时才好执行～" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);font-family:inherit;font-size:.9rem;background:var(--bg);color:var(--ink);min-height:80px;resize:vertical;line-height:1.6"></textarea>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn btn--ghost btn--small" id="gf-cancel" type="button">取消</button>
+            <button class="btn btn--primary btn--small" id="gf-submit" type="button">＋ 添加到方式库</button>
+          </div>
+        </div>`;
+      window.LoveNest.openModal("新增存款方式", html);
+      setTimeout(() => {
+        document.getElementById("gf-cancel")?.addEventListener("click", () => window.LoveNest.closeModal());
+        document.getElementById("gf-submit")?.addEventListener("click", async () => {
+          const name = document.getElementById("gf-name").value.trim();
+          if (!name) { alert("请填写方式名称"); document.getElementById("gf-name").focus(); return; }
+          const iconEl = document.querySelector('input[name="gf-icon"]:checked');
+          const desc = document.getElementById("gf-desc").value.trim();
+          __gestures.push({ id: gestureUid(), icon: iconEl ? iconEl.value : "💖", name, desc, custom: true });
+          try { await saveGestures(); } catch (e) { console.warn('[bank] saveGestures:', e); }
+          window.LoveNest.closeModal();
+          renderGestures();
+          refreshWheel();
+          renderGestureSelect();
+          showToast(`💝 已添加「${escapeHtml(name)}」到存款方式库`);
+        });
+      }, 30);
+    }
+
+    async function restoreBuiltinGestures() {
+      const existing = new Set(__gestures.map(g => g.id));
+      const missing = BUILTIN_GESTURES.filter(g => !existing.has(g.id));
+      if (!missing.length) { showToast("内置方式都在，一个没少～"); return; }
+      __gestures = __gestures.concat(missing.map(g => ({ ...g })));
+      try { await saveGestures(); } catch (e) { console.warn('[bank] saveGestures:', e); }
+      renderGestures();
+      refreshWheel();
+      renderGestureSelect();
+      showToast(`↺ 已恢复 ${missing.length} 种内置方式`);
+    }
+
+    /* 「记一笔」表单里的存款方式下拉 */
+    function renderGestureSelect() {
+      const sel = document.getElementById('bk-gesture');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">✍️ 自由记录</option>' + __gestures.map(g =>
+        `<option value="${escapeHtml(g.id)}">${escapeHtml(g.icon + " " + g.name)}</option>`
+      ).join('');
+    }
+
+    /* ---------- Toast（转盘/方式库反馈用） ---------- */
+    function showToast(html, opts) {
+      opts = opts || {};
+      const ms = opts.duration || 3500;
+      const kind = opts.kind || "success";
+      const bg = kind === "error" ? "var(--rose-deep)" : kind === "warn" ? "var(--amber)" : "var(--sage-deep)";
+      const toast = document.createElement("div");
+      toast.style.cssText = [
+        "position:fixed;left:50%;transform:translateX(-50%);top:36px;z-index:99999",
+        "max-width:min(640px,92vw);padding:10px 16px;border-radius:12px",
+        "background:" + bg + ";color:#fff;font-size:14px;line-height:1.5",
+        "box-shadow:0 8px 28px rgba(0,0,0,.18);pointer-events:none",
+        "opacity:0;transition:opacity .2s ease, transform .2s ease"
+      ].join(";");
+      toast.innerHTML = html;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => { toast.style.opacity = "1"; toast.style.transform = "translate(-50%, 8px)"; });
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translate(-50%, 0)";
+        setTimeout(() => toast.remove(), 350);
+      }, ms);
+    }
+
+    /* ============================================================
+       🎡 惊喜转盘（复刻美食转盘：Canvas 扇区 + CSS rotate 动画）
+       候选 = 存款方式库；转中可直接按方向记一笔存款
+       ============================================================ */
+    const WHEEL_COLORS = [
+      "#B8C4AD","#D4AE8B","#D6A5AE","#CBBFAE",
+      "#A8B5A0","#C49A82","#C999A4","#B8AD9A",
+      "#9FAD95","#B99072","#BC8B98","#ACA090"
+    ];
+    const WHEEL_TEXT_COLOR = "#3A3631";
+    const WheelState = {
+      items: [],
+      rotation: 0,
+      isSpinning: false,
+      mode: "smart",        // "smart" | "custom"
+      count: 8,             // 6/8/10/12
+      customSelected: new Set()
+    };
+
+    function shuffleArr(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function refreshWheelItems() {
+      const pool = __gestures.slice();
+      if (WheelState.mode === "custom") {
+        const seen = new Set();
+        const list = [];
+        pool.filter(g => WheelState.customSelected.has(g.id)).forEach(g => {
+          if (!seen.has(g.id)) { seen.add(g.id); list.push(g); }
+        });
+        if (list.length < WheelState.count) {
+          shuffleArr(pool.filter(g => !seen.has(g.id))).slice(0, WheelState.count - list.length).forEach(g => {
+            list.push(g); seen.add(g.id);
+          });
+        }
+        WheelState.items = shuffleArr(list).slice(0, WheelState.count);
+      } else {
+        WheelState.items = shuffleArr(pool).slice(0, WheelState.count);
+      }
+      const el = document.getElementById("wheelCount");
+      if (el) el.textContent = WheelState.items.length;
+    }
+
+    let __canvas = null, __ctx = null;
+
+    function drawWheel() {
+      if (!__canvas || !__ctx) return;
+      const canvas = __canvas, ctx = __ctx;
+      const W = canvas.width, H = canvas.height;
+      const cx = W / 2, cy = H / 2;
+      const R = Math.min(W, H) / 2 - 20;
+      ctx.clearRect(0, 0, W, H);
+
+      const items = WheelState.items.length ? WheelState.items : [
+        { icon: "💡", name: "先去上方添加存款方式" },
+        { icon: "🤗", name: "一个突然的拥抱" },
+        { icon: "🍲", name: "做一顿TA爱吃的菜" },
+        { icon: "🚶", name: "饭后牵手散步" },
+        { icon: "🌙", name: "认真的晚安" },
+        { icon: "🎁", name: "带回念叨过的小东西" }
+      ];
+      const N = items.length;
+      const anglePer = (Math.PI * 2) / N;
+
+      for (let i = 0; i < N; i++) {
+        const start = -Math.PI / 2 + i * anglePer;
+        const end = start + anglePer;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, R, start, end);
+        ctx.closePath();
+        ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(255,255,255,.7)";
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(start + anglePer / 2);
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = WHEEL_TEXT_COLOR;
+        const icon = items[i].icon || "💖";
+        const name = items[i].name || "";
+        const fontSize = Math.max(14, Math.min(22, 150 / Math.max(4, name.length)));
+        ctx.font = `600 ${fontSize}px "Noto Sans SC", "Noto Serif SC", sans-serif`;
+        const textR = R * 0.72;
+        if (name.length > 5) {
+          const half = Math.ceil(name.length / 2);
+          ctx.fillText(icon + " " + name.slice(0, half), textR, -fontSize * 0.62);
+          ctx.fillText(name.slice(half), textR, fontSize * 0.62);
+        } else {
+          ctx.fillText(icon + " " + name, textR, 0);
+        }
+        ctx.restore();
+      }
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "rgba(92,110,83,.35)";
+      ctx.stroke();
+    }
+
+    function spinWheel() {
+      if (WheelState.isSpinning) return;
+      if (!__gestures.length || !WheelState.items.length) {
+        showToast("先去上方「存款方式库」添加至少一种方式吧～", { kind: "warn" });
+        return;
+      }
+      WheelState.isSpinning = true;
+      const btn = document.getElementById("btnWheelSpin");
+      btn.classList.add("is-spinning");
+      btn.disabled = true;
+      btn.innerHTML = "🎰 转动中…";
+
+      const N = WheelState.items.length;
+      const anglePer = 360 / N;
+      const idx = Math.floor(Math.random() * N);
+      const baseAngle = -(idx * anglePer + anglePer / 2);
+      const jitter = (Math.random() - 0.5) * anglePer * 0.5;
+      const totalRounds = 5 + Math.floor(Math.random() * 3);
+      const finalRotation = WheelState.rotation + totalRounds * 360 + (baseAngle - (WheelState.rotation % 360)) + jitter;
+
+      const canvas = __canvas;
+      canvas.style.transition = "transform 4.2s cubic-bezier(.17,.67,.16,1)";
+      WheelState.rotation = finalRotation;
+      canvas.style.transform = `rotate(${finalRotation}deg)`;
+
+      setTimeout(() => {
+        WheelState.isSpinning = false;
+        btn.classList.remove("is-spinning");
+        btn.disabled = false;
+        btn.innerHTML = "🎲 再转一次！";
+        showWheelResult(WheelState.items[idx]);
+      }, 4300);
+    }
+
+    function showWheelResult(item) {
+      if (!window.LoveNest || !window.LoveNest.openModal) return;
+      const html = `
+        <div class="wheel-result">
+          <div class="wheel-result__emoji">${escapeHtml(item.icon || "💖")}</div>
+          <div class="wheel-result__tag">🎯 转盘选中 · 给 TA 的小惊喜</div>
+          <div class="wheel-result__name">${escapeHtml(item.name)}</div>
+          ${item.desc ? `<div class="wheel-result__info">💡 ${escapeHtml(item.desc)}</div>` : ""}
+          <div class="opts-section-title" style="justify-content:center">谁来做这件小事？</div>
+          <div class="who-chips" id="wrWhoChips">
+            <button class="who-chip is-active" type="button" data-who="him">师豪 → 佳力</button>
+            <button class="who-chip who-chip--rose" type="button" data-who="her">佳力 → 师豪</button>
+          </div>
+          <div class="opts-section-title" style="justify-content:center">这笔存款记多少？</div>
+          <div class="who-chips" id="wrWeightChips">
+            ${(data.weight_options || [1, 2, 3, 5]).map(w =>
+              `<button class="who-chip${w === 2 ? " is-active" : ""}" type="button" data-weight="${w}">${w}</button>`
+            ).join("")}
+          </div>
+          <div class="wheel-result__actions">
+            <button class="btn btn--ghost" id="wr-again" type="button">🔄 再转一次</button>
+            <button class="btn btn--primary" id="wr-ok" type="button">＋ 记一笔存款</button>
+          </div>
+        </div>`;
+      window.LoveNest.openModal("🎉 今天的缘分", html);
+      setTimeout(() => {
+        let who = "him", weight = 2;
+        document.querySelectorAll("#wrWhoChips .who-chip").forEach(ch => {
+          ch.addEventListener("click", () => {
+            document.querySelectorAll("#wrWhoChips .who-chip").forEach(x => x.classList.remove("is-active"));
+            ch.classList.add("is-active");
+            who = ch.getAttribute("data-who");
+          });
+        });
+        document.querySelectorAll("#wrWeightChips .who-chip").forEach(ch => {
+          ch.addEventListener("click", () => {
+            document.querySelectorAll("#wrWeightChips .who-chip").forEach(x => x.classList.remove("is-active"));
+            ch.classList.add("is-active");
+            weight = Number(ch.getAttribute("data-weight")) || 1;
+          });
+        });
+        document.getElementById("wr-again")?.addEventListener("click", () => {
+          window.LoveNest.closeModal();
+          setTimeout(spinWheel, 200);
+        });
+        document.getElementById("wr-ok")?.addEventListener("click", async () => {
+          const rec = {
+            date: LoveNest.todayISO(),
+            type: "deposit",
+            who: who,
+            event: `${item.icon || "💖"} 转盘小惊喜：${item.name}`,
+            weight: weight,
+            source: "user"
+          };
+          try {
+            await LoveNest.db.insert('bank_records', rec);
+            await reloadRecords();
+            renderBalance();
+            renderLog();
+            window.LoveNest.closeModal();
+            showToast(`${escapeHtml(item.icon || "💖")} 已存入「${escapeHtml(item.name)}」——${who === "him" ? "师豪 → 佳力" : "佳力 → 师豪"}，金额 ${weight}`);
+          } catch (e) {
+            console.warn('[bank] wheel insert:', e);
+            showToast("❌ 记录写入失败，请重试", { kind: "error" });
+          }
+        });
+      }, 50);
+    }
+
+    function openWheelConfig() {
+      if (!window.LoveNest || !window.LoveNest.openModal) return;
+      const checkRow = (g) => {
+        const checked = WheelState.customSelected.has(g.id) ? "checked" : "";
+        return `
+          <label class="check-item-row">
+            <input type="checkbox" data-gid="${escapeHtml(g.id)}" ${checked}/>
+            <div class="check-item-row__text">
+              <div class="check-item-row__name">${escapeHtml(g.icon + " " + g.name)}</div>
+              <div class="check-item-row__meta"><span>${g.custom ? "自定义" : "经典"}</span></div>
+            </div>
+          </label>`;
+      };
+      const builtin = __gestures.filter(g => !g.custom);
+      const custom = __gestures.filter(g => g.custom);
+      const html = `
+        <div class="opts-panel">
+          <div class="opts-mode-switch" id="optsModeSwitch">
+            <button class="opts-mode-btn ${WheelState.mode === 'smart' ? 'is-active' : ''}" data-mode="smart" type="button">
+              <span class="ico">🎰</span>智能随机
+            </button>
+            <button class="opts-mode-btn ${WheelState.mode === 'custom' ? 'is-active' : ''}" data-mode="custom" type="button">
+              <span class="ico">✅</span>自定义勾选
+            </button>
+          </div>
+          <div>
+            <div class="opts-section-title">转盘显示数量</div>
+            <div class="count-chips" id="countChips">
+              ${[6, 8, 10, 12].map(n => `<button class="count-chip ${WheelState.count === n ? 'is-active' : ''}" data-count="${n}" type="button">${n} 项</button>`).join("")}
+            </div>
+          </div>
+          <p class="opts-desc">智能随机 = 从方式库整体随机抽；自定义勾选 = 只在勾选的方式里转。候选都来自上方「存款方式库」。</p>
+          <div id="customPanel" style="${WheelState.mode === 'custom' ? '' : 'display:none'}">
+            <div class="opts-section-title">逐项勾选</div>
+            <div class="custom-checklist" id="customChecklist">
+              ${builtin.length ? `<div class="check-group-title">📘 经典方式（${builtin.length}）</div>` + builtin.map(checkRow).join("") : ""}
+              ${custom.length ? `<div class="check-group-title">💝 我们的自定义（${custom.length}）</div>` + custom.map(checkRow).join("") : ""}
+              ${!__gestures.length ? '<p class="opts-desc">方式库为空，先去上方添加。</p>' : ""}
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn--ghost btn--small" id="selAll" type="button">全选</button>
+              <button class="btn btn--ghost btn--small" id="selNone" type="button">清空</button>
+            </div>
+          </div>
+          <div class="opts-footer">
+            <button class="btn btn--ghost" id="cfgCancel" type="button">取消</button>
+            <button class="btn btn--primary btn--block" id="cfgApply" type="button">✅ 应用并生成转盘</button>
+          </div>
+        </div>`;
+      window.LoveNest.openModal("⚙️ 自定义转盘选项", html);
+      setTimeout(() => {
+        document.querySelectorAll("#optsModeSwitch .opts-mode-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll("#optsModeSwitch .opts-mode-btn").forEach(b => b.classList.remove("is-active"));
+            btn.classList.add("is-active");
+            const m = btn.getAttribute("data-mode");
+            WheelState.mode = m;
+            document.getElementById("customPanel").style.display = m === "custom" ? "" : "none";
+          });
+        });
+        document.querySelectorAll("#countChips .count-chip").forEach(c => {
+          c.addEventListener("click", () => {
+            document.querySelectorAll("#countChips .count-chip").forEach(x => x.classList.remove("is-active"));
+            c.classList.add("is-active");
+            WheelState.count = Number(c.getAttribute("data-count"));
+          });
+        });
+        document.querySelectorAll("#customChecklist input[type=checkbox][data-gid]").forEach(cb => {
+          cb.addEventListener("change", () => {
+            const gid = cb.getAttribute("data-gid");
+            if (cb.checked) WheelState.customSelected.add(gid);
+            else WheelState.customSelected.delete(gid);
+          });
+        });
+        document.getElementById("selAll")?.addEventListener("click", () => {
+          document.querySelectorAll("#customChecklist input[type=checkbox][data-gid]").forEach(cb => {
+            cb.checked = true;
+            WheelState.customSelected.add(cb.getAttribute("data-gid"));
+          });
+        });
+        document.getElementById("selNone")?.addEventListener("click", () => {
+          WheelState.customSelected.clear();
+          document.querySelectorAll("#customChecklist input[type=checkbox][data-gid]").forEach(cb => cb.checked = false);
+        });
+        document.getElementById("cfgCancel")?.addEventListener("click", () => window.LoveNest.closeModal());
+        document.getElementById("cfgApply")?.addEventListener("click", () => {
+          refreshWheelItems();
+          drawWheel();
+          window.LoveNest.closeModal();
+          showToast(`🎡 转盘已刷新，共 ${WheelState.items.length} 种方式！`);
+        });
+      }, 60);
+    }
+
+    function refreshWheel() {
+      refreshWheelItems();
+      if (__canvas && __ctx) drawWheel();
+    }
+
+    function initWheel() {
+      __canvas = document.getElementById("wheelCanvas");
+      if (!__canvas) return;
+      __ctx = __canvas.getContext("2d");
+      refreshWheel();
+      document.getElementById("btnWheelSpin")?.addEventListener("click", spinWheel);
+      document.getElementById("btnWheelConfig")?.addEventListener("click", openWheelConfig);
     }
 
     /* ---------- 05 知识库 intro ---------- */
@@ -463,10 +1312,22 @@
     }
 
     /* ---------- 初始化 ---------- */
+    await loadGestures();
     renderDeposits();
     renderBalance();
     renderLog();
     wireForm();
+    renderGestures();
+    initWheel();
+    document.getElementById('bk-add-gesture')?.addEventListener('click', openAddGestureModal);
+    document.getElementById('bk-restore-gestures')?.addEventListener('click', restoreBuiltinGestures);
+    // 方式库（love_notes）云端 / 他端变更 → 自动刷新
+    LoveNest.db.watch('love_notes', async () => {
+      await loadGestures();
+      renderGestures();
+      renderGestureSelect();
+      refreshWheel();
+    });
     renderKnowledgeIntro();
     renderKnowledge();
   });

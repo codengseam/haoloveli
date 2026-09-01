@@ -98,6 +98,36 @@
   .detail-section{margin-bottom:18px}
   .detail-section h4{font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:500;letter-spacing:.04em}
   .detail-section p{font-size:.94rem;color:var(--ink);line-height:1.75;white-space:pre-wrap}
+
+  /* ===== 头像图片 + 上传/更换/移除 ===== */
+  .tree-node__avatar img,.profile__avatar img,.detail-avatar img{
+    width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;
+  }
+  .tree-node__avatar,.profile__avatar,.detail-avatar{overflow:hidden}
+  .avatar-editable{position:relative;display:inline-block;flex-shrink:0;cursor:pointer}
+  .tree-node .avatar-editable{display:block;width:48px;margin:0 auto 8px}
+  .avatar-cam{
+    position:absolute;right:-6px;bottom:-4px;width:24px;height:24px;border-radius:50%;
+    background:var(--sage-deep);color:#fff;border:2px solid var(--bg-card);
+    font-size:.66rem;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;opacity:0;transition:opacity .2s var(--ease);padding:0;line-height:1;
+  }
+  .avatar-del{
+    position:absolute;left:-6px;top:-4px;width:22px;height:22px;border-radius:50%;
+    background:var(--rose-deep);color:#fff;border:2px solid var(--bg-card);
+    font-size:.6rem;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;opacity:0;transition:opacity .2s var(--ease);padding:0;line-height:1;
+  }
+  .avatar-editable:hover .avatar-cam,.avatar-editable:hover .avatar-del,
+  .avatar-editable:focus-within .avatar-cam,.avatar-editable:focus-within .avatar-del{opacity:1}
+  @media (hover:none){.avatar-cam,.avatar-del{opacity:.92}}
+  .avatar-hint{font-size:.74rem;color:var(--faint);text-align:center;margin-top:8px}
+  .nf-avatar-preview{
+    width:72px;height:72px;border-radius:50%;margin:0 auto 10px;
+    display:flex;align-items:center;justify-content:center;font-weight:600;color:#fff;font-size:1.6rem;
+    background:linear-gradient(135deg,var(--sage),var(--sage-deep));overflow:hidden;
+  }
+  .nf-avatar-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 </style>
 </head>
 <body data-page="family">
@@ -355,6 +385,196 @@
   function uid() { return "m_" + Math.random().toString(36).slice(2, 10); }
 
   /* ============================================================
+     头像存取：复用 love_notes 通用键值表（note_key = family-avatar|<id>）
+     —— 零 SQL 迁移：本机模式走 localStorage 缓存层，配置 Supabase 后自动云端同步
+     —— 不写入 family_members 表，避免 upsert 整行时出现未知列
+     ============================================================ */
+  const AVATAR_KIND = "family-avatar";
+  const AVATAR_KEY_PREFIX = "family-avatar|";
+  const COUPLE_AVATAR_IDS = { "couple-him": { initial: "豪", name: "师豪" }, "couple-her": { initial: "力", name: "佳力" } };
+  let __avatarMap = {};          // id -> dataURL（成员 id / couple-him / couple-her）
+  let __avatarInput = null;      // 隐藏的 file input
+  let __newMemberAvatar = null;  // 新增成员弹窗里临时选中的头像
+
+  async function loadAvatars() {
+    try {
+      const rows = await LoveNest.db.list('love_notes', { kind: AVATAR_KIND });
+      const map = {};
+      (rows || []).forEach(r => {
+        if (r && r.note_key && r.note_key.indexOf(AVATAR_KEY_PREFIX) === 0
+            && typeof r.content === "string" && r.content.indexOf("data:image/") === 0) {
+          map[r.note_key.slice(AVATAR_KEY_PREFIX.length)] = r.content;
+        }
+      });
+      __avatarMap = map;
+    } catch (e) { console.warn('[family] loadAvatars:', e); __avatarMap = {}; }
+  }
+
+  async function saveAvatar(id, dataUrl) {
+    // 移除头像时用「空内容 upsert」而非物理删除：
+    // db.js 的缓存合并是并集策略，remove 后若云端刷新竞态，会把已被删除的行拉回本地缓存，
+    // 造成“僵尸头像”刷新后复活；upsert 空 content 以更新的 updated_at 稳定覆盖两端。
+    await LoveNest.db.upsert('love_notes', {
+      note_key: AVATAR_KEY_PREFIX + id,
+      kind: AVATAR_KIND,
+      content: dataUrl || ""
+    }, ['couple_id', 'note_key']);
+    if (dataUrl) __avatarMap[id] = dataUrl;
+    else delete __avatarMap[id];
+  }
+
+  function avatarLabel(id) {
+    const m = MemberStore.load().find(x => x.id === id);
+    if (m) return m.name === "（待补充：需你填写）" ? (m.role || "成员") : (m.name || m.role || "成员");
+    const c = COUPLE_AVATAR_IDS[id];
+    return c ? c.name : "该成员";
+  }
+
+  async function removeAvatar(id) {
+    if (!confirm(`确定移除「${avatarLabel(id)}」的头像吗？移除后将恢复文字头像。`)) return;
+    try { await saveAvatar(id, null); } catch (e) { console.warn('[family] removeAvatar:', e); }
+    refreshAll(MemberStore.load());
+    updateDetailAvatarIfOpen(id);
+    showToast("🖼 已恢复文字头像");
+  }
+
+  /* 图片压缩：居中方形裁剪 + 缩放到 maxSize + JPEG 导出（避免 base64 撑爆 localStorage） */
+  function compressImageToSquare(file, maxSize, quality) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("文件读取失败"));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("图片解析失败"));
+        img.onload = () => {
+          try {
+            const iw = img.width || maxSize, ih = img.height || maxSize;
+            const size = Math.max(1, Math.min(maxSize, Math.min(iw, ih)));
+            const canvas = document.createElement("canvas");
+            canvas.width = size; canvas.height = size;
+            const ctx = canvas.getContext("2d");
+            const scale = Math.max(size / iw, size / ih);
+            const dw = iw * scale, dh = ih * scale;
+            ctx.fillStyle = "#fff";  // JPEG 无透明通道，先铺白底
+            ctx.fillRect(0, 0, size, size);
+            ctx.drawImage(img, (size - dw) / 2, (size - dh) / 2, dw, dh);
+            resolve(canvas.toDataURL("image/jpeg", quality));
+          } catch (e) { reject(e); }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function setNewMemberAvatarPreview(dataUrl, text) {
+    const el = document.getElementById("nf-avatar-preview");
+    if (!el) return;
+    el.innerHTML = dataUrl ? `<img src="${escapeHtml(dataUrl)}" alt="头像预览" />` : escapeHtml(text || "📷");
+  }
+
+  function ensureAvatarInput() {
+    if (__avatarInput) return __avatarInput;
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = "image/*";
+    inp.style.display = "none";
+    document.body.appendChild(inp);
+    inp.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if (!file) return;
+      if (!/^image\//.test(file.type)) { showToast("请选择图片文件（jpg / png / webp…）", { kind: "warn" }); return; }
+      const targetId = inp.__targetId;
+      try {
+        const dataUrl = await compressImageToSquare(file, 256, 0.85);
+        if (targetId === "__new_member__") {
+          __newMemberAvatar = dataUrl;
+          setNewMemberAvatarPreview(dataUrl);
+          return;
+        }
+        if (!targetId) return;
+        await saveAvatar(targetId, dataUrl);
+        refreshAll(MemberStore.load());
+        updateDetailAvatarIfOpen(targetId);
+        showToast(isCloudConfigured() ? "📸 头像已更新并同步云端 ☁️" : "📸 头像已更新（本机模式，换设备记得导出 JSON）", isCloudConfigured() ? {} : { kind: "warn", duration: 4500 });
+      } catch (err) {
+        console.warn('[family] avatar upload:', err);
+        showToast("❌ 图片处理失败：" + escapeHtml(String(err && err.message || err)), { kind: "error" });
+      }
+    });
+    __avatarInput = inp;
+    return inp;
+  }
+
+  function pickAvatar(id) {
+    const inp = ensureAvatarInput();
+    inp.__targetId = id;
+    inp.click();
+  }
+
+  /* 详情弹窗打开时，头像变更后原地刷新（不重开弹窗） */
+  function updateDetailAvatarIfOpen(id) {
+    const el = document.querySelector('.detail-avatar[data-avatar-id="' + id + '"]');
+    if (!el) return;
+    const url = __avatarMap[id];
+    const initial = el.getAttribute("data-initial") || "?";
+    el.innerHTML = url ? `<img src="${escapeHtml(url)}" alt="头像" />` : escapeHtml(initial);
+    el.style.background = url ? "transparent" : (el.getAttribute("data-bg") || "");
+    const wrap = el.closest(".avatar-editable");
+    if (!wrap) return;
+    let del = wrap.querySelector(".avatar-del");
+    if (url && !del) {
+      del = document.createElement("button");
+      del.className = "avatar-del";
+      del.type = "button";
+      del.title = "移除头像";
+      del.setAttribute("aria-label", "移除头像");
+      del.setAttribute("data-avatar-del", id);
+      del.textContent = "✕";
+      del.addEventListener("click", (ev) => { ev.stopPropagation(); ev.preventDefault(); removeAvatar(id); });
+      wrap.appendChild(del);
+    } else if (!url && del) {
+      del.remove();
+    }
+  }
+
+  /* 统一给 [data-avatar-pick] / [data-avatar-del] 绑事件（每次渲染后调用） */
+  function bindAvatarControls(root) {
+    (root || document).querySelectorAll("[data-avatar-pick]").forEach(el => {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        pickAvatar(el.getAttribute("data-avatar-pick"));
+      });
+    });
+    (root || document).querySelectorAll("[data-avatar-del]").forEach(el => {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        removeAvatar(el.getAttribute("data-avatar-del"));
+      });
+    });
+  }
+
+  /* 头像内部 HTML：有图展示图，无图保持原有文字样式 */
+  function avatarInnerHtml(id, initial) {
+    const url = __avatarMap[id];
+    return url ? `<img src="${escapeHtml(url)}" alt="头像" />` : escapeHtml(initial);
+  }
+
+  /* 可编辑头像组件（cam 上传/更换 + 可选 del 移除） */
+  function avatarEditableHtml(id, initial, avatarClass, extraStyle) {
+    const has = !!__avatarMap[id];
+    return `
+      <div class="avatar-editable" title="上传 / 更换头像" role="button" tabindex="-1">
+        <div class="${avatarClass}"${extraStyle ? ` style="${extraStyle}"` : ""}>${avatarInnerHtml(id, initial)}</div>
+        <button class="avatar-cam" type="button" data-avatar-pick="${escapeHtml(id)}" title="上传 / 更换头像" aria-label="上传或更换头像">📷</button>
+        ${has ? `<button class="avatar-del" type="button" data-avatar-del="${escapeHtml(id)}" title="移除头像" aria-label="移除头像">✕</button>` : ""}
+      </div>`;
+  }
+
+  /* ============================================================
      云同步状态小工具（在工具栏显示徽标 + 弹出简要提示）
      ============================================================ */
   function isCloudConfigured() {
@@ -446,6 +666,15 @@
             const data = JSON.parse(e.target.result);
             if (data && Array.isArray(data.parents)) {
               await this.save(data.parents);
+              // 头像一并导入（{ memberId: dataURL }）
+              if (data.avatars && typeof data.avatars === "object") {
+                for (const [id, url] of Object.entries(data.avatars)) {
+                  if (typeof url === "string" && url.indexOf("data:image/") === 0) {
+                    try { await saveAvatar(id, url); } catch (err) { console.warn('[family] import avatar:', id, err); }
+                  }
+                }
+              }
+              await loadAvatars();
               resolve(data);
             } else {
               reject(new Error("文件格式不正确：缺少 parents 数组"));
@@ -479,7 +708,7 @@
       const initial = (m.initial || (m.name || "?").slice(0, 1));
       return `
         <div class="tree-node ${sideClass}" data-member-id="${escapeHtml(m.id)}" tabindex="0" role="button" aria-label="查看${escapeHtml(m.role)}的档案">
-          <div class="tree-node__avatar">${escapeHtml(initial)}</div>
+          ${avatarEditableHtml(m.id, initial, "tree-node__avatar")}
           <div class="tree-node__name">${escapeHtml(m.name === "（待补充：需你填写）" ? m.role : m.name)}</div>
           <div class="tree-node__role">${escapeHtml(m.role)}</div>
         </div>`;
@@ -493,13 +722,15 @@
         <div class="tree-level">${nodes}</div>`;
     }
 
-    // 小夫妻节点（固定）
+    // 小夫妻节点（头像支持上传，存 couple-him / couple-her）
+    const coupleAvatar = (id, txt, bg) => avatarEditableHtml(id, txt, "tree-node__avatar",
+      `background:${__avatarMap[id] ? "transparent" : bg};width:40px;height:40px;font-size:.95rem`);
     const coupleHtml = `
       <div class="tree-level">
         <div class="tree-node tree-node--couple" data-member-id="__couple__" style="min-width:200px">
           <div style="display:flex;justify-content:center;gap:10px;margin-bottom:8px">
-            <div class="tree-node__avatar" style="background:linear-gradient(135deg,var(--terracotta),#a55d47);width:40px;height:40px;font-size:.95rem">豪</div>
-            <div class="tree-node__avatar" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));width:40px;height:40px;font-size:.95rem">力</div>
+            ${coupleAvatar("couple-him", "豪", "linear-gradient(135deg,var(--terracotta),#a55d47)")}
+            ${coupleAvatar("couple-her", "力", "linear-gradient(135deg,var(--rose),var(--rose-deep))")}
           </div>
           <div class="tree-node__name">师豪 ❤ 佳力</div>
           <div class="tree-node__role">我们 · 小家庭</div>
@@ -524,20 +755,23 @@
       </div>
     `;
 
-    // 绑定点击 → 打开详情
+    // 绑定点击 → 打开详情（头像上的点击/回车交给上传逻辑，不打开详情）
     container.querySelectorAll(".tree-node[data-member-id]").forEach(el => {
       const id = el.getAttribute("data-member-id");
+      const onAvatar = (e) => !!(e.target && e.target.closest && e.target.closest("[data-avatar-pick],[data-avatar-del]"));
       if (id === "__couple__") {
-        el.addEventListener("click", () => openCoupleDetail());
-        el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCoupleDetail(); } });
+        el.addEventListener("click", (e) => { if (!onAvatar(e)) openCoupleDetail(); });
+        el.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && !onAvatar(e)) { e.preventDefault(); openCoupleDetail(); } });
       } else {
         const member = members.find(m => m.id === id);
         if (member) {
-          el.addEventListener("click", () => openMemberDetail(member));
-          el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openMemberDetail(member); } });
+          el.addEventListener("click", (e) => { if (!onAvatar(e)) openMemberDetail(member); });
+          el.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && !onAvatar(e)) { e.preventDefault(); openMemberDetail(member); } });
         }
       }
     });
+    // 头像上传 / 移除（stopPropagation 防止冒泡到节点）
+    bindAvatarControls(container);
   }
 
   function openMemberDetail(m) {
@@ -547,11 +781,17 @@
       ? "linear-gradient(135deg,var(--terracotta),#a55d47)"
       : (m.side === "her" ? "linear-gradient(135deg,var(--rose),var(--rose-deep))" : "linear-gradient(135deg,var(--sage),var(--sage-deep))");
     const initial = (m.initial || (m.name || "?").slice(0, 1));
+    const hasAvatar = !!__avatarMap[m.id];
     const html = `
       <div class="detail-header">
-        <div class="detail-avatar" style="background:${avatarBg}">${escapeHtml(initial)}</div>
+        <div class="avatar-editable">
+          <div class="detail-avatar" data-avatar-id="${escapeHtml(m.id)}" data-initial="${escapeHtml(initial)}" data-bg="${escapeHtml(avatarBg)}" style="background:${hasAvatar ? "transparent" : avatarBg}">${avatarInnerHtml(m.id, initial)}</div>
+          <button class="avatar-cam" type="button" data-avatar-pick="${escapeHtml(m.id)}" title="上传 / 更换头像" aria-label="上传或更换头像">📷</button>
+          ${hasAvatar ? `<button class="avatar-del" type="button" data-avatar-del="${escapeHtml(m.id)}" title="移除头像" aria-label="移除头像">✕</button>` : ""}
+        </div>
         <div class="detail-name">${escapeHtml(m.name)}</div>
         <div class="detail-role">${escapeHtml(m.role)}${sideLabel ? " · " + sideLabel : ""}</div>
+        <p class="avatar-hint">点击 📷 上传 / 更换头像</p>
       </div>
       <div class="detail-section">
         <h4>🎂 生日</h4>
@@ -580,6 +820,7 @@
       </div>
     `;
     window.LoveNest.openModal(`档案 · ${m.name}`, html);
+    bindAvatarControls(document.getElementById("sharedModalBody"));
   }
 
   function openCoupleDetail() {
@@ -598,15 +839,26 @@
     const secs = Math.floor((ms % 60000) / 1000);
     const pad = (n) => String(n).padStart(2, "0");
 
+    const coupleDetailAvatar = (id, txt, bg) => {
+      const has = !!__avatarMap[id];
+      return `
+        <div class="avatar-editable">
+          <div class="detail-avatar" data-avatar-id="${id}" data-initial="${txt}" data-bg="${escapeHtml(bg)}" style="background:${has ? "transparent" : bg};margin:0">${avatarInnerHtml(id, txt)}</div>
+          <button class="avatar-cam" type="button" data-avatar-pick="${id}" title="上传 / 更换头像" aria-label="上传或更换头像">📷</button>
+          ${has ? `<button class="avatar-del" type="button" data-avatar-del="${id}" title="移除头像" aria-label="移除头像">✕</button>` : ""}
+        </div>`;
+    };
+
     const html = `
       <div class="detail-header">
-        <div style="display:flex;justify-content:center;gap:14px;margin-bottom:16px">
-          <div class="detail-avatar" style="background:linear-gradient(135deg,var(--terracotta),#a55d47);margin:0">豪</div>
+        <div style="display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:16px">
+          ${coupleDetailAvatar("couple-him", "豪", "linear-gradient(135deg,var(--terracotta),#a55d47)")}
           <div style="display:flex;align-items:center;font-size:1.8rem;color:var(--rose)">❤</div>
-          <div class="detail-avatar" style="background:linear-gradient(135deg,var(--rose),var(--rose-deep));margin:0">力</div>
+          ${coupleDetailAvatar("couple-her", "力", "linear-gradient(135deg,var(--rose),var(--rose-deep))")}
         </div>
         <div class="detail-name">师豪 ❤ 佳力</div>
         <div class="detail-role">我们的小家庭 · 自 2025.05.10 相恋</div>
+        <p class="avatar-hint">点击 📷 给我们俩各换一张头像</p>
       </div>
       <div class="detail-section">
         <h4>⏱ 已携手走过</h4>
@@ -629,6 +881,7 @@
       </div>
     `;
     window.LoveNest.openModal("我们 · 小家庭", html);
+    bindAvatarControls(document.getElementById("sharedModalBody"));
   }
 
   /* ============================================================
@@ -648,11 +901,18 @@
     grid.innerHTML = parents.map(function (p, i) {
       const sideClass = "profile profile--" + (p.side || "other");
       const delay = ((i % 2) + 1);
+      const pInitial = p.initial || (p.name || "?").slice(0, 1);
+      const pAvatar = avatarInnerHtml(p.id, pInitial);
+      const pHasAvatar = !!__avatarMap[p.id];
       // 查看模式
       const viewHtml = '' +
         '<div class="profile__view">' +
           '<div class="profile__head">' +
-            '<div class="profile__avatar">' + escapeHtml(p.initial || (p.name || "?").slice(0, 1)) + '</div>' +
+            '<div class="avatar-editable" title="上传 / 更换头像">' +
+              '<div class="profile__avatar">' + pAvatar + '</div>' +
+              '<button class="avatar-cam" type="button" data-avatar-pick="' + escapeHtml(p.id) + '" title="上传 / 更换头像" aria-label="上传或更换头像">📷</button>' +
+              (pHasAvatar ? '<button class="avatar-del" type="button" data-avatar-del="' + escapeHtml(p.id) + '" title="移除头像" aria-label="移除头像">✕</button>' : '') +
+            '</div>' +
             '<div>' +
               '<div class="profile__name">' + escapeHtml(p.name) + '</div>' +
               '<div class="profile__role">' + escapeHtml(p.role) + '</div>' +
@@ -674,13 +934,17 @@
       const editHtml = '' +
         '<div class="profile__edit" data-id="' + escapeHtml(p.id) + '">' +
           '<div class="profile__head" style="margin-bottom:14px">' +
-            '<div class="profile__avatar">' + escapeHtml(p.initial || "?") + '</div>' +
+            '<div class="profile__avatar">' + pAvatar + '</div>' +
             '<div>' +
               '<div class="profile__name" style="margin-bottom:2px">编辑模式</div>' +
               '<div class="profile__role">' + escapeHtml(p.role) + '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="edit-field"><label>称呼首字（头像显示）</label><input data-field="initial" type="text" maxlength="2" value="' + escapeHtml(p.initial || "") + '" /></div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">' +
+            '<button class="btn btn--ghost btn--small" type="button" data-avatar-pick="' + escapeHtml(p.id) + '" style="padding:6px 12px;font-size:.8rem">📷 ' + (pHasAvatar ? '更换头像' : '上传头像') + '</button>' +
+            (pHasAvatar ? '<button class="btn btn--ghost btn--small" type="button" data-avatar-del="' + escapeHtml(p.id) + '" style="padding:6px 12px;font-size:.8rem;color:var(--rose-deep)">✕ 移除头像</button>' : '') +
+          '</div>' +
+          '<div class="edit-field"><label>称呼首字（无头像时显示）</label><input data-field="initial" type="text" maxlength="2" value="' + escapeHtml(p.initial || "") + '" /></div>' +
           '<div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
             '<div class="edit-field"><label>姓名</label><input data-field="name" type="text" value="' + escapeHtml(p.name || "") + '" /></div>' +
             '<div class="edit-field"><label>身份称谓</label><input data-field="role" type="text" value="' + escapeHtml(p.role || "") + '" /></div>' +
@@ -737,8 +1001,9 @@
         if (confirm(`确定要删除「${m.name || m.role}」的档案吗？此操作可通过重新导入之前的 JSON 恢复。`)) {
           const list = MemberStore.load().filter(x => x.id !== id);
           __familyMembers = list;  // 内存先更
-          // 先删 DB 再 save（保留除被删掉的以外的）
+          // 先删 DB 再 save（保留除被删掉的以外的）；头像一并清理
           try { await LoveNest.db.remove('family_members', { id }); } catch (e) {}
+          try { await saveAvatar(id, null); } catch (e) {}
           const result = await MemberStore.save(list);
           refreshAll(list);
           renderStatusBadge();
@@ -747,6 +1012,8 @@
         }
       });
     });
+    // 头像上传 / 移除（查看模式 + 编辑模式）
+    bindAvatarControls(grid);
   }
 
   /* 从 DOM 编辑表单收集成员数据 */
@@ -770,8 +1037,13 @@
      ============================================================ */
   function openAddMemberModal() {
     if (!window.LoveNest || !window.LoveNest.openModal) return;
+    __newMemberAvatar = null;
     const html = `
       <div id="addForm">
+        <div class="edit-field" style="text-align:center;margin-bottom:14px">
+          <div class="nf-avatar-preview" id="nf-avatar-preview">📷</div>
+          <button class="btn btn--ghost btn--small" id="nf-avatar-btn" type="button" style="padding:6px 12px;font-size:.8rem">📷 选择头像（可选）</button>
+        </div>
         <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div class="edit-field"><label>姓名 *</label><input id="nf-name" type="text" placeholder="如：李XX" /></div>
           <div class="edit-field"><label>身份称谓 *</label><input id="nf-role" type="text" placeholder="如：大姨、姐姐、表哥" /></div>
@@ -815,7 +1087,14 @@
     setTimeout(() => {
       const cancel = document.getElementById("nf-cancel");
       const submit = document.getElementById("nf-submit");
+      const avatarBtn = document.getElementById("nf-avatar-btn");
+      const nameInput = document.getElementById("nf-name");
       if (cancel) cancel.addEventListener("click", () => window.LoveNest.closeModal());
+      if (avatarBtn) avatarBtn.addEventListener("click", () => pickAvatar("__new_member__"));
+      // 未选头像时，预览随手写姓名实时显示首字
+      if (nameInput) nameInput.addEventListener("input", () => {
+        if (!__newMemberAvatar) setNewMemberAvatarPreview(null, (nameInput.value.trim() || "📷").slice(0, 1));
+      });
       if (submit) submit.addEventListener("click", async () => {
         const name = document.getElementById("nf-name").value.trim();
         const role = document.getElementById("nf-role").value.trim();
@@ -839,6 +1118,11 @@
         const list = MemberStore.load().concat([newMember]);
         __familyMembers = list;
         const result = await MemberStore.save(list);
+        // 保存新成员时一并落盘头像（若有）
+        if (__newMemberAvatar) {
+          try { await saveAvatar(newMember.id, __newMemberAvatar); } catch (e) { console.warn('[family] new member avatar:', e); }
+          __newMemberAvatar = null;
+        }
         window.LoveNest.closeModal();
         refreshAll(list);
         renderStatusBadge();
@@ -1054,11 +1338,17 @@
     // ✨ Supabase 初始化（首次空库会把种子父母写进去）
     await LoveNest.db.ready;
     await refreshFromDB(data.parents || FALLBACK.parents);
-    // 订阅：另一台设备修改成员 / 勾选节日，这台自动重绘
+    await loadAvatars();
+    // 订阅：另一台设备修改成员 / 头像 / 勾选节日，这台自动重绘
     LoveNest.db.watch('family_members', async rows => {
       if (!rows || !rows.length) return;
       __familyMembers = rows.slice();
       refreshAll(__familyMembers);
+    });
+    LoveNest.db.watch('love_notes', async () => {
+      // 头像存在 love_notes（kind=family-avatar），云端/他端变更后重载
+      await loadAvatars();
+      refreshAll(MemberStore.load());
     });
     LoveNest.db.watch('holiday_checks', async rows => {
       __holidayChecks = rows || [];
@@ -1105,7 +1395,7 @@
     if (exportBtn) {
       exportBtn.addEventListener("click", () => {
         const members = MemberStore.load();
-        const exportData = Object.assign({}, data, { parents: members });
+        const exportData = Object.assign({}, data, { parents: members, avatars: __avatarMap });
         MemberStore.export(exportData);
       });
     }
